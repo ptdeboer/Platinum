@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="testsrc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.esciencecenter.ptk"/>
+	<classpathentry kind="lib" path="lib/httpclient.4.2.5/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient.4.2.5/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient.4.2.5/fluent-hc-4.2.5.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient.4.2.5/httpclient-4.2.5.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient.4.2.5/httpclient-cache-4.2.5.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient.4.2.5/httpcore-4.2.4.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient.4.2.5/httpmime-4.2.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="build/eclipse"/>
+</classpath>
