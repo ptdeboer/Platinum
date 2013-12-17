@@ -355,9 +355,9 @@ public class BrowserFrame extends JFrame
 	
 	protected void addViewerPanel(ViewerPanel viewer,boolean setFocus)
 	{
-	    TabContentPanel tab = this.getCurrentTab(); 
+	    //TabContentPanel currentTab = this.getCurrentTab(); 
 	    
-	    tab=this.addTab("Viewer",null,setFocus); 
+	    TabContentPanel tab = this.addTab(viewer.getName()+":",null,setFocus); 
 	    tab.setContent(viewer);  
 	    
 	    return; 

@@ -19,12 +19,17 @@ public class ViewerManager
 
     public ViewerPanel createViewerFor(ViewNode node,String optViewerClass) throws ProxyException
     {
-        ViewerRegistry registry = browser.getPlatform().getViewerRegistry();
-
         String resourceType = node.getResourceType();
         // String resourceStatus = node.getResourceStatus();
         String mimeType = node.getMimeType();
-
+        
+        return createViewerFor(resourceType,mimeType,optViewerClass); 
+    }
+    
+    public ViewerPanel createViewerFor(String resourceType,String mimeType,String optViewerClass) throws ProxyException
+    {
+        
+        ViewerRegistry registry = browser.getPlatform().getViewerRegistry();
 
         Class clazz=null; 
         

@@ -124,6 +124,7 @@ public class TabTopLabelPanel extends JPanel
         setOpaque(false);
 
         // make JLabel read titles from JTabbedPane
+        @SuppressWarnings("serial")
         JLabel label = new JLabel()
         {
             public String getText()

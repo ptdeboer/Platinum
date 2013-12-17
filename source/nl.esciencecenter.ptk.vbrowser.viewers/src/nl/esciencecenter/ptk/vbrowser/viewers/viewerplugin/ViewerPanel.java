@@ -126,12 +126,14 @@ public abstract class ViewerPanel extends JPanel implements Disposable
     {
         this.setName(name);
 
+        // also update JFrame 
         if (isStandaloneViewer())
         {
             JFrame frame = getJFrame();
             if (frame != null)
                 getJFrame().setTitle(name);
         }
+        
     }
     
     /**
@@ -271,6 +273,7 @@ public abstract class ViewerPanel extends JPanel implements Disposable
      * After a disposeViewer() a viewer will never be started but multiple disposeViewers() might ocure. 
      */ 
     abstract protected void doDisposeViewer();
+
 
 
   
