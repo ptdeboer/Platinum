@@ -116,7 +116,7 @@ public class ImageViewer extends EmbeddedViewer
             // this.imageLabel=new JLabel("ImageLabel:Loading image...");
             // this.add(this.imageLabel,BorderLayout.CENTER);
             // this.imageLabel.setLocation(0,0);
-            this.setToolTipText(getName());
+            this.setToolTipText(getViewerName());
         }
 
         // listeners:
@@ -166,7 +166,7 @@ public class ImageViewer extends EmbeddedViewer
     }
 
     @Override
-    public String getName()
+    public String getViewerName()
     {
         // remove html color codes:
         return "ImageViewer";

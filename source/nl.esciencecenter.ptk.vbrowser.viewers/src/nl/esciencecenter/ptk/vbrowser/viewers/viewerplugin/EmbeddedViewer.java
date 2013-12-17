@@ -14,7 +14,7 @@ import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
-public abstract class EmbeddedViewer extends ViewerPanel implements MimeViewer
+public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin,MimeViewer
 {
     private static final long serialVersionUID = -873655384459474749L;
         
@@ -107,6 +107,15 @@ public abstract class EmbeddedViewer extends ViewerPanel implements MimeViewer
     public String getViewerClass()
     {
         return this.getClass().getCanonicalName(); 
+    }
+    
+    /**
+     * Embedded viewer is actual ViewerPanel
+     */ 
+    @Override
+    public ViewerPanel getViewerPanel()
+    {
+        return this; 
     }
     
     public boolean canView(String mimeType)

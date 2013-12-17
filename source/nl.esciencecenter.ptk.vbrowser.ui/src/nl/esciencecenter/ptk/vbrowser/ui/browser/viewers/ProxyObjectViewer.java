@@ -83,7 +83,7 @@ public class ProxyObjectViewer extends EmbeddedViewer
                 
             }
 
-            this.setToolTipText(getName());
+            this.setToolTipText(getViewerName());
             
             {
                 this.iconLabel=new JLabel(); 
@@ -110,7 +110,7 @@ public class ProxyObjectViewer extends EmbeddedViewer
     }
 
     @Override
-    public String getName()
+    public String getViewerName()
     {
         // remove html color codes:
         return "ObjectViewer";

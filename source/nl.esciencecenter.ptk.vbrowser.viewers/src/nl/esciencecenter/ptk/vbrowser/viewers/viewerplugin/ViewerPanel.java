@@ -15,10 +15,14 @@ import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 
-
+/** 
+ * Embedded Viewer Panel for VBrowser (viewers) plugins. 
+ * 
+ * @author Piter T. de Boer 
+ */
 public abstract class ViewerPanel extends JPanel implements Disposable
 {
-    private static final long serialVersionUID = -8148836110597201287L;
+    private static final long serialVersionUID = -8312081272922735365L;
 
     private JPanel innerPanel;
 
@@ -38,7 +42,9 @@ public abstract class ViewerPanel extends JPanel implements Disposable
     protected void setViewerRegistry(ViewerRegistry viewerRegistry)
     {
         if (this.viewerRegistry!=null)
-            throw new Error("Cannot set VieweRegistry Twice!");
+        {
+            throw new Error("Cannot set ViewerRegistry Twice!");
+        }
         
         this.viewerRegistry=viewerRegistry;
     }

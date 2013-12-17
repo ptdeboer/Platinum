@@ -3,17 +3,28 @@ package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 import java.util.List;
 import java.util.Map;
 
+/** 
+ * Interface for content viewers.
+ * Viewer registry binds MimeTypes from getMimeTypes() to this viewer. 
+ */
 public interface MimeViewer
 {
     
-    String getName(); 
+    public String getViewerName(); 
     
-    String[] getMimeTypes();
+    /**
+     * Supported mime types. One viewer may support multiple mime types. 
+     * For example { "text/plain", "text/html" } 
+     * @return
+     */
+    public String[] getMimeTypes();
 
     /**
-     *  Returns Mapping or mimeType to a list of meny methods 
-     *  For example "text/plain" -> {"View Text","Edit Text"}
+     *  Returns menu mapping per MimeType to a list of menu methods.<br>
+     *  Map structure ::= <code> Map&lt;MimeType, List&lt;MenuMethod&gt;&gt; </code>  
+     *  <br>
+     *  For example: { "text/plain" , {"View Text","Edit Text"}} 
      */ 
-    Map<String,List<String>> getMimeMenuMethods(); 
+    public Map<String,List<String>> getMimeMenuMethods(); 
     
 }

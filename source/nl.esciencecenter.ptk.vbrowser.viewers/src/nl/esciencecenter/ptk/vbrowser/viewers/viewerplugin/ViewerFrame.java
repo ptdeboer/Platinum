@@ -4,12 +4,12 @@ import java.net.URI;
 
 import javax.swing.JFrame;
 
-import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
-
+/** 
+ * Viewer Frame for embedded Viewer Panel. 
+ */
 public class ViewerFrame extends JFrame
 {
-    private static final long serialVersionUID = -1604425778812821234L;
+    private static final long serialVersionUID = 3613838609500660102L;
     
     protected ViewerPanel viewer; 
     
@@ -29,7 +29,7 @@ public class ViewerFrame extends JFrame
         return viewer; 
     }
      
-    public static ViewerFrame startViewer(Class<? extends ViewerPanel> class1, URI optionalURI)
+    public static ViewerFrame startViewer(Class<? extends ViewerPlugin> class1, URI optionalURI)
     {
         ViewerPanel newViewer=ViewerRegistry.getDefault().createViewer(class1); 
         

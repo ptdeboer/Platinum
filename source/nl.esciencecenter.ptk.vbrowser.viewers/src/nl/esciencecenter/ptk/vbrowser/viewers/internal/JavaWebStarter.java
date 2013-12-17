@@ -39,6 +39,7 @@ import nl.esciencecenter.ptk.exec.LocalExec;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.MimeViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -46,7 +47,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /** 
  * Start Webstart application. 
  */ 
-public class JavaWebStarter extends ViewerPanel implements ActionListener, MimeViewer
+public class JavaWebStarter extends ViewerPanel implements ActionListener, ViewerPlugin,MimeViewer
 {
     private static final long serialVersionUID = -8153274632131510572L;
     private JTextPane mainTP;
@@ -72,7 +73,7 @@ public class JavaWebStarter extends ViewerPanel implements ActionListener, MimeV
     }
     
     @Override
-    public String getName()
+    public String getViewerName()
     {
         return "JavaWebStart"; 
     }
@@ -213,5 +214,11 @@ public class JavaWebStarter extends ViewerPanel implements ActionListener, MimeV
         }
         
         return mappings; 
+    }
+
+    @Override
+    public ViewerPanel getViewerPanel()
+    {
+       return this; 
     }
 }

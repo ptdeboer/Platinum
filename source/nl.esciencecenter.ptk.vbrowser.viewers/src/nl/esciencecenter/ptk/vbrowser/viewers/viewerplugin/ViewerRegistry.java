@@ -19,17 +19,17 @@ public class ViewerRegistry
 
     public class ViewerEntry
     {
-        protected Class<? extends ViewerPanel> viewerClass;
+        protected Class<? extends ViewerPlugin> viewerClass;
 
         protected String viewerName;
 
-        ViewerEntry(String viewerName, Class<? extends ViewerPanel> viewerClass)
+        ViewerEntry(String viewerName, Class<? extends ViewerPlugin> viewerClass)
         {
             this.viewerClass = viewerClass;
             this.viewerName = viewerName;
         }
 
-        public Class<? extends ViewerPanel> getViewerClass()
+        public Class<? extends ViewerPlugin> getViewerClass()
         {
             return viewerClass;
         }
@@ -112,21 +112,19 @@ public class ViewerRegistry
         registerViewer(JavaWebStarter.class);
     }
 
-    public void registerViewer(Class<? extends ViewerPanel> viewerClass)
+    public void registerViewer(Class<? extends ViewerPlugin> viewerClass)
     {
 
         try
         {
-            ViewerPanel viewer = viewerClass.newInstance();
-            String viewerName = viewer.getName();
-
+            ViewerPlugin viewer = viewerClass.newInstance();
+            String viewerName = viewer.getViewerName();
             ViewerEntry entry = new ViewerEntry(viewerName, viewerClass);
             viewers.add(entry);
 
             if (viewer instanceof MimeViewer)
             {
                 MimeViewer mimeViewer = (MimeViewer) viewer;
-
                 registerMimeTypes(mimeViewer.getMimeTypes(), entry);
                 registerMimeMenuMappings(mimeViewer.getMimeMenuMethods(), entry);
             }
@@ -147,14 +145,20 @@ public class ViewerRegistry
     {
         toolViewers.add(entry);  
         
-//        if (viewer.addToToolMenu())
-//        {
-//            String menuPath[]=viewer.getToolMenuPath(); 
-//        }
+        if (viewer.addToToolMenu())
+        {
+            String menuPath[]=viewer.getToolMenuPath();
+            updateToolMenu(menuPath,viewer.getToolName()); 
+        }
         
     }
     
-    private void registerMimeTypes(String[] mimeTypes, ViewerEntry entry)
+    protected void updateToolMenu(String[] menuPath, String toolName)
+    {
+        
+    }
+
+    protected void registerMimeTypes(String[] mimeTypes, ViewerEntry entry)
     {
         for (String type : mimeTypes)
         {
@@ -170,7 +174,7 @@ public class ViewerRegistry
         }
     }
 
-    private void registerMimeMenuMappings(Map<String, List<String>> map, ViewerEntry entry)
+    protected void registerMimeMenuMappings(Map<String, List<String>> map, ViewerEntry entry)
     {
         if ((map == null) || (map.size() <= 0))
         {
@@ -216,7 +220,7 @@ public class ViewerRegistry
         }
     }
 
-    public Class<? extends ViewerPanel> getMimeTypeViewerClass(String mimeType)
+    public Class<? extends ViewerPlugin> getMimeTypeViewerClass(String mimeType)
     {
         List<ViewerEntry> list = this.mimeTypeViewers.get(mimeType);
 
@@ -229,13 +233,14 @@ public class ViewerRegistry
 
     }
 
-    public ViewerPanel createViewer(Class<? extends ViewerPanel> viewerClass)
+    public ViewerPanel createViewer(Class<? extends ViewerPlugin> viewerClass)
     {
         ViewerPanel viewer = null;
 
         try
         {
-            viewer = viewerClass.newInstance();
+            ViewerPlugin viewerPlugin = viewerClass.newInstance();
+            viewer=viewerPlugin.getViewerPanel(); 
             viewer.setViewerRegistry(this);
         }
         catch (Exception e)

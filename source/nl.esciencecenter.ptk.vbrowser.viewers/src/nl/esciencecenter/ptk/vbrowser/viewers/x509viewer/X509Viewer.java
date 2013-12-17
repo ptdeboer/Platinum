@@ -87,7 +87,7 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     }
 
     @Override
-    public String getName()
+    public String getViewerName()
     {
         return "ViewerX509";
     }

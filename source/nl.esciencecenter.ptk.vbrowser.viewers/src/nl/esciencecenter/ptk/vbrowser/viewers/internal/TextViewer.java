@@ -25,10 +25,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.RenderingHints.Key;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -232,7 +228,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
                         // [Settings]=>[Encoding]=>{Encodings}
 
-                        String encs[] = this.getResourceLoader().getCharEncodings();
+                        String encs[] = ResourceLoader.getDefaultCharEncodings();
                         encodingButtons = new Vector<JRadioButton>();
                         ButtonGroup bGroup = new ButtonGroup();
                         for (String encoding : encs)
@@ -574,7 +570,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     }
 
     @Override
-    public String getName()
+    public String getViewerName()
     {
         return "TextEditor";
     }

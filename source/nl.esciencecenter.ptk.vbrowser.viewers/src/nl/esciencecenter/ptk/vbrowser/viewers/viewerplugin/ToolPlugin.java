@@ -2,48 +2,49 @@ package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 
 import javax.swing.Icon;
 
-/** 
- * Interface for Viewer which are Custom Tools. 
- * These viewers will appears under the "Tools" menu and optionally have their own ToolBar. 
+/**
+ * Interface for Viewers which are Custom "Tools". These viewers will appears
+ * under the "Tools" menu and optionally have their own ToolBar.
  */
 public interface ToolPlugin
 {
- 
-    /**
-     * Added under "Tools" menu 
-     */
-    public boolean addToToolMenu(); 
+
+    public String getToolName(); 
     
-    /** 
-     * Menu path to appear under "Tools" menu of the browser.  
-     * @return
+    /**
+     * Whether to add tool under "Tools" menu.
+     */
+    public boolean addToToolMenu();
+
+    /**
+     * Menu path to appear under "Tools" menu of the browser. For example
+     * {"util","binary viewers"}.
+     * 
+     * @return array of menu path names.
      */
     public String[] getToolMenuPath();
-    
-    /** 
-     * Create custom ToolBar to be added to the browser. 
-     * @return
-     */
-    boolean createToolBar(); 
-    
-    /**
-     * Name to group other tools to the same ToolBar if createToolBar() is true. 
-     * @return
-     */
-    public String toolBarName(); 
 
-    /** 
-     * Custom method name to use when the viewer is started from the Tool Menu.
-     * see {@link ViewerPanel#startViewerFor(java.net.URI, String)} 
+    /**
+     * Toolbar name to group other tools to the same ToolBar if createToolBar()
+     * is true. If null, no toolbar will be created. 
+     * 
      * @return
      */
-    public String viewerToolMethod(); 
-    
-    /** 
-     * Custom Tool Icon. 
-     * Method may return a tool mismatching the requested size. 
-     * Icons are automatically resized to fit the menu or Toolbar. 
+    public String toolBarName();
+
+    /**
+     * Default method name to use when the viewer is started from the Tool Menu.
+     * see {@link ViewerPanel#startViewerFor(java.net.URI, String)}
+     * 
+     * @return
+     */
+    public String viewerToolMethod();
+
+    /**
+     * Return custom tool Icon. Parameter size indicates minimum size of icon.
+     * Icons are automatically resized to fit the menu or Toolbar.<br>
+     * To avoid upscaling of the icon return at least an icon with a Height &gt; size and Width &gt; size. 
      */
     public Icon getToolIcon(int size);
-    
+
 }

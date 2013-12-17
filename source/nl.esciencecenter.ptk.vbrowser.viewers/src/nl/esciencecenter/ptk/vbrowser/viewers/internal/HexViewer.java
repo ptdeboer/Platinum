@@ -55,6 +55,7 @@ import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ToolPlugin;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 
@@ -64,7 +65,7 @@ import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
  * 
  * @author Piter.NL.
  */
-public class HexViewer extends EmbeddedViewer implements FontToolbarListener
+public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, ToolPlugin
 
 {
     // todo: UTF-8 Char Mapping
@@ -675,7 +676,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener
     }
 
     @Override
-    public String getName()
+    public String getViewerName()
     {
         return "Binary Viewer";
     }
