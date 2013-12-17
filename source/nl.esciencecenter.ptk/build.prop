@@ -1,0 +1,28 @@
+###
+# File      : build.prop
+# Component : platinum core 
+# 
+# Info: 
+#
+#   build properties. Holds ALL customizable properties 
+#   
+
+comp.groupId=nl.esciencecenter.ptk
+comp.artefactId=nlesc-platinum
+comp.package.prefix=nl.esciencecenter.platinum
+comp.package.dir=nl/esciencecenter/ptk
+comp.mainclass=nl.esciencecenter.ptk.bootstrap.Bootstrapper
+
+comp.src=src
+comp.testsrc=testsrc
+comp.dist=dist
+comp.build=build
+comp.build.classdir=${comp.build}/classes
+
+##
+#bootstrapper:
+
+bootstrap.package.dir=nl/esciencecenter/ptk/bootstrap
+bootstrap.mainclass=nl.esciencecenter.ptk.bootstrap.Bootstrapper
+
+

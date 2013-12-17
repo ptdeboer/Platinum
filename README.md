@@ -1,4 +1,4 @@
 Platinum
 ========
 
-Swing based GUI toolkit
+Swing based GUI Toolkit 
