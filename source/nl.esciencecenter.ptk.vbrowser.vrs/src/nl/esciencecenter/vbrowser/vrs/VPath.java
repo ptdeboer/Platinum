@@ -28,7 +28,7 @@ public interface VPath
  
     /**
      * Return parent VPath of this VPath. 
-     * Default implementation return directory name.  
+     * Default implementation returns directory name.  
      * @return Logical Parent (V)Path of this VPath. 
      * @throws VrsException
      */
