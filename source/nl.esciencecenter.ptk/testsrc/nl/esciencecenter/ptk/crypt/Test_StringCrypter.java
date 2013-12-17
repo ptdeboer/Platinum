@@ -34,6 +34,7 @@ import junit.framework.Assert;
 import nl.esciencecenter.ptk.crypt.CryptScheme;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.crypt.StringCrypter;
+import nl.esciencecenter.ptk.testsettings.TestSettings;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 import org.junit.Test;
@@ -150,9 +151,15 @@ public class Test_StringCrypter
     @Test
     public void test_CryptAES256ECB_SHA256_12345() throws Throwable
     { 
+        if (TestSettings.getInstance().testAES256Encryption()==false)
+        {
+            TestSettings.getLogger(Test_StringCrypter.class).warnPrintf("Not testing 256 bits AES encryption\n"); 
+            return; 
+        }
+        
         try
         {
-            // echo -n 12345 | openssl enc -aes-256-ecb -nosalt -pass pass:12345 -base64 -md sha256 -p
+            // echo -n 12345 | openssl enc -aes-256-ecb -nosalt -pass pass:12345 -base64 -md sha256 -ps
             // key=5994471ABB01112AFCC18159F6CC74B4F511B99806DA59B3CAF5A9C173CACFC5
             // yy7m98PdS/LxdH6XI32Z6g==
             testEncrypt("12345", "12345", "yy7m98PdS/LxdH6XI32Z6g==", CryptScheme.AES256_ECB_PKCS5, "SHA-256", StringCrypter.CHARSET_UTF8);

@@ -100,7 +100,7 @@ public class ResourceLoader
         logger = ClassLogger.getLogger(ResourceLoader.class);
     }
 
-    public static String[] getCharEncodings()
+    public static String[] getDefaultCharEncodings()
     {
         return charEncodings;
     }
@@ -693,5 +693,6 @@ public class ResourceLoader
     {
         return fsUtil.createRandomWriter(fsUtil.newFSNode(loc));
     }
+
     
 }
