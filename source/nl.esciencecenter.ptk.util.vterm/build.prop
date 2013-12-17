@@ -1,0 +1,24 @@
+###
+# File      : build.prop
+# Component : ptk.util.vterm
+# 
+# Info: 
+#
+#   build properties. Holds ALL customizable properties 
+#   
+
+##
+# Module definition 
+#
+comp.groupId=nl.esciencecenter.platinum
+comp.artefactId=nlesc-platinum.util.vterm
+comp.package.prefix=nl.esciencecenter.ptk.util.vterm
+comp.package.dir=nl/esciencecenter/ptk/util/vterm
+
+##
+# Build environment. 
+comp.src=src
+comp.build=build
+comp.build.classes=${comp.build}/classes
+comp.dist=dist
+comp.lib=lib

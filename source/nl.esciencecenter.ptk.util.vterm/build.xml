@@ -1,0 +1,130 @@
+<project name="nlesc-ptk.util.vterm" default="dist" basedir=".">
+	<description>
+        Project        : PTK
+        Component      : ptk.util.vterm
+		
+		See build.prop for configuration options. 
+		
+    </description>
+
+	<!-- is set by toplevel build -->
+	<property name="project.root" value="../.." />
+	<!-- project environment -->
+	<property file="${project.root}/project.prop" />
+	<property environment="env" />
+	<property name="comp.root" location="." />
+	<property file="build.prop" />
+
+	<!-- 
+		Target: init 
+	  -->
+	<target name="init">
+
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${comp.build}" />
+		<mkdir dir="${comp.build.classes}" />
+		<mkdir dir="${comp.dist}" />
+		<mkdir dir="${comp.dist}/lib" />
+
+		<property name="ptk.version" value="dev-snapshot"/>
+		<property name="comp.version" value="${ptk.version}"/>
+
+	</target>
+
+	<target name="config">
+	</target>
+
+	<target name="generate">
+	</target>
+
+	<path id="comp.classpath">
+		<!-- include project libraries-->
+		<fileset dir="${project.dist.lib}">
+			<include name="**/*.jar" />
+		</fileset>
+
+		<!--        <fileset dir="${comp.lib}">
+            <include name="**/*.jar" />
+        </fileset>
+        -->
+
+		<!-- add local paths settings -->
+		<pathelement location="${comp.build.classes}" />
+
+	</path>
+
+	<!--
+        Target : Compilation 
+    -->
+	<target name="build" depends="init" description="compile the source ">
+
+		<javac srcdir="${comp.src}" 
+               destdir="${comp.build.classes}" compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}" target="${javac.target}">
+			<classpath refid="comp.classpath" />
+		</javac>
+
+	</target>
+
+	<target name="test" depends="build">
+	</target>
+
+	<target name="jar" depends="build">
+		<!-- defaults -->
+		<property name="comp.version" value="dev" />
+		<property name="project.version" value="dev" />
+		<property name="project.vendor" value="${user.name}" />
+
+		<!-- Create application JAR file -->
+		<jar jarfile="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" basedir="${comp.build.classes}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="${comp.mainclass}" />
+				<section name="common">
+					<attribute name="Specification-Title" value="${comp.artefactId}" />
+					<attribute name="Specification-Version" value="${project.version}" />
+					<attribute name="Specification-Vendor" value="${project.vendor}" />
+					<attribute name="Implementation-Title" value="${comp.artefactId}" />
+					<attribute name="Implementation-Version" value="${comp.version} ${TODAY}" />
+					<attribute name="Implementation-Vendor" value="${project.vendor}" />
+				</section>
+				<!-- <attribute name="Class-Path" value="bootstrap.jar" /> -->
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="dist" depends="build,jar">
+
+		<filterset id="compfilters">
+			<!-- nifty:  ant filterset (keyword subtitution) while copying files ! -->
+			<filter token="COMP_VERSION" value="${comp.version}" />
+			<filter token="DATE" value="${comp.tstamp}" />
+		</filterset>
+
+
+	</target>
+
+	<!--
+     *    Target: dist-install
+     *    Info:
+     *     		install auxiliary (3rd party) libraries into {project.dist.lib}  dir 
+     *        
+     -->
+	<target name="dist-install" depends="dist" description="install libraries">
+		<fail message="*** Error: property 'project.root' not defined. Please start with '-Dproject.root=&lt;path&gt;' argument. " unless="project.env.ok" />
+
+		<!-- toplevel directory structure -->
+		<mkdir dir="${project.dist.lib}" />
+		<copy todir="${project.dist.lib}">
+			<fileset dir="${comp.dist}/lib" />
+		</copy>
+
+	</target>
+
+	<target name="clean" description="clean">
+		<delete dir="${comp.dist}"/>
+		<delete dir="${comp.build}"/>
+	</target>
+
+</project>
+
+
