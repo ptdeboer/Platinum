@@ -1,0 +1,24 @@
+###
+# File      : build.prop
+# Component : platinum.ui
+# 
+# Info: 
+#
+#   build properties. Holds ALL customizable properties 
+#   
+
+##
+# Module definition 
+#
+comp.groupId=nl.esciencecenter.platinum
+comp.artefactId=nlesc-platinum.ui
+comp.package.prefix=nl.esciencecenter.ptk.ui
+comp.package.dir=nl/esciencecenter/ptk/ui
+
+##
+# Build environment. 
+comp.src=src
+comp.build=build
+comp.build.classes=${comp.build}/classes
+comp.dist=dist
+comp.lib=lib
