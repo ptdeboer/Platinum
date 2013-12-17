@@ -7,7 +7,7 @@
 #   build properties. Holds ALL customizable properties 
 #   
 
-comp.groupId=nl.esciencecenter.ptk
+comp.groupId=nl.esciencecenter.platinum
 comp.artefactId=nlesc-platinum
 comp.package.prefix=nl.esciencecenter.platinum
 comp.package.dir=nl/esciencecenter/ptk

@@ -1,7 +1,7 @@
-<project name="nlesc-platinum" default="dist" xmlns:jacoco="antlib:org.jacoco.ant" basedir=".">
+<project name="Platinum" default="dist" xmlns:jacoco="antlib:org.jacoco.ant" basedir=".">
     <description>
-        Project        : platinum
-        Component      : platinum
+        Project        : Platinum
+        Component      : Core module.
 		
 		See build.prop for configuration options. 
 		
