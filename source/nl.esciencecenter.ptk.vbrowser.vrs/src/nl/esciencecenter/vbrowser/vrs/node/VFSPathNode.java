@@ -51,9 +51,9 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         ATTR_PERMISSIONSTRING // implementation specific permissions string
     };
     
-    protected VFSPathNode(VRL vrl, VFileSystem fileSystem)
+    protected VFSPathNode(VFileSystem fileSystem,VRL vrl)
     {
-        super(vrl, fileSystem);
+        super(fileSystem,vrl);
     }
     
     protected VFileSystem getVFileSystem()

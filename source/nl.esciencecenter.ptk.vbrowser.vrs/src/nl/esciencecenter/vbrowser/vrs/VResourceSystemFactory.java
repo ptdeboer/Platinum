@@ -8,8 +8,10 @@ public interface VResourceSystemFactory
     public String[] getSchemes(); 
 
     public String createResourceSystemId(VRL vrl);
+
+    public ResourceSystemInfo updateResourceInfo(VRSContext context,ResourceSystemInfo resourceSystemInfo, VRL vrl);
     
-    public VResourceSystem createResourceSystemFor(VRL vrl) throws VrsException; 
- 
+    public VResourceSystem createResourceSystemFor(VRSContext context,ResourceSystemInfo info, VRL vrl) throws VrsException;
+
     
 }

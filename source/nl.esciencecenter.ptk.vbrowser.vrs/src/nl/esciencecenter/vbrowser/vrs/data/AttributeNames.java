@@ -39,6 +39,8 @@ public class AttributeNames
 
     public static final String ATTR_MIMETYPE = "mimeType";
 
+    public static final String ATTR_CHARSET = "mimeType";
+
     /** 
      * String representation of Implementation depended permissions 
      */

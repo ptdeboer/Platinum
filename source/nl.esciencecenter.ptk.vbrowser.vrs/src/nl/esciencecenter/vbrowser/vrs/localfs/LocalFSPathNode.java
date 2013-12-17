@@ -24,7 +24,7 @@ public class LocalFSPathNode extends VFSPathNode
 
     protected LocalFSPathNode(LocalFileSystem fileSystem, LocalFSNode node)
     {
-        super(new VRL(node.getURI()), fileSystem);
+        super(fileSystem,new VRL(node.getURI()));
         this.localfs=fileSystem;
         this.fsNode=node; 
     }

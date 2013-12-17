@@ -1,5 +1,7 @@
 package nl.esciencecenter.vbrowser.vrs.localfs;
 
+import nl.esciencecenter.vbrowser.vrs.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -7,11 +9,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class LocalFSFileSystemFactory implements VResourceSystemFactory
 {
-    private LocalFileSystem localfs; 
-    
     public LocalFSFileSystemFactory() throws VrsException
     {
-        localfs=new LocalFileSystem(); 
     }
     
     @Override
@@ -29,14 +28,21 @@ public class LocalFSFileSystemFactory implements VResourceSystemFactory
     }
 
     @Override
-    public VResourceSystem createResourceSystemFor(VRL vrl) throws VrsException
+    public VResourceSystem createResourceSystemFor(VRSContext context,ResourceSystemInfo info,VRL vrl) throws VrsException
     {
         if ("file".equals(vrl.getScheme())==false)
         {
             throw new VrsException("Only support local file system URI:"+vrl);
         }
         
-        return localfs;
+        return new LocalFileSystem(context);
+    }
+
+    @Override
+    public ResourceSystemInfo updateResourceInfo(VRSContext context,ResourceSystemInfo resourceSystemInfo, VRL vrl)
+    {
+        // Nothing to be updated. 
+        return resourceSystemInfo; 
     }
 
 }

@@ -39,7 +39,7 @@ public class VPathNode implements VPath
     
     protected VResourceSystem resourceSystem; 
     
-    protected VPathNode(VRL vrl,VResourceSystem resourceSystem)
+    protected VPathNode(VResourceSystem resourceSystem,VRL vrl)
     {
         this.vrl=vrl;
         this.resourceSystem=resourceSystem; 

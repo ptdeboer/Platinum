@@ -1,14 +1,31 @@
 package nl.esciencecenter.vbrowser.vrs;
 
-import java.util.Properties;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import nl.esciencecenter.ptk.object.Duplicatable;
 
-public class VRSProperties
+public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties>//, Comparable<VRSProperties>
 {
-    protected Properties properties=null; 
+    private static final long serialVersionUID = 1515535666077358909L;
     
-    public VRSProperties(Properties properties)
+    protected Map<String,Object>  properties=null; 
+    
+    /**
+     * Creates new VRSProperties and copies values from sourceProperties; 
+     * Converts key object to String based key. 
+     * @param sourceProperties source Properties to copy. 
+     */
+    public VRSProperties(Map<? extends Object,Object> sourceProperties)
     {
-        this.properties=properties; 
+        this.properties=new Hashtable<String,Object>(); 
+        
+        for (Object key:properties.keySet())
+        {
+            this.properties.put(key.toString(), sourceProperties.get(key)); 
+        }
     }
     
     public String getStringProperty(String name)
@@ -80,5 +97,88 @@ public class VRSProperties
     {
         return properties.get(name); 
     }
+
+    public VRSProperties duplicate()
+    {
+        return new VRSProperties(properties);
+    }
+
+    @Override
+    public boolean shallowSupported()
+    {
+        return false;
+    }
+
+    @Override
+    public VRSProperties duplicate(boolean shallow)
+    {
+        return duplicate(); 
+    }
     
+    /**
+     * Returns copy of Key Set as String List. 
+     * @return String list of key set. 
+     */
+    public List<String> keyList()
+    {
+        List<String> keys=new ArrayList<String>();  
+        
+        for (Object key:properties.keySet())
+        {
+            keys.add(key.toString()); 
+        }
+        
+        return keys; 
+    }
+
+    /** 
+     * Copy all properties: 
+     * @param vrsProps
+     */
+    public void putAll(VRSProperties vrsProps)
+    {
+        properties.putAll(vrsProps.properties);
+        
+    }
+
+    public boolean getBooleanProperty(String name, boolean defaultValue)
+    {
+        Object val=this.properties.get(name); 
+        if (val==null)
+        {
+            return defaultValue;
+        }
+        else if (val instanceof Boolean)
+        {
+            return (Boolean)val; //autoboxing
+        }
+        else
+        {
+            return Boolean.parseBoolean(val.toString());
+        }
+    }
+
+    public void set(String name, boolean value)
+    {
+        properties.put(name, new Boolean(value)); 
+    }
+    
+    public void set(String name, String value)
+    {
+        // null value mean not set -> clear value. 
+        
+        if (value==null)
+        {
+            properties.remove(name); 
+            return;
+        }
+        
+        properties.put(name, value); 
+    }
+    
+    public void set(String name,int value)
+    {
+        properties.put(name, new Integer(value)); 
+    }
+
 }

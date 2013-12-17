@@ -4,6 +4,7 @@ import java.util.List;
 
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -11,9 +12,9 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public abstract class VFileSystemNode extends VResourceSystemNode implements VFileSystem, VFSPath
 {
 
-    protected VFileSystemNode(VRL serverVrl)
+    protected VFileSystemNode(VRSContext context,VRL serverVrl)
     {
-        super(serverVrl);
+        super(context,serverVrl);
         
     }
 
