@@ -1,0 +1,22 @@
+###
+# File      : build.prop
+# Component : vbrowser.vrs
+# 
+# Info: 
+#
+#   build properties. Holds ALL customizable properties 
+#   
+
+###
+# Do not add spaces to the end of the values ! 
+# Component defaults (not that comp.root is set in the main build file)
+comp.groupId=nl.esciencecenter.platinum
+comp.artefactId=nlesc-platinum.vbrowser.vrs
+# build env: 
+comp.src=${comp.root}/src
+comp.dist=${comp.root}/dist
+comp.build=${comp.root}/build
+comp.lib=${comp.root}/lib
+comp.build.classes=${comp.root}/build/classes
+
+

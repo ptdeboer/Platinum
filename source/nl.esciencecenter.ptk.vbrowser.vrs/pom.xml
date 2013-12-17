@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+  <name>vbrowser-vrs (${vbrowser.version})</name>  
+  <groupId>nl.esciencecenter.vbrowser</groupId>
+  <artifactId>vbrowser-vrs</artifactId>
+  <version>${vbrowser.version}</version>
+  
+  <parent>
+      <groupId>nl.esciencecenter.vbrowser</groupId>
+      <artifactId>mvnbuild</artifactId>
+      <version>dev-1</version>
+      <relativePath>../../pom.xml</relativePath>
+  </parent>
+    
+  <build>
+  
+        <sourceDirectory>src</sourceDirectory>
+        
+        <plugins>
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                   <source>1.6</source>
+                <target>1.6</target>
+            </configuration>
+            </plugin>
+        </plugins>
+        
+ </build>
+
+ <dependencies>
+ 
+	<dependency>
+    	<groupId>nl.ikarus.nxt.priv.imageio.icoreader</groupId>
+        <artifactId>ICOReader</artifactId>
+        <version>1.04</version>
+  	</dependency>
+        
+     <dependency>
+         <groupId>nl.esciencecenter.ptk</groupId>
+         <artifactId>nlesc-ptk</artifactId>
+         <version>${ptk.version}</version>
+         <type>jar</type>
+         <scope>compile</scope>
+     </dependency>
+     
+	<dependency>
+        <groupId>jmimemagic</groupId>
+        <artifactId>jmimemagic</artifactId>
+        <version>0.1.2</version>
+        <scope>compile</scope>
+    </dependency>
+        
+ </dependencies>
+   
+</project>

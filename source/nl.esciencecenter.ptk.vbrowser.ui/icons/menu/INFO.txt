@@ -1,0 +1,6 @@
+package: (icons)menu.*
+
+Info
+===
+ Embedded icons for the Gui Util components. 
+ Are added to the gui.utils.jar 

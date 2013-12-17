@@ -1,0 +1,22 @@
+###
+# File      : build.prop
+# Component : vbrowser.vb2.ui
+# 
+# Info: 
+#
+#   build properties. Holds ALL customizable properties 
+#   
+
+###
+# Do not add spaces to the end of the values ! 
+# Component defaults (not that comp.root is set in the main build file)
+comp.groupId=nl.esciencecenter.platinum
+comp.artefactId=nlesc-platinum.vbrowser.ui
+# build env: 
+comp.src=${comp.root}/src
+comp.dist=${comp.root}/dist
+comp.build=${comp.root}/build
+comp.build.classes=${comp.root}/build/classes
+
+
+
