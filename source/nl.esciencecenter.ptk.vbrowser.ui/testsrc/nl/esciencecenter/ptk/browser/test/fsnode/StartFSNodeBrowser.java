@@ -18,15 +18,14 @@
  */ 
 // source: 
 
-package test.localfs;
+package nl.esciencecenter.ptk.browser.test.fsnode;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.fsnode.FSNodeProxyFactory;
 
-public class testFSNodeBrowser 
+public class StartFSNodeBrowser 
 {
 
 	public static void main(String args[])

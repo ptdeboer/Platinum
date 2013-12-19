@@ -18,7 +18,7 @@
  */
 // source: 
 
-package nl.esciencecenter.ptk.vbrowser.ui.proxy.fsnode;
+package nl.esciencecenter.ptk.browser.test.fsnode;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.FSNode;

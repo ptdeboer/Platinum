@@ -27,16 +27,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import nl.esciencecenter.ptk.browser.test.dummy.DummyProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.DummyBrowserInterface;
-import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.dummy.DummyProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.tree.ResourceTree;
 
-public class testResourceTree 
+public class TestResourceTree 
 {
 	
 	public static void main(String args[])

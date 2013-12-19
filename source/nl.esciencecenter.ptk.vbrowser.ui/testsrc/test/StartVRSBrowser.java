@@ -18,14 +18,14 @@
  */ 
 // source: 
 
-package nl.esciencecenter.ptk.vbrowser.ui.proxy.fsnode;
+package test;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 
-public class StartFSNodeBrowser 
+public class StartVRSBrowser 
 {
 
 	public static void main(String args[])
@@ -36,7 +36,7 @@ public class StartFSNodeBrowser
 		    
 		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
 		    
-		    ProxyFactory fac = FSNodeProxyFactory.getDefault(); 
+		    VRSProxyFactory fac = VRSProxyFactory.getDefault(); 
 		    
 		    platform.registerProxyFactory(fac); 
 		    

@@ -28,10 +28,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+import nl.esciencecenter.ptk.browser.test.fsnode.FSNodeProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.fsnode.FSNodeProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeTableDataProducer;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
