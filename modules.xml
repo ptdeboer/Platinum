@@ -54,7 +54,7 @@
 
     </target>
 
-    <target name="platinum-all" depends="init,platinum-core,platinum-vbrowser,platinum-vbrowser-viewers">
+    <target name="platinum-all" depends="init,platinum-core,platinum-vbrowser,platinum-vbrowser-viewers,platinum-util-vterm">
     </target>
 
     <target name="platinum-auxlibs" depends="init">
