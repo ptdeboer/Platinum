@@ -18,7 +18,7 @@
  */ 
 // source: 
 
-package test;
+package nl.esciencecenter.ptk.vbrowser.ui;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;

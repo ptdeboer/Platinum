@@ -38,50 +38,49 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-
-/** 
- * Factory class for UIPresentation of VRS Nodes. 
+/**
+ * Factory class for UIPresentation of VRS Nodes.
  */
 public class VRSPresentation
 {
-    public static String defaultVFSAttributeNames[] = 
-        {
-            ATTR_ICON, 
-            ATTR_NAME, 
-            ATTR_RESOURCE_TYPE, 
+    public static String defaultVFSAttributeNames[] =
+    {
+            ATTR_ICON,
+            ATTR_RESOURCE_TYPE,
+            ATTR_NAME,
             ATTR_FILE_SIZE,
             // ATTR_MODIFICATION_TIME_STRING,
-            ATTR_MODIFICATION_TIME, 
-            ATTR_MIMETYPE, 
+            ATTR_MODIFICATION_TIME,
+            ATTR_MIMETYPE,
             ATTR_PERMISSIONSTRING,
             // ATTR_ISHIDDEN,
             // ATTR_ISLINK
             // VFS.ATTR_ISFILE,
             // VFS.ATTR_ISDIR
-        };
-    
-    /** 
-     * Default Attributes to show for VPathNode  
+    };
+
+    /**
+     * Default Attributes to show for VPathNode
      */
-    public static String defaultVPathAttributeNames[] = 
-        {
-            ATTR_ICON, 
-            ATTR_RESOURCE_TYPE, 
+    public static String defaultVPathAttributeNames[] =
+    {
+            ATTR_ICON,
+            ATTR_RESOURCE_TYPE,
             ATTR_NAME,
             // ATTR_LENGTH,
             ATTR_MIMETYPE
-        };
+    };
 
-    /** 
-     * @see getPresentationFor(String, String, String, boolean) 
+    /**
+     * @see getPresentationFor(String, String, String, boolean)
      */
     public static Presentation getPresentationFor(String scheme, String host, String type)
     {
         return getPresentationFor(scheme, host, type, true);
     }
 
-    /** 
-     * @see getPresentationFor(String, String, String, boolean) 
+    /**
+     * @see getPresentationFor(String, String, String, boolean)
      */
     public static Presentation getPresentationFor(VRL vrl, String type, boolean autocreate)
     {
@@ -108,19 +107,19 @@ public class VRSPresentation
         String id = createID(scheme, host, type);
         Presentation pres = null;
 
-        pres=Presentation.getPresentation(id,false); 
-        if (pres!=null)
-            return pres; 
+        pres = Presentation.getPresentation(id, false);
+        if (pres != null)
+            return pres;
 
         if (autocreate == false)
             return null;
 
-        pres = createDefault(); 
-        
+        pres = createDefault();
+
         //
         // Set defaults:
         //
-        
+
         if (type.compareTo(VRSTypes.DIR_TYPE) == 0)
         {
             pres.setChildAttributeNames(new StringList(VRSPresentation.defaultVFSAttributeNames));
@@ -129,40 +128,40 @@ public class VRSPresentation
         {
             pres.setChildAttributeNames(new StringList(VRSPresentation.defaultVPathAttributeNames));
         }
-        
+
         pres.setIconAttributeName(ATTR_ICON);
-        
-        Presentation.storePresentation(id,pres);
-        
+
+        Presentation.storePresentation(id, pres);
+
         return pres;
     }
-    
+
     private static String createID(String scheme, String host, String type)
     {
-        if (scheme==null)
-            throw new NullPointerException("Presentation must have at least a scheme"); 
-        
-        if (host==null)
-            host="";
-        
-        if (type==null)
-            type="";
-        
-        String id= scheme + "-" + host + "-" + type;
-        return id; 
+        if (scheme == null)
+            throw new NullPointerException("Presentation must have at least a scheme");
+
+        if (host == null)
+            host = "";
+
+        if (type == null)
+            type = "";
+
+        String id = scheme + "-" + host + "-" + type;
+        return id;
     }
-    
+
     public static Presentation createDefault()
     {
-        Presentation pres=new Presentation(); 
+        Presentation pres = new Presentation();
         initDefaults(pres);
-        return pres; 
+        return pres;
     }
-    
+
     public static void initDefaults(Presentation pres)
     {
         pres.setAttributePreferredWidth(ATTR_ICON, 32);
-        //pres.setAttributePreferredWidth(ATTR_INDEX, 32);
+        // pres.setAttributePreferredWidth(ATTR_INDEX, 32);
         pres.setAttributePreferredWidth(ATTR_NAME, 200);
         pres.setAttributePreferredWidth(ATTR_RESOURCE_TYPE, 140);
         pres.setAttributePreferredWidth(ATTR_SCHEME, 60);
@@ -174,8 +173,8 @@ public class VRSPresentation
         pres.setAttributePreferredWidth(ATTR_MODIFICATION_TIME, 120);
         pres.setAttributePreferredWidth(ATTR_CREATION_TIME, 120);
         // VQueues and VJobs:
-        
+
         pres.setChildAttributeNames(new StringList(defaultVPathAttributeNames));
     }
-    
+
 }

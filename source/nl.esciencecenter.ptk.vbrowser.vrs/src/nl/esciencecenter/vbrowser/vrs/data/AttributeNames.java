@@ -39,7 +39,7 @@ public class AttributeNames
 
     public static final String ATTR_MIMETYPE = "mimeType";
 
-    public static final String ATTR_CHARSET = "mimeType";
+    public static final String ATTR_CHARSET = "charSet";
 
     /** 
      * String representation of Implementation depended permissions 
@@ -54,7 +54,7 @@ public class AttributeNames
 
     public static final String ATTR_UNIX_GROUPID = "unix.groupID";
 
-    public static final String ATTR_UNIX_OWNER= "unix.userName";
+    public static final String ATTR_UNIX_OWNER= "unix.owner";
 
     public static final String ATTR_UNIX_GROUPNAME = "unix.groupName";
 

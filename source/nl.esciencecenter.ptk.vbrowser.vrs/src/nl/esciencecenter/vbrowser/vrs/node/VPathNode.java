@@ -180,7 +180,7 @@ public class VPathNode implements VPath
         else if (name.compareTo(ATTR_HOSTNAME) == 0)
             return new Attribute(name, vrl.getHostname());
         // only return port attribute if it has a meaningful value
-        else if (name.compareTo(ATTR_PORT) >= 0)
+        else if ((name.compareTo(ATTR_PORT)==0) && (vrl.getPort() >= 0))
             return new Attribute(name, vrl.getPort());
         else if (name.compareTo(ATTR_ICONURL) == 0)
             return new Attribute(name, getIconURL(16));

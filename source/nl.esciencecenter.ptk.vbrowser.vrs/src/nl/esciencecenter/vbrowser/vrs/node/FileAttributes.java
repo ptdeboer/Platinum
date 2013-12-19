@@ -3,6 +3,8 @@ package nl.esciencecenter.vbrowser.vrs.node;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
+import nl.esciencecenter.ptk.presentation.Presentation;
+
 public class FileAttributes implements BasicFileAttributes
 {
     
@@ -26,15 +28,34 @@ public class FileAttributes implements BasicFileAttributes
         return false; 
     }
 
-    public long getModificationTime()
+    public java.util.Date getModificationTimeDate()
     {
         FileTime time = this.lastModifiedTime();
         if (time==null)
         {
-            return -1; 
+            return null;
         }
-        
-        return time.toMillis(); 
+        return Presentation.createDate(time.toMillis());
+    }
+
+    public java.util.Date getCreationTimeDate()
+    {
+        FileTime time = this.creationTime();
+        if (time==null)
+        {
+            return null;
+        }
+        return Presentation.createDate(time.toMillis());
+    }
+
+    public java.util.Date getLastAccessTimeDate()
+    {
+        FileTime time = this.lastAccessTime();
+        if (time==null)
+        {
+            return null;
+        }
+        return Presentation.createDate(time.toMillis());
     }
 
 //    public String getPermissionsString()

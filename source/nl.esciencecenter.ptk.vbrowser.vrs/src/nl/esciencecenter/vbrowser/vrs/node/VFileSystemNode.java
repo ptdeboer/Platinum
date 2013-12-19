@@ -12,10 +12,10 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public abstract class VFileSystemNode extends VResourceSystemNode implements VFileSystem, VFSPath
 {
 
-    protected VFileSystemNode(VRSContext context,VRL serverVrl)
+    protected VFileSystemNode(VRSContext context, VRL serverVrl)
     {
-        super(context,serverVrl);
-        
+        super(context, serverVrl);
+
     }
 
     @Override
@@ -27,46 +27,46 @@ public abstract class VFileSystemNode extends VResourceSystemNode implements VFi
     @Override
     public VFSPath getParent() throws VrsException
     {
-        // default of FileSystem Root is FileSystem itself. 
-        return this; 
+        // default of FileSystem Root is FileSystem itself.
+        return this;
     }
 
-    @Override 
+    @Override
     public boolean isRoot() throws VrsException
     {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean isDir() throws VrsException
     {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean isFile() throws VrsException
     {
-        return false; 
+        return false;
     }
 
     @Override
     public List<? extends VFSPath> list() throws VrsException
     {
-        return createVFSNode(this.getServerVRL()).list(); 
+        return createVFSNode(this.getServerVRL()).list();
     }
 
     @Override
     public VFSPath resolvePath(String relativePath) throws VrsException
     {
-        return resolvePath(resolvePathVRL(relativePath)); 
+        return resolvePath(resolvePathVRL(relativePath));
     }
-    
+
     @Override
     public VFSPath resolvePath(VRL vrl) throws VrsException
     {
-        return createVFSNode(vrl); 
+        return createVFSNode(vrl);
     }
-    
+
     abstract protected VFSPathNode createVFSNode(VRL vrl) throws VrsException;
-    
+
 }

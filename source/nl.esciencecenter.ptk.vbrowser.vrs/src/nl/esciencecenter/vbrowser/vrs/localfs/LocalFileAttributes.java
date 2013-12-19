@@ -1,6 +1,5 @@
 package nl.esciencecenter.vbrowser.vrs.localfs;
 
-import java.io.IOException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
