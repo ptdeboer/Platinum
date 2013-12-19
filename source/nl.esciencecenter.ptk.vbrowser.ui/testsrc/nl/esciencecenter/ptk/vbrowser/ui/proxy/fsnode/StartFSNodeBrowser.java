@@ -15,40 +15,39 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */
+ */ 
 // source: 
 
-package nl.esciencecenter.ptk.vbrowser.ui.proxy.dummy;
+package nl.esciencecenter.ptk.vbrowser.ui.proxy.fsnode;
 
-import nl.esciencecenter.ptk.data.StringHolder;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class DummyProxyFactory extends ProxyFactory
+public class StartFSNodeBrowser 
 {
-    private static ProxyFactory instance; 
-    
-    public static ProxyFactory getDefault() 
-    {
-        if (instance==null)
-            instance=new DummyProxyFactory();
-              
-        return instance; 
-   }
-    // ========================================================================
-    // 
-    // ========================================================================
 
-    public ProxyNode doOpenLocation(VRL locator)
-    {
-        return new DummyProxyNode(locator); 
-    }
-
-	@Override
-    public boolean canOpen(VRL locator,StringHolder reason) 
+	public static void main(String args[])
 	{
-	    return locator.hasScheme("proxy");
+		try 
+		{
+			BrowserPlatform platform=BrowserPlatform.getInstance(); 
+		    
+		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
+		    
+		    ProxyFactory fac = FSNodeProxyFactory.getDefault(); 
+		    
+		    platform.registerProxyFactory(fac); 
+		    
+			ProxyNode root = fac.openLocation("file:/home/");
+		
+			frame.setRoot(root,true,true); 
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		} 
+		
 	}
-
 }

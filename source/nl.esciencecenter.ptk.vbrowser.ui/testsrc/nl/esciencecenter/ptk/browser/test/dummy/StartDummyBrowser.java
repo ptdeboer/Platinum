@@ -18,37 +18,48 @@
  */ 
 // source: 
 
-package test;
+package nl.esciencecenter.ptk.browser.test.dummy;
 
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserFrame;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
+import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.fsnode.FSNodeProxyFactory;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.tree.ResourceTree;
 
-public class testFSNodeBrowser 
+public class StartDummyBrowser 
 {
 
 	public static void main(String args[])
 	{
+	    
+	    
 		try 
 		{
 			BrowserPlatform platform=BrowserPlatform.getInstance(); 
 		    
 		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
 		    
-		    ProxyFactory fac = FSNodeProxyFactory.getDefault(); 
+		    ProxyFactory dummyFac = DummyProxyFactory.getDefault(); 
 		    
-		    platform.registerProxyFactory(fac); 
+		    platform.registerProxyFactory(dummyFac); 
 		    
-			ProxyNode root = fac.openLocation("file:/home/");
+			ProxyNode root = dummyFac.openLocation("proxy:///");
 		
 			frame.setRoot(root,true,true); 
+			
+			
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 		} 
+		
+		// frame.setRoot(root); 
 		
 	}
 }

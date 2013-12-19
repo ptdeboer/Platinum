@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.browser.test.dummy.DummyProxyFactory;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSNode;
@@ -33,7 +34,6 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.dummy.DummyProxyFactory;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;

@@ -18,7 +18,7 @@
  */
 // source: 
 
-package nl.esciencecenter.ptk.vbrowser.ui.proxy.dummy;
+package nl.esciencecenter.ptk.browser.test.dummy;
 
 import java.util.ArrayList;
 import java.util.List;
