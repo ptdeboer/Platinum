@@ -22,9 +22,9 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
 import java.util.Vector;
 
+
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.dummy.DummyProxyFactory;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -89,7 +89,13 @@ public class ProxyFactoryRegistry
 
     public ProxyFactory getDefaultProxyFactory()
     {
-        return DummyProxyFactory.getDefault(); 
+        if ((factories==null) || (factories.size()<=0))
+        {
+            return null;
+        }
+        
+        return factories.get(0);
+        
     }
 
     public void registerProxyFactory(ProxyFactory factory)
