@@ -110,7 +110,7 @@ public class VPathNode implements VPath
         
         for (String name:vpathImmutableAttributeNames)
         {
-            list.add(new AttributeDescription(name,AttributeType.STRING,false));
+            list.add(new AttributeDescription(name,AttributeType.STRING,false,null));
         }
         return list; 
     }

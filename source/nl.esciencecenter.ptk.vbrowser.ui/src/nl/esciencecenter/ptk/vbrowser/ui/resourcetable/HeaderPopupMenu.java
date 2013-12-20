@@ -32,9 +32,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 
+import nl.esciencecenter.ptk.data.StringList;
 
 
-/** Table Header popup menu + popup listener */ 
+/** 
+ * Table Header popup menu + popup listener. 
+ * Creates dynamic menu from DataModel.  
+ */ 
 public class HeaderPopupMenu extends JPopupMenu
 {
     /** */
@@ -75,7 +79,7 @@ public class HeaderPopupMenu extends JPopupMenu
                     tablePanel.insertColumn(headerName,argstr,insertBefore);
                     break; 
                 case DELETE_COLUMN:
-                    tablePanel.removeColumn(argstr); 
+                    tablePanel.removeColumn(argstr,true); 
                     break;
                 case AUTO_FIT_COLUMNS_OFF:
                     tablePanel.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -139,7 +143,7 @@ public class HeaderPopupMenu extends JPopupMenu
         menu.setText("Columns");
         
         // All Headers!
-        List<String> names = tablePanel.getModel().getAllHeaders();
+        List<String> names = tablePanel.getModel().getAllAttributeNames();
         
         @SuppressWarnings("unused")
         JMenuItem mitem=null;

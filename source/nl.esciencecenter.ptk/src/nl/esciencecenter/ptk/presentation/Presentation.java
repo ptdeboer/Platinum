@@ -695,7 +695,7 @@ public class Presentation implements Duplicatable<Presentation>
      * Presentation of the (parent) directory holds the default file attributes
      * to show.
      */
-    public String[] getChildAttributeNames()
+    public String[] getPreferredChildAttributeNames()
     {
         if (childAttributeNames==null)
             return null; 

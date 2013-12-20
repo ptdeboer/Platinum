@@ -176,16 +176,16 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     /** Mapping of Key String to row Index number */
     private Map<String, Integer> rowKeyIndex = new Hashtable<String, Integer>();
 
-    // all headers: default empty, NOT null
+    // Current HeaderModel default empty, NOT null
     private HeaderModel headers = new HeaderModel();
-
-    /** All potential headers */
-    private StringList allHeaders = null;
 
     private ViewNode rootViewNode;
 
-    private String iconHeaderName="icon"; 
+    private String iconHeaderName="icon";
 
+    private StringList allAttributeNames=null; 
+    
+    
     // For Testing
     protected ResourceTableModel(String[] headers)
     {
@@ -218,13 +218,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 
         this.rows.add(new RowData(null,"", dummySet));
     }
-
-    public void setHeaders(String[] headers)
-    {
-        this.headers.setValues(headers);
-        this.fireTableStructureChanged();
-    }
-
+    
     public void setHeaders(StringList headers)
     {
         this.headers.setValues(headers);
@@ -730,18 +724,23 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         }
     }
 
-    public List<String> getAllHeaders()
+    /** 
+     * All attribute names available from DataModel. 
+     * Each attribute name can be used as column.  
+     * 
+     * @return all available attribute names as List. 
+     */
+    public List<String> getAllAttributeNames()
     {
-        if (allHeaders == null)
-            return this.headers.toArray();
-
-        return this.allHeaders;
+        return allAttributeNames; 
     }
 
-    /** Allow editable columns by specifying all possible headers */
-    public void setAllHeaders(StringList list)
+    /** 
+     * Allow editable columns by specifying all possible headers 
+     */
+    public void setAllAttributeNames(StringList list)
     {
-        this.allHeaders = list.duplicate();
+        this.allAttributeNames = list.duplicate();
     }
 
     public HeaderModel getHeaderModel()

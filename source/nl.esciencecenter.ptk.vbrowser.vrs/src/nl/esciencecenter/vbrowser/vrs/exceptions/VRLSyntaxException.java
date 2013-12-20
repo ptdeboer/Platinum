@@ -20,6 +20,8 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
+import java.net.URISyntaxException;
+
 
 public class VRLSyntaxException extends VrsException
 {
@@ -29,7 +31,12 @@ public class VRLSyntaxException extends VrsException
     {
         super(message);
     }
-
+    
+    public VRLSyntaxException(URISyntaxException e)
+    {
+        super(e.getMessage(),e); 
+    }
+        
     public VRLSyntaxException(Throwable e)
     {
         super(e); 

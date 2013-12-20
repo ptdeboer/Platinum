@@ -2,6 +2,7 @@ package nl.esciencecenter.vbrowser.vrs;
 
 import java.util.Properties;
 
+import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -16,12 +17,27 @@ public class VRSContext
     protected VRSProperties vrsProperties;
 
     private ResourceSystemInfoRegistry resourceInfoRegistry; 
+
+    public VRSContext()
+    {
+        init(new VRSProperties()); 
+    }
+
+    public VRSContext(Properties props)
+    {
+        init(new VRSProperties(props));
+    }
     
-    protected VRSContext(Properties props)
+    public VRSContext(VRSProperties props)
+    {
+        init(props.duplicate(false)); 
+    }
+
+    private void init(VRSProperties privateProperties)
     {
         // default Static Registry ! 
         this.registry=Registry.getInstance(); 
-        this.vrsProperties=new VRSProperties(props); 
+        this.vrsProperties=privateProperties;
         resourceInfoRegistry=new ResourceSystemInfoRegistry(this);
     }
     
@@ -70,6 +86,16 @@ public class VRSContext
     public void putResourceSystemInfo(String id, ResourceSystemInfo info)
     {
         resourceInfoRegistry.putInfo(id, info); 
+    }
+
+    public VRL getHomeVRL()
+    {
+        return new VRL("file",null,GlobalProperties.getGlobalUserHome());
+    }
+
+    public VRL getCurrentPathVRL()
+    {
+        return new VRL("file",null,GlobalProperties.getGlobalUserDir());
     }
 
 }

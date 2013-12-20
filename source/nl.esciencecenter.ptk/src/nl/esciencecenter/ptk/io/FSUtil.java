@@ -44,7 +44,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  * Global File System utils and resource loaders. 
  * Used for the local file system.
  */
-public class FSUtil
+public class FSUtil implements ResourceProvider
 {
     public static final String ENCODING_UTF8 = "UTF8";
     
@@ -82,8 +82,6 @@ public class FSUtil
     protected FSOptions fsOptions=new FSOptions(); 
 
     private LocalFSHandler localFSHandler; 
-
-    protected Map<String,FSHandler> fsHandlers=new HashMap<String,FSHandler>();
     
     public FSUtil()
     {
@@ -99,23 +97,11 @@ public class FSUtil
             this.userHome = new java.io.File(GlobalProperties.getGlobalUserHome()).toURI(); 
             this.workingDir=new java.io.File(GlobalProperties.getGlobalUserHome()).toURI(); 
             this.tmpDir=new java.io.File(GlobalProperties.getGlobalTempDir()).toURI();
-            
-            registerHandlers(); 
         }
         catch (Throwable e)
         {
             logger.logException(ClassLogger.FATAL, e, "Initialization Exception:%s\n", e);
         }
-    }
-   
-    private void registerHandlers()
-    {
-        fsHandlers.put(localFSHandler.getScheme(),localFSHandler); 
-    }
-    
-    private FSHandler getHandler(String scheme)
-    {
-        return this.fsHandlers.get(scheme); 
     }
     
     /**
@@ -128,30 +114,30 @@ public class FSUtil
      */
     public String resolvePath(String path) throws FileURISyntaxException 
     {
-        return resolveURI(path).getPath(); 
+        try
+        {
+            return resolvePathURI(path).getPath();
+        }
+        catch (URISyntaxException e)
+        {
+            throw new FileURISyntaxException(e.getMessage(),path,e);
+        } 
     }
     
     /** 
      * Resolve relative path to absolute URI. 
      */
-    public URI resolveURI(String path) throws FileURISyntaxException
+    public URI resolvePathURI(String path) throws URISyntaxException
     {
         if ((this.fsOptions.resolve_tilde) && (path!=null) && path.contains("~"))
         {
             String homePath=URIFactory.uripath(userHome.getPath());
             path=path.replace("~", homePath); 
         }
-
-        try
-        {
-            return URIUtil.resolvePathURI(workingDir,path);
-        }
-        catch (URISyntaxException e)
-        {
-            throw new FileURISyntaxException(e.getMessage(),path,e);
-        }
+        
+        return URIUtil.resolvePathURI(workingDir,path);
     }
-    
+
     public boolean existsPath(String path,LinkOption... linkOptions) throws IOException
     {
         return newFSNode(resolvePath(path)).exists(linkOptions);
@@ -252,17 +238,14 @@ public class FSUtil
 
     public FSNode newFSNode(String path) throws IOException
     {
-        URI uri=resolveURI(path);
-
-        // return new LocalFSNode(resolveURI(path));
-        FSHandler handler=getHandler(uri.getScheme());
-
-        if (handler==null)
+        try
         {
-            throw new IOException("Scheme not registered:"+uri.getScheme()); 
+            return localFSHandler.newFSNode(resolvePathURI(path));
         }
-        
-        return getHandler(uri.getScheme()).newFSNode(uri); 
+        catch (URISyntaxException e)
+        {
+            throw new FileURISyntaxException(e.getMessage(),path,e); 
+        }
     }
     
     /**
@@ -304,7 +287,16 @@ public class FSUtil
      */
     public String[] list(String dirPath,LinkOption... linkOptions) throws IOException, FileURISyntaxException
     {
-        FSNode file = newFSNode(resolveURI(dirPath));
+        FSNode file;
+        try
+        {
+            file = newFSNode(resolvePathURI(dirPath));
+        }
+        catch (URISyntaxException e)
+        {
+            throw new FileURISyntaxException(e.getMessage(),dirPath,e); 
+        }
+        
         if (file.exists(null) == false)
             return null;
 
@@ -314,11 +306,11 @@ public class FSUtil
         String strs[] = file.list();
         if ((strs == null) || (strs.length <= 0))
             return null;
-
+        
         // sanitize:
         for (int i = 0; i < strs.length; i++)
             strs[i] = resolvePath(dirPath + "/" + strs[i]);
-
+       
         return strs;
     }
 
@@ -511,9 +503,14 @@ public class FSUtil
 
     public LocalFSNode newLocalFSNode(String fileUri) throws FileURISyntaxException
     {
-        LocalFSNode file=this.newLocalFSNode(resolveURI(fileUri));
-        
-        return file; 
+        try
+        {
+            return newLocalFSNode(resolvePathURI(fileUri));
+        }
+        catch (URISyntaxException e)
+        {
+            throw new FileURISyntaxException(e.getMessage(),fileUri,e); 
+        }
     }
     
     public void deleteDirectoryContents(URI uri,boolean recursive) throws IOException
@@ -559,9 +556,10 @@ public class FSUtil
             }   
           return false;
         }
+        
         try
         {
-            URI uri=this.resolveURI(relPath); 
+            URI uri=this.resolvePathURI(relPath); 
             FSNode node=newFSNode(uri);
             // should trigger file system check on path. 
             boolean exists=node.exists();
@@ -571,7 +569,7 @@ public class FSUtil
             }
             return true ;
         }
-        catch (FileURISyntaxException ex)
+        catch (URISyntaxException ex)
         {
             if (reasonH!=null)
             {
@@ -589,7 +587,65 @@ public class FSUtil
         if (GlobalProperties.isLinux())
             return true; 
         
+        if (GlobalProperties.isMac())
+            return true; 
+        
         return true; 
     }
-  
+
+    @Override
+    public OutputStream createOutputStream(URI uri) throws IOException
+    {
+        if (isLocalFSUri(uri))
+        {
+            return localFSHandler.newFSNode(uri).createOutputStream();
+        }
+        else
+        {
+            // use default URL method ! 
+            return uri.toURL().openConnection().getOutputStream(); 
+        }
+        
+    }
+
+    @Override
+    public InputStream createInputStream(URI uri) throws IOException
+    {
+        if (isLocalFSUri(uri))
+        {
+            return localFSHandler.newFSNode(uri).createInputStream();
+        }
+        else
+        {
+            // use default URL method ! 
+            return uri.toURL().openConnection().getInputStream(); 
+        }
+    }
+
+    private boolean isLocalFSUri(URI uri)
+    {
+        if (uri.getScheme().equalsIgnoreCase("file"))
+        {
+            return true; 
+        }   
+        else
+        {
+            return false;
+        }
+    }
+
+    @Override
+    public RandomReader createRandomReader(URI uri) throws IOException
+    {
+        return localFSHandler.createRandomReader(newFSNode(uri)); 
+    }
+
+    @Override
+    public RandomWriter createRandomWriter(URI uri) throws IOException
+    {
+        return localFSHandler.createRandomWriter(newFSNode(uri));
+    }
+
+
+
 }

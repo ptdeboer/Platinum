@@ -63,7 +63,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 	
     // default presentation
 	
-    private Presentation presentation=null; 
+    private Presentation _presentation=null; 
     
     private TablePopupMenu popupMenu=new TablePopupMenu();
     
@@ -146,7 +146,8 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         
         if ((headers==null) || (headers.size()<=0)) 
         {
-            headers=getModel().getAllHeaders(); 
+            // Use all attribute names.  
+            headers=getModel().getAllAttributeNames(); 
             logger.infoPrintf("initColumns(): getAllHeaders() = %s\n",new StringList(headers).toString());
         }
         
@@ -222,8 +223,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 	   
     private void initColumns(List<String> headers)
     {
-        setAutoResizeMode(getPresentation().getColumnsAutoResizeMode());
-                
         TableColumnModel columnModel=new DefaultTableColumnModel();
 
         for (int i=0;i<headers.size();i++)
@@ -231,36 +230,69 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             String headerName=headers.get(i); 
             // debug("Creating new column:"+headers[i]);
             TableColumn column = createColumn(i,headerName);
-            // update column width from presentation
-            Integer prefWidth=getPresentation().getAttributePreferredWidth(headerName);
-            if (prefWidth==null)
-                prefWidth=headers.get(i).length()*10;// 10 points font ? 
-            
-            column.setPreferredWidth(prefWidth);
-            
-            //if (prefWidth<50) 
-            //   column.setResizable(false); 
-            column.setResizable(getPresentation().getAttributeFieldResizable(headerName)); 
-            
-            columnModel.addColumn(column); 
+            //
+            columnModel.addColumn(column);
+            // move update presentation out of create loop: 
         }
         
         this.setColumnModel(columnModel);
         if (this.isEditable)
             this.updateCellEditors(); 
+        
+        updatePresentation(); 
     }
     
+    protected void updatePresentation()
+    {
+        Presentation pres=getPresentation(); 
+        if (pres==null)
+        {
+            logger.warnPrintf("*** updatePresentation(): NO Presentation!\n"); 
+            return;
+        }
+        
+        // auto resize mode of columns. 
+        setAutoResizeMode(pres.getColumnsAutoResizeMode());
+        
+        TableColumnModel model = this.getColumnModel();
+        
+        if (model!=null)
+        {
+            for (int i=0;i<model.getColumnCount();i++)
+            {
+                TableColumn column = model.getColumn(i); 
+                Object colName=column.getIdentifier(); 
+                String headerName=colName.toString(); 
+                column.setResizable(pres.getAttributeFieldResizable(headerName)); 
+                // update column width from presentation
+                Integer prefWidth=pres.getAttributePreferredWidth(headerName);
+                if (prefWidth==null)
+                    prefWidth=headerName.length()*10;// 10 points font ? 
+                
+                column.setPreferredWidth(prefWidth);
+            }
+        }
+        
+    }
+
     private TableColumn createColumn(int modelIndex,String headerName)
     {
         // one renderer per column 
         ResourceTableCellRenderer renderer= new ResourceTableCellRenderer();
         
         TableColumn column = new TableColumn(modelIndex,10,renderer, null);
+        // identifier object= unique headerName ! 
         column.setIdentifier(headerName); 
         column.setHeaderValue(headerName);
         column.setCellRenderer(renderer); 
         // update presentation
-        Integer size=getPresentation().getAttributePreferredWidth(headerName);
+        Presentation pres=getPresentation(); 
+        Integer size=null;
+        if (pres!=null)
+        {
+            size=pres.getAttributePreferredWidth(headerName);
+        }
+        
         if (size!=null)
             column.setWidth(size); 
         else
@@ -331,7 +363,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 		} 
     }
 
-	public void removeColumn(String headerName)
+	public void removeColumn(String headerName,boolean updatePresentation)
     {
         if (this.getHeaderModel().isEditable()==false)
             return; 
@@ -340,9 +372,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         StringList viewHeaders=this.getColumnHeaders(); 
         viewHeaders.remove(headerName); 
         
-        // triggers restructure, and KEEP the current view order of Columns. 
+        // Triggers restructure, and KEEP the current view order of Columns. 
         this.getModel().setHeaders(viewHeaders);
-        this.presentation.setChildAttributeNames(viewHeaders);
+        if ( (updatePresentation) && (this.getPresentation()!=null))
+        {
+            // Keep headers in persistant Presentation. 
+            this.getPresentation().setChildAttributeNames(viewHeaders);
+        }
         this.getModel().fireTableStructureChanged(); 
     }
     
@@ -423,17 +459,16 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     public Presentation getPresentation()
     {
-        if (presentation==null)
-        {
-            presentation=Presentation.createDefault(); 
-        }
-        
-        return this.presentation; 
+        return this._presentation; 
     }
 
-    public void setPresentation(Presentation presentation)
+    public void setPresentation(Presentation presentation, boolean updateUI)
     {
-        this.presentation=presentation;
+        this._presentation=presentation;
+        if (updateUI)
+        {
+            this.updatePresentation(); 
+        }
     }
     
     public void dispose()
@@ -453,7 +488,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         Presentation pres=node.getPresentation(); 
         if (pres!=null)
         {
-            setPresentation(pres.duplicate(true)); 
+            setPresentation(pres.duplicate(true),true); 
         }
     }
 

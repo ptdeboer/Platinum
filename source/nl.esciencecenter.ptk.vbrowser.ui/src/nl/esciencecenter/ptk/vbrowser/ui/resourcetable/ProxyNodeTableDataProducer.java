@@ -123,7 +123,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 		if (dataSource==null)
 		{
 		    // clear: 
-			tableModel.setHeaders(new String[0]); 
+			tableModel.setHeaders(new StringList()); 
 			return; 
 		}
 				
@@ -139,7 +139,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 		}
 		else
 		{
-			names=pres.getChildAttributeNames();
+			names=pres.getPreferredChildAttributeNames();
 		     // update icon attribute name:
 			iconAttributeName=pres.getIconAttributeName(); 
 			logger.debugPrintf("Using headers from Presentation.getChildAttributeNames():%s\n",new StringList(names));
@@ -159,9 +159,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 		}
 
 		filterHeaders(headers); 
-
-		tableModel.setHeaders(headers.toArray()); 
-		tableModel.setAllHeaders(headers); 
+		tableModel.setHeaders(headers);  
 		
 		// Specify icon column:
 		if (iconAttributeName!=null)
@@ -183,7 +181,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 		return getRootViewNode().getVRL(); 
 	}
 
-	private void filterHeaders(StringList headers) 
+	private StringList filterHeaders(StringList headers) 
 	{
 		for (String name:headers.toArray())
 		{
@@ -191,6 +189,8 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 			if (name.startsWith("["))
 				headers.remove(name); 
 		}
+		
+		return headers;
 	}
 
 	public int insertHeader(String headerName, String newName, boolean insertBefore)
@@ -279,8 +279,9 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 						} 
 					}
 
-					filterHeaders(allAttributes); 
-					tableModel.setAllHeaders(allAttributes);
+					// Keep all attribute names which are actually availabl from the nodes. 
+					allAttributes=filterHeaders(allAttributes); 
+					tableModel.setAllAttributeNames(allAttributes);
 
 				}
 				catch(Throwable t)

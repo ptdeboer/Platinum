@@ -22,6 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.TransferHandler;
@@ -35,6 +36,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerResourceHandler;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
+import nl.esciencecenter.vbrowser.vrs.VRSProperties;
+import nl.esciencecenter.vbrowser.vrs.util.VRSResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -49,8 +53,10 @@ public class BrowserPlatform
     public static synchronized BrowserPlatform getInstance()
     {
         if (instance == null)
+        {
             instance = new BrowserPlatform();
-
+        }
+        
         return instance;
     }
 
@@ -62,12 +68,14 @@ public class BrowserPlatform
 
     private ViewerRegistry viewerRegistry;
 
-    private ResourceLoader resourceLoader;
+    private VRSResourceLoader resourceLoader;
 
     private JFrame rootFrame;
 
     private IconProvider iconProvider;
 
+    private VRSContext vrsContext; 
+    
     protected BrowserPlatform()
     {
         try
@@ -82,19 +90,35 @@ public class BrowserPlatform
 
     private void init() throws URISyntaxException
     {
+ 
         // init defaults:
         this.proxyRegistry = ProxyFactoryRegistry.getInstance();
-
-        ResourceLoader resourceLoader = new ResourceLoader();
+        
+        URI cfgDir = getPlatformConfigDir();
+        
+        initVRSContext(cfgDir); 
+        
+        // Default viewer resource Loader/Resource Handler: 
+        resourceLoader = new VRSResourceLoader(getVRSContext());
         ViewerResourceHandler resourceHandler = new ViewerResourceHandler(resourceLoader);
-        resourceHandler.setViewerConfigDir(getPlatformConfigDir());
-
+        resourceHandler.setViewerConfigDir(cfgDir);
         this.viewerRegistry = new ViewerRegistry(resourceHandler);
 
         rootFrame = new JFrame();
         iconProvider = new IconProvider(rootFrame, resourceLoader);
     }
+    
+    private void initVRSContext(URI cfgDir)
+    {
+        VRSProperties props=new VRSProperties(); 
+        vrsContext=new VRSContext(props);  
+    }
 
+    public VRSContext getVRSContext()
+    {
+        return vrsContext; 
+    }
+    
     public void setResourceLoader(ResourceLoader resourceLoader)
     {
         viewerRegistry.getResourceHandler().setResourceLoader(resourceLoader);
@@ -102,7 +126,7 @@ public class BrowserPlatform
 
     public String getPlatformID()
     {
-        return "VBTK2";
+        return "PTKVB";
     }
 
     public ProxyFactory getProxyFactoryFor(VRL locator)

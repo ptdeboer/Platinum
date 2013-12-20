@@ -28,6 +28,11 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         }
     }
     
+    public VRSProperties()
+    {
+        properties=new Hashtable<String,Object>(); 
+    }
+
     public String getStringProperty(String name)
     {
         Object val=this.properties.get(name); 

@@ -2,6 +2,8 @@ package nl.esciencecenter.vbrowser.vrs.node;
 
 import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,12 +13,14 @@ import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public abstract class VFSPathNode extends VPathNode implements VFSPath
 {
-    public static final String[] attributeNames =
+    public static final String[] vfsAttributeNames =
     {
             ATTR_RESOURCE_TYPE,
             ATTR_NAME,
@@ -102,6 +106,17 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         return vrl.getDirname();
     }
 
+    public List<AttributeDescription> getResourceAttributeDescriptions() 
+    {
+        List<AttributeDescription> attrs=new ArrayList<AttributeDescription>(); 
+        
+        for (String name:vfsAttributeNames)
+        {
+            attrs.add(new AttributeDescription(name,AttributeType.ANY,true,"File Attribute:"+name)); 
+        }
+        return attrs; 
+    }
+    
     /**
      * Returns single File Resource Attribute.
      */
@@ -185,9 +200,9 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         return getFileAttributes().isRegularFile();
     }
 
-    // ===
+    // ===================
     // Abstract Interface
-    // ===
+    // ===================
 
     abstract public FileAttributes getFileAttributes() throws VrsException;
 

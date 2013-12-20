@@ -28,15 +28,17 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.FileURISyntaxException;
+
 import nl.esciencecenter.ptk.io.RandomReader;
 import nl.esciencecenter.ptk.io.RandomWriter;
+import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
@@ -121,7 +123,7 @@ public class ResourceLoader
 
     protected URLClassLoader classLoader = null;
 
-    protected FSUtil fsUtil;
+    protected ResourceProvider resourceProvider;
 
     public ResourceLoader()
     {
@@ -145,12 +147,12 @@ public class ResourceLoader
      * @param FSUtil - custom FileSystem utility. 
      * @param urls - URL search paths
      */
-    public ResourceLoader(FSUtil fsUtil,URL urls[])
+    public ResourceLoader(ResourceProvider resourceProvider,URL urls[])
     {
-        init(fsUtil,urls);
+        init(resourceProvider,urls);
     }
 
-    protected void init(FSUtil fsUtil, URL urls[])
+    protected void init(ResourceProvider resourceProvider, URL urls[])
     {
         if (urls != null)
         {
@@ -159,11 +161,11 @@ public class ResourceLoader
             classLoader = new URLClassLoader(urls, parent);
         }
         
-        this.fsUtil=fsUtil;
+        this.resourceProvider=resourceProvider;
         
-        if (this.fsUtil==null)
+        if (this.resourceProvider==null)
         {
-            fsUtil = FSUtil.getDefault();
+            resourceProvider = FSUtil.getDefault();
         }
     }
 
@@ -186,8 +188,7 @@ public class ResourceLoader
     // =================================================================
     // URI/URL resolving 
     // =================================================================
-    
-    
+        
     /**
      * Resolve URL string to absolute URL
      * 
@@ -197,34 +198,26 @@ public class ResourceLoader
     {
         return resolveUrl(null, urlString);
     }
-
-    /** 
-     * Resolve possible relative URI to absolute URL. 
-     * 
-     * @param relUri relative or absolute URI 
-     * @return resolve and valid URL.  
-     * @throws MalformedURLException
-     * @throws FileURISyntaxException 
-     */
-    public URL resolveUrl(URI relUri) throws MalformedURLException, FileURISyntaxException
-    {
-        
-        if (relUri.isAbsolute())
-        {
-            return relUri.toURL(); 
-        }
-        
-        URL url=resolveUrl(relUri.toString());
-        if (url!=null)
-        {
-            return url; 
-        }
-        
-        // If the URL is null, the relative URI can not be resolved against an existing URL on the classpath ! 
-        // The relative URI should be resolve to the current working directory.
-        
-        return fsUtil.resolveURI(relUri.toString()).toURL();  
-    }
+    
+//    public URI resolveURI(URI uri) throws MalformedURLException, URISyntaxException
+//    {
+//    {
+//        if (uri.isAbsolute())
+//        {
+//            return uri;    
+//        }
+//        
+//        URL url=resolveUrl(uri.toString());
+//        if (url!=null)
+//        {
+//            return url; 
+//        }
+//        
+//        // If the URL is null, the relative URI can not be resolved against an existing URL on the classpath ! 
+//        // The relative URI should be resolve to the current working directory.
+//        
+//        return resourceProvider.resolveURI(uri.toString()).toURL();  
+//    }
     
     /**
      * Resolve relative resource String and return absolute URL. The URL String
@@ -336,8 +329,11 @@ public class ResourceLoader
     public InputStream createInputStream(String urlstr) throws IOException
     {
         URL url=resolveUrl(null, urlstr); 
+        
         if (url==null)
+        {
             throw new FileNotFoundException("Couldn't resolve:"+urlstr); 
+        }
         
         return createInputStream(url);
     }
@@ -358,9 +354,9 @@ public class ResourceLoader
         
         try
         {
-            return url.openConnection().getInputStream();
+            return resourceProvider.createInputStream(url.toURI()); 
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
             // wrap:
             throw new IOException("Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
@@ -369,44 +365,18 @@ public class ResourceLoader
 
     public InputStream createInputStream(URI uri) throws IOException
     {
-        try
-        {
-            // use URL compatible method
-            return resolveUrl(uri).openConnection().getInputStream();
-        }
-        catch (IOException e)
-        {
-            // Wrap:
-            throw new IOException("Cannot get inputstream from:" + uri + "\n" + e.getMessage(), e);
-        }
-    }
-
-    public OutputStream createOutputStream(URL url) throws IOException
-    {
-        return _createOutputStream(url);
+        // use URI Provider: 
+        return resourceProvider.createInputStream(uri);
     }
 
     public OutputStream createOutputStream(URI uri) throws IOException
     {
-        return _createOutputStream(resolveUrl(uri));
+        return _createOutputStream(uri);
     }
     
-    protected OutputStream _createOutputStream(URL url) throws IOException
+    protected OutputStream _createOutputStream(URI uri) throws IOException
     {
-        if (url.getProtocol().equalsIgnoreCase("file"))
-        {
-            return this.fsUtil.createOutputStream(url.getPath());  
-        }
-        
-        try
-        {
-            return url.openConnection().getOutputStream();
-        }
-        catch (IOException e)
-        {
-            // wrap:
-            throw new IOException("Cannot create OutputStream from:" + url + "\n" + e.getMessage(), e);
-        }
+        return resourceProvider.createOutputStream(uri);  
     }
     
     // =================================================================
@@ -549,29 +519,33 @@ public class ResourceLoader
         byte[] data = bos.toByteArray();
         return data;
     }
+    
 
+    public Properties loadProperties(URL url) throws IOException 
+    {
+        // delegate to universal URI method: 
+        try
+        {
+            return loadProperties(url.toURI());
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IOException(e.getMessage(),e); 
+        } 
+    }
+    
     /**
      * Load properties file from specified location.<br>
-     * <b>IMPORTANT</b>: When this method is used and the URL stream factory
-     * handler HAS NOT BEEN SET, only default url schemes can be used !
-     * (file:/,http://).
      */
     public Properties loadProperties(URI uri) throws IOException
     {
-        // must use URL so it works during bootstrap !
-        // (After bootstrap new schemes will be possible)
-        return loadProperties(resolveUrl(uri));
-    }
-
-    public Properties loadProperties(URL url) throws IOException
-    {
         Properties props = new Properties();
-     
+        
         try
         {
-            InputStream inps = this.createInputStream(url);
+            InputStream inps = this.resourceProvider.createInputStream(uri);
             props.load(inps);
-            logger.debugPrintf("Read properties from:%s\n", url);
+            logger.debugPrintf("Read properties from:%s\n", uri);
             try
             {
                 inps.close();
@@ -583,14 +557,14 @@ public class ResourceLoader
         }
         catch (IOException e)
         {
-            throw new IOException("Couldn't load propertied from:" + url + "\n" + e.getMessage(), e);
+            throw new IOException("Couldn't load propertied from:" + uri + "\n" + e.getMessage(), e);
         }
         // in the case of applet startup: Not all files are
         // accessable, wrap exception for gracefull exception handling.
         catch (java.security.AccessControlException ex)
         {
             // Applet/Servlet environment !
-            throw new IOException("Security Exception: Permission denied for:" + url, ex);
+            throw new IOException("Security Exception: Permission denied for:" + uri, ex);
         }
 
         for (Enumeration<Object> keys = props.keys(); keys.hasMoreElements();)
@@ -682,7 +656,7 @@ public class ResourceLoader
      */
     public RandomReader createRandomReader(URI loc) throws IOException
     {
-        return fsUtil.createRandomReader(fsUtil.newFSNode(loc));
+        return resourceProvider.createRandomReader(loc);
     }
 
     /** 
@@ -691,8 +665,11 @@ public class ResourceLoader
      */
     public RandomWriter createRandomWriter(URI loc) throws IOException
     {
-        return fsUtil.createRandomWriter(fsUtil.newFSNode(loc));
+        return resourceProvider.createRandomWriter(loc);
     }
+
+
+
 
     
 }

@@ -509,7 +509,9 @@ public abstract class ProxyNode
         List<String> names=doGetAttributeNames(); 
         
         if (names!=null)
+        {
             return names;
+        }
         
         return getDefaultProxyAttributesNames(); 
     }

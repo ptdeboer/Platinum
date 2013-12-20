@@ -313,7 +313,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     
     public AttributeDescription getDescription()
     {
-        return new AttributeDescription(this.getName(),this.getType(),this.isEditable()); 
+        return new AttributeDescription(this.getName(),this.getType(),this.isEditable(),null); 
     }
     /**
      * Main init method to be called by other constructors. <br>

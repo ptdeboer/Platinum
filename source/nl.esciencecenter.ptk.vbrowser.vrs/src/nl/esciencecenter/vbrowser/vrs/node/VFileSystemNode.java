@@ -66,7 +66,11 @@ public abstract class VFileSystemNode extends VResourceSystemNode implements VFi
     {
         return createVFSNode(vrl);
     }
-
+    
+    // ===================
+    // Abstract Interface
+    // ===================
+    
     abstract protected VFSPathNode createVFSNode(VRL vrl) throws VrsException;
 
 }

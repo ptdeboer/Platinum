@@ -25,7 +25,13 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 
-public class StartVRSBrowser 
+/** 
+ * Browser start Class. 
+ * This package used the shortname "platinum" as convenience for startup scripts. 
+ *  
+ * @author Piter T. de Boer. 
+ */
+public class StartBrowser 
 {
 
 	public static void main(String args[])

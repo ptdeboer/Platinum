@@ -45,7 +45,7 @@ public class VRS
     
     public static VRSClient createVRSClient()
     {
-         return new VRSClient(new VRSContext(null));    
+         return new VRSClient(new VRSContext());    
     }
 
     public static VRSContext createVRSContext(Properties properties)

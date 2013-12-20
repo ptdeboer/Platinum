@@ -1,6 +1,8 @@
 package nl.esciencecenter.vbrowser.vrs.localfs;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,11 +13,13 @@ import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsAccessDeniedException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
+import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.node.FileAttributes;
 import nl.esciencecenter.vbrowser.vrs.node.VFSPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class LocalFSPathNode extends VFSPathNode
+public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
 {
     private static final ClassLogger logger=ClassLogger.getLogger(LocalFSPathNode.class);
     
@@ -86,6 +90,30 @@ public class LocalFSPathNode extends VFSPathNode
         catch (IOException e)
         {
            throw new VrsException(e.getMessage(),e); 
+        }
+    }
+
+    public OutputStream createOutputStream() throws VrsException
+    {
+        try
+        {
+            return fsNode.createOutputStream();
+        }
+        catch (IOException e)
+        {
+            throw new VrsIOException(e); 
+        }
+    }
+
+    public InputStream createInputStream() throws VrsException
+    {
+        try
+        {
+            return fsNode.createInputStream();
+        }
+        catch (IOException e)
+        {
+            throw new VrsIOException(e);
         }
     }
     

@@ -12,6 +12,8 @@ public class AttributeDescription
     
     protected boolean isEditable; 
     
+    protected String descriptionText=null; 
+    
     AttributeDescription(String name)
     {
         this.name=name; 
@@ -20,12 +22,13 @@ public class AttributeDescription
         this.isEditable=false; 
     }
     
-    public AttributeDescription(String name, AttributeType type, boolean editable)
+    public AttributeDescription(String name, AttributeType type, boolean editable,String description)
     {
         this.name=name; 
         this.allowedTypes=new HashSetList<AttributeType>(); 
         this.allowedTypes.add(type); 
         this.isEditable=false; 
+        this.descriptionText=description;
     }
 
     public AttributeDescription(String name, AttributeType[] types, boolean editable)

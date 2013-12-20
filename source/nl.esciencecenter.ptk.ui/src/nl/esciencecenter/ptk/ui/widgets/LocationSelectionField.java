@@ -11,6 +11,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.TooManyListenersException;
@@ -72,7 +73,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
     		try
     		{
     			java.net.URI uri;
-    			uri = FSUtil.getDefault().resolveURI(text);
+    			uri = FSUtil.getDefault().resolvePathURI(text);
     			if (locationType==LocationType.URIType)
     			{
     			    locationTF.setText(uri.toString());
@@ -86,7 +87,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
     			locationTF.setToolTipText("Enter location."); 
     			return true; 
     		}
-    		catch (FileURISyntaxException e1) 
+    		catch (URISyntaxException e1) 
     		{
     		    showError("Syntax Error: Not a valid path or URI:"+e1.getInput());
     			//locationTF.setBackground(Color.RED);
@@ -229,10 +230,10 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
     	
     }
 
-    public java.net.URI getLocationURI() throws FileURISyntaxException
+    public java.net.URI getLocationURI() throws URISyntaxException
     {	
     	// Use FSUtil to resolve URI: 
-    	return FSUtil.getDefault().resolveURI(locationTF.getText()); 
+    	return FSUtil.getDefault().resolvePathURI(locationTF.getText()); 
     }
     
     public boolean isURI()
@@ -241,7 +242,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
     	{
     		return (getLocationURI()!=null); 
     	}
-    	catch (FileURISyntaxException e)
+    	catch (URISyntaxException e)
     	{
     		return false; 
     	}
@@ -362,7 +363,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
                 this.setLocationURI(path);
             }
         }
-        catch (FileURISyntaxException e)
+        catch (URISyntaxException e)
         {
             e.printStackTrace();
         }
