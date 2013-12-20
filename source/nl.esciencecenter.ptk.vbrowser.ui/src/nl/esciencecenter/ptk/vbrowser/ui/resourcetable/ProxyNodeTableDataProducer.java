@@ -43,13 +43,11 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 	static
 	{
 		logger=ClassLogger.getLogger(ProxyNodeTableDataProducer.class); 
-		logger.setLevelToDebug();
 	}
 
 	// ========================================================================
 	// Instance 
 	// ========================================================================
-
 
 	private ProxyNodeDataSource dataSource;
 

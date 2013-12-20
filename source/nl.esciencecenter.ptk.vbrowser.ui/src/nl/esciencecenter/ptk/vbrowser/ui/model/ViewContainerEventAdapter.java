@@ -60,7 +60,6 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
         this.nodeActionListener = componentController;
         //this.notifySelectionEvents=handleSelectionEvents;
         //this.notifyActionEvents=handleActionEvents;
-        logger.setLevelToDebug(); 
     }
 
     public void setNotifySelectionEvent(boolean val)
