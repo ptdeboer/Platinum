@@ -65,13 +65,13 @@ public class VRSResourceProvider implements ResourceProvider
     @Override
     public RandomReader createRandomReader(URI uri) throws IOException
     {
-        return null;
+        throw new IOException("not implemented: createRandomReader():"+uri); 
     }
 
     @Override
     public RandomWriter createRandomWriter(URI uri) throws IOException
     {
-        return null;
+        throw new IOException("not implemented: createRandomWriter():"+uri);
     }
 
 }
