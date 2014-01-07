@@ -8,7 +8,7 @@
 
 ###
 ## Source structure: 
-project.sourcedir=source
+project.sourcedir=.
 
 ###
 ## Distribution target directory:   
