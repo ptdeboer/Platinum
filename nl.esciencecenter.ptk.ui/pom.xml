@@ -39,7 +39,7 @@
             <artifactId>javafx</artifactId>
             <version>2.2.3</version>
             <scope>system</scope>
-            <systemPath>/opt/jdk1.7/jre/lib/jfxrt.jar</systemPath>
+            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
         </dependency>
 
         <dependency>
