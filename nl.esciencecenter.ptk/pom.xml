@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-        
-  <groupId>nl.esciencecenter.platinum</groupId>
-  <artifactId>nlesc-platinum</artifactId>
-  <version>${ptk.version}</version>
-  <name>nlesc-ptk (${ptk.version})</name>  
-  
-  <parent>
-      <groupId>nl.esciencecenter.vbrowser</groupId>
-      <artifactId>mvnbuild</artifactId>
-      <version>dev-1</version>
-      <relativePath>../../pom.xml</relativePath>
-  </parent>
-    
-  <build>
-  
+
+    <groupId>nl.esciencecenter.platinum</groupId>
+    <artifactId>nlesc-platinum-common</artifactId>
+    <version>${ptk.version}</version>
+    <name>nlesc-platinum-common (${ptk.version})</name>
+
+    <parent>
+        <groupId>nl.esciencecenter.platinum</groupId>
+        <artifactId>mvnbuild</artifactId>
+        <version>dev-1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <build>
+
         <sourceDirectory>src</sourceDirectory>
-        
+
         <plugins>
             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                   <source>1.6</source>
-                <target>1.6</target>
-            </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
             </plugin>
         </plugins>
-        
- </build>
 
- <dependencies>
- </dependencies>
-   
+    </build>
+
+    <dependencies>
+    </dependencies>
+
 </project>

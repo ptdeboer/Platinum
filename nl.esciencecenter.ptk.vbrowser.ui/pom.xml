@@ -2,11 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <groupId>nl.esciencecenter.platinum</groupId>
-    <artifactId>nlesc-platinum-ui</artifactId>
+    <artifactId>nlesc-platinum-vbrowser-ui</artifactId>
     <version>${ptk.version}</version>
-    <name>nlesc-platinum-ui (${ptk.version})</name>
+    <name>nlesc-platinum-vbrowser-ui (${ptk.version})</name>
 
     <parent>
         <groupId>nl.esciencecenter.platinum</groupId>
@@ -35,14 +34,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>javafx</artifactId>
-            <version>2.2.3</version>
-            <scope>system</scope>
-            <systemPath>/opt/jdk1.7/jre/lib/jfxrt.jar</systemPath>
-        </dependency>
-
-        <dependency>
             <groupId>nl.ikarus.nxt.priv.imageio.icoreader</groupId>
             <artifactId>ICOReader</artifactId>
             <version>1.04</version>
@@ -57,23 +48,21 @@
         </dependency>
 
         <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>forms</artifactId>
-            <version>1.2.1</version>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>nlesc-platinum-vbrowser-vrs</artifactId>
+            <version>${ptk.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>looks</artifactId>
-            <version>2.2.2</version>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>nlesc-platinum-vbrowser-viewers</artifactId>
+            <version>${ptk.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
 
     </dependencies>
-
-
 
 </project>

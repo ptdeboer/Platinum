@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+  <groupId>nl.esciencecenter.platinum</groupId>
+  <artifactId>nlesc-platinum-web</artifactId>
+  <version>${ptk.version}</version>
+  <name>nlesc-platinum-web (${ptk.version})</name>  
+  
+  <parent>
+      <groupId>nl.esciencecenter.platinum</groupId>
+      <artifactId>mvnbuild</artifactId>
+      <version>dev-1</version>
+      <relativePath>../pom.xml</relativePath>
+  </parent>
+    
+  <build>
+  
+        <sourceDirectory>src</sourceDirectory>
+        
+        <plugins>
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                   <source>1.7</source>
+                <target>1.7</target>
+            </configuration>
+            </plugin>
+        </plugins>
+        
+ </build>
+
+ <dependencies>
+ 
+     <dependency>
+         <groupId>nl.esciencecenter.platinum</groupId>
+         <artifactId>nlesc-platinum-common</artifactId>
+         <version>${ptk.version}</version>
+         <type>jar</type>
+         <scope>compile</scope>
+     </dependency>
+
+     <dependency>
+	<groupId>org.apache.httpcomponents</groupId>
+	<artifactId>httpclient</artifactId>
+	<version>4.2.6</version>
+     </dependency>
+
+     <dependency>
+	<groupId>org.apache.httpcomponents</groupId>
+	<artifactId>httpmime</artifactId>
+	<version>4.2.6</version>
+     </dependency>
+
+ </dependencies>
+   
+</project>
