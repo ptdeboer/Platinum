@@ -27,21 +27,6 @@
     <name>mvnbuild (${project.version})</name>
 
     <repositories>
-        <repository>
-            <id>platinum-local</id>
-            <name>Platinum local Maven2 repository</name>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-            <url>file:${ptk.rootdir}/maven2</url>
-        </repository>
 
         <repository>
             <id>nlesc-1</id>
@@ -125,8 +110,5 @@
         </dependency>
 
     </dependencies>
-
-
-
 
 </project>
