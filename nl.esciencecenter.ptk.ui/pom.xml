@@ -43,12 +43,6 @@
         </dependency>
 
         <dependency>
-            <groupId>nl.ikarus.nxt.priv.imageio.icoreader</groupId>
-            <artifactId>ICOReader</artifactId>
-            <version>1.04</version>
-        </dependency>
-
-        <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>nlesc-platinum-common</artifactId>
             <version>${ptk.version}</version>
@@ -72,8 +66,21 @@
             <scope>compile</scope>
         </dependency>
 
-    </dependencies>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>looks</artifactId>
+            <version>2.2.2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.jclarion</groupId>
+            <artifactId>image4j</artifactId>
+            <version>0.7</version>
+        </dependency>
+
+    </dependencies>
 
 
 </project>

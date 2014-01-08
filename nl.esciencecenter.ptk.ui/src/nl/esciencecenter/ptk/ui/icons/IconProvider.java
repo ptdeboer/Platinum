@@ -33,6 +33,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -42,6 +43,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import net.sf.image4j.codec.ico.ICODecoder;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
@@ -557,44 +559,25 @@ public class IconProvider
     {
         try
         {
-            InputStream inps=resourceLoader.createInputStream(iconurl);  
-            ImageInputStream in = ImageIO.createImageInputStream(inps);
-
-            nl.ikarus.nxt.priv.imageio.icoreader.obj.ICOFile f;
-            f = new  nl.ikarus.nxt.priv.imageio.icoreader.obj.ICOFile(in);
-
-            // iterate over bitmaps: 
-            Iterator<?> it = f.getEntryIterator();
-
-            Vector<BufferedImage> bitmaps=new Vector<BufferedImage>();
+            InputStream inps=resourceLoader.createInputStream(iconurl);
+            List<BufferedImage> icoImages = ICODecoder.read(inps);
             
             BufferedImage biggestImage=null; 
             int biggestSize=0; 
             
-            while(it.hasNext()) 
+            for (BufferedImage im:icoImages) 
             {
-                nl.ikarus.nxt.priv.imageio.icoreader.obj.IconEntry ie = (nl.ikarus.nxt.priv.imageio.icoreader.obj.IconEntry) it.next();
-
-                try
+                // use surface metrics to get 'biggest' image
+                int size= im.getWidth()*im.getHeight(); 
+                if (size>biggestSize)
                 {
-                    BufferedImage img = ie.getBitmap().getImage();
-                    bitmaps.add(img); 
-                    int size= img.getWidth()*img.getHeight(); 
-                    if (size>biggestSize)
-                    {
-                        biggestSize=size; 
-                        biggestImage=img; 
-                    }
-                            //System.err.println(" - width="+img.getWidth());  
-                    //System.err.println(" - height="+img.getHeight());  
-
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
+                    biggestSize=size; 
+                    biggestImage=im; 
                 }
             }
-
+            
+            try { inps.close(); } catch (IOException e) {} ;  // ignore
+            
             return  biggestImage;  
             
         }
