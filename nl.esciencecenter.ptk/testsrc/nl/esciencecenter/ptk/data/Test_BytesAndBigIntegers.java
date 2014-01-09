@@ -85,22 +85,31 @@ public class Test_BytesAndBigIntegers
         String bigStr=StringUtil.toBigIntegerString(bytes,signed, isLE); 
         Assert.assertEquals("Big Endian BigInteger string doesn't match expected",expected, bigStr); 
         
-        byte reverseEndian[];
+        byte reverse[];
         
         // little endian:
         if (bytes==null)
         {
-            reverseEndian=null;
+            reverse=null;
         }
         else
         {
-            int len=bytes.length; 
-            reverseEndian=new byte[len];
-            for (int i=0;i<len;i++)
-                reverseEndian[len-i-1]=bytes[i];
+            reverse=reverseEndian(bytes); 
         }
-        String revStr=StringUtil.toBigIntegerString(reverseEndian, false,(isLE==false)); 
+        String revStr=StringUtil.toBigIntegerString(reverse, signed,(isLE==false)); 
         Assert.assertEquals("Little Endian BigInteger string doesn't match expected",expected, revStr); 
+    }
+
+    public static byte[] reverseEndian(byte[] bytes)
+    {
+        byte reverse[];
+                
+        int len=bytes.length; 
+        reverse=new byte[len];
+        for (int i=0;i<len;i++)
+            reverse[len-i-1]=bytes[i];
+
+        return reverse; 
     } 
     
     
