@@ -494,10 +494,10 @@ public class Presentation implements Duplicatable<Presentation>
      */
     public static String createNormalizedDateTimeString(Date date)
     {
-        return createNormalizedDateTimeString(date,false); 
+        return createNormalizedDateTimeString(date,null); 
     }
     
-    public static String createNormalizedDateTimeString(Date date,boolean addTimeZone)
+    public static String createNormalizedDateTimeString(Date date,String timeZone)
     {
         if (date==null)
             return null; 
@@ -505,11 +505,20 @@ public class Presentation implements Duplicatable<Presentation>
         GregorianCalendar gmtTime = new GregorianCalendar();
         gmtTime.setTime(date);
         // normalize to GMT:
-        gmtTime.setTimeZone(TimeZone.getTimeZone("GMT"));
+        if (timeZone==null)
+        {
+            gmtTime.setTimeZone(TimeZone.getTimeZone("GMT"));
+        }
+        else
+        {
+            gmtTime.setTimeZone(TimeZone.getTimeZone(timeZone));
+        }
 
         int yearSign=1; 
         if (gmtTime.get(GregorianCalendar.ERA)== GregorianCalendar.BC)
+        {
             yearSign=-1; 
+        }
         
         int year = gmtTime.get(GregorianCalendar.YEAR);
         int month = 1 + gmtTime.get(GregorianCalendar.MONTH); // January=0!
@@ -522,9 +531,9 @@ public class Presentation implements Duplicatable<Presentation>
         String timeStr= to4decimals(yearSign*year) + "-" + to2decimals(month) + "-" + to2decimals(day) + " " + to2decimals(hours) + ":"
                + to2decimals(minutes) + ":" + to2decimals(seconds) + "." + to3decimals(millies);
         
-        if (addTimeZone)
+        if (timeZone!=null)
         {
-            timeStr+=" GMT"; 
+            timeStr+=" "+timeZone; 
         }
         
         return timeStr; 
