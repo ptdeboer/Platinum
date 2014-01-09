@@ -44,6 +44,24 @@ public class Test_BytesAndBigIntegers
         testBigIntegerString("340282366920938463463374607431768211455",bytes,false,false); 
         testBigIntegerString("340282366920938463463374607431768211455",bytes,false,true); 
     }
+ 
+    @Test
+    public void test16bytesBigIntegerNegativeMax()
+    {
+        // create 16 bytes little endian singed integer. 
+        byte bytes[]=new byte[16]; 
+        int n=16;
+        
+        for (int i=0;i<n;i++)
+        {
+            bytes[i]=(byte)0x00;  
+        }
+
+        bytes[0]=(byte)0x80; 
+        
+        // 0x800000...0  
+        testBigIntegerString("-170141183460469231731687303715884105728",bytes,true,false);
+    }
     
     @Test
     public void test24bytesBigInteger()
