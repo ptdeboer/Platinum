@@ -34,7 +34,7 @@ import junit.framework.Assert;
 import nl.esciencecenter.ptk.crypt.CryptScheme;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.crypt.StringCrypter;
-import nl.esciencecenter.ptk.testsettings.TestSettings;
+import nl.esciencecenter.ptk.testsettings.Settings;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 import org.junit.Test;
@@ -151,9 +151,9 @@ public class Test_StringCrypter
     @Test
     public void test_CryptAES256ECB_SHA256_12345() throws Throwable
     { 
-        if (TestSettings.getInstance().testAES256Encryption()==false)
+        if (Settings.getInstance().testAES256Encryption()==false)
         {
-            TestSettings.getLogger(Test_StringCrypter.class).warnPrintf("Not testing 256 bits AES encryption\n"); 
+            Settings.getLogger(Test_StringCrypter.class).warnPrintf("Not testing 256 bits AES encryption\n"); 
             return; 
         }
         

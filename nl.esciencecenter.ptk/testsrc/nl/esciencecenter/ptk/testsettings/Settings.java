@@ -4,17 +4,17 @@ import java.util.Properties;
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
-public class TestSettings
+public class Settings
 {
-    private static TestSettings instance=null; 
+    private static Settings instance=null; 
     
     public final String TEST_AES256BITS_ENCRYPTION="platinum.test.encryption.AES256bits"; 
     
-    public static TestSettings getInstance()
+    public static Settings getInstance()
     {
         if (instance==null)
         {
-            instance=new TestSettings(); 
+            instance=new Settings(); 
         }
         return instance; 
     }
