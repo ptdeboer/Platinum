@@ -372,10 +372,10 @@ public class WebClient
             {
                 if (this.config.useAuthentication()==false)
                 {
-                    throw new WebException(reason, "Need proper authentication for this service, but authentication is disabled.\n" + e.getMessage(), e);
+                    throw new WebException(reason, "Need proper authentication for this service, but authentication is disabled for:"+this.getServiceURI()+".\n" + e.getMessage(), e);
                 }
                 
-                throw new WebException(reason, "Failed to authenticate: User or password wrong.\n" + e.getMessage(), e);
+                throw new WebException(reason, "Failed to authenticate: User or password wrong for URI:"+this.getServiceURI()+".\n" + e.getMessage(), e);
             }
             else
             {
