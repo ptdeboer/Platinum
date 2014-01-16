@@ -72,6 +72,7 @@ import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicHeader;
 
 /**
@@ -121,7 +122,7 @@ public class WebClient
     
     // status: 
     private DefaultHttpClient httpClient;
-    private String sessionID;
+    private String jsessionID;
     private int lastHttpStatus;
     private URI serviceUri;
 
@@ -184,9 +185,9 @@ public class WebClient
         return serviceUri;
     }
 
-    public String getSessionID()
+    public String getJSessionID()
     {
-        return this.sessionID;
+        return this.jsessionID;
     }
 
     public UI getUI()
@@ -221,7 +222,7 @@ public class WebClient
      */
     public boolean isAuthenticated()
     {
-        return (StringUtil.isEmpty(sessionID) == false);
+        return (StringUtil.isEmpty(jsessionID) == false);
     }
 
     public String getCharacterEncoding()
@@ -232,7 +233,7 @@ public class WebClient
 
     public void setJSessionID(String jsession)
     {
-        this.sessionID = jsession;
+        this.jsessionID = jsession;
     }
 
     // ========================================================================
@@ -264,7 +265,7 @@ public class WebClient
                 }
             }
 
-            if ((config.useAuthentication()) && (config.hasPassword() == false) && (this.hasUI()))
+            if ((config.getUseBasicAuthentication()) && (config.hasPassword() == false) && (this.jsessionID==null) && (this.hasUI()))
             {
                 String user = getUsername();
 
@@ -285,9 +286,9 @@ public class WebClient
             // new UsernamePasswordCredentials(config.getUsername(), new
             // String(config.getPasswordChars())));
 
-            if (config.hasCredentials() && config.useJSession())
+            if (config.useJSession())
             {
-                initJSession();
+                initJSession(false);
                 return true;
             }
             else
@@ -311,6 +312,10 @@ public class WebClient
         {
             throw new WebException(WebException.Reason.HTTPS_SSLEXCEPTION, e.getMessage(), e);
         }
+        catch (WebException e)
+        {
+            throw (e); // pass 
+        }
         catch (IOException e)
         {
             throw new WebException(WebException.Reason.IOEXCEPTION, e.getMessage(), e);
@@ -321,13 +326,34 @@ public class WebClient
         }
     }
 
-    protected void initJSession() throws WebException
+    protected void initJSession(boolean deletePrevious) throws WebException
     {
         logger.debugPrintf("initJSession(). Using JESSION URI init string:%s\n", config.jsessionInitPart);
 
-        this.sessionID = null;
+        if (deletePrevious)
+        {
+            this.jsessionID = null;
+        }
+        
         String uri = null;
 
+        // re-use JSESSIONID: 
+        if (this.jsessionID!=null)
+        {
+            logger.debugPrintf("initJSession():Re-using JSESSIONID:%s\n",jsessionID); 
+            
+            BasicClientCookie cookie=new BasicClientCookie(WebConst.COOKIE_JSESSIONID,jsessionID); 
+            cookie.setPath(config.servicePath); 
+            cookie.setDomain(config.hostname); 
+            this.httpClient.getCookieStore().addCookie(cookie);
+            
+            return ; 
+        }
+        else
+        {
+            logger.debugPrintf("initJSession():NO JSESSIONID\n"); 
+        }
+        
         try
         {
             uri = getServerURI().toString();
@@ -351,8 +377,9 @@ public class WebClient
             {
                 if (cookie.getName().equals(WebConst.COOKIE_JSESSIONID))
                 {
-                    this.sessionID = cookie.getValue();
-                    logger.infoPrintf(" - new JSessionID = %s\n", sessionID);
+                    this.jsessionID = cookie.getValue();
+                    logger.infoPrintf(" - new JSessionID = %s\n", jsessionID);
+                    System.err.printf("Cookie Path/Domain=%s/%s\n",cookie.getPath(),cookie.getDomain()); 
                 }
             }
 
@@ -379,7 +406,7 @@ public class WebClient
             }
             else
             {
-                throw new WebException(reason, "Failed to initialize JSession:" + e.getMessage(), e);
+                throw new WebException(reason, "Failed to initialize JSession to: "+this.getServiceURI()+"\n" + e.getMessage(), e);
             }
         }
     }
@@ -405,7 +432,7 @@ public class WebClient
     {
         logger.debugPrintf("deleteJSession()\n");
 
-        if (this.sessionID == null)
+        if (this.jsessionID == null)
         {
             logger.debugPrintf("deleteJSession(): sessionID already invalidated\n");
             return;
@@ -431,7 +458,7 @@ public class WebClient
             int result = this.executeDelete(delMethod, null, null);
             checkHttpStatus(result, "deleteJSession(): Couldn't invalidate JSessionID.",null,null);
             // all ok here.
-            sessionID = null; // cleared
+            jsessionID = null; // cleared
         }
         catch (WebException e)
         {
