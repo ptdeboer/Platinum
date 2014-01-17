@@ -118,7 +118,7 @@ public class Registry
         }
     }
     
-    protected void registryFactoryNoException(Class<? extends VResourceSystemFactory> vrsClass,Level loggerLevel)
+    public void registryFactoryNoException(Class<? extends VResourceSystemFactory> vrsClass,Level loggerLevel)
     {
         try
         {
@@ -131,7 +131,7 @@ public class Registry
         }
     }
 
-    protected void registryFactory(VResourceSystemFactory factory)
+    public void registryFactory(VResourceSystemFactory factory)
     {
         synchronized(registeredServices)
         {
