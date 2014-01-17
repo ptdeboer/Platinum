@@ -109,6 +109,26 @@ public class SimpelUI implements UI
 				optionPaneOption);
 	}
 	
+	  public String askInput(String title,String message) 
+      {
+	      // Thanks to Swing's serialization, we can send Swing Components ! 
+	      JTextField textField = new JTextField(20);
+	      Object[] inputFields =  {message, textField};
+	        
+	        int result=JOptionPane.showConfirmDialog(null, 
+	                inputFields, 
+	                title,
+	                JOptionPane.WARNING_MESSAGE);
+	        
+	        if (result == JOptionPane.OK_OPTION)
+	        {
+	            return textField.getText();  
+	        }
+	        else
+	        {
+	            return null; 
+	        }
+	    }
 	
 	// Wrapper for JOptionPane. 
 	 public int showOptionDialog(String title, 

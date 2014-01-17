@@ -31,25 +31,34 @@ public interface UI
     public boolean isEnabled();
     
     /** Display message dialog or print to console */ 
-    void showMessage(String title,String message,boolean modal);
+    public void showMessage(String title,String message,boolean modal);
     
     /**
      * Simple Yes/No prompter 
      * @param defaultValue value to return if there is no UI present 
      *        or it is currently disabled. 
      */ 
-    boolean askYesNo(String title,String message, boolean defaultValue);
+    public boolean askYesNo(String title,String message, boolean defaultValue);
 
     /**
      * Simple Yes/No/Cancel prompter. 
      * Returns JOptionPane.CANCEL_OPTION if no UI present
+     * @see JOptionPane for return values 
      */ 
-    int askYesNoCancel(String title,String message);
+    public int askYesNoCancel(String title,String message);
 
     /** 
      * Ask for password, passphrase or other 'secret' String 
      */ 
-    boolean askAuthentication(String message, SecretHolder secretHolder);
+    public boolean askAuthentication(String message, SecretHolder secretHolder);
+    
+    /**
+     * Ask for a single String input message, like for example a name or other value. 
+     * @param title - title to display
+     * @param message - Input message 
+     * @return String or null 
+     */
+    public String askInput(String title, String message); 
     
     /**
      * Simple formatted Input Dialog. Method is wrapper for JOptionPane ! 
@@ -58,6 +67,6 @@ public interface UI
      * @return JOptionPane.OK_OPTION if successful. 
      *         Parameter inputFields can contain modified (Swing) objects.  
      */ 
-    int askInput(String title, Object[] inputFields, int jOpentionPaneOption);
+    public int askInput(String title, Object[] inputFields, int jOpentionPaneOption);
     
 }
