@@ -200,6 +200,15 @@ public class WebClient
         return (this.ui != null);
     }
 
+    /**
+     * Specify UI interface, set to null if no UI interactions are allowed. 
+     * @param newUI - new UI interface or null to disable UI actions.
+     */
+    public void setUI(UI newUI)
+    {
+        this.ui=newUI; 
+    }
+    
     public void setCredentials(String username, Secret password)
     {
         config.setCredentials(username, password);
@@ -340,11 +349,13 @@ public class WebClient
         // re-use JSESSIONID: 
         if (this.jsessionID!=null)
         {
-            logger.debugPrintf("initJSession():Re-using JSESSIONID:%s\n",jsessionID); 
             
             BasicClientCookie cookie=new BasicClientCookie(WebConst.COOKIE_JSESSIONID,jsessionID); 
             cookie.setPath(config.servicePath); 
-            cookie.setDomain(config.hostname); 
+            cookie.setDomain(config.hostname);
+            logger.infoPrintf (" - Using JSessionID   = %s\n", jsessionID);
+            logger.debugPrintf(" - Cookie Domain/Path = %s/%s\n",cookie.getDomain(),cookie.getPath()); 
+
             this.httpClient.getCookieStore().addCookie(cookie);
             
             return ; 
@@ -378,8 +389,8 @@ public class WebClient
                 if (cookie.getName().equals(WebConst.COOKIE_JSESSIONID))
                 {
                     this.jsessionID = cookie.getValue();
-                    logger.infoPrintf(" - new JSessionID = %s\n", jsessionID);
-                    System.err.printf("Cookie Path/Domain=%s/%s\n",cookie.getPath(),cookie.getDomain()); 
+                    logger.infoPrintf (" - new JSessionID     = %s\n", jsessionID);
+                    logger.debugPrintf(" - Cookie Domain/Path = '%s','%s'\n",cookie.getDomain(),cookie.getPath()); 
                 }
             }
 
@@ -1255,14 +1266,18 @@ public class WebClient
     public boolean uiPromptPassfield(String message, SecretHolder secretHolder)
     {
         if (getUI() == null)
+        {
             return false; // no UI present!
-
+        }
+        
         boolean result = getUI().askAuthentication(message, secretHolder);
 
         if (result == true)
         {
             if (secretHolder.value == null)
+            {
                 return false;
+            }
         }
 
         return result;
@@ -1278,5 +1293,6 @@ public class WebClient
     {
         return logger;
     }
+
 
 }
