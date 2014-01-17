@@ -229,8 +229,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 		// allowed at init time! 
 		if (dataSource==null)
 			return; 
-
-
+		
 		UITask task=new UITask(null,"Test get ProxyNode data")
 		{
 			boolean mustStop=false; 
@@ -250,15 +249,22 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 						handle(e,"Couldn't fetch childs\n"); 
 						return; 
 					}
-
+					
+					// no data: 
+					if (nodes==null)
+					{
+					    logger.debugPrintf("No Nodes for:"+this); 
+					    return; 
+					}
+					
 					for (ViewNode node:nodes)
 					{
-						if (mustStop==true)
-							return; 
-
-						createRow(node); 
+					    if (mustStop==true)
+					        return; 
+    
+					    createRow(node); 
 					}
-
+					
 					StringList allAttributes=new StringList(); 
 
 					for (ViewNode node:nodes)
