@@ -209,6 +209,11 @@ public class VPathNode implements VPath
     @Override
     public VPath resolvePath(String path) throws VrsException
     {
+        if (this.resourceSystem==this)
+        {
+            throw new Error("Cannot delegate resolvePath to resourceSystem as i *AM* the ResourceSystem!"); 
+        }
+        
         return this.resourceSystem.resolvePath(path); 
     }
 
