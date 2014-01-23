@@ -30,7 +30,7 @@ project.dist.doc=${project.dist}/doc
 project.env.ok=ok;
  
 ## version
-project.version=0.8.0-rc1
+project.version=0.8.0
 platinum.version=${project.version}
 ## Owner/Vendor: 
 project.vendor=eScienceCenter.nl
