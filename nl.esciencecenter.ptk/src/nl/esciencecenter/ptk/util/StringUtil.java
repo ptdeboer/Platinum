@@ -472,7 +472,7 @@ public class StringUtil
     /** Remove spaces, newlines and tabs. Does not respect quoted values! */
     public static String stripWhiteSpace(String val)
     {
-        if ((val == null) || (val == ""))
+        if ((val == null) || (val.equals("")))
             return null;
 
         return val.replaceAll("[ \t\n]", "");
