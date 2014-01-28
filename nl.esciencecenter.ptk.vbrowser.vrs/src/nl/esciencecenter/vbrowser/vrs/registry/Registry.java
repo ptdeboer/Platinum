@@ -9,11 +9,11 @@ import java.util.logging.Level;
 
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.vbrowser.vrs.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.infors.InfoRSFactory;
 import nl.esciencecenter.vbrowser.vrs.localfs.LocalFSFileSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.webrs.WebRSFactory;
@@ -78,6 +78,7 @@ public class Registry
     {
         this.registryFactoryNoException(LocalFSFileSystemFactory.class,ClassLogger.ERROR);
         this.registryFactoryNoException(WebRSFactory.class,ClassLogger.ERROR);
+        this.registryFactoryNoException(InfoRSFactory.class,ClassLogger.ERROR);
     }
 
     public VResourceSystemFactory getVResourceSystemFactoryFor(VRSContext vrsContext, String scheme)

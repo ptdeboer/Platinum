@@ -7,6 +7,7 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.Registry;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfoRegistry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -96,6 +97,12 @@ public class VRSContext
     public VRL getCurrentPathVRL()
     {
         return new VRL("file",null,GlobalProperties.getGlobalUserDir());
+    }
+
+    public VPath getPath(VRL vrl)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -3,7 +3,6 @@ package nl.esciencecenter.vbrowser.vrs.registry;
 import java.util.Hashtable;
 import java.util.Map;
 
-import nl.esciencecenter.vbrowser.vrs.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 
 public class ResourceSystemInfoRegistry

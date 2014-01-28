@@ -1,7 +1,9 @@
-package nl.esciencecenter.vbrowser.vrs;
+package nl.esciencecenter.vbrowser.vrs.registry;
 
 import java.util.Properties;
 
+import nl.esciencecenter.vbrowser.vrs.VRS;
+import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ResourceSystemInfo
@@ -21,7 +23,11 @@ public class ResourceSystemInfo
     public static final String SERVER_PATH="serverPath";
     
     public static final String SERVER_CONFIG_PROPERTIES="serverConfigProperties";
-       
+ 
+    // ==================
+    // Instance 
+    // ==================
+   
     protected VRSProperties vrsConfig;   
  
     public ResourceSystemInfo(VRL serverVRL)
