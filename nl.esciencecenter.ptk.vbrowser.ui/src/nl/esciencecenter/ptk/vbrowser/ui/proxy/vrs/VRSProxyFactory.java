@@ -58,7 +58,7 @@ public class VRSProxyFactory extends ProxyFactory
     
     private VRSClient vrsClient;
 
-    //protected VRSViewNodeDnDHandler viewNodeDnDHandler=null;
+    protected VRSViewNodeDnDHandler viewNodeDnDHandler=null;
     
     protected VRSProxyFactory()
     {
@@ -66,6 +66,7 @@ public class VRSProxyFactory extends ProxyFactory
         
         this.vrsContext=getProxyVRSContext();
         this.vrsClient=new VRSClient(vrsContext); 
+        this.viewNodeDnDHandler=new VRSViewNodeDnDHandler(vrsClient); 
     }
     
 	public VRSProxyNode _openLocation(VRL vrl) throws ProxyException
@@ -97,7 +98,7 @@ public class VRSProxyFactory extends ProxyFactory
         }
     }
     
-	private nl.esciencecenter.vbrowser.vrs.vrl.VRL createVRL(VRL locator)
+	private VRL createVRL(VRL locator)
     {
 	    return new nl.esciencecenter.vbrowser.vrs.vrl.VRL(locator.getScheme(),
 	            locator.getUserinfo(),
@@ -129,8 +130,7 @@ public class VRSProxyFactory extends ProxyFactory
 
     public VRSViewNodeDnDHandler getVRSProxyDnDHandler(ViewNode viewNode)
     {
-        return null;
+        return viewNodeDnDHandler;
     }
-
 
 }
