@@ -56,21 +56,21 @@ public class DummyProxyNode extends ProxyNode
     private List<DummyProxyNode> childs;
 	private boolean isComposite=true; 
 	private String mimetype="text/plain";
+	
     protected DummyProxyNode createChild(String childname)
-        
     {
         return new DummyProxyNode(this,getVRL().appendPath(childname)); 
     }
     
-    public DummyProxyNode(VRL locator)
+    public DummyProxyNode(DummyProxyFactory dummyProxyFactory, VRL locator)
     {
-        super(DummyProxyFactory.getDefault(),locator); 
+        super(dummyProxyFactory,locator); 
         this.parent=null; 
     }
     
     protected DummyProxyNode(DummyProxyNode parent,VRL locator)
     {
-        super(DummyProxyFactory.getDefault(),locator);
+        super(parent.getProxyFactory(),locator);
         this.parent=parent; 
         init(); 
     }
@@ -107,7 +107,7 @@ public class DummyProxyNode extends ProxyNode
     @Override
     protected ProxyNode doGetParent() throws ProxyException
     {
-        return DummyProxyFactory.getDefault().doOpenLocation(this.locator.getParent());
+        return getProxyFactory().doOpenLocation(this.locator.getParent());
     }
     
     @Override
@@ -140,24 +140,6 @@ public class DummyProxyNode extends ProxyNode
                 
         return subrange(childs,offset,range);  
     }
-
-    public static DummyProxyNode getRoot() throws ProxyException
-    {
-        try
-        {
-            return new DummyProxyNode(new VRL("proxy:/"));
-        }
-        catch (VRLSyntaxException e)
-        {
-            throw new ProxyException("VRISyntaxException",e); 
-        } 
-    }
-
-	@Override
-	public ProxyFactory getProxyFactory()
-	{
-		return DummyProxyFactory.getDefault(); 
-	}
 
 	@Override
 	protected String doGetMimeType() throws ProxyException 

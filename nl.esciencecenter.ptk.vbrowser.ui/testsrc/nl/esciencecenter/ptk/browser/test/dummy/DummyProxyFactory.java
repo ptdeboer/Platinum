@@ -21,28 +21,31 @@
 package nl.esciencecenter.ptk.browser.test.dummy;
 
 import nl.esciencecenter.ptk.data.StringHolder;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class DummyProxyFactory extends ProxyFactory
 {
-    private static ProxyFactory instance; 
-    
-    public static ProxyFactory getDefault() 
+
+    public static ProxyFactory createFor(BrowserPlatform platform)
     {
-        if (instance==null)
-            instance=new DummyProxyFactory();
-              
-        return instance; 
-   }
+        return new DummyProxyFactory(platform); 
+    }
+    
     // ========================================================================
     // 
     // ========================================================================
 
+    public DummyProxyFactory(BrowserPlatform platform)
+    {
+        super(platform); 
+    }
+
     public ProxyNode doOpenLocation(VRL locator)
     {
-        return new DummyProxyNode(locator); 
+        return new DummyProxyNode(this,locator); 
     }
 
 	@Override
@@ -50,5 +53,6 @@ public class DummyProxyFactory extends ProxyFactory
 	{
 	    return locator.hasScheme("proxy");
 	}
+
 
 }

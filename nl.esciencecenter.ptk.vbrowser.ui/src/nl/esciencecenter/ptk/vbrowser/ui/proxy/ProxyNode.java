@@ -265,7 +265,7 @@ public abstract class ProxyNode
     
     public Icon getIcon(int size,boolean greyOut,boolean focus) throws ProxyException
     {
-        IconProvider provider=BrowserPlatform.getInstance().getIconProvider();
+        IconProvider provider=this.getProxyFactory().getPlatform().getIconProvider();
         
         String mimeType=this.getMimeType(); 
         

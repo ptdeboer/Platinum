@@ -38,11 +38,11 @@ public class StartBrowser
 	{
 		try 
 		{
-			BrowserPlatform platform=BrowserPlatform.getInstance(); 
+			BrowserPlatform platform=BrowserPlatform.getInstance("ptkvb"); 
 		    
 		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
 		    
-		    VRSProxyFactory fac = VRSProxyFactory.getDefault(); 
+		    VRSProxyFactory fac = VRSProxyFactory.createFor(platform);  
 		    
 		    platform.registerProxyFactory(fac); 
 		    
