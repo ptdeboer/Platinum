@@ -108,7 +108,7 @@ public class BrowserPlatform
 
     private void init(String id) throws URISyntaxException
     {
- 
+        this.platformID=id; 
         // init defaults:
         this.proxyRegistry = ProxyFactoryRegistry.getInstance();
         
