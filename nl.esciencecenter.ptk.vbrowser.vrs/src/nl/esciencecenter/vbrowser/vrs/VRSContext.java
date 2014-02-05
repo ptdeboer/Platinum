@@ -5,6 +5,8 @@ import java.util.Properties;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
+import nl.esciencecenter.ptk.ui.SimpelUI;
+import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.Registry;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
@@ -19,6 +21,8 @@ public class VRSContext
 
     private ResourceSystemInfoRegistry resourceInfoRegistry; 
 
+    protected UI ui; 
+    
     public VRSContext()
     {
         init(new VRSProperties()); 
@@ -40,9 +44,10 @@ public class VRSContext
         this.registry=Registry.getInstance(); 
         this.vrsProperties=privateProperties;
         resourceInfoRegistry=new ResourceSystemInfoRegistry(this);
+        ui=new SimpelUI(); 
     }
     
-    protected Registry getRegistry()
+    public Registry getRegistry()
     {
         return registry;  
     }
@@ -99,10 +104,9 @@ public class VRSContext
         return new VRL("file",null,GlobalProperties.getGlobalUserDir());
     }
 
-    public VPath getPath(VRL vrl)
+    public UI getUI()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return ui; 
     }
 
 }

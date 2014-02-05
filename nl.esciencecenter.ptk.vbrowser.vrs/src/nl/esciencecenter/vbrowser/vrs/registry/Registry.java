@@ -123,8 +123,7 @@ public class Registry
     {
         try
         {
-            VResourceSystemFactory vrsInstance = vrsClass.newInstance(); 
-            registryFactory(vrsInstance);
+            registryFactory(vrsClass);
         }
         catch (Throwable t)
         {
@@ -132,16 +131,22 @@ public class Registry
         }
     }
 
-    public void registryFactory(VResourceSystemFactory factory)
+    public void registryFactory(Class<? extends VResourceSystemFactory> vrsClass) throws InstantiationException, IllegalAccessException
     {
+        VResourceSystemFactory vrsInstance; 
+        
         synchronized(registeredServices)
         {
-            registeredServices.put(factory.getClass().getCanonicalName(), factory); 
+            // ===
+            // Protected VRSFactory instance is created here ! 
+            // ===
+            vrsInstance = vrsClass.newInstance(); 
+            registeredServices.put(vrsClass.getCanonicalName(), vrsInstance); 
         }
         
         synchronized(registeredSchemes)
         {
-            for (String scheme:factory.getSchemes())
+            for (String scheme:vrsInstance.getSchemes())
             {
                 ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);    
                 if (list==null)
@@ -150,7 +155,7 @@ public class Registry
                     registeredSchemes.put(scheme,list); 
                 }
                 
-                list.add(new SchemeInfo(scheme,factory));
+                list.add(new SchemeInfo(scheme,vrsInstance));
             }
         }
         
