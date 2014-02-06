@@ -6,6 +6,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import nl.esciencecenter.ptk.object.Duplicatable;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties>//, Comparable<VRSProperties>
 {
@@ -143,7 +145,6 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     public void putAll(VRSProperties vrsProps)
     {
         properties.putAll(vrsProps.properties);
-        
     }
 
     public boolean getBooleanProperty(String name, boolean defaultValue)
@@ -184,6 +185,31 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     public void set(String name,int value)
     {
         properties.put(name, new Integer(value)); 
+    }
+
+    public VRL getVRLProperty(String name) throws VRLSyntaxException
+    {
+        Object val=this.properties.get(name); 
+        if (val==null)
+        {
+            return null; 
+        }
+        else if (val instanceof VRL)
+        {
+            return (VRL)val;
+        }
+        else if (val instanceof java.net.URI)
+        {
+            return new VRL((java.net.URI)val); 
+        }
+        else if (val instanceof java.net.URL)
+        {
+            return new VRL((java.net.URL)val); 
+        }
+        else
+        {
+            return new VRL(val.toString()); 
+        }
     }
 
 }

@@ -27,31 +27,28 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.LinkOption;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.local.LocalFSHandler;
 import nl.esciencecenter.ptk.io.local.LocalFSNode;
-import nl.esciencecenter.ptk.io.local.LocalFSReader;
-import nl.esciencecenter.ptk.io.local.LocalFSWriter;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
- * Global File System utils and resource loaders. 
- * Used for the local file system.
+ * Global File System utils and resource loaders. Used for the local file
+ * system.
  */
 public class FSUtil implements ResourceProvider
 {
     public static final String ENCODING_UTF8 = "UTF8";
-    
+
     public static final String ENCODING_ASCII = "ASCII";
 
     private static ClassLogger logger;
-    
+
     private static FSUtil instance = null;
 
     static
@@ -63,26 +60,29 @@ public class FSUtil implements ResourceProvider
     {
         if (instance == null)
             instance = new FSUtil();
-        
+
         return instance;
     }
-    
+
     public static class FSOptions
     {
-        public boolean resolve_tilde=true; 
+        public boolean resolve_tilde = true;
     }
-   
+
     // ========================================================================
     // Instance
     // ========================================================================
-    
-    protected URI userHome;
-    protected URI workingDir; 
-    protected URI tmpDir; 
-    protected FSOptions fsOptions=new FSOptions(); 
 
-    private LocalFSHandler localFSHandler; 
-    
+    protected URI userHome;
+
+    protected URI workingDir;
+
+    protected URI tmpDir;
+
+    protected FSOptions fsOptions = new FSOptions();
+
+    private LocalFSHandler localFSHandler;
+
     public FSUtil()
     {
         init();
@@ -90,29 +90,30 @@ public class FSUtil implements ResourceProvider
 
     private void init()
     {
-        this.localFSHandler=LocalFSHandler.getDefault();
-        
+        this.localFSHandler = LocalFSHandler.getDefault();
+
         try
         {
-            this.userHome = new java.io.File(GlobalProperties.getGlobalUserHome()).toURI(); 
-            this.workingDir=new java.io.File(GlobalProperties.getGlobalUserHome()).toURI(); 
-            this.tmpDir=new java.io.File(GlobalProperties.getGlobalTempDir()).toURI();
+            this.userHome = new java.io.File(GlobalProperties.getGlobalUserHome()).toURI();
+            this.workingDir = new java.io.File(GlobalProperties.getGlobalUserHome()).toURI();
+            this.tmpDir = new java.io.File(GlobalProperties.getGlobalTempDir()).toURI();
         }
         catch (Throwable e)
         {
             logger.logException(ClassLogger.FATAL, e, "Initialization Exception:%s\n", e);
         }
     }
-    
+
     /**
      * Check syntax and decode optional (relative) URL or path to an absolute
-     * normalized path. 
-     * If an exception occurs (syntax error) the path is returned "as is" !
-     * Use resolveURI(path) to resolve to an absolute and normalized URI.
+     * normalized path. If an exception occurs (syntax error) the path is
+     * returned "as is" ! Use resolveURI(path) to resolve to an absolute and
+     * normalized URI.
      * 
-     * @throws FileURISyntaxException if the path contains invalid characters.  
+     * @throws FileURISyntaxException
+     *             if the path contains invalid characters.
      */
-    public String resolvePath(String path) throws FileURISyntaxException 
+    public String resolvePath(String path) throws FileURISyntaxException
     {
         try
         {
@@ -120,38 +121,38 @@ public class FSUtil implements ResourceProvider
         }
         catch (URISyntaxException e)
         {
-            throw new FileURISyntaxException(e.getMessage(),path,e);
-        } 
+            throw new FileURISyntaxException(e.getMessage(), path, e);
+        }
     }
-    
-    /** 
-     * Resolve relative path to absolute URI. 
+
+    /**
+     * Resolve relative path to absolute URI.
      */
     public URI resolvePathURI(String path) throws URISyntaxException
     {
-        if ((this.fsOptions.resolve_tilde) && (path!=null) && path.contains("~"))
+        if ((this.fsOptions.resolve_tilde) && (path != null) && path.contains("~"))
         {
-            String homePath=URIFactory.uripath(userHome.getPath());
-            path=path.replace("~", homePath); 
+            String homePath = URIFactory.uripath(userHome.getPath());
+            path = path.replace("~", homePath);
         }
-        
-        return URIUtil.resolvePathURI(workingDir,path);
+
+        return URIUtil.resolvePathURI(workingDir, path);
     }
 
-    public boolean existsPath(String path,LinkOption... linkOptions) throws IOException
+    public boolean existsPath(String path, LinkOption... linkOptions) throws IOException
     {
         return newFSNode(resolvePath(path)).exists(linkOptions);
     }
 
-    /** 
-     * Simple Copy File uses URIs to ensure absolute and normalized Paths. 
+    /**
+     * Simple Copy File uses URIs to ensure absolute and normalized Paths.
      */
     public void copyFile(URI source, URI destination) throws IOException
     {
         InputStream finput = newFSNode(source).createInputStream();
         OutputStream foutput = newFSNode(destination).createOutputStream();
 
-        IOUtil.copyStreams(finput, foutput,false);
+        IOUtil.copyStreams(finput, foutput, false);
 
         try
         {
@@ -174,10 +175,10 @@ public class FSUtil implements ResourceProvider
     }
 
     /**
-     * Checks whether paths exists and is a file. 
-     * If the filePath contains invalid characters, this method will also return false. 
+     * Checks whether paths exists and is a file. If the filePath contains
+     * invalid characters, this method will also return false.
      */
-    public boolean existsFile(String filePath, boolean mustBeFileType,LinkOption... linkOptions)
+    public boolean existsFile(String filePath, boolean mustBeFileType, LinkOption... linkOptions)
     {
         if (filePath == null)
             return false;
@@ -187,7 +188,7 @@ public class FSUtil implements ResourceProvider
             FSNode file = newFSNode(filePath);
             if (file.exists(linkOptions) == false)
                 return false;
-    
+
             if (mustBeFileType)
                 if (file.isFile(linkOptions))
                     return true;
@@ -198,19 +199,20 @@ public class FSUtil implements ResourceProvider
         }
         catch (FileURISyntaxException e)
         {
-            return false; 
+            return false;
         }
         catch (IOException e)
         {
-            return false; 
+            return false;
         }
     }
 
     /**
-     * Checks whether directoryPath paths exists and is a directory.
-     * If the directory path contains invalid characters the method will also return false.  
+     * Checks whether directoryPath paths exists and is a directory. If the
+     * directory path contains invalid characters the method will also return
+     * false.
      */
-    public boolean existsDir(String directoryPath,LinkOption... linkOptions) 
+    public boolean existsDir(String directoryPath, LinkOption... linkOptions)
     {
         if (directoryPath == null)
             return false;
@@ -226,11 +228,11 @@ public class FSUtil implements ResourceProvider
         }
         catch (FileURISyntaxException e)
         {
-            return false; 
+            return false;
         }
         catch (IOException e)
         {
-            return false; 
+            return false;
         }
 
         return false;
@@ -244,48 +246,50 @@ public class FSUtil implements ResourceProvider
         }
         catch (URISyntaxException e)
         {
-            throw new FileURISyntaxException(e.getMessage(),path,e); 
+            throw new FileURISyntaxException(e.getMessage(), path, e);
         }
     }
-    
+
     /**
-     * Return new FileSystem Node specified by the URI. 
-     * Currently only local files are supported. 
+     * Return new FileSystem Node specified by the URI. Currently only local
+     * files are supported.
      * 
-     * @param uri - uri of the file. 
-     * @return Lofical FileSystem Node. 
+     * @param uri
+     *            - uri of the file.
+     * @return Lofical FileSystem Node.
      */
     public FSNode newFSNode(URI uri)
     {
-        return new LocalFSNode(localFSHandler,uri);
+        return new LocalFSNode(localFSHandler, uri);
     }
 
     /**
      * Return new local file node specified by the path.
      * 
-     * @param path -  the relative,logical or absolute path to resolve on the
-     *                local file system.
+     * @param path
+     *            - the relative,logical or absolute path to resolve on the
+     *            local file system.
      */
     public LocalFSNode newLocalFSNode(URI localFileURI)
     {
         if (localFileURI.isAbsolute())
         {
-            return new LocalFSNode(LocalFSHandler.getDefault(),localFileURI);
+            return new LocalFSNode(LocalFSHandler.getDefault(), localFileURI);
         }
         else
         {
-            return new LocalFSNode(localFSHandler,workingDir.resolve(localFileURI));
+            return new LocalFSNode(localFSHandler, workingDir.resolve(localFileURI));
         }
-        
+
     }
 
-    /** 
-     * List directory: returns (URI) normalized paths. 
+    /**
+     * List directory: returns (URI) normalized paths.
      * 
-     * @throws IOException 
-     * @throws URISyntaxException 
+     * @throws IOException
+     * @throws URISyntaxException
      */
-    public String[] list(String dirPath,LinkOption... linkOptions) throws IOException, FileURISyntaxException
+    public String[] list(String dirPath, LinkOption... linkOptions) throws IOException, FileURISyntaxException
     {
         FSNode file;
         try
@@ -294,9 +298,9 @@ public class FSUtil implements ResourceProvider
         }
         catch (URISyntaxException e)
         {
-            throw new FileURISyntaxException(e.getMessage(),dirPath,e); 
+            throw new FileURISyntaxException(e.getMessage(), dirPath, e);
         }
-        
+
         if (file.exists(null) == false)
             return null;
 
@@ -306,11 +310,11 @@ public class FSUtil implements ResourceProvider
         String strs[] = file.list();
         if ((strs == null) || (strs.length <= 0))
             return null;
-        
+
         // sanitize:
         for (int i = 0; i < strs.length; i++)
             strs[i] = resolvePath(dirPath + "/" + strs[i]);
-       
+
         return strs;
     }
 
@@ -328,8 +332,8 @@ public class FSUtil implements ResourceProvider
      * @param filename
      *            - relative or absolute file path (resolves to absolute path on
      *            local filesystem)
-     * @throws URISyntaxException 
-     * @throws IOException 
+     * @throws URISyntaxException
+     * @throws IOException
      */
     public InputStream getInputStream(String filename) throws IOException, FileURISyntaxException
     {
@@ -337,14 +341,15 @@ public class FSUtil implements ResourceProvider
     }
 
     /**
-     * Open local file and return OutputStream to write to.
-     * The default implementation is to creat a new File if it doesn't exists or 
-     * replace an existing file with the new contents if it exists.  
+     * Open local file and return OutputStream to write to. The default
+     * implementation is to creat a new File if it doesn't exists or replace an
+     * existing file with the new contents if it exists.
+     * 
      * @param filename
      *            - relative or absolute file path (resolves to absolute path on
      *            local fileystem)
-     * @throws URISyntaxException 
-     * @throws IOException 
+     * @throws URISyntaxException
+     * @throws IOException
      */
     public OutputStream createOutputStream(String filename) throws IOException, FileURISyntaxException
     {
@@ -353,40 +358,43 @@ public class FSUtil implements ResourceProvider
 
     public RandomReader createRandomReader(FSNode node) throws IOException
     {
-        return node.getFSHandler().createRandomReader(node); 
+        return node.getFSHandler().createRandomReader(node);
     }
- 
+
     public RandomWriter createRandomWriter(FSNode node) throws IOException
     {
-        return node.getFSHandler().createRandomWriter(node); 
+        return node.getFSHandler().createRandomWriter(node);
     }
 
     /**
      * Read file and return as UTF8 String.
+     * 
      * @param filename
      *            - path to resolve and read.
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public String readText(String filename) throws IOException, FileURISyntaxException
     {
         return readText(filename, ENCODING_UTF8);
     }
-    
+
     public String readText(String filename, String encoding) throws IOException, FileURISyntaxException
     {
-        return readText(filename,encoding,1024*1024); 
-    }    
+        return readText(filename, encoding, 1024 * 1024);
+    }
+
     /**
-     * Read file and return as String. Provide optional encoding (can be null for default). 
-     * Limit size to maxSize
-     * @param filename  
-     *          - absolute of relative filepath
-     * @param enconding 
-     *          - optional encoding. Use null for default.
+     * Read file and return as String. Provide optional encoding (can be null
+     * for default). Limit size to maxSize
+     * 
+     * @param filename
+     *            - absolute of relative filepath
+     * @param enconding
+     *            - optional encoding. Use null for default.
      * @param maxSize
-     *          - limit size of number of bytes read (not the String size).   
-     * @throws FileURISyntaxException 
-     *          - when the filename contains invalid characters.
+     *            - limit size of number of bytes read (not the String size).
+     * @throws FileURISyntaxException
+     *             - when the filename contains invalid characters.
      */
     public String readText(String filename, String encoding, int maxSize) throws IOException, FileURISyntaxException
     {
@@ -399,7 +407,7 @@ public class FSUtil implements ResourceProvider
             len = maxSize;
 
         InputStream finps = file.createInputStream();
-        
+
         byte buffer[] = new byte[len + 1];
 
         int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len);
@@ -407,17 +415,24 @@ public class FSUtil implements ResourceProvider
         buffer[numRead] = 0;
 
         // close
-        try { finps.close(); } catch (IOException e) { ; } 
+        try
+        {
+            finps.close();
+        }
+        catch (IOException e)
+        {
+            ;
+        }
 
         return new String(buffer, encoding);
     }
 
-    public void writeText(String path,String txt) throws IOException, FileURISyntaxException
+    public void writeText(String path, String txt) throws IOException, FileURISyntaxException
     {
-        writeText(path,txt,ENCODING_UTF8);
+        writeText(path, txt, ENCODING_UTF8);
     }
 
-    public void writeText(String filename,String txt, String encoding) throws IOException, FileURISyntaxException
+    public void writeText(String filename, String txt, String encoding) throws IOException, FileURISyntaxException
     {
         if (encoding == null)
             encoding = ENCODING_UTF8;
@@ -425,19 +440,26 @@ public class FSUtil implements ResourceProvider
         FSNode file = newFSNode(filename);
 
         OutputStream foutps = file.createOutputStream();
-        byte bytes[]=txt.getBytes(encoding); 
-        int len=bytes.length; 
-        foutps.write(bytes); 
-                // close
-        try { foutps.close(); } catch (IOException e) { ; } 
-        
-        long fileLen=file.getFileSize();
-        if (len!=fileLen) 
+        byte bytes[] = txt.getBytes(encoding);
+        int len = bytes.length;
+        foutps.write(bytes);
+        // close
+        try
         {
-            logger.warnPrintf("File NOT truncated: After writing %d byte to '%s', file length is:%d!\n",filename,len,fileLen);
+            foutps.close();
         }
-        
-        return; 
+        catch (IOException e)
+        {
+            ;
+        }
+
+        long fileLen = file.getFileSize();
+        if (len != fileLen)
+        {
+            logger.warnPrintf("File NOT truncated: After writing %d byte to '%s', file length is:%d!\n", filename, len, fileLen);
+        }
+
+        return;
     }
 
     public FSNode mkdir(String path) throws IOException, FileURISyntaxException
@@ -453,52 +475,54 @@ public class FSUtil implements ResourceProvider
         dir.mkdirs();
         return dir;
     }
-   
+
     public LocalFSNode getLocalTempDir()
     {
         return this.newLocalFSNode(this.tmpDir);
     }
-    
+
     public LocalFSNode getWorkingDir()
     {
         return this.newLocalFSNode(this.workingDir);
     }
-    
+
     public URI getUserHome()
     {
         return userHome;
     }
-    
+
     public FSNode getUserHomeDir()
     {
         return newFSNode(this.userHome);
     }
-    
+
     public URI getUserHomeURI()
     {
         return userHome;
     }
-    
+
     public void setWorkingDir(URI newWorkingDir)
     {
-        // check for local ? 
-        this.workingDir=newWorkingDir;
+        // check for local ?
+        this.workingDir = newWorkingDir;
     }
-    
+
     public URI getWorkingDirVRI()
     {
         return workingDir;
     }
-    
+
     /**
-     * Returns new directory FSNode Object. Path might not exist. 
-     * @param  dirUri - location of new Directory 
-     * @return - new Local Directory object. 
+     * Returns new directory FSNode Object. Path might not exist.
+     * 
+     * @param dirUri
+     *            - location of new Directory
+     * @return - new Local Directory object.
      */
     public LocalFSNode newLocalDir(URI dirUri)
     {
-        LocalFSNode dir=this.newLocalFSNode(dirUri);
-        return dir; 
+        LocalFSNode dir = this.newLocalFSNode(dirUri);
+        return dir;
     }
 
     public LocalFSNode newLocalFSNode(String fileUri) throws FileURISyntaxException
@@ -509,40 +533,40 @@ public class FSUtil implements ResourceProvider
         }
         catch (URISyntaxException e)
         {
-            throw new FileURISyntaxException(e.getMessage(),fileUri,e); 
+            throw new FileURISyntaxException(e.getMessage(), fileUri, e);
         }
     }
-    
-    public void deleteDirectoryContents(URI uri,boolean recursive) throws IOException
+
+    public void deleteDirectoryContents(URI uri, boolean recursive) throws IOException
     {
-        LocalFSNode node = newLocalDir(uri); 
-        if (node.exists()==false)
-            throw new FileNotFoundException("Directory does not exist:"+uri); 
-        
-        deleteDirectoryContents(node,recursive); 
-        return; 
+        LocalFSNode node = newLocalDir(uri);
+        if (node.exists() == false)
+            throw new FileNotFoundException("Directory does not exist:" + uri);
+
+        deleteDirectoryContents(node, recursive);
+        return;
     }
 
     public void deleteDirectoryContents(FSNode dirNode, boolean recursive) throws IOException
     {
-        FSNode[] nodes = dirNode.listNodes(); 
-        for (FSNode node:nodes)
+        FSNode[] nodes = dirNode.listNodes();
+        for (FSNode node : nodes)
         {
             if (node.isDirectory() && recursive)
             {
-                deleteDirectoryContents(node,recursive);
+                deleteDirectoryContents(node, recursive);
             }
-            node.delete(); 
+            node.delete();
         }
-    }   
-    
-    public void delete(FSNode node,boolean recursive) throws IOException
+    }
+
+    public void delete(FSNode node, boolean recursive) throws IOException
     {
-        if ( (node.isDirectory()) && (recursive) )
-        { 
-            this.deleteDirectoryContents(node,recursive);
+        if ((node.isDirectory()) && (recursive))
+        {
+            this.deleteDirectoryContents(node, recursive);
         }
-        
+
         node.delete();
     }
 
@@ -550,47 +574,47 @@ public class FSUtil implements ResourceProvider
     {
         if (relPath.matches(".*[!@#$%*()]+"))
         {
-            if (reasonH!=null)
+            if (reasonH != null)
             {
-                reasonH.value="Path contains invalid characters!";
-            }   
-          return false;
+                reasonH.value = "Path contains invalid characters!";
+            }
+            return false;
         }
-        
+
         try
         {
-            URI uri=this.resolvePathURI(relPath); 
-            FSNode node=newFSNode(uri);
-            // should trigger file system check on path. 
-            boolean exists=node.exists();
-            if (reasonH!=null)
+            URI uri = this.resolvePathURI(relPath);
+            FSNode node = newFSNode(uri);
+            // should trigger file system check on path.
+            boolean exists = node.exists();
+            if (reasonH != null)
             {
-                reasonH.value="File path is ok. Exists="+exists;
+                reasonH.value = "File path is ok. Exists=" + exists;
             }
-            return true ;
+            return true;
         }
         catch (URISyntaxException ex)
         {
-            if (reasonH!=null)
+            if (reasonH != null)
             {
-                reasonH.value="Syntax Error:"+ex.getMessage()+", input="+ex.getInput();
+                reasonH.value = "Syntax Error:" + ex.getMessage() + ", input=" + ex.getInput();
             }
-            return false; 
-        }        
+            return false;
+        }
     }
 
     public boolean hasPosixFS()
     {
         if (GlobalProperties.isWindows())
-            return false; 
-        
+            return false;
+
         if (GlobalProperties.isLinux())
-            return true; 
-        
+            return true;
+
         if (GlobalProperties.isMac())
-            return true; 
-        
-        return true; 
+            return true;
+
+        return true;
     }
 
     @Override
@@ -602,10 +626,10 @@ public class FSUtil implements ResourceProvider
         }
         else
         {
-            // use default URL method ! 
-            return uri.toURL().openConnection().getOutputStream(); 
+            // use default URL method !
+            return uri.toURL().openConnection().getOutputStream();
         }
-        
+
     }
 
     @Override
@@ -617,8 +641,8 @@ public class FSUtil implements ResourceProvider
         }
         else
         {
-            // use default URL method ! 
-            return uri.toURL().openConnection().getInputStream(); 
+            // use default URL method !
+            return uri.toURL().openConnection().getInputStream();
         }
     }
 
@@ -626,8 +650,8 @@ public class FSUtil implements ResourceProvider
     {
         if (uri.getScheme().equalsIgnoreCase("file"))
         {
-            return true; 
-        }   
+            return true;
+        }
         else
         {
             return false;
@@ -637,7 +661,7 @@ public class FSUtil implements ResourceProvider
     @Override
     public RandomReader createRandomReader(URI uri) throws IOException
     {
-        return localFSHandler.createRandomReader(newFSNode(uri)); 
+        return localFSHandler.createRandomReader(newFSNode(uri));
     }
 
     @Override
@@ -646,6 +670,9 @@ public class FSUtil implements ResourceProvider
         return localFSHandler.createRandomWriter(newFSNode(uri));
     }
 
-
+    public List<FSNode> listRoots()
+    {
+        return localFSHandler.listLocalRoots();
+    }
 
 }

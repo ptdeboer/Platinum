@@ -18,7 +18,7 @@
  */ 
 // source: 
 
-package test;
+package nl.esciencecenter.ptk.browser.test.dummy;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -27,32 +27,37 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import nl.esciencecenter.ptk.browser.test.dummy.DummyProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.DummyBrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.tree.ResourceTree;
 
-public class TestResourceTree 
+public class DummyResourceTree 
 {
 	
 	public static void main(String args[])
 	{
-	    BrowserPlatform platform=BrowserPlatform.getInstance(); 
 	    
-		JFrame frame=new JFrame(); 
-		JPanel panel=new JPanel(); 
-		frame.add(panel); 
-		
-		panel.setLayout(new BorderLayout()); 
-		
 		try
-		{ 
+		{
+		    BrowserPlatform platform=BrowserPlatform.getInstance("dummy"); 
+	        ProxyBrowser browser=(ProxyBrowser)platform.createBrowser();
+	        ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);  
+	        platform.registerProxyFactory(dummyFac); 
+
+	        
+	        JFrame frame=new JFrame(); 
+	        JPanel panel=new JPanel(); 
+	        frame.add(panel); 
+	        
+	        panel.setLayout(new BorderLayout()); 
+	        
     		ResourceTree tree;
-    		ProxyFactory fac = DummyProxyFactory.getDefault(); 
-    		ProxyNode root = fac.openLocation("proxy:///"); 
+ 
+    		ProxyNode root = dummyFac.openLocation("proxy:///"); 
     		ProxyNodeDataSource dataSource = new ProxyNodeDataSource (root); 
     		tree=new ResourceTree(new DummyBrowserInterface(platform),dataSource);
     		//tree=new ResourceTree(null,dataSource);

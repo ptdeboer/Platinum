@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -424,6 +425,14 @@ public class LocalFSNode extends FSNode
 		
 		return attrs.group().getName(); 
 	}
+
+    public String renameTo(String relativeOrAbsolutePath) throws IOException
+    {
+        Path targetPath=_path.resolve(relativeOrAbsolutePath); 
+        Path actualPath=Files.move(this._path, targetPath);
+        // no errrors, assume path is renamed. 
+        return actualPath.toAbsolutePath().toString(); 
+    }
 
 
 }

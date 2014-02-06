@@ -7,6 +7,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
+import nl.esciencecenter.vbrowser.vrs.io.VRSTransferManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSClient
@@ -16,14 +17,15 @@ public class VRSClient
     protected VRL currentPathVRL=null;
     
     protected VRL homeVRL=null;
-
-    private VResourceSystem vrs; 
+    
+    protected VRSTransferManager transferManager=null;
     
     public VRSClient(VRSContext vrsContext)
     {
         this.vrsContext=vrsContext;
         this.homeVRL=vrsContext.getHomeVRL(); 
         this.currentPathVRL=vrsContext.getCurrentPathVRL(); 
+        this.transferManager=new VRSTransferManager(this); 
     }
 
     public VPath openLocation(VRL vrl) throws VrsException
@@ -59,7 +61,7 @@ public class VRSClient
 
     public OutputStream createOutputStream(VRL vrl) throws VrsException
     {
-        vrs=getVResourceSystemFor(vrl);
+        VResourceSystem vrs = getVResourceSystemFor(vrl);
         
         if ((vrs instanceof VOutputStreamCreator)==false)
         {
@@ -71,7 +73,7 @@ public class VRSClient
 
     public InputStream createInputStream(VRL vrl) throws VrsException
     {
-        vrs=getVResourceSystemFor(vrl);
+        VResourceSystem vrs = getVResourceSystemFor(vrl);
         
         if ((vrs instanceof VInputStreamCreator)==false)
         {
@@ -79,6 +81,11 @@ public class VRSClient
         }
         
         return ((VInputStreamCreator)vrs).createInputStream(vrl);
+    }
+    
+    public VRSTransferManager getVRSTransferManager()
+    {
+        return transferManager; 
     }
 
 }

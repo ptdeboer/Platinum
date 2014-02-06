@@ -29,12 +29,12 @@ import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.web.WebClient;
 import nl.esciencecenter.ptk.web.WebException;
 import nl.esciencecenter.ptk.web.WebException.Reason;
-import nl.esciencecenter.vbrowser.vrs.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.node.VResourceSystemNode;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class WebResourceSystem extends VResourceSystemNode

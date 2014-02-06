@@ -22,6 +22,7 @@ package nl.esciencecenter.ptk.browser.test.fsnode;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
@@ -32,19 +33,15 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class FSNodeProxyFactory extends ProxyFactory
 {
-    private static ProxyFactory instance; 
-    
-    public static synchronized ProxyFactory getDefault() 
-    {
-        if (instance==null)
-            instance=new FSNodeProxyFactory();
-              
-        return instance; 
-   }
     // ========================================================================
     // 
     // ========================================================================
 
+    protected FSNodeProxyFactory(BrowserPlatform browserPlatform)
+    {
+        super(browserPlatform);
+    }
+    
     public ProxyNode doOpenLocation(VRL locator) throws ProxyException
     {
         return new FSNodeProxyNode(this,locator); 

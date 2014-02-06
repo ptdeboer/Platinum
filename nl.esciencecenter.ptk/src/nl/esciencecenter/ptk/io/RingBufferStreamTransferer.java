@@ -37,6 +37,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  * in current thread. This parallel read/write will better use the available
  * bandwidth by both reading and writing in parallel.
  * <p>
+ * 
  * @author P.T. de Boer
  */
 public class RingBufferStreamTransferer
@@ -423,8 +424,8 @@ public class RingBufferStreamTransferer
 
     }
 
-    /** 
-     * Transfer upto numTranfer bytes, or -1 for all.  
+    /**
+     * Transfer upto numTranfer bytes, or -1 for all.
      */
     public void startTransfer(long numTransfer) throws Exception
     {

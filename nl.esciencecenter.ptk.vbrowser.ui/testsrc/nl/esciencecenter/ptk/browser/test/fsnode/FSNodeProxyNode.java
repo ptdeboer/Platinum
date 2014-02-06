@@ -121,7 +121,7 @@ public class FSNodeProxyNode extends ProxyNode
     @Override
     protected ProxyNode doGetParent() throws ProxyException
     {
-        return DummyProxyFactory.getDefault().doOpenLocation(this.locator.getParent());
+        return this.getProxyFactory().doOpenLocation(this.locator.getParent());
     }
     
    
@@ -148,12 +148,6 @@ public class FSNodeProxyNode extends ProxyNode
         
     	return subrange(nodes,offset,range);  
     }
-
-    @Override
-	public ProxyFactory getProxyFactory()
-	{
-		return FSNodeProxyFactory.getDefault(); 
-	}
 
 	@Override
 	protected String doGetMimeType() throws ProxyException 

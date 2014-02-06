@@ -265,7 +265,7 @@ public abstract class ProxyNode
     
     public Icon getIcon(int size,boolean greyOut,boolean focus) throws ProxyException
     {
-        IconProvider provider=BrowserPlatform.getInstance().getIconProvider();
+        IconProvider provider=this.getProxyFactory().getPlatform().getIconProvider();
         
         String mimeType=this.getMimeType(); 
         
@@ -348,7 +348,7 @@ public abstract class ProxyNode
         viewNode.setMimeType(this.getMimeType());
         viewNode.setResourceStatus(this.getResourceStatus());
         // handlers: 
-        viewNode.setDnDHandler(createViewNodeDnDHandler(viewNode)); 
+        viewNode.setDnDHandler(getViewNodeDnDHandlerFor(viewNode)); 
         
         // other 
         viewNode.setIcon(ViewNode.FOCUS_ICON,getIcon(model,false,true));
@@ -358,9 +358,9 @@ public abstract class ProxyNode
         return viewNode; 
     } 
 
-	protected ViewNodeDnDHandler createViewNodeDnDHandler(ViewNode viewNode) 
+	protected ViewNodeDnDHandler getViewNodeDnDHandlerFor(ViewNode viewNode) 
 	{
-		return new ViewNodeDnDHandler(viewNode); 
+	    return ViewNodeDnDHandler.getInstance(); 
 	}
 
 	public boolean hasLocator(VRL locator)

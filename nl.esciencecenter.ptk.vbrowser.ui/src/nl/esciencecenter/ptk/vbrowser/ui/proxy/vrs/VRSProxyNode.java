@@ -276,7 +276,7 @@ public class VRSProxyNode extends ProxyNode
     }
 
     @Override 
-    public VRSViewNodeDnDHandler createViewNodeDnDHandler(ViewNode viewNode)
+    public VRSViewNodeDnDHandler getViewNodeDnDHandlerFor(ViewNode viewNode)
     {
     	return factory().getVRSProxyDnDHandler(viewNode);
     }

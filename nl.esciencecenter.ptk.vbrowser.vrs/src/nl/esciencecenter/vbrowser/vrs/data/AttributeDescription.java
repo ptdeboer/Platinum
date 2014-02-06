@@ -1,11 +1,26 @@
 package nl.esciencecenter.vbrowser.vrs.data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import nl.esciencecenter.ptk.data.HashSetList;
+import nl.esciencecenter.ptk.data.StringList;
 
 public class AttributeDescription
 {
+    public static List<AttributeDescription> createList(StringList list, AttributeType type, boolean editable)
+    {
+        ArrayList<AttributeDescription> descs=new ArrayList<AttributeDescription>(); 
+        
+        for (String name:list)
+        {
+            descs.add(new AttributeDescription(name,type,editable,"Attribute "+name));
+             
+        }
+        return null;
+    }
+    
     protected String name; 
     
     protected Set<AttributeType> allowedTypes;  
@@ -56,4 +71,6 @@ public class AttributeDescription
     {
         return isEditable;
     }
+
+
 }

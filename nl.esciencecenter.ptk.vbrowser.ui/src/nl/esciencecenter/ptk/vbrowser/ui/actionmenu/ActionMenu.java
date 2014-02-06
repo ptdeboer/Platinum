@@ -41,12 +41,12 @@ public class ActionMenu extends JPopupMenu
 {
     private static final long serialVersionUID = 7948518745148426493L;
 
-    public static ActionMenu createSimpleMenu(ActionMenuListener actionListener, ViewNodeContainer container,
+    public static ActionMenu createSimpleMenu(BrowserPlatform browserPlatform, ActionMenuListener actionListener, ViewNodeContainer container,
             ViewNode viewNode, boolean canvasMenu)
     {
 
         VRL locator = viewNode.getVRL();
-        ActionMenu menu = new ActionMenu(viewNode, actionListener);
+        ActionMenu menu = new ActionMenu(browserPlatform,viewNode, actionListener);
 
         ViewNode[] selected = null;
         if (container != null)
@@ -192,16 +192,19 @@ public class ActionMenu extends JPopupMenu
     // Instance
     // ========================================================================
 
-    PopupHandler popupHandler;
+    private PopupHandler popupHandler;
+    
+    private BrowserPlatform platform;
 
-    public ActionMenu(ViewNode viewNode, ActionMenuListener actionListener)
+    public ActionMenu(BrowserPlatform browserPlatform, ViewNode viewNode, ActionMenuListener actionListener)
     {
-        init(viewNode, actionListener);
+        init(browserPlatform,viewNode, actionListener);
     }
 
-    public void init(ViewNode viewNode, ActionMenuListener actionListener)
+    public void init(BrowserPlatform browserPlatform, ViewNode viewNode, ActionMenuListener actionListener)
     {
         this.popupHandler = new PopupHandler(viewNode, actionListener);
+        this.platform=browserPlatform;
     }
 
     protected JMenuItem createItem(ViewNode viewNode, String name, ActionMethod actionMeth)
@@ -236,8 +239,7 @@ public class ActionMenu extends JPopupMenu
 
     private void addMimeViewerMenuMethods(ViewNode viewNode, String mimeType)
     {
-
-        ViewerRegistry viewReg = BrowserPlatform.getInstance().getViewerRegistry();
+        ViewerRegistry viewReg = platform.getViewerRegistry();
 
         List<MimeMenuEntry> entries = viewReg.getMimeMenuEntries(mimeType);
 
@@ -258,7 +260,7 @@ public class ActionMenu extends JPopupMenu
 
     private void createViewersMenu(ViewNode viewNode)
     {
-        ViewerRegistry viewReg = BrowserPlatform.getInstance().getViewerRegistry();
+        ViewerRegistry viewReg = platform.getViewerRegistry();
 
         ViewerEntry[] viewers = viewReg.getViewers();
         JMenu subMenu = new JMenu("View with");

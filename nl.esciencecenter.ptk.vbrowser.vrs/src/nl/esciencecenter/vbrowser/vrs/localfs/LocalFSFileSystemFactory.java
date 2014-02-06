@@ -1,10 +1,10 @@
 package nl.esciencecenter.vbrowser.vrs.localfs;
 
-import nl.esciencecenter.vbrowser.vrs.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class LocalFSFileSystemFactory implements VResourceSystemFactory

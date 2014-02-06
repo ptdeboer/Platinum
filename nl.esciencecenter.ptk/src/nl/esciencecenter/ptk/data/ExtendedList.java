@@ -217,7 +217,11 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
 
     /**
      * Add Elements if NOT already in this list. Returns number of elements
-     * really added
+     * really added.
+     * <p> 
+     * This is an O(N*N) merge. 
+     * For each element a linear search is used by calling contains().  
+     * @return number of unique elements added 
      */
     public int merge(T[] els)
     {
