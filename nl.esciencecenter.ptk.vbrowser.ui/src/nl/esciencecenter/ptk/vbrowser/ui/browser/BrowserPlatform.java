@@ -28,8 +28,6 @@ import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.TransferHandler;
 
-import com.sun.media.jfxmediaimpl.platform.Platform;
-
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
