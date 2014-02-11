@@ -18,7 +18,7 @@
  */ 
 // source: 
 
-package test;
+package nl.esciencecenter.ptk.browser.test.fsnode;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import nl.esciencecenter.ptk.browser.test.fsnode.FSNodeProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
@@ -43,9 +42,9 @@ public class TestProxyNodeTable
     {
         try 
         {
-            BrowserPlatform platform=BrowserPlatform.getInstance(); 
+            BrowserPlatform platform=BrowserPlatform.getInstance("testbrowser"); 
             
-            ProxyFactory fac = FSNodeProxyFactory.getDefault(); 
+            ProxyFactory fac = new FSNodeProxyFactory(platform);  
             
             platform.registerProxyFactory(fac); 
             

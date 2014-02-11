@@ -4,40 +4,40 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
- * Wrapper for nested URI Syntax Exceptions on File Locations.   
+ * Wrapper for nested URI Syntax Exceptions on File Locations.
  */
-public class FileURISyntaxException extends IOException 
+public class FileURISyntaxException extends IOException
 {
     private static final long serialVersionUID = -5950527403084197333L;
-    
-    protected String fileLocation=null;
-    
-    public FileURISyntaxException(String message, String location) 
+
+    protected String fileLocation = null;
+
+    public FileURISyntaxException(String message, String location)
     {
-        super(message); 
-        this.fileLocation=location;
+        super(message);
+        this.fileLocation = location;
     }
-    
-    public FileURISyntaxException(String message, String location,URISyntaxException cause) 
+
+    public FileURISyntaxException(String message, String location, URISyntaxException cause)
     {
-        super(message,cause); 
-        this.fileLocation=location;
+        super(message, cause);
+        this.fileLocation = location;
     }
-    
+
     public String getFileLocation()
     {
-        return fileLocation; 
+        return fileLocation;
     }
 
     public String getInput()
     {
-        Throwable orgCause = this.getCause(); 
-                
+        Throwable orgCause = this.getCause();
+
         if (this.getCause() instanceof URISyntaxException)
         {
-            return ((URISyntaxException)orgCause).getInput(); 
+            return ((URISyntaxException) orgCause).getInput();
         }
-        return null; 
+        return null;
     }
 
 }

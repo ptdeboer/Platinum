@@ -20,16 +20,10 @@
 
 package nl.esciencecenter.ptk.browser.test.dummy;
 
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserFrame;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
-import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.tree.ResourceTree;
 
 public class StartDummyBrowser 
 {
@@ -40,11 +34,11 @@ public class StartDummyBrowser
 	    
 		try 
 		{
-			BrowserPlatform platform=BrowserPlatform.getInstance(); 
+			BrowserPlatform platform=BrowserPlatform.getInstance("dummy"); 
 		    
 		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
 		    
-		    ProxyFactory dummyFac = DummyProxyFactory.getDefault(); 
+		    ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);  
 		    
 		    platform.registerProxyFactory(dummyFac); 
 		    

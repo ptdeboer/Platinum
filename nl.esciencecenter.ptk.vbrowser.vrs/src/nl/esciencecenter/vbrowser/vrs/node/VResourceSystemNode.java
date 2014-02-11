@@ -3,6 +3,7 @@ package nl.esciencecenter.vbrowser.vrs.node;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public abstract class VResourceSystemNode extends VPathNode implements VResourceSystem
@@ -31,6 +32,11 @@ public abstract class VResourceSystemNode extends VPathNode implements VResource
     protected VRSContext getVRSContext()
     {
         return vrsContext; 
+    }
+    
+    protected ResourceSystemInfo getResourceSystemInfo() throws VrsException
+    {
+        return vrsContext.getResourceSystemInfoFor(getVRL(), true);
     }
  
 }

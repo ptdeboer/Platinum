@@ -38,11 +38,6 @@ public class VRS
         // defaultPorts.put(IRODS_SCHEME,0); 
     }
     
-    public static Registry getRegistry()
-    {
-        return Registry.getInstance(); 
-    }
-    
     public static VRSClient createVRSClient()
     {
          return new VRSClient(new VRSContext());    

@@ -3,6 +3,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringHolder;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -12,14 +13,14 @@ public class VirtualRootProxyFactory extends ProxyFactory
     
     private static VirtualRootNode rootNode;
     
-    public VirtualRootProxyFactory()
-    {
-
-    }
-
     // ========
     // instance
     // ========
+
+    public VirtualRootProxyFactory(BrowserPlatform platform)
+    {
+        super(platform);
+    }
 
     @Override
     public ProxyNode doOpenLocation(VRL locator) throws ProxyException

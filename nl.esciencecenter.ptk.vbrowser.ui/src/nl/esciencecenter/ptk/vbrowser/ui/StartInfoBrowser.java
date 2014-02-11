@@ -25,13 +25,10 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 
-/** 
- * Browser start Class. 
- * This package used the shortname "platinum" as convenience for startup scripts. 
- *  
- * @author Piter T. de Boer. 
+/**
+ * Start Browser with virtual Info Resource.  
  */
-public class StartBrowser 
+public class StartInfoBrowser 
 {
 
 	public static void main(String args[])
@@ -46,7 +43,7 @@ public class StartBrowser
 		    
 		    platform.registerProxyFactory(fac); 
 		    
-			ProxyNode root = fac.openLocation("file:/home/");
+			ProxyNode root = fac.openLocation("info:/");
 		
 			frame.setRoot(root,true,true); 
 			

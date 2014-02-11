@@ -206,6 +206,12 @@ public class DnDUtil
             return false;
         }
         
+        if (targetViewNode.getDnDHandler()==null)
+        {
+            DnDUtil.errorPrintf("No DNDHandler for:%s\n",targetViewNode); 
+            return false;
+        }
+        
         boolean result=false;
         
         try

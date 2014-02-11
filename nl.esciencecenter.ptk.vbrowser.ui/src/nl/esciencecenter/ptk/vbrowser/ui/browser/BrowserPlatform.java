@@ -22,7 +22,8 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.TransferHandler;
@@ -38,6 +39,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerResourceHandler;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
+import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.util.VRSResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -48,14 +50,26 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class BrowserPlatform
 {
-    private static BrowserPlatform instance = null;
-
-    public static synchronized BrowserPlatform getInstance()
+    private static Map<String,BrowserPlatform> platforms=new Hashtable<String,BrowserPlatform>(); 
+    
+    /** 
+     * Get specific BrowserPlatform. 
+     * Multiple browser platform may be register/created in one single JVM.  
+     */
+    public static BrowserPlatform getInstance(String ID)
     {
-        if (instance == null)
+        BrowserPlatform instance; 
+        
+        synchronized(platforms)
         {
-            instance = new BrowserPlatform();
-        }
+            instance=platforms.get(ID);
+            
+            if (instance==null)
+            {
+                instance=new BrowserPlatform(ID); 
+                platforms.put(ID,instance);  
+            }
+        }            
         
         return instance;
     }
@@ -64,6 +78,8 @@ public class BrowserPlatform
     // Instance
     // ========================================================================
 
+    private String platformID; 
+    
     private ProxyFactoryRegistry proxyRegistry = null;
 
     private ViewerRegistry viewerRegistry;
@@ -76,11 +92,11 @@ public class BrowserPlatform
 
     private VRSContext vrsContext; 
     
-    protected BrowserPlatform()
+    protected BrowserPlatform(String id)
     {
         try
         {
-            init();
+            init(id);
         }
         catch (URISyntaxException e)
         {
@@ -88,9 +104,9 @@ public class BrowserPlatform
         }
     }
 
-    private void init() throws URISyntaxException
+    private void init(String id) throws URISyntaxException
     {
- 
+        this.platformID=id; 
         // init defaults:
         this.proxyRegistry = ProxyFactoryRegistry.getInstance();
         
@@ -119,6 +135,12 @@ public class BrowserPlatform
         return vrsContext; 
     }
     
+
+    public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception 
+    {
+        vrsContext.getRegistry().registryFactory(clazz); 
+    }
+    
     public void setResourceLoader(ResourceLoader resourceLoader)
     {
         viewerRegistry.getResourceHandler().setResourceLoader(resourceLoader);
@@ -126,7 +148,7 @@ public class BrowserPlatform
 
     public String getPlatformID()
     {
-        return "PTKVB";
+        return platformID; 
     }
 
     public ProxyFactory getProxyFactoryFor(VRL locator)
@@ -182,5 +204,6 @@ public class BrowserPlatform
     {
         return iconProvider;
     }
+
 
 }

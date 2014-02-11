@@ -27,16 +27,16 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 
 public class StartFSNodeBrowser 
 {
-
+ 
 	public static void main(String args[])
 	{
 		try 
 		{
-			BrowserPlatform platform=BrowserPlatform.getInstance(); 
+			BrowserPlatform platform=BrowserPlatform.getInstance("fstestbrowser"); 
 		    
 		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
 		    
-		    ProxyFactory fac = FSNodeProxyFactory.getDefault(); 
+		    ProxyFactory fac = new FSNodeProxyFactory(platform); 
 		    
 		    platform.registerProxyFactory(fac); 
 		    

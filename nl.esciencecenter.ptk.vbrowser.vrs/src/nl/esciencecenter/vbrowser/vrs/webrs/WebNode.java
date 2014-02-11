@@ -42,6 +42,8 @@ import nl.esciencecenter.ptk.web.ResponseInputStream;
 import nl.esciencecenter.ptk.web.ResponseOutputStream;
 import nl.esciencecenter.ptk.web.WebClient;
 import nl.esciencecenter.vbrowser.vrs.VRS;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
@@ -171,13 +173,12 @@ public class WebNode extends VPathNode // implements VStreamAccessable
         return mimeType; 
     }
 
-
     /** 
      * Get the names of the attributes this resource has 
      */ 
-    public List<String> getAttributeNames()
+    public List<AttributeDescription> getAttributeDescriptions()
     {
-        return attributeNames;
+        return AttributeDescription.createList(attributeNames,AttributeType.STRING,false); 
     }
 
     // === Misc === 

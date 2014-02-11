@@ -49,21 +49,21 @@ public abstract class FSNode
     //
     // ===
 
-    private URI uri=null;
+    private URI uri = null;
 
-    private FSHandler fsHandler=null;
+    private FSHandler fsHandler = null;
 
-    protected FSNode(FSHandler fsHandler,URI uri)
+    protected FSNode(FSHandler fsHandler, URI uri)
     {
         this.uri = uri;
-        this.fsHandler=fsHandler; 
+        this.fsHandler = fsHandler;
     }
 
     protected FSHandler getFSHandler()
     {
-        return fsHandler; 
+        return fsHandler;
     }
-    
+
     protected void setURI(URI URI)
     {
         this.uri = URI;
@@ -175,6 +175,7 @@ public abstract class FSNode
     {
         return false;
     }
+
     // =======================================================================
     // IO Methods
     // =======================================================================
@@ -239,7 +240,6 @@ public abstract class FSNode
         return true;
     }
 
-   
     /**
      * Returns creation time in millis since EPOCH, if supported. Returns -1
      * otherwise.
@@ -251,56 +251,56 @@ public abstract class FSNode
 
     public boolean isRoot()
     {
-        String path=this.getPathname();
-        
+        String path = this.getPathname();
+
         if ("/".equals(path))
         {
             return true;
         }
-        
-        return false; 
+
+        return false;
     }
-    
+
     public long getCreateionTime() throws IOException
     {
         BasicFileAttributes attrs = this.getBasicAttributes();
-        
-        if (attrs==null)
-            return -1; 
-        
+
+        if (attrs == null)
+            return -1;
+
         FileTime time = attrs.creationTime();
-        
-        if (time==null)
-            return -1; 
-        
+
+        if (time == null)
+            return -1;
+
         return time.toMillis();
     }
-     
+
     public long getModificationTime() throws IOException
     {
         BasicFileAttributes attrs = this.getBasicAttributes();
-        
-        if (attrs==null)
-            return -1; 
-        
+
+        if (attrs == null)
+            return -1;
+
         FileTime time = attrs.lastModifiedTime();
-        
-        if (time==null)
-            return -1; 
-        
+
+        if (time == null)
+            return -1;
+
         return time.toMillis();
     }
-    
+
     public long getFileSize() throws IOException
     {
         BasicFileAttributes attrs = this.getBasicAttributes();
-        
-        if (attrs==null)
+
+        if (attrs == null)
             return 0;
-        
+
         return attrs.size();
     }
-    
+
     // =======================================================================
     // Abstract Interface
     // =======================================================================
@@ -339,7 +339,5 @@ public abstract class FSNode
     public abstract void mkdirs() throws IOException;
 
     public abstract BasicFileAttributes getBasicAttributes() throws IOException;
-
-
 
 }

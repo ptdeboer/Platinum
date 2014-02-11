@@ -3,6 +3,7 @@ package nl.esciencecenter.vbrowser.vrs.localfs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +116,88 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
         {
             throw new VrsIOException(e);
         }
+    }
+
+    @Override
+    public boolean delete() throws VrsException
+    {
+        try
+        {
+            fsNode.delete();
+            return true; 
+        }
+        catch (IOException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        } 
+
+    }
+
+    @Override
+    public void createFile() throws VrsException
+    {
+        try
+        {
+            fsNode.create();
+        }
+        catch (IOException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        } 
+        
+    }
+
+    @Override
+    public void mkdir(boolean ignoreExisting) throws VrsException
+    {
+        try
+        {
+            fsNode.mkdir();
+        }
+        catch (IOException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        } 
+        
+    }
+
+    @Override
+    public void delete(boolean recurse) throws VrsException
+    {
+        try
+        {
+            
+            if (fsNode.isDirectory(LinkOption.NOFOLLOW_LINKS))
+            {
+                String[] nodes = fsNode.list(); 
+                if ((nodes!=null) && (nodes.length>0))
+                {
+                    throw new VrsException("Recursive Delete not yet supported"); 
+                }
+            }
+        
+            fsNode.delete();
+        }
+        catch (IOException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        } 
+        
+    }
+
+    @Override
+    public VFSPath renameTo(VFSPath other) throws VrsException
+    {
+        try
+        {
+            String newPath=fsNode.renameTo(other.getVRL().getPath());
+            return this.resolvePath(newPath);
+        }
+        catch (IOException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        } 
+            
     }
     
 }

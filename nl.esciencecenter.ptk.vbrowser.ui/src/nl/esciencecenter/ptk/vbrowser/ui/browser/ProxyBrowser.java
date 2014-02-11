@@ -191,7 +191,7 @@ public class ProxyBrowser implements BrowserInterface, ActionMenuListener
     @Override
     public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode, boolean canvasMenu)
     {
-        return ActionMenu.createSimpleMenu(this, container, viewNode, canvasMenu);
+        return ActionMenu.createSimpleMenu(this.getPlatform(),this, container, viewNode, canvasMenu);
     }
 
     /**

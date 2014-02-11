@@ -106,7 +106,7 @@ public class ResourceTreeDropTarget extends ViewNodeDropTarget
             }
             else
             {
-                dtde.rejectDrop();
+                dtde.getDropTargetContext().dropComplete(false); 
             }
         }
         else

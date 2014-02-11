@@ -11,14 +11,17 @@ import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
+import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
+import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public abstract class VFSPathNode extends VPathNode implements VFSPath
+public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRenamable, VPathDeletable
 {
     public static final String[] vfsAttributeNames =
     {
@@ -200,11 +203,40 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         return getFileAttributes().isRegularFile();
     }
 
+    public boolean create() throws VrsException
+    {
+        if (isFile())
+        {
+            createFile(); 
+            return true; 
+        }
+        else if (isDir())
+        {
+            mkdir(false);
+            return true; 
+        }
+        else
+        {
+            throw new VrsException("Don't know how to create:"+this); 
+        }
+    }
+    
+    public VPath renameTo(VPath other) throws VrsException
+    {
+        if ((other instanceof VFSPath)==false)
+        {
+            throw new VrsException("Can only rename VFSPaths to other VFSPaths (VPath is not a filesystem path)");
+        }
+            
+        return renameTo((VFSPath)other); 
+    }
+    
+    
     // ===================
     // Abstract Interface
     // ===================
 
-    abstract public FileAttributes getFileAttributes() throws VrsException;
+    public abstract FileAttributes getFileAttributes() throws VrsException;
 
     @Override
     public abstract boolean isRoot() throws VrsException;
@@ -212,4 +244,21 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
     @Override
     public abstract List<VFSPath> list() throws VrsException;
 
+    /** 
+     * Create this (virtual) path as an actual file on this FileSystem. 
+     * @throws VrsException
+     */
+    public abstract void createFile() throws VrsException;
+    
+    /** 
+     * Create this (virtual) path as an actual directory on this FileSystem. 
+     * @param ignoreExisting - if directory already exists, return without exception. 
+     * @throws VrsException
+     */
+    public abstract void mkdir(boolean ignoreExisting) throws VrsException;
+    
+    public abstract void delete(boolean recurse) throws VrsException; 
+    
+    public abstract VFSPath renameTo(VFSPath other) throws VrsException;
+    
 }

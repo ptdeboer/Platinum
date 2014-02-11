@@ -1,7 +1,10 @@
-package nl.esciencecenter.vbrowser.vrs;
+package nl.esciencecenter.vbrowser.vrs.registry;
 
 import java.util.Properties;
 
+import nl.esciencecenter.ptk.crypt.Secret;
+import nl.esciencecenter.vbrowser.vrs.VRS;
+import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ResourceSystemInfo
@@ -21,8 +24,17 @@ public class ResourceSystemInfo
     public static final String SERVER_PATH="serverPath";
     
     public static final String SERVER_CONFIG_PROPERTIES="serverConfigProperties";
-       
+
+    public static final String ATTR_SSH_IDENTITY = "sshIdentity"; 
+    
+ 
+    // ==================
+    // Instance 
+    // ==================
+   
     protected VRSProperties vrsConfig;   
+    
+    private Secret passwd=null; 
  
     public ResourceSystemInfo(VRL serverVRL)
     {
@@ -87,7 +99,6 @@ public class ResourceSystemInfo
         properties.putAll(properties);
     }
 
-
     public String getServerScheme()
     {
         return vrsConfig.getStringProperty(SERVER_SCHEME);
@@ -131,6 +142,57 @@ public class ResourceSystemInfo
     public void setNeedServerPath(boolean value)
     {
         vrsConfig.set(NEED_SERVERPATH,value);
+    }
+
+    /** 
+     * @return actual username without optional group and/or VO information.
+     */
+    public String getUsername()
+    {
+        String userInfo=this.getUserInfo();
+        
+        if (userInfo==null)
+        {
+            return null;
+        }
+        // split "<username>[:<VO>]" parts:
+        String parts[]=userInfo.split(":"); 
+        if (parts==null)
+            return null; 
+        return parts[0]; 
+        
+    }
+    
+    /** 
+     * Return user logical group or VO. 
+     * @return User group, VO or null if not defined. 
+     */
+    public String getUserVO()
+    {
+        String userInfo=this.getUserInfo();
+        
+        if (userInfo==null)
+        {
+            return null;
+        }
+        // split "<username>[:<VO>]" parts: 
+        String parts[]=userInfo.split(":");
+        if (parts.length<2)
+        {
+            return null; 
+        }
+        return parts[1]; 
+        
+    }
+
+    public Secret getPassword()
+    {
+        return passwd; 
+    }
+
+    public void setPassword(Secret secret)
+    {
+        passwd=secret; 
     }
 
 }

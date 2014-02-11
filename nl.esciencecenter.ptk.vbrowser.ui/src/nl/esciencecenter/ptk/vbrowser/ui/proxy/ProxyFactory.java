@@ -25,6 +25,7 @@ import java.util.Map;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -72,7 +73,19 @@ public abstract class ProxyFactory
 	protected boolean enableCache=true;
 	
 	protected Map<VRL,ProxyCacheElement> nodeCache=new Hashtable<VRL,ProxyCacheElement>();
-     
+	
+	protected BrowserPlatform platform; 
+	
+	protected ProxyFactory(BrowserPlatform browserPlatform)
+	{
+	    this.platform=browserPlatform; 
+	}
+	
+	public BrowserPlatform getPlatform()
+    {
+        return platform;
+    }
+
     // ========================================================================
     // 
     // ========================================================================
@@ -166,6 +179,7 @@ public abstract class ProxyFactory
 	abstract public ProxyNode doOpenLocation(VRL locator) throws ProxyException;
 
 	abstract public boolean canOpen(VRL locator,StringHolder reason);
+
 
 
 }

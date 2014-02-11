@@ -3,6 +3,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -28,16 +29,11 @@ public class VRSProxyFactory extends ProxyFactory
     	logger=ClassLogger.getLogger(VRSProxyFactory.class);
     }
     
-	private static VRSProxyFactory instance; 
-	
     private static VRSContext staticContext; 
     
-    public static VRSProxyFactory getDefault() 
+    public static VRSProxyFactory createFor(BrowserPlatform platform) 
     {
-        if (instance==null)
-            instance=new VRSProxyFactory();
-              
-        return instance; 
+        return new VRSProxyFactory(platform);
     }
     
     public static synchronized VRSContext getProxyVRSContext()
@@ -58,14 +54,15 @@ public class VRSProxyFactory extends ProxyFactory
     
     private VRSClient vrsClient;
 
-    //protected VRSViewNodeDnDHandler viewNodeDnDHandler=null;
+    protected VRSViewNodeDnDHandler viewNodeDnDHandler=null;
     
-    protected VRSProxyFactory()
+    protected VRSProxyFactory(BrowserPlatform platform)
     {
-        super(); 
+        super(platform); 
         
         this.vrsContext=getProxyVRSContext();
         this.vrsClient=new VRSClient(vrsContext); 
+        this.viewNodeDnDHandler=new VRSViewNodeDnDHandler(vrsClient); 
     }
     
 	public VRSProxyNode _openLocation(VRL vrl) throws ProxyException
@@ -97,7 +94,7 @@ public class VRSProxyFactory extends ProxyFactory
         }
     }
     
-	private nl.esciencecenter.vbrowser.vrs.vrl.VRL createVRL(VRL locator)
+	private VRL createVRL(VRL locator)
     {
 	    return new nl.esciencecenter.vbrowser.vrs.vrl.VRL(locator.getScheme(),
 	            locator.getUserinfo(),
@@ -129,8 +126,7 @@ public class VRSProxyFactory extends ProxyFactory
 
     public VRSViewNodeDnDHandler getVRSProxyDnDHandler(ViewNode viewNode)
     {
-        return null;
+        return viewNodeDnDHandler;
     }
-
 
 }

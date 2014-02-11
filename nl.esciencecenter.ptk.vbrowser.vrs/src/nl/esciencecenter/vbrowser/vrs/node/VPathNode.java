@@ -120,7 +120,10 @@ public class VPathNode implements VPath
         return null; 
     }
     
-    public List<String> getAttributeNames()
+    /** 
+     * Final getAttributeNames, override getAttributeDiscriptions for actual Attribute Definitions. 
+     */
+    final public List<String> getAttributeNames()
     {
         List<AttributeDescription> list = getAttributeDescriptions();
         if (list==null)
@@ -209,9 +212,10 @@ public class VPathNode implements VPath
     @Override
     public VPath resolvePath(String path) throws VrsException
     {
+        // Since a filesystem extends PathNode itself, check for cycle. 
         if (this.resourceSystem==this)
         {
-            throw new Error("Cannot delegate resolvePath to resourceSystem as i *AM* the ResourceSystem!"); 
+            throw new Error("Internal Error: resolvePath(): Cannot delegate resolvePath to resourceSystem as I *am* the ResourceSystem!"); 
         }
         
         return this.resourceSystem.resolvePath(path); 
