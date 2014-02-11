@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.JavaWebStarter;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceHandler;
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
 
 public class ViewerRegistry
@@ -69,22 +69,11 @@ public class ViewerRegistry
         {
             return viewerEntry.viewerClass.getCanonicalName();
         }
-
     }
 
-    private static ViewerRegistry instance;
-
-    public static ViewerRegistry getDefault()
-    {
-        if (instance == null)
-            instance = new ViewerRegistry(new ViewerResourceHandler(new ResourceLoader()));
-
-        return instance;
-    }
-
-    // ===
-    //
-    // ===
+    // ===============
+    // Instance Fields
+    // ===============
 
     private ArrayList<ViewerEntry> viewers = new ArrayList<ViewerEntry>();
 
@@ -93,7 +82,6 @@ public class ViewerRegistry
     private Map<String, List<MimeMenuEntry>> mimeMenuMappings = new HashMap<String, List<MimeMenuEntry>>();
 
     private ArrayList<ViewerEntry> toolViewers = new ArrayList<ViewerEntry>();
-
     
     private ViewerResourceHandler resourceHandler = null;
 

@@ -1,7 +1,5 @@
 package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 
-import java.net.URI;
-
 import javax.swing.JFrame;
 
 /** 
@@ -28,21 +26,9 @@ public class ViewerFrame extends JFrame
     {
         return viewer; 
     }
-     
-    public static ViewerFrame startViewer(Class<? extends ViewerPlugin> class1, URI optionalURI)
-    {
-        ViewerPanel newViewer=ViewerRegistry.getDefault().createViewer(class1); 
-        
-        ViewerFrame frame=createViewerFrame(newViewer,true); 
-        frame.getViewer().startViewerFor(optionalURI,null); 
-        frame.setVisible(true); 
-        
-        return frame;
-    }
 
     public static ViewerFrame createViewerFrame(ViewerPanel newViewer, boolean initViewer)
     {
-        
         ViewerFrame frame=new ViewerFrame(newViewer); 
         if (initViewer)
         {

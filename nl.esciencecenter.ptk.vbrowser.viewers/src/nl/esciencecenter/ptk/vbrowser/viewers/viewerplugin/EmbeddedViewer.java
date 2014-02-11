@@ -13,6 +13,7 @@ import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceHandler;
 
 public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin,MimeViewer
 {

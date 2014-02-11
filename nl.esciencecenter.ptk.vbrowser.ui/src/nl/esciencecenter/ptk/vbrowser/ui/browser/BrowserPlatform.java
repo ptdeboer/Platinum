@@ -21,28 +21,27 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.TransferHandler;
 
-import com.sun.media.jfxmediaimpl.platform.Platform;
-
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
+import nl.esciencecenter.ptk.util.StringUtil;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerResourceHandler;
+import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceHandler;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
-import nl.esciencecenter.vbrowser.vrs.util.VRSResourceLoader;
+import nl.esciencecenter.vbrowser.vrs.util.VRSUtil;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -52,27 +51,37 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class BrowserPlatform
 {
-    private static Map<String,BrowserPlatform> platforms=new Hashtable<String,BrowserPlatform>(); 
-    
-    /** 
-     * Get specific BrowserPlatform. 
-     * Multiple browser platform may be register/created in one single JVM.  
+    private static ClassLogger logger = ClassLogger.getLogger(BrowserPlatform.class);
+
+    private static Map<String, BrowserPlatform> platforms = new Hashtable<String, BrowserPlatform>();
+
+    /**
+     * Get specific BrowserPlatform. Multiple browser platforms may be
+     * register/created in one single JVM.
      */
     public static BrowserPlatform getInstance(String ID)
     {
-        BrowserPlatform instance; 
-        
-        synchronized(platforms)
+        BrowserPlatform instance;
+
+        synchronized (platforms)
         {
-            instance=platforms.get(ID);
-            
-            if (instance==null)
+            instance = platforms.get(ID);
+
+            if (instance == null)
             {
-                instance=new BrowserPlatform(ID); 
-                platforms.put(ID,instance);  
+                try
+                {
+                    instance = new BrowserPlatform(ID);
+                }
+                catch (Exception e)
+                {
+                    logger.errorPrintf("FATAL: Could not initialize browser platform:'%s'!\n", ID);
+                    logger.logException(ClassLogger.FATAL, e, "Exception during initialization:%s\n", e);
+                }
+                platforms.put(ID, instance);
             }
-        }            
-        
+        }
+
         return instance;
     }
 
@@ -80,69 +89,63 @@ public class BrowserPlatform
     // Instance
     // ========================================================================
 
-    private String platformID; 
-    
+    private String platformID;
+
     private ProxyFactoryRegistry proxyRegistry = null;
 
     private ViewerRegistry viewerRegistry;
 
-    private VRSResourceLoader resourceLoader;
+    private ResourceLoader resourceLoader;
 
     private JFrame rootFrame;
 
     private IconProvider iconProvider;
 
-    private VRSContext vrsContext; 
-    
-    protected BrowserPlatform(String id)
+    private VRSContext vrsContext;
+
+    protected BrowserPlatform(String id) throws Exception
     {
-        try
-        {
-            init(id);
-        }
-        catch (URISyntaxException e)
-        {
-            e.printStackTrace();
-        }
+        init(id);
     }
 
-    private void init(String id) throws URISyntaxException
+    private void init(String id) throws Exception
     {
-        this.platformID=id; 
+        this.platformID = id;
         // init defaults:
         this.proxyRegistry = ProxyFactoryRegistry.getInstance();
-        
-        URI cfgDir = getPlatformConfigDir();
-        
-        initVRSContext(cfgDir); 
-        
-        // Default viewer resource Loader/Resource Handler: 
-        resourceLoader = new VRSResourceLoader(getVRSContext());
-        ViewerResourceHandler resourceHandler = new ViewerResourceHandler(resourceLoader);
-        resourceHandler.setViewerConfigDir(cfgDir);
-        this.viewerRegistry = new ViewerRegistry(resourceHandler);
 
-        rootFrame = new JFrame();
-        iconProvider = new IconProvider(rootFrame, resourceLoader);
+        // VRSContext for this platform and configuration properties:
+        URI cfgDir = getPlatformConfigDir(null);
+        initVRSContext(cfgDir);
+
+        // Default viewer resource Loader/Resource Handler:
+        this.resourceLoader = VRSUtil.createVRSResourceLoader(getVRSContext());
+        ViewerResourceHandler resourceHandler = new ViewerResourceHandler(resourceLoader);
+        // ~/.vbtk2/viewers
+        resourceHandler.setViewerConfigDir(getPlatformConfigDir("viewers"));
+        // Viewer Registry for this Platform:
+        this.viewerRegistry = new ViewerRegistry(resourceHandler);
+        // root Frame and Icon Renderer/provider:
+        this.rootFrame = new JFrame();
+        this.iconProvider = new IconProvider(rootFrame, resourceLoader);
     }
-    
+
     private void initVRSContext(URI cfgDir)
     {
-        VRSProperties props=new VRSProperties(); 
-        vrsContext=new VRSContext(props);  
+        VRSProperties props = new VRSProperties();
+        vrsContext = new VRSContext(props);
     }
 
     public VRSContext getVRSContext()
     {
-        return vrsContext; 
+        return vrsContext;
     }
-    
 
-    public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception 
+    public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception
     {
-        vrsContext.getRegistry().registryFactory(clazz); 
+        vrsContext.getRegistry().registryFactory(clazz);
     }
-    
+
     public void setResourceLoader(ResourceLoader resourceLoader)
     {
         viewerRegistry.getResourceHandler().setResourceLoader(resourceLoader);
@@ -150,7 +153,7 @@ public class BrowserPlatform
 
     public String getPlatformID()
     {
-        return platformID; 
+        return platformID;
     }
 
     public ProxyFactory getProxyFactoryFor(VRL locator)
@@ -188,24 +191,24 @@ public class BrowserPlatform
         return viewerRegistry;
     }
 
-    public URI getPlatformConfigDir()
+    public URI getPlatformConfigDir(String optionalSubPath) throws Exception
     {
-        try
+        String cfgPath = GlobalProperties.getGlobalUserHome();
+        cfgPath += "." + getPlatformID().toLowerCase();
+
+        if (StringUtil.isEmpty(optionalSubPath) == false)
         {
-            return new URIFactory("file:///" + GlobalProperties.getGlobalUserHome()).appendPath(
-                    "." + getPlatformID().toLowerCase()).toURI();
+            cfgPath += cfgPath + optionalSubPath;
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
+        // normalize path
+        cfgPath = URIFactory.uripath(cfgPath);
+
+        return new URI("file", null, null, 0, cfgPath, null, null);
     }
 
     public IconProvider getIconProvider()
     {
         return iconProvider;
     }
-
 
 }

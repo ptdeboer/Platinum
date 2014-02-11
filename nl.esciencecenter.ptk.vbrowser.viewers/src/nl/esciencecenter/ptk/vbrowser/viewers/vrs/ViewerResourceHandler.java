@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
+package nl.esciencecenter.ptk.vbrowser.viewers.vrs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,50 +14,50 @@ import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 
-/** 
+/**
  * Content Factory and Resource Manager for the various embedded Viewers.
  */
 public class ViewerResourceHandler
 {
-    private static ClassLogger logger=ClassLogger.getLogger(ViewerResourceHandler.class); 
-    
+    private static ClassLogger logger = ClassLogger.getLogger(ViewerResourceHandler.class);
+
     private ResourceLoader resourceLoader;
-    
+
     private URI viewersConfigDir;
 
-    private CertificateStore certificateStore; 
-    
-    // === // 
+    private CertificateStore certificateStore;
+
+    // === //
 
     public ViewerResourceHandler(ResourceLoader resourceLoader)
     {
-        this.resourceLoader=resourceLoader;
-        viewersConfigDir=null;
+        this.resourceLoader = resourceLoader;
+        viewersConfigDir = null;
     }
-    
+
     public void setResourceLoader(ResourceLoader resourceLoader)
     {
-        this.resourceLoader=resourceLoader; 
+        this.resourceLoader = resourceLoader;
     }
-    
+
     public void setViewerConfigDir(URI configDir)
     {
-        logger.infoPrintf("ViewerConfigDir=%s\n",configDir);
-        this.viewersConfigDir=configDir;
+        logger.infoPrintf("ViewerConfigDir=%s\n", configDir);
+        this.viewersConfigDir = configDir;
     }
-    
+
     public URI getViewerConfigDir()
     {
         return viewersConfigDir;
     }
-    
+
     public InputStream openInputStream(URI uri) throws IOException
     {
-        //register/cache streams ? 
+        // register/cache streams ?
         return resourceLoader.createInputStream(uri);
     }
-    
-    ResourceLoader getResourceLoader()
+
+    public ResourceLoader getResourceLoader()
     {
         return resourceLoader;
     }
@@ -84,65 +84,61 @@ public class ViewerResourceHandler
 
     public Properties loadProperties(URI uri) throws IOException
     {
-        if (uri==null)
+        if (uri == null)
             return null;
 
-       return resourceLoader.loadProperties(uri);
+        return resourceLoader.loadProperties(uri);
     }
 
-  
     public void saveProperties(URI uri, Properties properties) throws IOException
     {
-        logger.infoPrintf("Saving Properties to:"+uri); 
-        if (uri==null)
-            return; 
-        
-        resourceLoader.saveProperties(uri,properties);
+        logger.infoPrintf("Saving Properties to:" + uri);
+        if (uri == null)
+            return;
+
+        resourceLoader.saveProperties(uri, properties);
     }
 
     public void syncReadBytes(RandomReader reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
     {
-        // delegate to IOUtil 
-        IOUtil.syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes); 
-        //reader.close(); 
+        // delegate to IOUtil
+        IOUtil.syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
+        // reader.close();
     }
 
     public void syncWriteBytes(RandomWriter writer, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
     {
-        writer.writeBytes(fileOffset, buffer, bufferOffset, numBytes); 
-        writer.close(); 
+        writer.writeBytes(fileOffset, buffer, bufferOffset, numBytes);
+        writer.close();
     }
-   
 
     public CertificateStore getCertificateStore() throws CertificateStoreException
     {
-        if (this.certificateStore==null)
+        if (this.certificateStore == null)
         {
-            certificateStore=CertificateStore.getDefault(true); 
+            certificateStore = CertificateStore.getDefault(true);
         }
         return certificateStore;
-
     }
-    
+
     public void setCertificateStore(CertificateStore store)
     {
-        this.certificateStore=store; 
+        this.certificateStore = store;
     }
 
     public String getMimeType(URI uri)
     {
-        return MimeTypes.getDefault().getMimeType(uri.getPath());  
+        return MimeTypes.getDefault().getMimeType(uri.getPath());
     }
 
     public RandomReader createRandomReader(URI loc) throws IOException
     {
-        return resourceLoader.createRandomReader(loc); 
-    }
-  
-    public RandomWriter createRandomWriter(URI loc) throws IOException
-    {
-        return resourceLoader.createRandomWriter(loc); 
+        return resourceLoader.createRandomReader(loc);
     }
 
+    public RandomWriter createRandomWriter(URI loc) throws IOException
+    {
+        return resourceLoader.createRandomWriter(loc);
+    }
 
 }
