@@ -212,4 +212,19 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         }
     }
 
+    public boolean setIfNotSet(String name, String value)
+    {
+        if (this.getStringProperty(name)==null)
+        {
+            this.set(name, value); 
+            return true; 
+        }
+        return false; 
+    }
+
+    public void clear()
+    {
+       properties.clear(); 
+    }
+
 }

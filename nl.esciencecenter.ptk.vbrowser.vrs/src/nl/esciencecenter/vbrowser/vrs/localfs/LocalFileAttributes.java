@@ -40,27 +40,6 @@ public class LocalFileAttributes extends FileAttributes
         return time.toMillis(); 
     }
 
-//    public String getPermissionsString()
-//    {
-//        String str;
-//        
-//        if (isSymbolicLink())
-//        {
-//            str="l"; 
-//        }
-//        else
-//        {
-//            str = (isDirectory()?"d":"-");
-//        }
-//        
-//        str+=isReadable()?"r":"-"; 
-//        str+=isWritable()?"w":"-"; 
-//        str+="[";
-//        str+=isHidden()?"H":""; 
-//        str+="]";
-//        return str;  
-//    }
-
     @Override
     public FileTime lastModifiedTime()
     {

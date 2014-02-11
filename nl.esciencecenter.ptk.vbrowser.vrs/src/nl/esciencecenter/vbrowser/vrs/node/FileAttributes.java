@@ -5,23 +5,12 @@ import java.nio.file.attribute.FileTime;
 
 import nl.esciencecenter.ptk.presentation.Presentation;
 
-public class FileAttributes implements BasicFileAttributes
+public abstract class FileAttributes implements BasicFileAttributes
 {
-    
     public boolean isSymbolicLink()
     {
         return false; 
     }
-//    
-//    public boolean isReadable()
-//    {
-//        return false;
-//    }
-//
-//    public boolean isWritable()
-//    {
-//        return false;
-//    }
 
     public boolean isHidden()
     {
@@ -58,57 +47,6 @@ public class FileAttributes implements BasicFileAttributes
         return Presentation.createDate(time.toMillis());
     }
 
-//    public String getPermissionsString()
-//    {
-//        String str;
-//        
-//        if (isSymbolicLink())
-//        {
-//            str="l"; 
-//        }
-//        else
-//        {
-//            str = (isDirectory()?"d":"-");
-//        }
-//        
-//        str+=isReadable()?"r":"-"; 
-//        str+=isWritable()?"w":"-"; 
-//        str+="[";
-//        str+=isHidden()?"H":""; 
-//        str+="]";
-//        return str;  
-//    }
-
-    @Override
-    public FileTime lastModifiedTime()
-    {
-        return null;
-    }
-
-    @Override
-    public FileTime lastAccessTime()
-    {
-        return null;
-    }
-
-    @Override
-    public FileTime creationTime()
-    {
-        return null;
-    }
-
-    @Override
-    public boolean isRegularFile()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isDirectory()
-    {
-       return false;
-    }
-
     @Override
     public boolean isOther()
     {
@@ -116,15 +54,28 @@ public class FileAttributes implements BasicFileAttributes
     }
 
     @Override
-    public long size()
-    {
-        return 0;
-    }
-
-    @Override
     public Object fileKey()
     {
         return null;
     }
+
+    @Override
+    abstract public FileTime lastModifiedTime(); 
+
+    @Override
+    abstract public FileTime lastAccessTime(); 
+
+    @Override
+    abstract public FileTime creationTime(); 
+
+    @Override
+    abstract public boolean isRegularFile(); 
+
+    @Override
+    abstract public boolean isDirectory(); 
+
+    @Override
+    abstract public long size(); 
+
 
 }

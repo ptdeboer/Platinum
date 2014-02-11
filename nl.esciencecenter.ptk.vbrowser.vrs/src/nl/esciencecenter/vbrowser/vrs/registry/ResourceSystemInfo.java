@@ -93,8 +93,22 @@ public class ResourceSystemInfo
     {
         return vrsConfig.duplicate(); 
     }
-    
+
+    /** 
+     * Replace properties. To update new properties, but keep the other properties use updateProperties(); 
+     * @param properties - new properties to replace curent ones. 
+     */
     public void setProperties(VRSProperties properties)
+    {
+        properties.clear(); 
+        properties.putAll(properties);
+    }
+    
+    /** 
+     * Add extra properties. To replace all properties use setProperties.  
+     * @param properties - new properties to be addded to this ResourceInfo. 
+     */
+    public void updateProperties(VRSProperties properties)
     {
         properties.putAll(properties);
     }
@@ -109,6 +123,11 @@ public class ResourceSystemInfo
         return vrsConfig.getStringProperty(SERVER_USERINFO);
     }
 
+    public void setUserInfo(String userInfo)
+    {
+        vrsConfig.set(SERVER_USERINFO,userInfo);
+    }
+    
     public int getServerPort()
     {
         return vrsConfig.getIntegerProperty(SERVER_PORT, -1); 
@@ -193,6 +212,16 @@ public class ResourceSystemInfo
     public void setPassword(Secret secret)
     {
         passwd=secret; 
+    }
+
+    public boolean setIfNotSet(String name, String value)
+    {
+        if (vrsConfig.get(name)==null)
+        {
+            vrsConfig.set(name, value); 
+            return true;
+        }
+        return false; 
     }
 
 }

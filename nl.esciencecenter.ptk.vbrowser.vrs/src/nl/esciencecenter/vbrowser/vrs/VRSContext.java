@@ -94,6 +94,11 @@ public class VRSContext
         resourceInfoRegistry.putInfo(id, info); 
     }
 
+    public UI getUI()
+    {
+        return ui; 
+    }
+    
     public VRL getHomeVRL()
     {
         return new VRL("file",null,GlobalProperties.getGlobalUserHome());
@@ -104,9 +109,9 @@ public class VRSContext
         return new VRL("file",null,GlobalProperties.getGlobalUserDir());
     }
 
-    public UI getUI()
+    public String getUserName()
     {
-        return ui; 
+        return GlobalProperties.getGlobalUserName(); 
     }
 
 }
