@@ -535,8 +535,12 @@ public class ProxyBrowser implements BrowserInterface, ActionMenuListener
 
     public void doDefaultAction(ViewNode actionNode)
     {
+        if (actionNode==null)
+        {
+            logger.errorPrintf("FIXME: Null ActionNode\n"); 
+        }
+        
         // Determine default action to view node:
-
         if (actionNode.isComposite())
         {
             openLocation(actionNode.getVRL(), true, false);

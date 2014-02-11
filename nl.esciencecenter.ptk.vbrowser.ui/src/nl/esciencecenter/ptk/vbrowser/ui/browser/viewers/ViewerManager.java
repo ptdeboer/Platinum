@@ -5,6 +5,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
 
 public class ViewerManager
@@ -31,7 +32,7 @@ public class ViewerManager
         
         ViewerRegistry registry = browser.getPlatform().getViewerRegistry();
 
-        Class clazz=null; 
+        Class<?> clazz=null; 
         
         if (optViewerClass!=null)
         {
@@ -41,17 +42,24 @@ public class ViewerManager
         if ((clazz==null) && (mimeType!=null))
         {
             if (clazz==null)
+            {
                 clazz=registry.getMimeTypeViewerClass(mimeType);
+            }
         }
         
         if (clazz==null)
             return null; 
         
-        ViewerPanel viewer = registry.createViewer(clazz);
+        if (ViewerPlugin.class.isAssignableFrom(clazz)==false)
+        {
+            throw new ProxyException("Viewer Class is not a ViewerPlugin class:"+clazz); 
+        }
+        
+        ViewerPanel viewer = registry.createViewer((Class<? extends ViewerPlugin>) clazz);
         return viewer;
     }
     
-    private Class loadViewerClass(String optViewerClass)
+    private Class<?> loadViewerClass(String optViewerClass)
     {
         try
         {
