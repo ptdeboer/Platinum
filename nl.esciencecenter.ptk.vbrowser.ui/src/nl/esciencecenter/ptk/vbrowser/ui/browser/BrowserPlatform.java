@@ -37,7 +37,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceHandler;
+import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
@@ -120,7 +120,7 @@ public class BrowserPlatform
 
         // Default viewer resource Loader/Resource Handler:
         this.resourceLoader = VRSUtil.createVRSResourceLoader(getVRSContext());
-        ViewerResourceHandler resourceHandler = new ViewerResourceHandler(resourceLoader);
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader);
         // ~/.vbtk2/viewers
         resourceHandler.setViewerConfigDir(getPlatformConfigDir("viewers"));
         // Viewer Registry for this Platform:

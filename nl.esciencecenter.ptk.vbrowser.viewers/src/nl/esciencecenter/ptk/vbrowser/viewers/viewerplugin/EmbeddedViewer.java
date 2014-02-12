@@ -13,7 +13,7 @@ import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceHandler;
+import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 
 public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin,MimeViewer
 {
@@ -57,7 +57,7 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
 
     protected Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
     
-    public ViewerResourceHandler getResourceHandler()
+    public ViewerResourceLoader getResourceHandler()
     {
         ViewerRegistry reg=getViewerRegistry(); 
         

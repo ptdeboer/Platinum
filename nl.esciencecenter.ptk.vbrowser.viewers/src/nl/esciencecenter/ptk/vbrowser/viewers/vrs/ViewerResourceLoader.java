@@ -17,9 +17,9 @@ import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 /**
  * Content Factory and Resource Manager for the various embedded Viewers.
  */
-public class ViewerResourceHandler
+public class ViewerResourceLoader
 {
-    private static ClassLogger logger = ClassLogger.getLogger(ViewerResourceHandler.class);
+    private static ClassLogger logger = ClassLogger.getLogger(ViewerResourceLoader.class);
 
     private ResourceLoader resourceLoader;
 
@@ -29,7 +29,7 @@ public class ViewerResourceHandler
 
     // === //
 
-    public ViewerResourceHandler(ResourceLoader resourceLoader)
+    public ViewerResourceLoader(ResourceLoader resourceLoader)
     {
         this.resourceLoader = resourceLoader;
         viewersConfigDir = null;

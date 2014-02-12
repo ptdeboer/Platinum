@@ -10,7 +10,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.JavaWebStarter;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceHandler;
+import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
 
 public class ViewerRegistry
@@ -83,9 +83,9 @@ public class ViewerRegistry
 
     private ArrayList<ViewerEntry> toolViewers = new ArrayList<ViewerEntry>();
     
-    private ViewerResourceHandler resourceHandler = null;
+    private ViewerResourceLoader resourceHandler = null;
 
-    public ViewerRegistry(ViewerResourceHandler resourceHandler)
+    public ViewerRegistry(ViewerResourceLoader resourceHandler)
     {
         this.resourceHandler = resourceHandler;
         initViewers();
@@ -239,7 +239,7 @@ public class ViewerRegistry
         return viewer;
     }
 
-    public ViewerResourceHandler getResourceHandler()
+    public ViewerResourceLoader getResourceHandler()
     {
         return resourceHandler;
     }

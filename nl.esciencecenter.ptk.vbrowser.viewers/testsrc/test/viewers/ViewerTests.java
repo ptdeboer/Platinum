@@ -7,7 +7,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceHandler;
+import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 
 public class ViewerTests
 {
@@ -17,7 +17,7 @@ public class ViewerTests
     {
         if (viewerRegistry == null)
         {
-            viewerRegistry = new ViewerRegistry(new ViewerResourceHandler(new ResourceLoader()));
+            viewerRegistry = new ViewerRegistry(new ViewerResourceLoader(new ResourceLoader()));
         }
         
         return viewerRegistry;
