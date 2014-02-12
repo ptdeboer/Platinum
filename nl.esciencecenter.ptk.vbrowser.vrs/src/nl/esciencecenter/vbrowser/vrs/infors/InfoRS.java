@@ -8,9 +8,8 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.node.VResourceSystemNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Info Resource System. 
- * Browse logical resources and (remote) URLs. 
+/**
+ * Info Resource System. Browse logical resources and (remote) URLs.
  * 
  * @author Piter T. de Boer
  */

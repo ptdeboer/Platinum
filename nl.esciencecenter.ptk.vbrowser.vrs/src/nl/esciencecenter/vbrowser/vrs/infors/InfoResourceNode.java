@@ -20,37 +20,39 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
 {
     private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
 
-    public static InfoResourceNode createLinkNode(InfoRSNode parent, String logicalName, VRL targetLink, String optIconURL, boolean showLinkIcon) throws VRLSyntaxException
+    public static InfoResourceNode createLinkNode(InfoRSNode parent, String logicalName, VRL targetLink, String optIconURL,
+            boolean showLinkIcon) throws VRLSyntaxException
     {
-        VRL logicalVRL=parent.createSubNodeVRL("node"+parent.getNumNodes());
-        
-        InfoResourceNode node = new InfoResourceNode(parent, InfoConstants.RESOURCELINK,logicalVRL);
-            
-        node.setTargetVRL(targetLink); 
+        VRL logicalVRL = parent.createSubNodeVRL("node" + parent.getNumNodes());
+
+        InfoResourceNode node = new InfoResourceNode(parent, InfoConstants.RESOURCELINK, logicalVRL);
+
+        node.setTargetVRL(targetLink);
         node.setIconUrl(optIconURL);
-        node.setShowLinkIcon(showLinkIcon); 
-        node.setLogicalName(logicalName);    
-            
-        return node; 
+        node.setShowLinkIcon(showLinkIcon);
+        node.setLogicalName(logicalName);
+
+        return node;
     }
 
-    public static InfoResourceNode createFolderNode(InfoRootNode parentNode, String folderName,String optIconURL) throws VRLSyntaxException
+    public static InfoResourceNode createFolderNode(InfoRootNode parentNode, String folderName, String optIconURL)
+            throws VRLSyntaxException
     {
-        VRL logicalVRL=parentNode.createSubNodeVRL(folderName); 
-        InfoResourceNode node = new InfoResourceNode(parentNode, InfoConstants.RESOURCEFOLDER,logicalVRL);
-            
-        node.setTargetVRL(null); 
+        VRL logicalVRL = parentNode.createSubNodeVRL(folderName);
+        InfoResourceNode node = new InfoResourceNode(parentNode, InfoConstants.RESOURCEFOLDER, logicalVRL);
+
+        node.setTargetVRL(null);
         node.setIconUrl(optIconURL);
-        node.setShowLinkIcon(false); 
-        node.setLogicalName(folderName);    
-            
-        return node; 
+        node.setShowLinkIcon(false);
+        node.setLogicalName(folderName);
+
+        return node;
     }
 
     // ==========
     // Instance
     // ==========
-    
+
     protected VRSProperties resourceProps = new VRSProperties();
 
     protected InfoResourceNode(InfoRSNode parent, String type, VRL logicalVRL)
@@ -129,7 +131,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
 
     public void setTargetVRL(VRL vrl)
     {
-        if (vrl==null)
+        if (vrl == null)
         {
             resourceProps.remove(InfoConstants.RESOURCE_TARGETVRL);
         }
@@ -144,12 +146,12 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         if (isResourceLink())
         {
             VRL vrl = this.getTargetVRL();
-    
+
             if (vrl == null)
             {
                 return nodes;
             }
-            
+
             VPath node = resolveTarget(vrl);
             if ((node == null) || (node.isComposite() == false))
             {
@@ -161,11 +163,11 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         }
         else if (isResourceFolder())
         {
-            return nodes; 
+            return nodes;
         }
         else
         {
-            return nodes; 
+            return nodes;
         }
     }
 
@@ -178,7 +180,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         return InfoConstants.RESOURCEFOLDER.equals(getResourceType());
     }
-    
+
     public VPath resolveTarget(VRL vrl) throws VrsException
     {
         return getInfoRS().getVRSClient().openLocation(vrl);
@@ -247,6 +249,5 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         throw new VrsException("Not now");
     }
-
 
 }

@@ -124,32 +124,34 @@ public class InfoRSNode extends VPathNode
         return null;
     }
 
-    /** 
-     * Return node with logical (base)name. 
-     * @param name logical name or basename of node. 
-     * @return - InfoRSNode or null.  
+    /**
+     * Return node with logical (base)name.
+     * 
+     * @param name
+     *            logical name or basename of node.
+     * @return - InfoRSNode or null.
      */
     protected InfoRSNode getSubNode(String name)
     {
-        for (InfoRSNode node:nodes)
+        for (InfoRSNode node : nodes)
         {
-            if (StringUtil.equals(node.getName(),name)) 
+            if (StringUtil.equals(node.getName(), name))
             {
                 return node;
             }
         }
-        
-        return null; 
+
+        return null;
     }
-    
+
     protected VRL createSubNodeVRL(String subPath) throws VRLSyntaxException
     {
         return getVRL().resolvePath(subPath);
     }
-    
+
     public int getNumNodes()
     {
-        return nodes.size(); 
+        return nodes.size();
     }
-    
+
 }

@@ -1,17 +1,16 @@
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-
 public class InfoConfigNode extends InfoRSNode
 {
 
     public InfoConfigNode(InfoRootNode infoRootNode)
     {
-        super(infoRootNode,InfoConstants.INFOCONFIGNODE,InfoRS.createPathVRL(InfoConstants.INFOCONFIGNODE));
+        super(infoRootNode, InfoConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoConstants.INFOCONFIGNODE));
     }
 
-    public InfoConfigNode(InfoConfigNode parentNode,String subName)
+    public InfoConfigNode(InfoConfigNode parentNode, String subName)
     {
-        super(parentNode,InfoConstants.INFOCONFIGNODE,InfoRS.createPathVRL(InfoConstants.INFOCONFIGNODE+"/"+subName));
+        super(parentNode, InfoConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoConstants.INFOCONFIGNODE + "/" + subName));
     }
 
     public String getIconURL(int size)
@@ -21,7 +20,7 @@ public class InfoConfigNode extends InfoRSNode
 
     public String getName()
     {
-        return "Config"; 
+        return "Config";
     }
-    
+
 }
