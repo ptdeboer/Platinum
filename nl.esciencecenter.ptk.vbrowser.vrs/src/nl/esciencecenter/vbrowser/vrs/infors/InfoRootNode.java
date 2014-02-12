@@ -1,6 +1,5 @@
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -28,7 +27,7 @@ public class InfoRootNode extends InfoRSNode
     {
         this.nodes.clear();
         this.addNode(getConfigNode());
-        this.addNode(getLocalSystem());        
+        this.addNode(getLocalSystem());
     }
 
     public InfoRSNode getNode(VRL vrl) throws VrsException
@@ -87,45 +86,46 @@ public class InfoRootNode extends InfoRSNode
         configNode = new InfoConfigNode(this);
     }
 
-    public void addResourceLink(String folderName, String logicalName,VRL targetLink,String optIconURL) throws VrsException
+    public void addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
     {
-        InfoRSNode parentNode; 
-        
-        if (folderName!=null)
+        InfoRSNode parentNode;
+
+        if (folderName != null)
         {
-            parentNode=this.getSubNode(folderName);
-            if (parentNode==null)
+            parentNode = this.getSubNode(folderName);
+            if (parentNode == null)
             {
-                parentNode=this.createResourceFolder(folderName, null); 
+                parentNode = this.createResourceFolder(folderName, null);
             }
         }
         else
         {
-            parentNode=this; 
+            parentNode = this;
         }
-        
-        InfoResourceNode node=InfoResourceNode.createLinkNode(parentNode,logicalName,targetLink,optIconURL,true);
-        parentNode.addNode(node);  
+
+        InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, optIconURL, true);
+        parentNode.addNode(node);
     }
 
-    protected InfoResourceNode createResourceFolder(String folderName,String optIconURL) throws VrsException
-    {   
-        InfoRSNode  node=this.getSubNode(folderName);
-        
+    protected InfoResourceNode createResourceFolder(String folderName, String optIconURL) throws VrsException
+    {
+        InfoRSNode node = this.getSubNode(folderName);
+
         if (node instanceof InfoResourceNode)
         {
-            return (InfoResourceNode)node; 
+            return (InfoResourceNode) node;
         }
-        else if (node!=null)
+        else if (node != null)
         {
-            throw new VrsException("Type Mismatch: InfoRSNode name'"+folderName+"' already exists, but is not a InfoResourceNode:"+node); 
+            throw new VrsException("Type Mismatch: InfoRSNode name'" + folderName + "' already exists, but is not a InfoResourceNode:"
+                    + node);
         }
         else
         {
-            InfoResourceNode folder=InfoResourceNode.createFolderNode(this,folderName,optIconURL); 
+            InfoResourceNode folder = InfoResourceNode.createFolderNode(this, folderName, optIconURL);
             this.addNode(folder);
             return folder;
         }
     }
-    
+
 }
