@@ -38,7 +38,7 @@ public interface ToolPlugin
      * 
      * @return
      */
-    public String viewerToolMethod();
+    public String defaultToolMethod();
 
     /**
      * Return custom tool Icon. Parameter size indicates minimum size of icon.

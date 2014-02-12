@@ -13,9 +13,9 @@ import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
 
-public class ViewerRegistry
+public class PluginRegistry
 {
-    private static ClassLogger logger = ClassLogger.getLogger(ViewerRegistry.class);
+    private static ClassLogger logger = ClassLogger.getLogger(PluginRegistry.class);
 
     public class ViewerEntry
     {
@@ -75,23 +75,23 @@ public class ViewerRegistry
     // Instance Fields
     // ===============
 
-    private ArrayList<ViewerEntry> viewers = new ArrayList<ViewerEntry>();
+    private ArrayList<ViewerEntry> viewerPlugins = new ArrayList<ViewerEntry>();
 
     private Map<String, List<ViewerEntry>> mimeTypeViewers = new HashMap<String, List<ViewerEntry>>();
 
     private Map<String, List<MimeMenuEntry>> mimeMenuMappings = new HashMap<String, List<MimeMenuEntry>>();
 
-    private ArrayList<ViewerEntry> toolViewers = new ArrayList<ViewerEntry>();
+    private ArrayList<ViewerEntry> toolPlugins = new ArrayList<ViewerEntry>();
     
     private ViewerResourceLoader resourceHandler = null;
 
-    public ViewerRegistry(ViewerResourceLoader resourceHandler)
+    public PluginRegistry(ViewerResourceLoader resourceHandler)
     {
         this.resourceHandler = resourceHandler;
-        initViewers();
+        initDefaultViewers();
     }
 
-    protected void initViewers()
+    protected void initDefaultViewers()
     {
         registerViewer(TextViewer.class);
         registerViewer(ImageViewer.class);
@@ -108,7 +108,7 @@ public class ViewerRegistry
             ViewerPlugin viewer = viewerClass.newInstance();
             String viewerName = viewer.getViewerName();
             ViewerEntry entry = new ViewerEntry(viewerName, viewerClass);
-            viewers.add(entry);
+            viewerPlugins.add(entry);
 
             if (viewer instanceof MimeViewer)
             {
@@ -121,6 +121,7 @@ public class ViewerRegistry
             {
                 registerTool((ToolPlugin)viewer,entry);
             }
+            
 
         }
         catch (InstantiationException | IllegalAccessException e)
@@ -131,7 +132,7 @@ public class ViewerRegistry
 
     private void registerTool(ToolPlugin viewer, ViewerEntry entry)
     {
-        toolViewers.add(entry);  
+        toolPlugins.add(entry);  
         
         if (viewer.addToToolMenu())
         {
@@ -247,7 +248,7 @@ public class ViewerRegistry
     public ViewerEntry[] getViewers()
     {
         // return array
-        return this.viewers.toArray(new ViewerEntry[0]);
+        return this.viewerPlugins.toArray(new ViewerEntry[0]);
     }
 
     /**

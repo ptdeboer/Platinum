@@ -59,7 +59,7 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
     
     public ViewerResourceLoader getResourceHandler()
     {
-        ViewerRegistry reg=getViewerRegistry(); 
+        PluginRegistry reg=getViewerRegistry(); 
         
         if (reg==null)
             return null; 

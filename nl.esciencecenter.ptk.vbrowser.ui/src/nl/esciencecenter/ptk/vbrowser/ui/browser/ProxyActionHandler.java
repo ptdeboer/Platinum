@@ -35,9 +35,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEventNotifier;
  */
 public class ProxyActionHandler
 {
-    private ProxyBrowser proxyBrowser;
+    private ProxyBrowserController proxyBrowser;
 
-    public ProxyActionHandler(ProxyBrowser proxyBrowser)
+    public ProxyActionHandler(ProxyBrowserController proxyBrowser)
     {
         this.proxyBrowser=proxyBrowser; 
     }

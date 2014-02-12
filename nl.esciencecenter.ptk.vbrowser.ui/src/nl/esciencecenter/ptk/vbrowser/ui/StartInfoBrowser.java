@@ -21,7 +21,7 @@
 package nl.esciencecenter.ptk.vbrowser.ui;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 
@@ -37,7 +37,7 @@ public class StartInfoBrowser
 		{
 			BrowserPlatform platform=BrowserPlatform.getInstance("ptkvb"); 
 		    
-		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
+		    ProxyBrowserController frame=(ProxyBrowserController)platform.createBrowser();
 		    
 		    VRSProxyFactory fac = VRSProxyFactory.createFor(platform);  
 		    

@@ -15,6 +15,8 @@ public class VirtualRootNode extends ProxyNode
     
     protected List<ProxyNode> childs=new ArrayList<ProxyNode>();
     
+    protected String iconUrl=null; 
+        
     protected VirtualRootNode(ProxyFactory factory, VRL proxyLocation)
     {
         super(factory, proxyLocation);
@@ -119,6 +121,12 @@ public class VirtualRootNode extends ProxyNode
         }
         
         return null; 
+    }
+
+    @Override
+    protected String doGetIconURL(String status, int size) throws ProxyException
+    {
+        return iconUrl; 
     }
     
 

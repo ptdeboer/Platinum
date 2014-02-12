@@ -59,12 +59,12 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Proxy Resource Browser.
  * 
  */
-public class ProxyBrowser implements BrowserInterface, ActionMenuListener
+public class ProxyBrowserController implements BrowserInterface, ActionMenuListener
 {
     private static ClassLogger logger;
 
     {
-        logger = ClassLogger.getLogger(ProxyBrowser.class);
+        logger = ClassLogger.getLogger(ProxyBrowserController.class);
     }
 
     // ========================================================================
@@ -75,7 +75,7 @@ public class ProxyBrowser implements BrowserInterface, ActionMenuListener
     {
         public void actionPerformed(ActionEvent e)
         {
-            ProxyBrowser.this.handleNavBarEvent(e);
+            ProxyBrowserController.this.handleNavBarEvent(e);
         }
     }
 
@@ -83,7 +83,7 @@ public class ProxyBrowser implements BrowserInterface, ActionMenuListener
     {
         public void actionPerformed(ActionEvent e)
         {
-            ProxyBrowser.this.handleActionEvent(e);
+            ProxyBrowserController.this.handleActionEvent(e);
         }
     }
 
@@ -97,7 +97,7 @@ public class ProxyBrowser implements BrowserInterface, ActionMenuListener
         @Override
         public void windowClosing(WindowEvent e)
         {
-            ProxyBrowser.this.browserFrame.dispose();
+            ProxyBrowserController.this.browserFrame.dispose();
         }
 
         @Override
@@ -145,7 +145,7 @@ public class ProxyBrowser implements BrowserInterface, ActionMenuListener
 
     private ViewerManager viewerManager;
 
-    public ProxyBrowser(BrowserPlatform platform, boolean show)
+    public ProxyBrowserController(BrowserPlatform platform, boolean show)
     {
         init(platform, show);
     }
@@ -717,10 +717,10 @@ public class ProxyBrowser implements BrowserInterface, ActionMenuListener
         return browserFrame.getResourceTree().getModel().getRoot().getViewNode();    
     }
 
-    private ProxyBrowser createBrowser(ViewNode node)
+    private ProxyBrowserController createBrowser(ViewNode node)
     {
         // clone browser and update ViewNode
-        ProxyBrowser newB = new ProxyBrowser(this.platform, true);
+        ProxyBrowserController newB = new ProxyBrowserController(this.platform, true);
         newB.setRoot(this.rootNode, true, true);
         newB.setCurrentViewNode(node);
 

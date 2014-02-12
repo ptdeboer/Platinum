@@ -201,4 +201,11 @@ public class DummyProxyNode extends ProxyNode
         return dummyPresentation; 
     }
 
+    @Override
+    protected String doGetIconURL(String status, int size) throws ProxyException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

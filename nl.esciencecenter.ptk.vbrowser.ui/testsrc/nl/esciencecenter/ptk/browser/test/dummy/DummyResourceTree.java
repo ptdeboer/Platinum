@@ -29,7 +29,7 @@ import javax.swing.JScrollPane;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.DummyBrowserInterface;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
@@ -44,7 +44,7 @@ public class DummyResourceTree
 		try
 		{
 		    BrowserPlatform platform=BrowserPlatform.getInstance("dummy"); 
-	        ProxyBrowser browser=(ProxyBrowser)platform.createBrowser();
+	        ProxyBrowserController browser=(ProxyBrowserController)platform.createBrowser();
 	        ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);  
 	        platform.registerProxyFactory(dummyFac); 
 

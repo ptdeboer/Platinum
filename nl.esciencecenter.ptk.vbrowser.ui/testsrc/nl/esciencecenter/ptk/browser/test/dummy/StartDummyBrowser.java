@@ -21,7 +21,7 @@
 package nl.esciencecenter.ptk.browser.test.dummy;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 
@@ -36,7 +36,7 @@ public class StartDummyBrowser
 		{
 			BrowserPlatform platform=BrowserPlatform.getInstance("dummy"); 
 		    
-		    ProxyBrowser frame=(ProxyBrowser)platform.createBrowser();
+		    ProxyBrowserController frame=(ProxyBrowserController)platform.createBrowser();
 		    
 		    ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);  
 		    

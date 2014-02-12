@@ -36,7 +36,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
@@ -93,7 +93,7 @@ public class BrowserPlatform
 
     private ProxyFactoryRegistry proxyRegistry = null;
 
-    private ViewerRegistry viewerRegistry;
+    private PluginRegistry viewerRegistry;
 
     private ResourceLoader resourceLoader;
 
@@ -124,7 +124,7 @@ public class BrowserPlatform
         // ~/.vbtk2/viewers
         resourceHandler.setViewerConfigDir(getPlatformConfigDir("viewers"));
         // Viewer Registry for this Platform:
-        this.viewerRegistry = new ViewerRegistry(resourceHandler);
+        this.viewerRegistry = new PluginRegistry(resourceHandler);
         // root Frame and Icon Renderer/provider:
         this.rootFrame = new JFrame();
         this.iconProvider = new IconProvider(rootFrame, resourceLoader);
@@ -168,7 +168,7 @@ public class BrowserPlatform
 
     public BrowserInterface createBrowser(boolean show)
     {
-        return new ProxyBrowser(this, show);
+        return new ProxyBrowserController(this, show);
     }
 
     public void registerProxyFactory(ProxyFactory factory)
@@ -186,7 +186,7 @@ public class BrowserPlatform
         return DnDUtil.getDefaultTransferHandler();
     }
 
-    public ViewerRegistry getViewerRegistry()
+    public PluginRegistry getViewerRegistry()
     {
         return viewerRegistry;
     }

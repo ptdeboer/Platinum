@@ -24,9 +24,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.tasks.UITask;
 
 public abstract class ProxyBrowserTask extends UITask 
 {
-	private ProxyBrowser browserController=null;
+	private ProxyBrowserController browserController=null;
 
-    public ProxyBrowserTask(ProxyBrowser browserController,String taskName) 
+    public ProxyBrowserTask(ProxyBrowserController browserController,String taskName) 
 	{
 		super(browserController.getTaskWatcher(),taskName);
 		this.browserController=browserController; 

@@ -6,18 +6,18 @@ import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 
 public class ViewerTests
 {
-    private static ViewerRegistry viewerRegistry;
+    private static PluginRegistry viewerRegistry;
 
-    public static ViewerRegistry getViewerRegistry()
+    public static PluginRegistry getViewerRegistry()
     {
         if (viewerRegistry == null)
         {
-            viewerRegistry = new ViewerRegistry(new ViewerResourceLoader(new ResourceLoader()));
+            viewerRegistry = new PluginRegistry(new ViewerResourceLoader(new ResourceLoader()));
         }
         
         return viewerRegistry;

@@ -327,7 +327,7 @@ public abstract class ProxyNode
      */
     public String getIconURL(String status,int size) throws ProxyException
     {
-        return null; 
+        return this.doGetIconURL(status,size); 
     }
 
     public boolean hasChildren() throws ProxyException
@@ -600,6 +600,7 @@ public abstract class ProxyNode
 
     abstract protected boolean doGetIsComposite() throws ProxyException;
     
+    abstract protected String doGetIconURL(String status, int size) throws ProxyException;
     // ====
     // Child/Composite Attributes
     // ====

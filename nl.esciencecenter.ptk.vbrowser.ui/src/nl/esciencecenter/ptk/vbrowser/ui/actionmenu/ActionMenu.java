@@ -32,9 +32,9 @@ import javax.swing.JSeparator;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry.MimeMenuEntry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry.ViewerEntry;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry.MimeMenuEntry;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry.ViewerEntry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ActionMenu extends JPopupMenu
@@ -239,7 +239,7 @@ public class ActionMenu extends JPopupMenu
 
     private void addMimeViewerMenuMethods(ViewNode viewNode, String mimeType)
     {
-        ViewerRegistry viewReg = platform.getViewerRegistry();
+        PluginRegistry viewReg = platform.getViewerRegistry();
 
         List<MimeMenuEntry> entries = viewReg.getMimeMenuEntries(mimeType);
 
@@ -260,7 +260,7 @@ public class ActionMenu extends JPopupMenu
 
     private void createViewersMenu(ViewNode viewNode)
     {
-        ViewerRegistry viewReg = platform.getViewerRegistry();
+        PluginRegistry viewReg = platform.getViewerRegistry();
 
         ViewerEntry[] viewers = viewReg.getViewers();
         JMenu subMenu = new JMenu("View with");

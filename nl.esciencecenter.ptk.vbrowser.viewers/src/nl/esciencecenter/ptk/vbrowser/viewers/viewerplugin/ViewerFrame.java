@@ -3,7 +3,7 @@ package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 import javax.swing.JFrame;
 
 /** 
- * Viewer Frame for embedded Viewer Panel. 
+ * Viewer Frame for stand alone Viewer Panel. 
  */
 public class ViewerFrame extends JFrame
 {

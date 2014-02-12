@@ -32,14 +32,14 @@ public abstract class ViewerPanel extends JPanel implements Disposable
     
     private List<ViewerListener> listeners=new ArrayList<ViewerListener>(); 
     
-    private ViewerRegistry viewerRegistry=null;
+    private PluginRegistry viewerRegistry=null;
     
     protected ViewerPanel()
     {
         this.setLayout(new BorderLayout());
     }
     
-    protected void setViewerRegistry(ViewerRegistry viewerRegistry)
+    protected void setViewerRegistry(PluginRegistry viewerRegistry)
     {
         if (this.viewerRegistry!=null)
         {
@@ -49,7 +49,7 @@ public abstract class ViewerPanel extends JPanel implements Disposable
         this.viewerRegistry=viewerRegistry;
     }
     
-    protected ViewerRegistry getViewerRegistry()
+    protected PluginRegistry getViewerRegistry()
     {
         return viewerRegistry;
     }

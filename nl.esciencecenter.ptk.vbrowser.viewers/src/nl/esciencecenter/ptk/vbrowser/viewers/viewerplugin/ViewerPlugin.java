@@ -2,11 +2,13 @@ package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 
 /** 
  * Default interface for Viewer Plugins. 
- * 
+ * All Viewer plugins extend this interface. 
  */
 public interface ViewerPlugin
 {
-
+    /** 
+     * Short to be display in menu.
+     */
     public String getViewerName();
 
     /**

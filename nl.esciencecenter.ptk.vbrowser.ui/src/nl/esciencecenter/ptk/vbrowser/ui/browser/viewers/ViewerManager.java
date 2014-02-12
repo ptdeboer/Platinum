@@ -1,19 +1,18 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
-import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowser;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
 
 public class ViewerManager
 {
+    private ProxyBrowserController browser;
 
-    private ProxyBrowser browser;
-
-    public ViewerManager(ProxyBrowser proxyBrowser)
+    public ViewerManager(ProxyBrowserController proxyBrowser)
     {
         browser=proxyBrowser;
     }
@@ -29,8 +28,7 @@ public class ViewerManager
     
     public ViewerPanel createViewerFor(String resourceType,String mimeType,String optViewerClass) throws ProxyException
     {
-        
-        ViewerRegistry registry = browser.getPlatform().getViewerRegistry();
+        PluginRegistry registry = browser.getPlatform().getViewerRegistry();
 
         Class<?> clazz=null; 
         
