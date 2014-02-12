@@ -20,20 +20,24 @@
 
 package nl.esciencecenter.ptk.task;
 
-public interface ITaskSource 
+public interface ITaskSource
 {
-    public String getTaskSourceName(); 
-    
+    public String getTaskSourceName();
+
     void registerTask(ActionTask actionTask);
 
-    void unregisterTask(ActionTask actionTask); 
-    
-    /** Is called by ActionTask when task has actually started*/ 
-	void notifyTaskStarted(ActionTask actionTask);
+    void unregisterTask(ActionTask actionTask);
 
-	/** Is called by ActionTask when task has terminated */
-	void notifyTaskTerminated(ActionTask actionTask);
+    /** Is called by ActionTask when task has actually started */
+    void notifyTaskStarted(ActionTask actionTask);
 
+    /** Is called by ActionTask when task has terminated */
+    void notifyTaskTerminated(ActionTask actionTask);
+
+    /**
+     * Is called by ActionTask when a task execution has thrown an uncought
+     * exception and the ActionTask has stopped.
+     */
     void notifyTaskException(ActionTask actionTask, Throwable t);
 
 }

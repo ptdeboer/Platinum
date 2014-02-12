@@ -24,7 +24,8 @@ import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.events.IEventSource;
 
 /** 
- * Interface for Action Tasks, or other objects,  which can be monitored. 
+ * Interface for Action Tasks, or other objects,  which can be monitored and provide statistics about the progress. 
+ *  
  */
 public interface ITaskMonitor extends IEventSource 
 {
@@ -96,11 +97,12 @@ public interface ITaskMonitor extends IEventSource
         
 	}
 	
-	// === task === 
-	
+	// ======================
+	// ITaskMonitor interface 
+	// ======================
 	
 	// Should be called be implementing monitor. Will be moved. 
-	public void startTask(String taskNameOrComments, long numTodo);
+	public void startTask(String taskName, long numTodo);
 
 	public String getTaskName(); 
 	
@@ -108,17 +110,17 @@ public interface ITaskMonitor extends IEventSource
 
 	public TaskStats getTaskStats(); 
 
-	public void endTask(String taskNameOrComments);
+	public void endTask(String taskName);
     
 	// === subtask === 
 
-	public void startSubTask(String name, long numTodo);
+	public void startSubTask(String subTaskName, long numTodo);
     
 	public String getCurrentSubTaskName();
     
-	public TaskStats getSubTaskStats(String name); 
+	public TaskStats getSubTaskStats(String subTaskName); 
 	
-	public void updateSubTaskDone(String name,long numDone);
+	public void updateSubTaskDone(String subTaskName,long numDone);
 	
 	public void endSubTask(String name);
 
@@ -158,6 +160,5 @@ public interface ITaskMonitor extends IEventSource
 	public Throwable getException();
     
 	public void setException(Throwable t); 
-
 	
 }

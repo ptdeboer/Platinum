@@ -324,7 +324,9 @@ public abstract class ActionTask implements Runnable
 		    this.setException(taskError);  
         
 		    if (taskSource!=null)
-		        taskSource.notifyTaskException(this,taskError); 
+		    {
+		        taskSource.notifyTaskException(this,taskError);
+		    }
 		}
 		
         // === Finalization ===
