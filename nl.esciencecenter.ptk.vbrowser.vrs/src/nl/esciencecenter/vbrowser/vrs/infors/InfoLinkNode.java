@@ -6,7 +6,7 @@ public class InfoLinkNode extends InfoResourceNode
 {
     protected InfoLinkNode(InfoRSNode parent, VRL logicalVRL, VRL targetVRL)
     {
-        super(parent, InfoConstants.INFOLINKNODE,logicalVRL);
+        super(parent, InfoConstants.RESOURCELINK,logicalVRL);
         this.setTargetVRL(targetVRL); 
         this.setIconUrl(null); // default ?
         this.setShowLinkIcon(true); 

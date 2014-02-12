@@ -3,6 +3,7 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
@@ -76,7 +77,7 @@ public class InfoRSNode extends VPathNode
         return nodes;
     }
 
-    final public void addNode(InfoRSNode node)
+    final protected void addNode(InfoRSNode node)
     {
         synchronized (nodes)
         {
@@ -123,8 +124,32 @@ public class InfoRSNode extends VPathNode
         return null;
     }
 
+    /** 
+     * Return node with logical (base)name. 
+     * @param name logical name or basename of node. 
+     * @return - InfoRSNode or null.  
+     */
+    protected InfoRSNode getSubNode(String name)
+    {
+        for (InfoRSNode node:nodes)
+        {
+            if (StringUtil.equals(node.getName(),name)) 
+            {
+                return node;
+            }
+        }
+        
+        return null; 
+    }
+    
     protected VRL createSubNodeVRL(String subPath) throws VRLSyntaxException
     {
         return getVRL().resolvePath(subPath);
     }
+    
+    public int getNumNodes()
+    {
+        return nodes.size(); 
+    }
+    
 }

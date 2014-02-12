@@ -65,6 +65,11 @@ public class VRSProxyFactory extends ProxyFactory
         this.viewNodeDnDHandler=new VRSViewNodeDnDHandler(vrsClient); 
     }
     
+    public VRSContext getVRSContext()
+    {
+        return vrsContext; 
+    }
+    
 	public VRSProxyNode _openLocation(VRL vrl) throws ProxyException
 	{
 		try 

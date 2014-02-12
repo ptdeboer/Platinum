@@ -10,8 +10,10 @@ public class InfoConstants
     
     public static final String INFOCONFIGNODE = "InfoConfig";
     
-    public static final String INFOLINKNODE =  "InfoLink";
+    public static final String RESOURCELINK =  "ResourceLink";
 
+    public static final String RESOURCEFOLDER =  "ResourceFolder";
+    
     public static final String RESOURCE_ICONURL="resourceIconURL";
 
     public static final String RESOURCE_SHOWLINKICON="resourceShowLinkIcon";

@@ -187,6 +187,11 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         properties.put(name, new Integer(value)); 
     }
 
+    public void remove(String name)
+    {
+        properties.remove(name);
+    }
+    
     public VRL getVRLProperty(String name) throws VRLSyntaxException
     {
         Object val=this.properties.get(name); 

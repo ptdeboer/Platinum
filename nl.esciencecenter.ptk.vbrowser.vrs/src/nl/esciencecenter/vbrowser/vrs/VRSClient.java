@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VRSTransferManager;
@@ -86,6 +87,11 @@ public class VRSClient
     public VRSTransferManager getVRSTransferManager()
     {
         return transferManager; 
+    }
+
+    public InfoRootNode getInfoRootNode() throws VrsException
+    {
+        return (InfoRootNode)openLocation(new VRL("info:/")); 
     }
 
 }
