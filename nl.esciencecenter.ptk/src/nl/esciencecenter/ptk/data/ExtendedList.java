@@ -52,7 +52,6 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     {
         if (values == null)
             return; // NIL list
-        add(values);
     }
 
     public ExtendedList()
@@ -469,4 +468,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         return set;
     }
 
+    public ExtendedListIterator<T> iterator()
+    {
+        return new ExtendedListIteratorWrapper<T>(super.listIterator());  
+    }
 }
