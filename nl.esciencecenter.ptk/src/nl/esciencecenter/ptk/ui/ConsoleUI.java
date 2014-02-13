@@ -54,6 +54,19 @@ public class ConsoleUI implements UI
     }
 
     @Override
+    public boolean askOkCancel(String title, String message, boolean defaultValue)
+    {
+        console.printf("[%s]\n%s\n O)k/C)ancel?",title,message);
+        String str = getInput("");
+
+        if (str == null)
+        {
+            return defaultValue;
+        }
+        return StringUtil.equalsIgnoreCase(str, "O", "OK");
+    }
+    
+    @Override
     public int askYesNoCancel(String title, String message)
     {
         console.printf("[%s]\n%s\n Y)es/N)o/C)ancel?",title,message);
@@ -96,13 +109,13 @@ public class ConsoleUI implements UI
         return true;
     }
 
-    @Override
-    public int askInput(String title, Object[] inputFields, int jOpentionPaneOption)
-    {
-        String errStr = "Not implemented for ConsoleUI: askInput() with UI objects";
-        System.err.printf("%s\n",errStr);
-        throw new Error(errStr);
-    }
+//    @Override
+//    public int askInput(String title, Object[] inputFields, int jOpentionPaneOption)
+//    {
+//        String errStr = "Not implemented for ConsoleUI: askInput() with UI objects";
+//        System.err.printf("%s\n",errStr);
+//        throw new Error(errStr);
+//    }
 
     public String getInput(String prompt)
     {

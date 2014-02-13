@@ -20,6 +20,8 @@
 
 package nl.esciencecenter.ptk.ui;
 
+import javax.swing.JOptionPane;
+
 import nl.esciencecenter.ptk.data.SecretHolder;
 
 /**
@@ -27,18 +29,36 @@ import nl.esciencecenter.ptk.data.SecretHolder;
  */
 public interface UI
 {
-    /** Whether user interaction is possible */ 
-    public boolean isEnabled();
+    public static int YES_OPTION = JOptionPane.YES_OPTION;
     
-    /** Display message dialog or print to console */ 
-    public void showMessage(String title,String message,boolean modal);
+    public static int NO_OPTION = JOptionPane.NO_OPTION;
+    
+    public static int CANCEL_OPTION = JOptionPane.CANCEL_OPTION;
     
     /**
+     * Whether user interaction is possible. 
+     * @return false for robots and non-interactive scripts/applications, true for interactive applications.  
+     */ 
+    public boolean isEnabled();
+    
+    /** 
+     * Display message dialog or message to print to console.  
+     */ 
+    public void showMessage(String title,String message,boolean modal);
+
+     /**
      * Simple Yes/No prompter 
-     * @param defaultValue value to return if there is no UI present 
+     * @param true for yes, false for no or <code>defaultValue</code> value to return if there is no UI present 
      *        or it is currently disabled. 
      */ 
     public boolean askYesNo(String title,String message, boolean defaultValue);
+
+    /**
+     * Simple OK/Cancel prompter.  
+     * @param true for OK, false for cancel or defaultValue value to return if there is no UI present 
+     *        or it is currently disabled. 
+     */ 
+    public boolean askOkCancel(String title,String message, boolean defaultValue);
 
     /**
      * Simple Yes/No/Cancel prompter. 
@@ -60,13 +80,13 @@ public interface UI
      */
     public String askInput(String title, String message); 
     
-    /**
-     * Simple formatted Input Dialog. Method is wrapper for JOptionPane ! 
-     * See  JOptionPane.showConfirmDialog() for options.
-     * 
-     * @return JOptionPane.OK_OPTION if successful. 
-     *         Parameter inputFields can contain modified (Swing) objects.  
-     */ 
-    public int askInput(String title, Object[] inputFields, int jOpentionPaneOption);
+//    /**
+//     * Simple formatted Input Dialog. Method is wrapper for JOptionPane ! 
+//     * See  JOptionPane.showConfirmDialog() for options.
+//     * 
+//     * @return JOptionPane.OK_OPTION if successful. 
+//     *         Parameter inputFields can contain modified (Swing) objects.  
+//     */ 
+//    public int askInput(String title, Object[] inputFields, int jOptionPaneOption);
     
 }
