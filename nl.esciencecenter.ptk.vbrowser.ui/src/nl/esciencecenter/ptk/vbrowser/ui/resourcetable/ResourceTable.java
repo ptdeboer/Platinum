@@ -151,6 +151,11 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             logger.infoPrintf("initColumns(): getAllHeaders() = %s\n",new StringList(headers).toString());
         }
         
+        if ((headers==null) || (headers.size()<=0)) 
+        {
+            headers=new StringList(0); 
+        }
+        
         initColumns(headers); 
     }
     

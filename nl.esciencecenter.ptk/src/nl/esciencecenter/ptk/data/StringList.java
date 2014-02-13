@@ -21,6 +21,7 @@
 package nl.esciencecenter.ptk.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import nl.esciencecenter.ptk.util.SortUtil;
@@ -152,7 +153,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
 
     public StringList(Collection<? extends String> list)
     {
-        super(list);
+        super((list!=null)?list:new ArrayList<String>(0));
     }
 
     public int[] sort()
