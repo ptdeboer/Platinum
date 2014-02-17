@@ -354,6 +354,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 break;
             case SELECTION_ACTION:
                 doDefaultSelectedAction(node);
+                break; 
             default:
                 logger.errorPrintf("<<< FIXME: ACTION NOT IMPLEMENTED:%s >>>\n", action);
                 break;
@@ -529,8 +530,9 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     public void doDefaultSelectedAction(ViewNode actionNode)
     {
-        // Container listener update Actual Selection.
+        // Container listeners should update selections. 
         // Perform here optional Menu updates...
+        logger.errorPrintf("***>>>> New Selection Node:%s\n", actionNode); 
     }
 
     public void doDefaultAction(ViewNode actionNode)
