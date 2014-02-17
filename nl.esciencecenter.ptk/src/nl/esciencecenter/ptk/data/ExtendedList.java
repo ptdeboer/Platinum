@@ -51,7 +51,10 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     public ExtendedList(T[] values)
     {
         if (values == null)
+        {
             return; // NIL list
+        }
+        add(values); 
     }
 
     public ExtendedList()
