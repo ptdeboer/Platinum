@@ -26,8 +26,8 @@ import java.util.Vector;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 
-/** 
- * Default Adaptor for ITaskMonitor interface. 
+/**
+ * Default Adaptor for ITaskMonitor interface.
  */
 public class TaskMonitorAdaptor implements ITaskMonitor
 {
@@ -43,19 +43,22 @@ public class TaskMonitorAdaptor implements ITaskMonitor
 
     // === Listeners ===
 
-    //protected Vector<ITaskMonitorListener> listeners = new Vector<ITaskMonitorListener>();
+    // protected Vector<ITaskMonitorListener> listeners = new
+    // Vector<ITaskMonitorListener>();
 
-    // === status === 
+    // === status ===
     protected boolean isCancelled = false;
 
     protected String currentSubTaskName = null;
 
     protected ITaskMonitor parent;
 
-    // === privates === 
-    
+    // === privates ===
+
     private Object waitMutex = new Object();
+
     private Throwable exception = null;
+
     private TaskLogger taskLogger = null;
 
     public TaskMonitorAdaptor()
@@ -63,13 +66,12 @@ public class TaskMonitorAdaptor implements ITaskMonitor
         init();
     }
 
-    public TaskMonitorAdaptor(String taskName,long todo)
+    public TaskMonitorAdaptor(String taskName, long todo)
     {
         init();
-        
+
     }
 
-    
     private void init()
     {
         this.taskLogger = new TaskLogger("TaskLogger");
@@ -137,7 +139,7 @@ public class TaskMonitorAdaptor implements ITaskMonitor
         subTask.markEnd();
     }
 
-    @Override
+    // @Override
     public void startTask(String taskName, long numTodo)
     {
         this.taskStats.name = taskName;
@@ -192,7 +194,7 @@ public class TaskMonitorAdaptor implements ITaskMonitor
                 throw e;
                 // could start wait cycle again, but reason of interrupt is
                 // unknown here.
-                // Typically isInterrupted means stop what you are doing. 
+                // Typically isInterrupted means stop what you are doing.
             }
         }
     }
@@ -211,8 +213,8 @@ public class TaskMonitorAdaptor implements ITaskMonitor
         this.isCancelled = true;
     }
 
-    /** 
-     * Add informative text (for end user).  
+    /**
+     * Add informative text (for end user).
      */
     public void logPrintf(String format, Object... args)
     {
@@ -225,22 +227,22 @@ public class TaskMonitorAdaptor implements ITaskMonitor
         }
     }
 
-    /** 
-     * Return all log events as single String. 
-     * @return - String holding all the log events as single String. 
+    /**
+     * Return all log events as single String.
+     * 
+     * @return - String holding all the log events as single String.
      */
     public String getLogText()
     {
-        StringHolder holder=new StringHolder(); 
-        getLogText(false,0,holder);
-        return holder.value; 
+        StringHolder holder = new StringHolder();
+        getLogText(false, 0, holder);
+        return holder.value;
     }
 
-    public int getLogText(boolean clearLogBuffer,int logEventOffset,StringHolder logTextHolder)
+    public int getLogText(boolean clearLogBuffer, int logEventOffset, StringHolder logTextHolder)
     {
-        return taskLogger.getLogText(clearLogBuffer,logEventOffset,logTextHolder); 
+        return taskLogger.getLogText(clearLogBuffer, logEventOffset, logTextHolder);
     }
-   
 
     @Override
     public TaskStats getTaskStats()
@@ -296,16 +298,16 @@ public class TaskMonitorAdaptor implements ITaskMonitor
         this.exception = tr;
     }
 
-//    @Override
-//    public void addMonitorListener(ITaskMonitorListener listener)
-//    {
-//        this.listeners.add(listener);
-//    }
-//
-//    @Override
-//    public void removeMonitorListener(ITaskMonitorListener listener)
-//    {
-//        this.listeners.remove(listener);
-//    }
+    // @Override
+    // public void addMonitorListener(ITaskMonitorListener listener)
+    // {
+    // this.listeners.add(listener);
+    // }
+    //
+    // @Override
+    // public void removeMonitorListener(ITaskMonitorListener listener)
+    // {
+    // this.listeners.remove(listener);
+    // }
 
 }

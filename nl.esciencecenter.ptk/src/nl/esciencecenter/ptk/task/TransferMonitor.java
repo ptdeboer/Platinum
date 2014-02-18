@@ -22,77 +22,129 @@ package nl.esciencecenter.ptk.task;
 
 import java.net.URI;
 
-/** 
- * Transfer Specific Monitor. 
- * Adds more meta fields specific for (VFS) File Transfers. 
+/**
+ * Transfer Specific Monitor. Adds more meta fields specific for (VRS) File
+ * Transfers.
  * 
- * @author Piter T. de Boer. 
+ * @author Piter T. de Boer.
  */
 public class TransferMonitor extends TaskMonitorAdaptor
 {
-    private static int transferCounter=0; 
-    
-    private int transferId=0; 
-    
+    private static int transferCounter = 0;
+
+    private int transferId = 0;
+
     private URI sources[];
+
+    private String sourceTypes[];
 
     private URI dest;
 
-    private String actionStr;
+    private String destType;
+
+    private String actionType;
 
     private int sourcesDone;
 
+    /**
+     * Create Transfer monitor for specified URIs to destination URI.
+     * 
+     * @param action
+     * @param sourceUris
+     * @param sourceTypes
+     * @param destVri
+     * @param destType
+     */
     public TransferMonitor(String action, URI sourceUris[], URI destVri)
     {
-        this.transferId=transferCounter++; 
-        this.actionStr=action; 
-        this.sources=sourceUris;
-        this.dest=destVri; 
+        this.transferId = transferCounter++;
+        this.actionType = action;
+        this.sources = sourceUris;
+        this.dest = destVri;
+    }
+
+    /**
+     * Create Transfer monitor with optional Resource Types.
+     * 
+     * @param action
+     * @param sourceUris
+     * @param sourceTypes
+     * @param destVri
+     * @param destType
+     */
+    public TransferMonitor(String action, URI sourceUris[], String sourceTypes[], URI destVri, String destType)
+    {
+        this.transferId = transferCounter++;
+        this.actionType = action;
+        this.sources = sourceUris;
+        this.sourceTypes = sourceTypes;
+        this.destType = destType;
+        this.dest = destVri;
     }
 
     public String getID()
     {
-        return "transfer:#"+transferId; 
+        return "transfer:#" + transferId;
     }
-    
+
     public URI getDestination()
     {
         return dest;
     }
 
+    public String getDestinationType()
+    {
+        return destType;
+    }
+
     public URI getSource()
     {
-    	if ((sources!=null) && (sources.length>0))
-    		return sources[0];
-    	return null;
+        if ((sources != null) && (sources.length > 0))
+            return sources[0];
+        return null;
+    }
+
+    public URI[] getSources()
+    {
+        return sources;
     }
 
     public int getTotalSources()
     {
-       if (sources!=null)
-    	   return sources.length; 
-       return 0; 
-    }
-        
-    public void setSources(URI sources[])
-    {
-        this.sources=sources; 
+        if (sources != null)
+            return sources.length;
+        return 0;
     }
 
     public int getSourcesDone()
     {
-        return sourcesDone; 
+        return sourcesDone;
     }
 
     public void updateSourcesDone(int done)
     {
-       this.sourcesDone=done; 
+        this.sourcesDone = done;
     }
 
     public String getActionType()
     {
-        return actionStr;
+        return actionType;
     }
-    
-    
+
+    // ===
+    // Sub class interface:
+    // ===
+
+    /**
+     * During a transfer, more source might be added by the ongoing transfer
+     * process.
+     * 
+     * @param sources
+     *            - new full list of sources.
+     */
+    protected void updateSources(URI sources[])
+    {
+        this.sources = sources;
+    }
+
 }
