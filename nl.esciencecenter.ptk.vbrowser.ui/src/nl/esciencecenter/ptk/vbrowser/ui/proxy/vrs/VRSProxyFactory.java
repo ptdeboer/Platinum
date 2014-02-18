@@ -8,14 +8,13 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 
+import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
-
-
 
 /** 
  * VRS Proxy Factory for VRSProxyNodes.  
@@ -54,6 +53,8 @@ public class VRSProxyFactory extends ProxyFactory
     
     private VRSClient vrsClient;
 
+    private VRSTranferManager transferManager; 
+    
     protected VRSViewNodeDnDHandler viewNodeDnDHandler=null;
     
     protected VRSProxyFactory(BrowserPlatform platform)
@@ -61,13 +62,24 @@ public class VRSProxyFactory extends ProxyFactory
         super(platform); 
         
         this.vrsContext=getProxyVRSContext();
-        this.vrsClient=new VRSClient(vrsContext); 
-        this.viewNodeDnDHandler=new VRSViewNodeDnDHandler(vrsClient); 
+        this.vrsClient=new VRSClient(vrsContext);
+        this.transferManager=vrsClient.getVRSTransferManager(); 
+        this.viewNodeDnDHandler=new VRSViewNodeDnDHandler(transferManager); 
     }
     
     public VRSContext getVRSContext()
     {
         return vrsContext; 
+    }
+    
+    public VRSClient getVRSClient()
+    {
+        return this.vrsClient; 
+    }
+    
+    public VRSTranferManager getTransferManager()
+    {
+        return transferManager;
     }
     
 	public VRSProxyNode _openLocation(VRL vrl) throws ProxyException

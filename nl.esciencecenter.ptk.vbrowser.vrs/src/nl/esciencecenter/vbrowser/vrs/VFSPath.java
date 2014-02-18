@@ -1,5 +1,6 @@
 package nl.esciencecenter.vbrowser.vrs;
 
+import java.nio.file.LinkOption;
 import java.util.List;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -13,7 +14,9 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public interface VFSPath extends VPath
 {
-
+    // downcast to VFileSystem. 
+    public VFileSystem getVFileSystem() throws VrsException; 
+    
     @Override
     public VRL resolvePathVRL(String path) throws VrsException; 
     
@@ -30,10 +33,28 @@ public interface VFSPath extends VPath
      */
     public abstract boolean isRoot() throws VrsException; 
     
-    public abstract boolean isDir() throws VrsException; 
+    public abstract boolean isDir(LinkOption... linkOptions) throws VrsException; 
     
-    public abstract boolean isFile() throws VrsException; 
+    public abstract boolean isFile(LinkOption... linkOptions) throws VrsException; 
  
+    public abstract boolean exists(LinkOption... linkOptions) throws VrsException; 
+    
     public abstract List<? extends VFSPath> list() throws VrsException; 
+ 
+    /** 
+     * Create last part of this path as directory. 
+     * @param ignoreExisting
+     * @throws VrsException
+     */
+    public abstract void mkdir(boolean ignoreExisting) throws VrsException;
+
+    /** 
+     * Create complete path as directory. 
+     * @param ignoreExisting
+     * @throws VrsException
+     */
+    public abstract void mkdirs(boolean ignoreExisting) throws VrsException;
+
+    public abstract void createFile(boolean ignoreExisting) throws VrsException;
     
 }

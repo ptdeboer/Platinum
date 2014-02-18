@@ -5,12 +5,12 @@ public class InfoConfigNode extends InfoRSNode
 
     public InfoConfigNode(InfoRootNode infoRootNode)
     {
-        super(infoRootNode, InfoConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoConstants.INFOCONFIGNODE));
+        super(infoRootNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE));
     }
 
     public InfoConfigNode(InfoConfigNode parentNode, String subName)
     {
-        super(parentNode, InfoConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoConstants.INFOCONFIGNODE + "/" + subName));
+        super(parentNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE + "/" + subName));
     }
 
     public String getIconURL(int size)

@@ -22,7 +22,7 @@ public class LocalSystem extends InfoRSNode
 
     public LocalSystem(InfoRootNode infoRootNode) throws VrsException
     {
-        super(infoRootNode, InfoConstants.LOCALSYSTEM, InfoRS.createPathVRL(InfoConstants.LOCALSYSTEM));
+        super(infoRootNode, InfoRSConstants.LOCALSYSTEM, InfoRS.createPathVRL(InfoRSConstants.LOCALSYSTEM));
         fsUtil = FSUtil.getDefault();
         initChilds();
     }
@@ -103,13 +103,13 @@ public class LocalSystem extends InfoRSNode
     public List<AttributeDescription> getResourceAttrDescriptions()
     {
         ArrayList<AttributeDescription> descs = new ArrayList<AttributeDescription>();
-        descs.add(new AttributeDescription(InfoConstants.LOCALSYSTEM_OSTYPE, AttributeType.STRING, false, "LocalSystem OS Type"));
-        descs.add(new AttributeDescription(InfoConstants.LOCALSYSTEM_OSVERSION, AttributeType.STRING, false, "LocalSystem OS Version"));
-        descs.add(new AttributeDescription(InfoConstants.LOCALSYSTEM_ARCHTYPE, AttributeType.STRING, false, "LocalSystem Architecture"));
-        descs.add(new AttributeDescription(InfoConstants.LOCALSYSTEM_HOMEDIR, AttributeType.STRING, false,
+        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_OSTYPE, AttributeType.STRING, false, "LocalSystem OS Type"));
+        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_OSVERSION, AttributeType.STRING, false, "LocalSystem OS Version"));
+        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_ARCHTYPE, AttributeType.STRING, false, "LocalSystem Architecture"));
+        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_HOMEDIR, AttributeType.STRING, false,
                 "LocalSystem user home directory"));
-        descs.add(new AttributeDescription(InfoConstants.LOCALSYSTEM_JREHOME, AttributeType.STRING, false, "LocalSystem JRE home"));
-        descs.add(new AttributeDescription(InfoConstants.LOCALSYSTEM_JREVERSION, AttributeType.STRING, false, "LocalSystem JRE Version"));
+        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_JREHOME, AttributeType.STRING, false, "LocalSystem JRE home"));
+        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_JREVERSION, AttributeType.STRING, false, "LocalSystem JRE Version"));
         return descs;
     }
 
@@ -122,27 +122,27 @@ public class LocalSystem extends InfoRSNode
         if (attr != null)
             return attr;
 
-        if (name.equals(InfoConstants.LOCALSYSTEM_OSTYPE))
+        if (name.equals(InfoRSConstants.LOCALSYSTEM_OSTYPE))
         {
             attr = new Attribute(name, GlobalProperties.getOsName());
         }
-        else if (name.equals(InfoConstants.LOCALSYSTEM_ARCHTYPE))
+        else if (name.equals(InfoRSConstants.LOCALSYSTEM_ARCHTYPE))
         {
             attr = new Attribute(name, GlobalProperties.getOsArch());
         }
-        else if (name.equals(InfoConstants.LOCALSYSTEM_OSVERSION))
+        else if (name.equals(InfoRSConstants.LOCALSYSTEM_OSVERSION))
         {
             attr = new Attribute(name, GlobalProperties.getOsVersion());
         }
-        else if (name.equals(InfoConstants.LOCALSYSTEM_JREHOME))
+        else if (name.equals(InfoRSConstants.LOCALSYSTEM_JREHOME))
         {
             attr = new Attribute(name, GlobalProperties.getJavaHome());
         }
-        else if (name.equals(InfoConstants.LOCALSYSTEM_JREVERSION))
+        else if (name.equals(InfoRSConstants.LOCALSYSTEM_JREVERSION))
         {
             attr = new Attribute(name, GlobalProperties.getJavaVersion());
         }
-        else if (name.equals(InfoConstants.LOCALSYSTEM_HOMEDIR))
+        else if (name.equals(InfoRSConstants.LOCALSYSTEM_HOMEDIR))
         {
             String path = this.getHomeNode().getVRL().getPath();
             attr = new Attribute(name, path);

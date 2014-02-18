@@ -2,13 +2,15 @@ package nl.esciencecenter.vbrowser.vrs;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
-import nl.esciencecenter.vbrowser.vrs.io.VRSTransferManager;
+import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSClient
@@ -19,14 +21,17 @@ public class VRSClient
     
     protected VRL homeVRL=null;
     
-    protected VRSTransferManager transferManager=null;
+    /** 
+     * TaskManager for this client. 
+     */
+    protected VRSTranferManager transferManager=null;
     
     public VRSClient(VRSContext vrsContext)
     {
         this.vrsContext=vrsContext;
         this.homeVRL=vrsContext.getHomeVRL(); 
         this.currentPathVRL=vrsContext.getCurrentPathVRL(); 
-        this.transferManager=new VRSTransferManager(this); 
+        this.transferManager=new VRSTranferManager(this); 
     }
 
     public VPath openLocation(VRL vrl) throws VrsException
@@ -84,7 +89,7 @@ public class VRSClient
         return ((VInputStreamCreator)vrs).createInputStream(vrl);
     }
     
-    public VRSTransferManager getVRSTransferManager()
+    public VRSTranferManager getVRSTransferManager()
     {
         return transferManager; 
     }
@@ -92,6 +97,19 @@ public class VRSClient
     public InfoRootNode getInfoRootNode() throws VrsException
     {
         return (InfoRootNode)openLocation(new VRL("info:/")); 
+    }
+
+    public List<VPath> openLocations(List<VRL> vrls) throws VrsException
+    {
+        ArrayList<VPath> paths=new ArrayList<VPath>();
+        
+        for (VRL vrl:vrls)
+        {
+            paths.add(openLocation(vrl)); 
+        }
+        
+        return paths; 
+        
     }
 
 }

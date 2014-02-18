@@ -262,17 +262,12 @@ public class VRSProxyNode extends ProxyNode
     {
         try
         {
-            if (vnode.isComposite())
-            {
-                return vnode.getChildNodeResourceTypes(); 
-            }
+            return vnode.getChildResourceTypes(); 
         }
         catch (VrsException e)
         {
             throw new ProxyException(e.getMessage(),e); 
         }
-        
-        return null; 
     }
 
     @Override 

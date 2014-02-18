@@ -104,6 +104,7 @@ public class VPathNode implements VPath
         return list;
         
     }
+    
     public List<AttributeDescription> getImmutableAttributeDescriptions() 
     {
         ArrayList<AttributeDescription> list=new ArrayList<AttributeDescription>(); 
@@ -235,9 +236,15 @@ public class VPathNode implements VPath
     }
 
     @Override
-    public List<String> getChildNodeResourceTypes() throws VrsException
+    public List<String> getChildResourceTypes() throws VrsException
     {
         return null;
+    }
+
+    @Override
+    public VPath create(String type, String name) throws VrsException
+    {
+        throw new VrsException("Can not create new '"+type+"' node named:"+name); 
     }
 
 }

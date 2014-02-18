@@ -7,11 +7,9 @@ import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.local.LocalFSNode;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
-import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsAccessDeniedException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
@@ -42,17 +40,22 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
     }
 
     @Override
-    public boolean isDir()
+    public boolean isDir(LinkOption... linkOptions)
     {
-        return fsNode.isDirectory(); 
+        return fsNode.isDirectory(linkOptions); 
     }
 
     @Override
-    public boolean isFile()
+    public boolean isFile(LinkOption... linkOptions)
     {
-        return fsNode.isFile();
+        return fsNode.isFile(linkOptions);
     }
 
+    @Override
+    public boolean exists(LinkOption... linkOptions)
+    {
+        return fsNode.exists(linkOptions); 
+    }
     @Override
     public List<VFSPath> list() throws VrsException
     {
@@ -82,11 +85,11 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
     }
 
     @Override
-    public FileAttributes getFileAttributes() throws VrsException
+    public FileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException
     {
         try
         {
-            return new LocalFileAttributes(fsNode.getBasicAttributes());
+            return new LocalFileAttributes(fsNode.getBasicAttributes(linkOptions));
         }
         catch (IOException e)
         {
@@ -121,23 +124,18 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
     @Override
     public boolean delete() throws VrsException
     {
-        try
-        {
-            fsNode.delete();
-            return true; 
-        }
-        catch (IOException e)
-        {
-            throw new VrsException(e.getMessage(),e); 
-        } 
-
+        delete(false);
+        return true; // delete is applicable. 
     }
 
     @Override
-    public void createFile() throws VrsException
+    public void createFile(boolean ignoreExisting) throws VrsException
     {
         try
         {
+            if (ignoreExisting && exists() )
+                throw new VrsException("File already exists:"+this); 
+            
             fsNode.create();
         }
         catch (IOException e)
@@ -162,27 +160,28 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
     }
 
     @Override
-    public void delete(boolean recurse) throws VrsException
+    public void delete(boolean recurse,LinkOption... linkOptions) throws VrsException
     {
         try
         {
-            
-            if (fsNode.isDirectory(LinkOption.NOFOLLOW_LINKS))
+            if (fsNode.isDirectory(linkOptions))
             {
-                String[] nodes = fsNode.list(); 
-                if ((nodes!=null) && (nodes.length>0))
+                if (recurse)
                 {
-                    throw new VrsException("Recursive Delete not yet supported"); 
+                    String[] nodes = fsNode.list(); 
+                    if ((nodes!=null) && (nodes.length>0))
+                    {
+                        throw new VrsException("Recursive Delete not yet supported"); 
+                    }
                 }
             }
         
-            fsNode.delete();
+            fsNode.delete(linkOptions);
         }
         catch (IOException e)
         {
             throw new VrsException(e.getMessage(),e); 
         } 
-        
     }
 
     @Override
@@ -199,5 +198,6 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
         } 
             
     }
+
     
 }

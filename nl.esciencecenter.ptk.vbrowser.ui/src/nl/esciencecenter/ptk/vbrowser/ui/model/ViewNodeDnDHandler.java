@@ -21,7 +21,7 @@ public class ViewNodeDnDHandler
         return defaultInstance; 
     }
 
-	public enum DropAction {COPY,MOVE,LINK, PASTE}; 
+	public enum DropAction {COPY,MOVE,LINK, COPY_PASTE, CUT_PASTE}; 
 	
 	public ViewNodeDnDHandler() 
 	{	

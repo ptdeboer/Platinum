@@ -8,6 +8,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
+import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
@@ -25,7 +26,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         VRL logicalVRL = parent.createSubNodeVRL("node" + parent.getNumNodes());
 
-        InfoResourceNode node = new InfoResourceNode(parent, InfoConstants.RESOURCELINK, logicalVRL);
+        InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
 
         node.setTargetVRL(targetLink);
         node.setIconUrl(optIconURL);
@@ -39,13 +40,13 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
             throws VRLSyntaxException
     {
         VRL logicalVRL = parentNode.createSubNodeVRL(folderName);
-        InfoResourceNode node = new InfoResourceNode(parentNode, InfoConstants.RESOURCEFOLDER, logicalVRL);
+        InfoResourceNode node = new InfoResourceNode(parentNode, InfoRSConstants.RESOURCEFOLDER, logicalVRL);
 
         node.setTargetVRL(null);
         node.setIconUrl(optIconURL);
         node.setShowLinkIcon(false);
         node.setLogicalName(folderName);
-
+        
         return node;
     }
 
@@ -72,33 +73,33 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
 
     protected void setLogicalName(String name)
     {
-        this.resourceProps.set(InfoConstants.RESOURCE_NAME, name);
+        this.resourceProps.set(InfoRSConstants.RESOURCE_NAME, name);
     }
 
     protected void setIconUrl(String iconUrl)
     {
-        this.resourceProps.set(InfoConstants.RESOURCE_ICONURL, iconUrl);
+        this.resourceProps.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
     }
 
     protected void setShowLinkIcon(boolean val)
     {
-        this.resourceProps.set(InfoConstants.RESOURCE_SHOWLINKICON, val);
+        this.resourceProps.set(InfoRSConstants.RESOURCE_SHOWLINKICON, val);
     }
 
     public boolean getShowLinkIcon(boolean defaultValue)
     {
-        return resourceProps.getBooleanProperty(InfoConstants.RESOURCE_SHOWLINKICON, defaultValue);
+        return resourceProps.getBooleanProperty(InfoRSConstants.RESOURCE_SHOWLINKICON, defaultValue);
     }
 
     @Override
     public String getIconURL(int size)
     {
-        return resourceProps.getStringProperty(InfoConstants.RESOURCE_ICONURL);
+        return resourceProps.getStringProperty(InfoRSConstants.RESOURCE_ICONURL);
     }
 
     public String getName()
     {
-        String name = resourceProps.getStringProperty(InfoConstants.RESOURCE_NAME);
+        String name = resourceProps.getStringProperty(InfoRSConstants.RESOURCE_NAME);
 
         if (name == null)
         {
@@ -120,7 +121,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         try
         {
-            return resourceProps.getVRLProperty(InfoConstants.RESOURCE_TARGETVRL);
+            return resourceProps.getVRLProperty(InfoRSConstants.RESOURCE_TARGETVRL);
         }
         catch (VRLSyntaxException e)
         {
@@ -133,11 +134,11 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         if (vrl == null)
         {
-            resourceProps.remove(InfoConstants.RESOURCE_TARGETVRL);
+            resourceProps.remove(InfoRSConstants.RESOURCE_TARGETVRL);
         }
         else
         {
-            resourceProps.set(InfoConstants.RESOURCE_TARGETVRL, vrl);
+            resourceProps.set(InfoRSConstants.RESOURCE_TARGETVRL, vrl);
         }
     }
 
@@ -173,12 +174,12 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
 
     public boolean isResourceLink()
     {
-        return InfoConstants.RESOURCELINK.equals(getResourceType());
+        return InfoRSConstants.RESOURCELINK.equals(getResourceType());
     }
 
     public boolean isResourceFolder()
     {
-        return InfoConstants.RESOURCEFOLDER.equals(getResourceType());
+        return InfoRSConstants.RESOURCEFOLDER.equals(getResourceType());
     }
 
     public VPath resolveTarget(VRL vrl) throws VrsException
@@ -198,10 +199,10 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     public List<AttributeDescription> getResourceAttrDescriptions()
     {
         ArrayList<AttributeDescription> descs = new ArrayList<AttributeDescription>();
-        descs.add(new AttributeDescription(InfoConstants.RESOURCE_TARGETVRL, AttributeType.VRL, true, "Resource Target VRL"));
-        descs.add(new AttributeDescription(InfoConstants.RESOURCE_MIMETYPE, AttributeType.STRING, true, "Resource MimeType"));
-        descs.add(new AttributeDescription(InfoConstants.RESOURCE_ICONURL, AttributeType.STRING, true, "Resource Icon URL"));
-        descs.add(new AttributeDescription(InfoConstants.RESOURCE_SHOWLINKICON, AttributeType.BOOLEAN, true,
+        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_TARGETVRL, AttributeType.VRL, true, "Resource Target VRL"));
+        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_MIMETYPE, AttributeType.STRING, true, "Resource MimeType"));
+        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_ICONURL, AttributeType.STRING, true, "Resource Icon URL"));
+        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_SHOWLINKICON, AttributeType.BOOLEAN, true,
                 "Resource show (mini) link icon"));
 
         return descs;
@@ -216,19 +217,19 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         if (attr != null)
             return attr;
 
-        if (name.equals(InfoConstants.RESOURCE_TARGETVRL))
+        if (name.equals(InfoRSConstants.RESOURCE_TARGETVRL))
         {
             attr = new Attribute(name, getTargetVRL());
         }
-        else if (name.equals(InfoConstants.RESOURCE_MIMETYPE))
+        else if (name.equals(InfoRSConstants.RESOURCE_MIMETYPE))
         {
             attr = new Attribute(name, getMimeType());
         }
-        else if (name.equals(InfoConstants.RESOURCE_SHOWLINKICON))
+        else if (name.equals(InfoRSConstants.RESOURCE_SHOWLINKICON))
         {
             attr = new Attribute(name, getShowLinkIcon(false));
         }
-        else if (name.equals(InfoConstants.RESOURCE_ICONURL))
+        else if (name.equals(InfoRSConstants.RESOURCE_ICONURL))
         {
             attr = new Attribute(name, getIconURL(128));
         }
@@ -236,17 +237,49 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         return attr;
     }
 
+    public String getMimeType()
+    {
+        if (isResourceLink())
+        {
+            return InfoRSConstants.RESOURCELINK_MIMETYPE; 
+        }
+        else if (isResourceFolder())
+        {
+            return InfoRSConstants.RESOURCEFOLDER_MIMETYPE; 
+        }
+        else
+        {
+            // default infors-<ResourceType> mime-type;
+            return super.getMimeType(); 
+        }
+    }
+    
+    public List<String> getChildResourceTypes()
+    {
+        if (this.isResourceFolder())
+        {
+            return defaultFolderChildTypes;
+        }
+        else if (this.isResourceLink())
+        {
+            // resolve target Child Types ? 
+        }
+        return null;
+    }
+    
     // ======================================
     // Stream Read/Write Methods (load/save)
     // ========================================
 
     public OutputStream createOutputStream() throws VrsException
     {
+        // todo: create from xml stream 
         throw new VrsException("Not now");
     }
 
     public InputStream createInputStream() throws VrsException
     {
+        // todo: to xml stream
         throw new VrsException("Not now");
     }
 

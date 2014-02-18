@@ -38,6 +38,7 @@ import javax.swing.border.EtchedBorder;
 
 import nl.esciencecenter.ptk.ui.fonts.FontInfo;
 import nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings;
+import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDragListener;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
@@ -131,13 +132,17 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
         DragSource dragSource=DragSource.getDefaultDragSource();
         dragSource.createDefaultDragGestureRecognizer(
                 this, DnDConstants.ACTION_COPY_OR_MOVE, dragListener );
-       
+
+        dragSource.addDragSourceListener(new ViewNodeDragListener()); 
+        
         // Specify DROP target: 
         this.setDropTarget(new ViewNodeDropTarget(this));
         // Have to set Keymapping to my component 
         KeyMappings.addCopyPasteKeymappings(this); 
         
         this.setTransferHandler(transferHandler);   
+        
+
     }
     
     public void updateLabelText(String text, boolean hasFocus)

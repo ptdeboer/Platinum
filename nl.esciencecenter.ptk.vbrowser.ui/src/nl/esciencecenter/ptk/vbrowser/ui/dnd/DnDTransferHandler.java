@@ -33,7 +33,6 @@ import javax.swing.TransferHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler.DropAction;
 
 /**
  * Default TransgerHandler for ViewNodes.
@@ -41,13 +40,14 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler.DropAction;
 public class DnDTransferHandler extends TransferHandler
 {
     private static final long serialVersionUID = -115960212645219778L;
+
     private static DnDTransferHandler defaultTransferHandler = new DnDTransferHandler();
 
     public static DnDTransferHandler getDefault()
     {
         return defaultTransferHandler;
     }
-    
+
     // === Instance stuff === //
 
     /** Construct default TransferHandler wich handles VRL Objects */
@@ -56,7 +56,6 @@ public class DnDTransferHandler extends TransferHandler
         // Default ViewNode Transferer.
     }
 
-    
     @Override
     public void exportDone(JComponent comp, Transferable data, int action)
     {
@@ -67,7 +66,10 @@ public class DnDTransferHandler extends TransferHandler
         DnDUtil.debugPrintln("exportDone action=" + action);
     }
 
-    // Method is NOT called when canImport(TransferSupport transferSupport) is overrriden!
+    // ===
+    // Method is NOT called when canImport(TransferSupport transferSupport) is
+    // overrriden!
+    // ===
     @Deprecated
     @Override
     public boolean canImport(JComponent c, DataFlavor[] flavors)
@@ -78,72 +80,74 @@ public class DnDTransferHandler extends TransferHandler
         // return VTransferData.hasMyDataFlavor(flavors);
     }
 
+    // This method is called i.s.o above one:
     public boolean canImport(TransferSupport transferSupport)
     {
-    	DataFlavor[] flavors = transferSupport.getDataFlavors(); 
-    	for (DataFlavor flav : flavors)
-    	{
-            DnDUtil.errorPrintf("FIXME:canImport():%s\n",flav);
-    	}
+        DataFlavor[] flavors = transferSupport.getDataFlavors();
+        for (DataFlavor flav : flavors)
+        {
+            DnDUtil.errorPrintf("FIXME:canImport():%s\n", flav);
+        }
+        // transferSupport.setDropAction(COPY);
         return false;
     }
-    
+
     @Override
     protected Transferable createTransferable(JComponent c)
     {
-        DnDUtil.debugPrintf("createTransferable():%s\n",c);
+        DnDUtil.debugPrintf("createTransferable():%s\n", c);
 
-        if ((c instanceof ViewNodeComponent)==false)
+        if ((c instanceof ViewNodeComponent) == false)
         {
-            DnDUtil.errorPrintf("createTransferable(): Error: Not a ViewNodeComponent:%s\n",c);
+            DnDUtil.errorPrintf("createTransferable(): Error: Not a ViewNodeComponent:%s\n", c);
             return null;
         }
-        
+
         return createTransferable((ViewNodeComponent) c);
     }
 
     protected Transferable createTransferable(ViewNodeComponent c)
     {
-        //Debug("Create Transferable:"+c);
-        ViewNode[] nodes=null;
-        
+        // Debug("Create Transferable:"+c);
+        ViewNode[] nodes = null;
+
         ViewNodeContainer parent = c.getViewContainer();
-        
-        if (parent!=null)
+
+        if (parent != null)
         {
             // redirect to parent for multi selection!
             nodes = parent.getNodeSelection();
         }
         else if (c instanceof ViewNodeContainer)
         {
-            // drag initiated from Container! (ResourceTree) 
-            nodes=((ViewNodeContainer)c).getNodeSelection();
+            // drag initiated from Container! (ResourceTree)
+            nodes = ((ViewNodeContainer) c).getNodeSelection();
         }
         else
         {
             // stand-alone 'node'
-            nodes=new ViewNode[1];
-            nodes[0]=c.getViewNode(); // get actual view node i.s.o contains selection.
+            nodes = new ViewNode[1];
+            nodes[0] = c.getViewNode(); // get actual view node i.s.o contains
+                                        // selection.
         }
-        
-        if ((nodes!=null) && (nodes.length>0))
+
+        if ((nodes != null) && (nodes.length > 0))
         {
-            DnDUtil.debugPrintf("createTransferable(): getNodeSelection()=%d\n",nodes.length);
-            
-            if (nodes.length<=0)
+            DnDUtil.debugPrintf("createTransferable(): getNodeSelection()=%d\n", nodes.length);
+
+            if (nodes.length <= 0)
                 return null;
-            
-            return VRLListTransferable.createFrom(nodes); 
+
+            return VRLEntryListTransferable.createFrom(nodes);
         }
         else
         {
-            DnDUtil.debugPrintf("Tranfer source not recognised:%s\n",c); 
+            DnDUtil.debugPrintf("Tranfer source not recognised:%s\n", c);
         }
-        
-        return null; 
+
+        return null;
     }
-  
-    
+
     @Override
     public void exportAsDrag(JComponent comp, InputEvent e, int action)
     {
@@ -160,48 +164,50 @@ public class DnDTransferHandler extends TransferHandler
     @Override
     public int getSourceActions(JComponent c)
     {
-        return COPY_OR_MOVE | DnDConstants.ACTION_LINK ;// nodes can be copied and moved. 
-    }    
-    
+        // All Nodes can be Copied, Moved and Linked to
+        return COPY_OR_MOVE | DnDConstants.ACTION_LINK;
+    }
 
-    // NOT called if importData(TransferSupport is implemented) 
+    // NOT called if importData(TransferSupport is implemented)
     @Override
     @Deprecated
     public boolean importData(JComponent comp, Transferable data)
     {
         // This method is directory called when performing CTRL-V
 
-        DnDUtil.debugPrintf("importData():%s\n",comp);
-        if ((comp instanceof ViewNodeComponent)==false)
+        DnDUtil.debugPrintf("importData():%s\n", comp);
+        if ((comp instanceof ViewNodeComponent) == false)
         {
-            DnDUtil.errorPrintf("importData(): Error: Not a ViewNodeComponent:%s\n",comp);
+            DnDUtil.errorPrintf("importData(): Error: Not a ViewNodeComponent:%s\n", comp);
             return false;
         }
-        
-        return DnDUtil.doPasteData(comp,((ViewNodeComponent)comp).getViewNode(),data); 
+
+        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data);
     }
 
     /*
-     * New (java 1.6) version. 
-     * If this is overriden, the old ImportData(JComponent, Transferable) is NOT called 
-     * @see javax.swing.TransferHandler#importData(javax.swing.TransferHandler.TransferSupport)
+     * New (java 1.6) version. If this is overridden, the old
+     * ImportData(JComponent, Transferable) is NOT called
+     * 
+     * @see javax.swing.TransferHandler#importData(javax.swing.TransferHandler.
+     * TransferSupport)
      */
     @Override
-    public boolean importData(TransferSupport support) 
+    public boolean importData(TransferSupport support)
     {
         // This method is direct called when performing CTRL-V
 
-        Component comp = support.getComponent(); 
-        Transferable data = support.getTransferable(); 
+        Component comp = support.getComponent();
+        Transferable data = support.getTransferable();
         // This method is directory called when performing CTRL-V
-        DnDUtil.debugPrintf("importData(TransferSupport):%s\n",comp);
-        if ((comp instanceof ViewNodeComponent)==false)
+        DnDUtil.debugPrintf("importData(TransferSupport):%s\n", comp);
+        if ((comp instanceof ViewNodeComponent) == false)
         {
-            DnDUtil.errorPrintf("importData(): Error: Not a ViewNodeComponent:%s\n",comp);
+            DnDUtil.errorPrintf("importData(): Error: Not a ViewNodeComponent:%s\n", comp);
             return false;
         }
-        
-        return DnDUtil.doPasteData(comp,((ViewNodeComponent)comp).getViewNode(),data); 
+
+        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data);
     }
-    
+
 }

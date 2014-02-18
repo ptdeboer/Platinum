@@ -34,8 +34,6 @@ public interface VPath
      */
     public VPath getParent() throws VrsException;
     
-    public boolean isComposite() throws VrsException;
-    
     public String getIconURL(int size) throws VrsException; 
 
     public String getMimeType() throws VrsException;
@@ -48,8 +46,29 @@ public interface VPath
 
     public List<String> getAttributeNames() throws VrsException;
 
+    // =====================
+    // VComposite Interface
+    // =====================
+    
+    public boolean isComposite() throws VrsException;
+    
+    /** 
+     * List of allow child resource types. These types will be use as allowed types for Create and the (Copy)Drop methods 
+     * @throws VrsException
+     */
+    public List<String> getChildResourceTypes() throws VrsException; 
+
     public List<? extends VPath> list() throws VrsException;
 
-    public List<String> getChildNodeResourceTypes() throws VrsException; 
- 
+    /** 
+     * Create new resource with this path as parent. Type must be one of getChildResourceTypes(). 
+     * @param type
+     * @param name
+     * @return
+     * @throws VrsException
+     */
+    public VPath create(String type, String name) throws VrsException; 
+    
+    // public Map<String,List<Attribute>> getChildAttributes(List<String> childNames, List<String> attrNames) throws VrsException;
+
 }

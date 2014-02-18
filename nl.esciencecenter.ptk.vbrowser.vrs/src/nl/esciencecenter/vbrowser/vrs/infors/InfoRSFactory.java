@@ -18,20 +18,20 @@ public class InfoRSFactory implements VResourceSystemFactory
     public String[] getSchemes()
     {
         return new String[]
-        { InfoConstants.INFO_SCHEME };
+        { InfoRSConstants.INFO_SCHEME };
     }
 
     @Override
     public String createResourceSystemId(VRL vrl)
     {
         // only one local infors per registry;
-        return InfoConstants.INFO_SCHEME + ":0";
+        return InfoRSConstants.INFO_SCHEME + ":0";
     }
 
     @Override
     public VResourceSystem createResourceSystemFor(VRSContext context, ResourceSystemInfo info, VRL vrl) throws VrsException
     {
-        if (StringUtil.equals(InfoConstants.INFO_SCHEME, vrl.getScheme()) == false)
+        if (StringUtil.equals(InfoRSConstants.INFO_SCHEME, vrl.getScheme()) == false)
         {
             throw new VrsException("Only support 'info' scheme:" + vrl);
         }

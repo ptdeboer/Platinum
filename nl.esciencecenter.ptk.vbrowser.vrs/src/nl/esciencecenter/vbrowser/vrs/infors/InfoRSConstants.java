@@ -1,6 +1,8 @@
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-public class InfoConstants
+import nl.esciencecenter.vbrowser.vrs.VRSTypes;
+
+public class InfoRSConstants
 {
     public static final String INFO_SCHEME = "info";
 
@@ -35,4 +37,10 @@ public class InfoConstants
     public static final String LOCALSYSTEM_JREHOME = "localsystem.jre.home";
 
     public static final String LOCALSYSTEM_JREVERSION = "localsystem.jre.version";
+
+    public static final String RESOURCELINK_MIMETYPE =VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX+"-"+RESOURCELINK; 
+    
+    public static final String RESOURCEFOLDER_MIMETYPE =VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX+"-"+RESOURCEFOLDER;
+    
+    
 }

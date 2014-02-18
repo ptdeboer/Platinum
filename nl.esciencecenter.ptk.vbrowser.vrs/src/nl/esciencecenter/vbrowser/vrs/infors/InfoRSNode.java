@@ -3,9 +3,11 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
+import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.node.VPathNode;
@@ -15,6 +17,16 @@ public class InfoRSNode extends VPathNode
 {
     private static final ClassLogger logger = ClassLogger.getLogger(InfoRSNode.class);
 
+    // =============== 
+    // Class Constants 
+    // ===============
+    
+    public static List<String> defaultFolderChildTypes = new StringList( InfoRSConstants.RESOURCEFOLDER,InfoRSConstants.RESOURCELINK,VRSTypes.VLINK_TYPE ); 
+
+    // ===============
+    // Instance
+    // ===============
+    
     protected ArrayList<InfoRSNode> nodes = new ArrayList<InfoRSNode>();
 
     protected InfoRSNode parent;
@@ -55,7 +67,7 @@ public class InfoRSNode extends VPathNode
 
     public String getMimeType()
     {
-        return "vrs-info/" + getResourceType().toLowerCase();
+        return VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX+"-infors-"+getResourceType();
     }
 
     public InfoRSNode getParent()

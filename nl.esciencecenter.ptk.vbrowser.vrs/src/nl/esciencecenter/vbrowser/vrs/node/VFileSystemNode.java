@@ -4,12 +4,13 @@ import java.util.List;
 
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
+import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public abstract class VFileSystemNode extends VResourceSystemNode implements VFileSystem, VFSPath
+public abstract class VFileSystemNode extends VResourceSystemNode implements VFileSystem //, VFSPath
 {
 
     protected VFileSystemNode(VRSContext context, VRL serverVrl)
@@ -25,28 +26,10 @@ public abstract class VFileSystemNode extends VResourceSystemNode implements VFi
     }
 
     @Override
-    public VFSPath getParent() throws VrsException
+    public VPath getParent() throws VrsException
     {
         // default of FileSystem Root is FileSystem itself.
         return this;
-    }
-
-    @Override
-    public boolean isRoot() throws VrsException
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isDir() throws VrsException
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isFile() throws VrsException
-    {
-        return false;
     }
 
     @Override

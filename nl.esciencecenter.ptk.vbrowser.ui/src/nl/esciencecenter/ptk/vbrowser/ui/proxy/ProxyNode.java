@@ -22,6 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.Icon;
 
@@ -36,6 +37,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeNames;
+import nl.esciencecenter.vbrowser.vrs.task.VRSActionType;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -354,7 +356,7 @@ public abstract class ProxyNode
         viewNode.setIcon(ViewNode.FOCUS_ICON,getIcon(model,false,true));
         viewNode.setIcon(ViewNode.SELECTED_ICON,getIcon(model,true,false));
         viewNode.setIcon(ViewNode.SELECTED_FOCUS_ICON,getIcon(model,true,true)); 
-        
+        viewNode.setChildTypes(this.getChildTypes()); 
         return viewNode; 
     } 
 
@@ -487,7 +489,7 @@ public abstract class ProxyNode
 		return this.cache.is_composite; 
 	}
 	
-	public List<String> getCreateTypes() 
+	public List<String> getChildTypes() 
 	{
 	    if (this.cache.child_types==null)
 	    {
@@ -584,8 +586,6 @@ public abstract class ProxyNode
         return "<ProxyNode:"+getResourceType()+":"+getVRL(); 
     }
     
-
-    
 	// ========================================================================
     // Protected implementation interface ! 
     // ========================================================================
@@ -597,13 +597,15 @@ public abstract class ProxyNode
     abstract protected String doGetResourceStatus() throws ProxyException;
   
     abstract protected String doGetMimeType() throws ProxyException;
-
-    abstract protected boolean doGetIsComposite() throws ProxyException;
     
     abstract protected String doGetIconURL(String status, int size) throws ProxyException;
+    
     // ====
     // Child/Composite Attributes
     // ====
+
+    abstract protected boolean doGetIsComposite() throws ProxyException;
+
     
 	/**  Uncached doGetChilds, using optional range */  
 	abstract protected List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException;

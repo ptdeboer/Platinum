@@ -2,12 +2,15 @@ package nl.esciencecenter.vbrowser.vrs.node;
 
 import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
 
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.util.StringUtil;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.VPath;
@@ -47,7 +50,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         super(fileSystem, vrl);
     }
 
-    protected VFileSystem getVFileSystem()
+    public VFileSystem getVFileSystem()
     {
         return (VFileSystem) resourceSystem;
     }
@@ -71,12 +74,13 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
     }
 
     @Override
-    public List<String> getChildNodeResourceTypes() throws VrsException
+    public List<String> getChildResourceTypes() throws VrsException
     {
-        if (isComposite())
+        if (isDir())
         {
             return new StringList(VRSTypes.FILE_TYPE, VRSTypes.DIR_TYPE);
         }
+        
         return null;
     }
 
@@ -191,22 +195,22 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
     }
 
     @Override
-    public boolean isDir() throws VrsException
+    public boolean isDir(LinkOption... linkOptions) throws VrsException
     {
-        return getFileAttributes().isDirectory();
+        return getFileAttributes(linkOptions).isDirectory();
     }
 
     @Override
-    public boolean isFile() throws VrsException
+    public boolean isFile(LinkOption... linkOptions) throws VrsException
     {
-        return getFileAttributes().isRegularFile();
+        return getFileAttributes(linkOptions).isRegularFile();
     }
 
     public boolean create() throws VrsException
     {
         if (isFile())
         {
-            createFile();
+            createFile(false);
             return true;
         }
         else if (isDir())
@@ -220,6 +224,31 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         }
     }
 
+    public VFSPath create(String type,String name,boolean ignoreExisting) throws VrsException
+    {
+        if (isFile()) 
+        {
+            throw new VrsException("Files can not create child nodes"); 
+        }
+        
+        VFSPath path=this.resolvePath(name); 
+        
+        if (StringUtil.equals(type,VRSTypes.FILE_TYPE)) 
+        {
+            path.createFile(ignoreExisting); 
+        }
+        else if (StringUtil.equals(type,VRSTypes.DIR_TYPE))
+        {
+            path.mkdir(ignoreExisting); 
+        }
+        else
+        {
+            throw new VrsException("Type not supported:"+type); 
+        }
+        
+        return path;
+        
+    }
     public VPath renameTo(VPath other) throws VrsException
     {
         if ((other instanceof VFSPath) == false)
@@ -230,11 +259,45 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         return renameTo((VFSPath) other);
     }
 
+
+    @Override
+    public void mkdirs(boolean ignoreExisting) throws VrsException
+    {
+        List<VFSPath> paths=new ArrayList<VFSPath>(); 
+
+        // walk up tree: 
+        VFSPath path=this; 
+        while (path.isRoot()==false)
+        {
+            path=path.getParent();
+            if (paths.contains(path))
+            {
+                ClassLogger.getLogger(this.getClass()).errorPrintf("*** Path Cycle detected, parent path:"+path+" already in path list from:"+this); 
+                break; 
+            }
+            
+            paths.add(path);  
+        }
+        
+        for (int i=paths.size()-1;i>=0;i++)
+        {
+            paths.get(i).mkdir(ignoreExisting); 
+        }
+        
+        mkdir(ignoreExisting); 
+    }
+    
     // ===================
     // Abstract Interface
     // ===================
 
-    public abstract FileAttributes getFileAttributes() throws VrsException;
+    /**
+     * @return - true if path exists. 
+     * @throws VrsException
+     */
+    public abstract boolean exists(LinkOption... linkOptions) throws VrsException; 
+    
+    public abstract FileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException;
 
     @Override
     public abstract boolean isRoot() throws VrsException;
@@ -247,7 +310,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
      * 
      * @throws VrsException
      */
-    public abstract void createFile() throws VrsException;
+    public abstract void createFile(boolean ignoreExisting) throws VrsException;
 
     /**
      * Create this (virtual) path as an actual directory on this FileSystem.
@@ -257,8 +320,8 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
      * @throws VrsException
      */
     public abstract void mkdir(boolean ignoreExisting) throws VrsException;
-
-    public abstract void delete(boolean recurse) throws VrsException;
+    
+    public abstract void delete(boolean recurse, LinkOption... linkOptions) throws VrsException;
 
     public abstract VFSPath renameTo(VFSPath other) throws VrsException;
 

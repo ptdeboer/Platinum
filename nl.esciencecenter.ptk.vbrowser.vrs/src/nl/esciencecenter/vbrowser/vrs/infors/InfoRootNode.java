@@ -1,10 +1,14 @@
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import java.util.List;
+
+import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class InfoRootNode extends InfoRSNode
 {
+
     protected InfoRS infors;
 
     protected LocalSystem localSystem;
@@ -13,7 +17,7 @@ public class InfoRootNode extends InfoRSNode
 
     public InfoRootNode(InfoRS infoRS) throws VrsException
     {
-        super(infoRS, InfoConstants.INFOROOTNODE, new VRL("info", null, 0, "/"));
+        super(infoRS, InfoRSConstants.INFOROOTNODE, new VRL("info", null, 0, "/"));
         infors = infoRS;
         init();
     }
@@ -128,4 +132,10 @@ public class InfoRootNode extends InfoRSNode
         }
     }
 
+    public List<String> getChildResourceTypes()
+    {
+        // Root Node support default InfoRS types: 
+       return defaultFolderChildTypes;  
+    }
+    
 }
