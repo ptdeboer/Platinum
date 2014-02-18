@@ -170,7 +170,7 @@ public class LocalFSNode extends FSNode
         
     }
 
-    public void delete() throws IOException
+    public void delete(LinkOption... linkOptions) throws IOException
     {
         Files.delete(_path);
     }
@@ -264,7 +264,9 @@ public class LocalFSNode extends FSNode
     public boolean isBrokenLink() throws IOException
     {
         if (isSymbolicLink()==false)
+        {
             return false; 
+        }
         
         return (getSymbolicLinkTarget().exists()==false);
     }
@@ -282,18 +284,18 @@ public class LocalFSNode extends FSNode
         return new LocalFSNode(getFSHandler(),target);
     }
 
-    public BasicFileAttributes getBasicAttributes() throws IOException
+    public BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException
     {
         try
         {
             if (basicAttrs == null)
             {
-                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class);
+                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class,linkOptions);
             }
         }
         catch (IOException e)
         {
-            // auto dereference in the case of a borken link: 
+            // Auto dereference in the case of a borken link: 
             if (isBrokenLink())
             {
                 basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class,LinkOption.NOFOLLOW_LINKS);
