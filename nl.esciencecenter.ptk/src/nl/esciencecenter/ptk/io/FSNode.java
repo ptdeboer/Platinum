@@ -322,7 +322,7 @@ public abstract class FSNode
     public abstract FSNode getParent();
 
     /** Delete file or empty directory. */
-    public abstract void delete() throws IOException;
+    public abstract void delete(LinkOption... linkOptions) throws IOException;
 
     // === Directory methods === //
 
@@ -338,6 +338,6 @@ public abstract class FSNode
     /** Create full directory path. */
     public abstract void mkdirs() throws IOException;
 
-    public abstract BasicFileAttributes getBasicAttributes() throws IOException;
+    public abstract BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException;
 
 }
