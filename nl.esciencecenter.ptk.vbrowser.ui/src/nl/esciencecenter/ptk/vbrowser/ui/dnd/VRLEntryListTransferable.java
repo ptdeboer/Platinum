@@ -26,8 +26,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.util.Vector;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-
 import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData.VRLEntry;
