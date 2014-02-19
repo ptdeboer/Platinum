@@ -1,5 +1,5 @@
 package nl.esciencecenter.ptk.ui.widgets;
- 
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -10,50 +10,42 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
-import nl.esciencecenter.ptk.net.URIUtil;
+import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
-/** 
- * Handle drops on the Navigation Bar. 
+/**
+ * Handle drops on the Navigation Bar.
  */
 public class URIDropHandler implements DropTargetListener
 {
-
-    /** 
-     * Flavors in order of preference 
-     */ 
-    public static DataFlavor uriDataFlavors[]={DnDFlavors.javaFileListFlavor,DnDFlavors.flavorURIList,DnDFlavors.stringFlavor};
-    
+    private static ClassLogger logger=ClassLogger.getLogger(URIDropHandler.class); 
+     
     private URIDropTargetLister uriDropTargetListener;
 
     public URIDropHandler(URIDropTargetLister uriDropListener)
     {
-        this.uriDropTargetListener=uriDropListener;
+        this.uriDropTargetListener = uriDropListener;
     }
 
     public void dragEnter(DropTargetDragEvent dtde)
     {
         // accept/reject DataFlavor
-        for (DataFlavor flavor:uriDataFlavors)
+        for (DataFlavor flavor : DnDFlavors.uriDataFlavors)
         {
             if (dtde.isDataFlavorSupported(flavor))
             {
                 dtde.acceptDrag(DnDConstants.ACTION_COPY);
-                return ; 
+                return;
             }
         }
-        dtde.rejectDrag(); 
+        dtde.rejectDrag();
     }
 
     public void dragOver(DropTargetDragEvent dtde)
     {
-        
-        // dtde.rejectDrag(); 
     }
 
     public void dropActionChanged(DropTargetDragEvent dtde)
@@ -66,93 +58,48 @@ public class URIDropHandler implements DropTargetListener
 
     public void drop(DropTargetDropEvent dtde)
     {
-        // check 
+        // check
         Transferable t = dtde.getTransferable();
         DropTargetContext dtc = dtde.getDropTargetContext();
-        
-        List<java.net.URI> uris = null; 
-        
+
+        List<java.net.URI> uris = null;
+
         try
         {
-
-            // Note: 'javaFileListFlavor' might be supported when URIs are dropped 
-            // but still won't return correct transfer data as "http" URIs are not Files. 
-            // Check URI list first. 
-            
-            if ( t.isDataFlavorSupported(DnDFlavors.flavorURIList))
+            if (DnDFlavors.canConvertToURIs(t.getTransferDataFlavors(),true))
             {
-                // Check URI(s)
-                debugPrintf(">>>%s\n","flavorURIList");
+                // first accept drop!
                 dtde.acceptDrop(DnDConstants.ACTION_COPY);
-                
-                uris=DnDFlavors.getURIList(t,DnDFlavors.flavorURIList);
-                
-                dtde.getDropTargetContext().dropComplete(true);
+                uris = DnDFlavors.getURIList(t);
 
-                if ((uris!=null) && (uris.size()>0))
-                {
-                	uriDropTargetListener.notifyUriDrop(uris);
-                	dtde.dropComplete(true);
-                	return;
-                }
-            }
-            else if (t.isDataFlavorSupported(DnDFlavors.javaFileListFlavor))
-            {
-            	// (Java) Files dropped native browser: 
-                debugPrintf(">>>%s\n","javaFileListFlavor");
-                dtde.acceptDrop(DnDConstants.ACTION_COPY);
-                
-                uris=DnDFlavors.getURIList(t,DnDFlavors.javaFileListFlavor);
-    
-                if ((uris!=null) && (uris.size()>0))
+                if ((uris != null) && (uris.size() > 0))
                 {
                     uriDropTargetListener.notifyUriDrop(uris);
                     dtde.dropComplete(true);
                     return;
                 }
-                
-                uris=null; // continue; 
+                else
+                {
+                    logger.warnPrintf("drop(): Could not convert to one or more URIs:%s\n",new ExtendedList<DataFlavor>(t.getTransferDataFlavors())); 
+                    dtde.dropComplete(false);
+                }
             }
-            else if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
+            else
             {
-                // Convert to text: 
-                dtde.acceptDrop(DnDConstants.ACTION_COPY);
-                String txt = (String) t.getTransferData(DataFlavor.stringFlavor);
-                dtde.getDropTargetContext().dropComplete(true);
-                uris = new ArrayList<java.net.URI>();
-
-                try
-                {
-                    uris.add(new URI(txt));
-                    uriDropTargetListener.notifyUriDrop(uris);
-                    dtde.dropComplete(true);
-                    return; 
-                }
-                catch (URISyntaxException e)
-                {
-                    // uriDropTargetListener.notifyDnDDropText(txt);
-                    dtde.rejectDrop();
-                    return; 
-                }
+                logger.warnPrintf("drop(): Dropped data is not valid URI\n"); 
+                dtde.rejectDrop();
             }
-            
         }
         catch (UnsupportedFlavorException e)
         {
-            e.printStackTrace();
+            logger.logException(ClassLogger.ERROR,e,"UnsupportedFlavorException:%s\n",e); 
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            logger.logException(ClassLogger.ERROR,e,"IOException:%s\n",e); 
         }
-        
+
         dtde.dropComplete(false);
-
-    }
-
-    private void debugPrintf(String format, Object... args)
-    {
-        
     }
 
 }
