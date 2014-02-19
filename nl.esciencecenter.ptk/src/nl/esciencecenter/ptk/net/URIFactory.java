@@ -492,8 +492,10 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     protected void init(final String uriStr) throws URISyntaxException
     {
         if (uriStr == null)
+        {
             throw new URISyntaxException("<NULL>", "URI String can not be null");
-
+        }
+        
         URISyntaxException ex;
 
         // java.net.URI parsing is bo
@@ -506,11 +508,19 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
         if (sspStr != null)
         {
+            // Parse: "scheme:", "scheme:/" "scheme://". Triple slash is parsed as empty authority URI
             if (StringUtil.isEmpty(sspStr) || StringUtil.equals(sspStr, "/") || StringUtil.equals(sspStr, "//"))
             {
-                // Parse: "scheme:", "scheme:/" "scheme://".
                 // create scheme only URI
+
                 this.scheme = uriStr.substring(0, index);
+                
+                if ("/".equals(sspStr))
+                {
+                    this.pathOrReference="/"; 
+                }
+                // check scheme:// 
+                
                 return;
             }
         }
@@ -1056,8 +1066,8 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         }
         else
         {
-            // create Reference URI
-            return new URI(this.scheme, null, null, -1, this.getReference(), this.query, this.fragment);
+            // Reference or path only URI: 
+            return new URI(scheme,null,null,-1,pathOrReference,query,fragment); 
         }
     }
 
