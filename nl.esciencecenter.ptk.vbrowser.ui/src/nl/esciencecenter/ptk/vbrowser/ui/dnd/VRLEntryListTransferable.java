@@ -121,7 +121,7 @@ public class VRLEntryListTransferable implements Transferable
                 if (vri.hasScheme(FSNode.FILE_SCHEME))
                 {
                     // create local file path (leave out hostname!)
-                    urisstr += "file://" + vri.getPath() + sepStr;
+                    urisstr += "file://" + vri.getPath();
                 }
                 else
                 {
