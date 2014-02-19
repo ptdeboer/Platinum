@@ -37,17 +37,6 @@ public class DnDUtil
 {
     protected static ClassLogger dndLogger = ClassLogger.getLogger(DnDUtil.class);
 
-    static
-    {
-        staticInit();
-    }
-
-    private static void staticInit()
-    {
-        dndLogger.setLevelToDebug();
-        //logger.setLevelToInfo();
-    }
-
     public static DnDTransferHandler getDefaultTransferHandler()
     {
         return DnDTransferHandler.getDefault();

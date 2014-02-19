@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Vector;
 
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -42,6 +43,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class DnDData
 {
+    private static ClassLogger logger=ClassLogger.getLogger(DnDData.class,DnDUtil.dndLogger); 
+    
     public static final String VBROWSER_VRS_MIMETYPE_PREFIX = VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX;
 
     public static final String VBROWSER_VFS_MIMETYPE_PREFIX = VRSTypes.VBROWSER_VFS_MIMETYPE_PREFIX;
@@ -171,7 +174,7 @@ public class DnDData
     {
         for (DataFlavor flav:dataFlavorsFromVFSPaths)
         {
-            DnDUtil.debugPrintf("- VFSPath DataFlavor=%s\n",flav); 
+            logger.debugPrintf("- VFSPath DataFlavor=%s\n",flav); 
         }
     }
     
@@ -312,11 +315,10 @@ public class DnDData
         if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
         {
             String str = (String) t.getTransferData(DataFlavor.stringFlavor);
-            
             return str; 
         }
         
-        return null; 
+        throw new UnsupportedFlavorException(DataFlavor.stringFlavor);
     }
     
 }
