@@ -45,8 +45,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     protected boolean allowNull = true;
 
     /**
-     * Construct list from Array.
-     * Creates new backing array, does create not a copy of the elements. 
+     * Construct list from Array. Creates new backing array, does create not a
+     * copy of the elements.
      */
     public ExtendedList(T[] values)
     {
@@ -54,7 +54,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         {
             return; // NIL list
         }
-        add(values); 
+        add(values);
     }
 
     public ExtendedList()
@@ -96,7 +96,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
 
     /**
      * Concatenates Elements to String array using elementSeperator between
-     * elements
+     * elements.
      */
     public String toString(String elementSeperator)
     {
@@ -108,7 +108,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         return toString(quote, quote, elementSeperator);
     }
 
-    public String toString(String beginQuote, String endQuote, String elementSeperator)
+    public String toString(String elementPrefix, String elementPostfix, String elementSeperator)
     {
         // two pass to alloc right size of target string
         int nrStrs = this.size();
@@ -119,13 +119,13 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         // calculate target size
         for (int i = 0; i < nrStrs; i++)
         {
-            if (beginQuote != null)
-                buf.append(beginQuote);
+            if (elementPrefix != null)
+                buf.append(elementPrefix);
 
             buf.append(this.get(i));
 
-            if (endQuote != null)
-                buf.append(endQuote);
+            if (elementPostfix != null)
+                buf.append(elementPostfix);
 
             // add separator, but only BETWEEN strings
             if (i + 1 < nrStrs)
@@ -220,10 +220,11 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     /**
      * Add Elements if NOT already in this list. Returns number of elements
      * really added.
-     * <p> 
-     * This is an O(N*N) merge. 
-     * For each element a linear search is used by calling contains().  
-     * @return number of unique elements added 
+     * <p>
+     * This is an O(N*N) merge. For each element a linear search is used by
+     * calling contains().
+     * 
+     * @return number of unique elements added
      */
     public int merge(T[] els)
     {
@@ -473,6 +474,6 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
 
     public ExtendedListIterator<T> iterator()
     {
-        return new ExtendedListIteratorWrapper<T>(super.listIterator());  
+        return new ExtendedListIteratorWrapper<T>(super.listIterator());
     }
 }
