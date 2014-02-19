@@ -114,9 +114,9 @@ public class VRLEntryListTransferable implements Transferable
             // I can export local file
             String urisstr = "";
 
-            for (VRLEntry ref : vris)
+            for (int i=0;i<vris.size();i++)
             {
-                VRL vri = ref.vrl;
+                VRL vri = vris.get(i).vrl;
                 // local files are dropped:
                 if (vri.hasScheme(FSNode.FILE_SCHEME))
                 {
@@ -125,8 +125,14 @@ public class VRLEntryListTransferable implements Transferable
                 }
                 else
                 {
-                    urisstr += vri.toString() + ";"; // toURI().toString();
+                    urisstr += vri.toString();
                 }
+                
+                if (i+1<vris.size())
+                {
+                    urisstr+=sepStr; 
+                }
+                
             }
             return urisstr;
         }
