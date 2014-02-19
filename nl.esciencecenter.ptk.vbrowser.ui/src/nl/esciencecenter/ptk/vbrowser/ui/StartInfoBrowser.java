@@ -22,6 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.ui;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
+import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;

@@ -78,9 +78,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         DnDUtil.debugPrintf("dragOver:%s\n", dtde);
         super.dragOver(dtde);
 
-        // dtde.acceptDrag (DnDConstants.ACTION_LINK);
         updateDropAction(dtde);
-
     }
 
     public void dropActionChanged(DropTargetDragEvent dtde)

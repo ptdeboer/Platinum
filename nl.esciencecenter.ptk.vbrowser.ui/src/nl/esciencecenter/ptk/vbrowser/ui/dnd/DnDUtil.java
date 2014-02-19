@@ -35,7 +35,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class DnDUtil
 {
-    private static ClassLogger logger = ClassLogger.getLogger("DND");
+    protected static ClassLogger dndLogger = ClassLogger.getLogger(DnDUtil.class);
 
     static
     {
@@ -44,7 +44,7 @@ public class DnDUtil
 
     private static void staticInit()
     {
-        //logger.setLevelToDebug();
+        dndLogger.setLevelToDebug();
         //logger.setLevelToInfo();
     }
 
@@ -57,32 +57,32 @@ public class DnDUtil
 
     public static void debugPrintf(String format, Object... args)
     {
-        logger.debugPrintf("DnD:" + format, args);
+        dndLogger.debugPrintf(format, args);
     }
 
     public static void debugPrintln(String message)
     {
-        logger.debugPrintf("DnD:%s\n", message);
+        dndLogger.debugPrintf("%s\n", message);
     }
 
     public static void warnPrintf(String format, Object... args)
     {
-        logger.warnPrintf("DnD:" + format, args);
+        dndLogger.warnPrintf(format, args);
     }
 
     public static void infoPrintf(String format, Object... args)
     {
-        logger.infoPrintf("DnD:" + format, args);
+        dndLogger.infoPrintf(format, args);
     }
 
     public static void errorPrintf(String format, Object... args)
     {
-        logger.errorPrintf("DnD:" + format, args);
+        dndLogger.errorPrintf(format, args);
     }
 
     public static void logException(Exception e, String format, Object... args)
     {
-        logger.logException(ClassLogger.ERROR, e, "DnD:" + format, args);
+        dndLogger.logException(ClassLogger.ERROR, e, format, args);
     }
 
     /**

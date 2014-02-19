@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Vector;
 
 import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData.VRLEntry;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData.VRLEntryList;
@@ -46,7 +47,7 @@ public class VRLEntryListTransferable implements Transferable
         {
             return null;
         }
-        
+
         int n = nodes.length;
         VRLEntryList vris = new VRLEntryList(n);
         for (int i = 0; i < n; i++)
@@ -77,14 +78,30 @@ public class VRLEntryListTransferable implements Transferable
         {
             throw new UnsupportedFlavorException(flavor);
         }
-        else if (flavor.equals(DnDData.flavorVRLEntryList))
+
+        if (flavor.equals(DnDData.flavorVFSPaths))
+        {
+            if (isAllVFSPaths())
+            {
+                return vris;
+            }
+            else
+            {
+                DnDUtil.errorPrintf("Requested for VFSPaths but not all VRLs are VFS Paths!\n");
+            }
+            return vris; // filter ?
+        }
+
+        if (flavor.equals(DnDData.flavorVRLEntryList))
         {
             return vris;
         }
+
         //
-        // KDE and Web browser drag and drop: ask for URIs
+        // KDE and Web browser drag and drop: ask for URIs as semicolon
+        // separated String list.
         //
-        else if ((flavor.equals(DnDData.flavorURIList)) || (flavor.equals(DataFlavor.stringFlavor)))
+        if ((flavor.equals(DnDFlavors.uriListAsTextFlavor)) || (flavor.equals(DataFlavor.stringFlavor)))
         {
             // export as newline separated string
             // to mimic KDE's newline separated uriList flavor !
@@ -113,7 +130,8 @@ public class VRLEntryListTransferable implements Transferable
             }
             return urisstr;
         }
-        else if (flavor.equals(DataFlavor.javaFileListFlavor))
+
+        if (flavor.equals(DataFlavor.javaFileListFlavor))
         {
             java.util.Vector<File> fileList = new Vector<File>();
 
@@ -135,9 +153,8 @@ public class VRLEntryListTransferable implements Transferable
             return fileList;
         }
 
-        DnDUtil.errorPrintf("DataFlavors not supported:%s\n", flavor);
-
-        return null;
+        DnDUtil.errorPrintf("VRLEntryList:DataFlavor not supported:%s\n", flavor);
+        throw new UnsupportedFlavorException(flavor); 
     }
 
     public DataFlavor[] getTransferDataFlavors()
@@ -152,13 +169,18 @@ public class VRLEntryListTransferable implements Transferable
         else
         {
             // Mixed URIs or non File type nodes: can only export as VRLs
-            return DnDData.dataFlavorsFromVRL;
+            return DnDData.dataFlavorsFromVRLs;
         }
     }
 
-    private boolean allVFSPaths(VRLEntryList vrls)
+    public boolean isAllVFSPaths()
     {
-        for (VRLEntry entry : vrls)
+        return this.allVFSPaths(vris);
+    }
+
+    private boolean allVFSPaths(VRLEntryList vris)
+    {
+        for (VRLEntry entry : vris)
         {
             boolean vfsType = StringUtil.equals(entry.resourceType, VRSTypes.FILE_TYPE, VRSTypes.DIR_TYPE);
             if (!vfsType)
@@ -171,12 +193,15 @@ public class VRLEntryListTransferable implements Transferable
 
     public boolean isDataFlavorSupported(DataFlavor flavor)
     {
-        DnDUtil.debugPrintf("isDataFlavorSupported:%s\n", flavor);
+        DnDUtil.debugPrintf("VRLEntryList:isDataFlavorSupported:%s\n", flavor);
 
         for (DataFlavor flav : getTransferDataFlavors())
+        {
             if (flav.equals(flavor))
+            {
                 return true;
-
+            }
+        }
         // return true;
         return false;
     }

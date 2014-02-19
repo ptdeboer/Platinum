@@ -64,6 +64,13 @@ public class ClassLogger extends FormattingLogger
         }
     }
 
+    public static ClassLogger getLogger(Class<?> clazz, ClassLogger parentLogger)
+    {
+        ClassLogger logger=getLogger(clazz);
+        logger.setParent(parentLogger); 
+        return logger; 
+    }
+    
     public static ClassLogger getLogger(Class<?> clazz)
     {
         return getLogger(clazz.getCanonicalName()); 
@@ -183,8 +190,7 @@ public class ClassLogger extends FormattingLogger
 
     public boolean hasDebugLevel()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return isLoggable(ClassLogger.DEBUG);
     }
     
 }
