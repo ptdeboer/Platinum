@@ -44,7 +44,7 @@ public class DnDUtil
 
     private static void staticInit()
     {
-        logger.setLevelToDebug();
+        //logger.setLevelToDebug();
         //logger.setLevelToInfo();
     }
 
