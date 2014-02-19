@@ -92,8 +92,8 @@ public class DnDFlavors
     public static DataFlavor uriDataFlavors[] =
     {
             DnDFlavors.javaURLFlavor,
-            DnDFlavors.javaURIListAsTextFlavor,
             DnDFlavors.javaFileListFlavor,
+            DnDFlavors.javaURIListAsTextFlavor,
             DnDFlavors.plainTextFlavor,
             DnDFlavors.javaStringFlavor
     };
@@ -107,7 +107,7 @@ public class DnDFlavors
                 List<URI> uris = getURIList(transferable, flav);
                 if (logger.hasDebugLevel())
                 {
-                    logger.debugPrintf("getURIList()=%s\n", new ExtendedList<URI>(uris));
+                    logger.debugPrintf("getURIList():\n%s\n", new ExtendedList<URI>(uris).toString(" - ","","\n"));
                 }
                 return uris;
             }
@@ -139,7 +139,8 @@ public class DnDFlavors
         if (uriFlavor.equals(DnDFlavors.javaURIListAsTextFlavor))
         {
             String urilist = (String) transferable.getTransferData(uriFlavor);
-            uris = URIUtil.parseURIList(urilist, ";");
+            // either semicolon or newline seperated list. 
+            uris = URIUtil.parseURIList(urilist, "[;\n]");
             return uris;
         }
 

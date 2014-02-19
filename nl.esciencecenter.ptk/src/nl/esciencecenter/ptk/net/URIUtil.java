@@ -44,10 +44,10 @@ public class URIUtil
         return new URIFactory(uri).setUserInfo(userInfo).toURI();
     }
 
-    public static List<URI> parseURIList(String urilist, String pathSeperator)
+    public static List<URI> parseURIList(String urilist, String pathSeperatorRE)
     {
         Scanner scanner = new Scanner(urilist.trim());
-        scanner.useDelimiter(pathSeperator);
+        scanner.useDelimiter(pathSeperatorRE);
 
         List<URI> uris = new ArrayList<URI>();
 
