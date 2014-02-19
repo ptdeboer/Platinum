@@ -36,6 +36,9 @@ import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/**
+ * Drag and Drop Data conversion methods and DataFlavors.
+ */
 public class DnDData
 {
     public static final String VBROWSER_VRS_MIMETYPE_PREFIX = VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX;
@@ -43,7 +46,7 @@ public class DnDData
     public static final String VBROWSER_VFS_MIMETYPE_PREFIX = VRSTypes.VBROWSER_VFS_MIMETYPE_PREFIX;
 
     /**
-     * Any Resource van be exported as VRL.
+     * Any Resource can be exported as VRL.
      */
     public static final String VBROWSER_VRL_MIMETYPE = "application/vbrowser-vrl";
 
@@ -99,8 +102,8 @@ public class DnDData
     };
 
     /**
-     * Always allow String. For URIs/VRLs the String representation is one or
-     * more URI Strings separated by a ';'
+     * For URIs/VRLs the String representation is one or more URI Strings
+     * separated by a ';'
      */
     public static DataFlavor flavorString = DataFlavor.stringFlavor;
 
@@ -111,33 +114,62 @@ public class DnDData
     public static DataFlavor flavorJavaFileList = DataFlavor.javaFileListFlavor;
 
     /**
-     * In KDE this is a newline separators list of URIs
+     * In KDE this is a list of URI seperated by newlines;
      */
     public static DataFlavor flavorURIList = new DataFlavor("text/uri-list;class=java.lang.String", "URI list");
 
+    /**
+     * Default binary stream mime-type.
+     */
     public static DataFlavor octetStreamDataFlavor = new DataFlavor("application/octet-stream;class=java.io.InputStream", "octetStream");
 
+    /**
+     * List of VRLs
+     */
     public static DataFlavor flavorVRLEntryList = new DataFlavor(VBROWSER_VRL_MIMETYPE + ";class="
             + DnDUtil.mimeTypeClassName(VRLEntryList.class), "(Array)List<VRL> class");
 
+    /***
+     * List of VFS VRls contains only (remote) files or directories.
+     */
     public static DataFlavor flavorVFSPaths = new DataFlavor(VBROWSER_VFSPATH_MIMETYPE + ";class="
             + DnDUtil.mimeTypeClassName(VRLEntryList.class), "VFS Paths as as list of VRLs (List<VRL>)");
 
-    public static DataFlavor[] dataFlavorsVRL = new DataFlavor[]
+    /**
+     * DataFlavors which can be converted to VRLs
+     */
+    public static DataFlavor[] dataFlavorsToVRL = new DataFlavor[]
     {
+            flavorVFSPaths,
             flavorVRLEntryList,
             flavorJavaFileList,
-            flavorURIList,
-            flavorString,
+            flavorURIList
     };
 
-    public static DataFlavor[] dataFlavorsVFSPaths = new DataFlavor[]
+    /**
+     * DataFlavors which can be converted to VFSPaths (VFS VRLs)
+     */
+    public static DataFlavor[] dataFlavorsToVFSPaths = new DataFlavor[]
     {
             flavorVFSPaths,
             flavorJavaFileList
     };
 
-    public static DataFlavor[] dataFlavorsVRLAndVFSPaths = new DataFlavor[]
+    /**
+     * DataFlavors which can be constructed from VRLs.
+     */
+    public static DataFlavor[] dataFlavorsFromVRL = new DataFlavor[]
+    {
+            flavorVRLEntryList,
+            flavorURIList,
+            flavorString,
+    };
+
+    /**
+     * DataFlavors which can be constructed from VFSPaths. JavaFileList might
+     * not work if files are remote files.
+     */
+    public static DataFlavor[] dataFlavorsFromVFSPaths = new DataFlavor[]
     {
             flavorVFSPaths,
             flavorVRLEntryList,
@@ -150,14 +182,14 @@ public class DnDData
     //
     // ========================================================================
 
-    // === Object === //
-
     /**
-     * DataFlavors from which VRL(s) can be imported !
+     * Check whether all of the Transferable data can be converted to one or
+     * more VRLs. This method returns false if some data can not be converted to
+     * a VRL.
      */
     public static boolean canConvertToVRLs(Transferable t)
     {
-        for (DataFlavor flav : dataFlavorsVRLAndVFSPaths)
+        for (DataFlavor flav : dataFlavorsToVRL)
         {
             if (t.isDataFlavorSupported(flav))
             {
@@ -170,13 +202,15 @@ public class DnDData
     }
 
     /**
-     * DataFlavors from which VFS VRL(s) can be imported !
+     * Check whether all of teh Transferable date can be converted to one or
+     * more VFSPaths. This could be one ore more (remote) files. This method
+     * returns false if some data can not be converted to a VFS Path.
      */
     public static boolean canConvertToVFSPaths(Transferable t)
     {
         // DataFlavor flavors[]=t.getTransferDataFlavors();
 
-        for (DataFlavor flav : dataFlavorsVFSPaths)
+        for (DataFlavor flav : dataFlavorsToVFSPaths)
         {
             if (t.isDataFlavorSupported(flav))
             {
@@ -200,13 +234,21 @@ public class DnDData
         }
         // Check for drop of (Java)files from native Operating System. Works
         // under windows:
-        else if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+        if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
         {
             List<VRL> vris = DnDData.getJavaFileListVRLs(t);
-            return vris;
+
+            // ---
+            // Although some browser claim they can export an URL to a JavaFile
+            // Some URLs are not actual files. Only return non empty lists!
+            // ---
+
+            if (vris != null)
+                return vris;
         }
+
         // List of URIs.
-        else if (t.isDataFlavorSupported(DnDData.flavorURIList))
+        if (t.isDataFlavorSupported(DnDData.flavorURIList))
         {
             String urilist = (String) t.getTransferData(DnDData.flavorURIList);
 
@@ -231,25 +273,20 @@ public class DnDData
 
             return vris;
         }
-        // else if <checkSupportedMimeType>
-        // {
-        // Default MimeTypes Here. Check for binary/images/etc.
-        // }
-        // Default to String:
-        else if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
+
+        if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
         {
             String str = (String) t.getTransferData(DataFlavor.stringFlavor);
             Vector<VRL> vris = new Vector<VRL>();
             vris.add(new VRL(str));
             return vris;
-
         }
 
         throw new UnsupportedFlavorException(t.getTransferDataFlavors()[0]);
     }
 
     /**
-     * Handle Java File List
+     * Handle Java File List. Both windows and KDE can drop actual Java Files.
      * 
      * @throws IOException
      * @throws UnsupportedFlavorException
@@ -260,27 +297,33 @@ public class DnDData
         Iterator<File> iterator = fileList.iterator();
 
         int len = fileList.size();
+        if (len == 0)
+        {
+            return null;
+        }
 
         List<VRL> vris = new ArrayList<VRL>(len);
 
         while (iterator.hasNext())
         {
             java.io.File file = (File) iterator.next();
-
-            // Debug("name="+file.getName());
-            // Debug("url="+file.toURI().toString());
-            // Debug("path="+file.getAbsolutePath());
-
             VRL vrl = new VRL("file", null, file.getAbsolutePath());
-            // String type=(file.isDirectory()?VRS.DIR_TYPE:VRS.FILE_TYPE);
-
-            // String
-            // mimeType=UIGlobal.getMimeTypes().getMimeType(vrl.getPath());
-
             vris.add(vrl);
         }
 
         return vris;
     }
 
+    public String getText(Transferable t) throws UnsupportedFlavorException, IOException
+    {
+        if (t.isDataFlavorSupported(DataFlavor.stringFlavor))
+        {
+            String str = (String) t.getTransferData(DataFlavor.stringFlavor);
+            
+            return str; 
+        }
+        
+        return null; 
+    }
+    
 }

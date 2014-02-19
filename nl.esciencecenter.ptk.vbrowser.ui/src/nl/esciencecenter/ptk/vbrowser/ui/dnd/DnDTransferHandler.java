@@ -33,6 +33,7 @@ import javax.swing.TransferHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler.DropAction;
 
 /**
  * Default TransgerHandler for ViewNodes.
@@ -66,7 +67,13 @@ public class DnDTransferHandler extends TransferHandler
         DnDUtil.debugPrintln("exportDone action=" + action);
     }
 
-    // ===
+    /*
+     * Method is NOT called when canImport(TransferSupport transferSupport) is
+     * overriden!
+     * 
+     * @see javax.swing.TransferHandler#canImport(javax.swing.JComponent,
+     * java.awt.datatransfer.DataFlavor[])
+     */
     // Method is NOT called when canImport(TransferSupport transferSupport) is
     // overrriden!
     // ===
@@ -83,10 +90,12 @@ public class DnDTransferHandler extends TransferHandler
     // This method is called i.s.o above one:
     public boolean canImport(TransferSupport transferSupport)
     {
+        DnDUtil.errorPrintf("FIXME:canImport():%s\n", transferSupport);
+        
         DataFlavor[] flavors = transferSupport.getDataFlavors();
         for (DataFlavor flav : flavors)
         {
-            DnDUtil.errorPrintf("FIXME:canImport():%s\n", flav);
+            DnDUtil.errorPrintf("FIXME:canImport(): -flav:%s\n", flav);
         }
         // transferSupport.setDropAction(COPY);
         return false;
@@ -168,7 +177,12 @@ public class DnDTransferHandler extends TransferHandler
         return COPY_OR_MOVE | DnDConstants.ACTION_LINK;
     }
 
-    // NOT called if importData(TransferSupport is implemented)
+    /*
+     * NOT called if importData(TransferSupport is implemented)(non-Javadoc)
+     * 
+     * @see javax.swing.TransferHandler#importData(javax.swing.JComponent,
+     * java.awt.datatransfer.Transferable)
+     */
     @Override
     @Deprecated
     public boolean importData(JComponent comp, Transferable data)
@@ -182,7 +196,7 @@ public class DnDTransferHandler extends TransferHandler
             return false;
         }
 
-        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data);
+        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data, DropAction.COPY);
     }
 
     /*
@@ -195,7 +209,7 @@ public class DnDTransferHandler extends TransferHandler
     @Override
     public boolean importData(TransferSupport support)
     {
-        // This method is direct called when performing CTRL-V
+        // This method is called when performing CTRL-V
 
         Component comp = support.getComponent();
         Transferable data = support.getTransferable();
@@ -205,9 +219,21 @@ public class DnDTransferHandler extends TransferHandler
         {
             DnDUtil.errorPrintf("importData(): Error: Not a ViewNodeComponent:%s\n", comp);
             return false;
+        } 
+        
+        DropAction dndAction;
+        
+        if (support.isDrop())
+        {
+            dndAction = DnDUtil.getDropAction(support.getDropAction());
         }
-
-        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data);
+        else
+        {
+            // todo: check for  Cut'n Paste (CTRL-X)! 
+            dndAction = DropAction.COPY_PASTE;
+        }
+        
+        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data, dndAction);
     }
 
 }

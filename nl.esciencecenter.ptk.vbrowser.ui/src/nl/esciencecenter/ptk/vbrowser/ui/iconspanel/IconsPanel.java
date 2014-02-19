@@ -21,7 +21,6 @@
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureListener;
@@ -54,443 +53,455 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable
 {
-	private static final long serialVersionUID = -8822489309726132852L;
-	private static ClassLogger logger; 
-	
-	static
-	{
-		logger=ClassLogger.getLogger(IconsPanel.class); 
-	}
-	
-	/** IconPanel owns UIModel */ 
-	private UIViewModel uiModel;
+    private static final long serialVersionUID = -8822489309726132852L;
 
-	private IconLayoutManager layoutManager;
+    private static ClassLogger logger;
 
-	private IconsPanelController iconsPanelController;
-
-	private IconListModel iconModel;
-
-	private BrowserInterface masterBrowser;
-
-	private IconsPanelUpdater iconsPanelUpdater;
-	private ViewContainerEventAdapter viewComponentHandler;
-    private nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener dragListener;
-	
-	public IconsPanel(BrowserInterface browser,DataSource viewNodeSource)
+    static
     {
-        init(browser,viewNodeSource);    
+        logger = ClassLogger.getLogger(IconsPanel.class);
     }
-	
-	private void init(BrowserInterface browser, DataSource dataSource) 
-	{
-		this.masterBrowser=browser;
-		this.uiModel=UIViewModel.createIconsModel(48); 
-		this.iconsPanelUpdater=new IconsPanelUpdater(this,dataSource); 
-		this.iconModel=new IconListModel(); 
-		this.iconModel.addListDataListener(this); 
-		
-		initGui();
-		
-		// add listener last: 
-		this.iconsPanelController=new IconsPanelController(browser,this); 
-		this.viewComponentHandler=new ViewContainerEventAdapter(this,iconsPanelController);
-		// Mouse and Focus
-		this.addMouseMotionListener(viewComponentHandler); 
-		this.addMouseListener(this.viewComponentHandler); 
-		this.addFocusListener(this.viewComponentHandler); 
-		
-		this.setFocusable(true);
-		
-		initDND();
-	}
-	
-	private void initDND()
-	{
-	    //[DnD]
-        // Important: 
-        // IconsPanel is dragsource for ALL icons it contains 
+
+    /** IconPanel owns UIModel */
+    private UIViewModel uiModel;
+
+    private IconLayoutManager layoutManager;
+
+    private IconsPanelController iconsPanelController;
+
+    private IconListModel iconModel;
+
+    private BrowserInterface masterBrowser;
+
+    private IconsPanelUpdater iconsPanelUpdater;
+
+    private ViewContainerEventAdapter viewComponentHandler;
+
+    private nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener dragListener;
+
+    public IconsPanel(BrowserInterface browser, DataSource viewNodeSource)
+    {
+        init(browser, viewNodeSource);
+    }
+
+    private void init(BrowserInterface browser, DataSource dataSource)
+    {
+        this.masterBrowser = browser;
+        this.uiModel = UIViewModel.createIconsModel(48);
+        this.iconsPanelUpdater = new IconsPanelUpdater(this, dataSource);
+        this.iconModel = new IconListModel();
+        this.iconModel.addListDataListener(this);
+
+        initGui();
+
+        // add listener last:
+        this.iconsPanelController = new IconsPanelController(browser, this);
+        this.viewComponentHandler = new ViewContainerEventAdapter(this, iconsPanelController);
+        // Mouse and Focus
+        this.addMouseMotionListener(viewComponentHandler);
+        this.addMouseListener(this.viewComponentHandler);
+        this.addFocusListener(this.viewComponentHandler);
+
+        this.setFocusable(true);
+
+        initDND();
+    }
+
+    private void initDND()
+    {
+        // [DnD]
+        // Important:
+        // IconsPanel is dragsource for ALL icons it contains
         // this to support multiple selections!
-	    
-		DragSource dragSource = DragSource.getDefaultDragSource();
-		dragListener = new ViewNodeContainerDragListener(); // is (this) needed ?;
-		//this.dsListener = MyDragSourceListener.getDefault(); 
-		// component, action, listener
-		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, dragListener );
-		
-		  // IconPanel canvas can receive contents !
-        this.setTransferHandler(getPlatform().getTransferHandler()); 
-        
-        // DnD is closely linked to the KeyMapping! (CTRL-C, CTRL-V) 
+
+        DragSource dragSource = DragSource.getDefaultDragSource();
+        dragListener = new ViewNodeContainerDragListener(); // is (this) needed
+                                                            // ?;
+        // this.dsListener = MyDragSourceListener.getDefault();
+        // component, action, listener
+        dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, dragListener);
+
+        // IconPanel canvas can receive contents !
+        this.setTransferHandler(getPlatform().getTransferHandler());
+
+        // DnD is closely linked to the KeyMapping! (CTRL-C, CTRL-V)
         // Add Copy/Paste Menu shortcuts to this component:
-        KeyMappings.addCopyPasteKeymappings(this); 
-        KeyMappings.addSelectionKeyMappings(this); 
-        
+        KeyMappings.addCopyPasteKeymappings(this);
+        KeyMappings.addSelectionKeyMappings(this);
+
         // canvas is drop target:
-        this.setDropTarget(new ViewNodeDropTarget(this)); 
-        
-	}
-	
-	public BrowserPlatform getPlatform()
-	{
-	    return this.masterBrowser.getPlatform(); 
-	}
-	
-	public boolean isFocusable()
-	{
-		return true; 
-	}
-	
-	private void initGui()
-	{
-		// layoutmanager: 
-		this.layoutManager=new IconLayoutManager(this.uiModel); 
-		this.setLayout(layoutManager);
-        //this.setLayout(new FlowLayout());
-		this.setBackground(uiModel.getCanvasBGColor()); 
-	}
-	
-	public void updateUIModel(UIViewModel model)
-	{
-		this.uiModel=model;
-		this.layoutManager.setUIModel(model); 
-		this.iconsPanelUpdater.updateRoot(); 
-	}
+        this.setDropTarget(new ViewNodeDropTarget(this));
 
-	public IconListModel getModel()
-	{
-		return this.iconModel; 
-	}
+    }
 
-	public UIViewModel getUIViewModel()
-	{
-		return this.uiModel; 
-	}
-	
-	public JComponent getComponent()
-	{
-		return this; 
-	}
-	
-	public IconItem getComponent(int index)
-	{
-		// downcast from Component:
-		return (IconItem) super.getComponent(index); 
-	}
-	
-	/** 
-	 * Set Root Node and update UI
-	 */ 
+    public BrowserPlatform getPlatform()
+    {
+        return this.masterBrowser.getPlatform();
+    }
+
+    public boolean isFocusable()
+    {
+        return true;
+    }
+
+    private void initGui()
+    {
+        // layoutmanager:
+        this.layoutManager = new IconLayoutManager(this.uiModel);
+        this.setLayout(layoutManager);
+        // this.setLayout(new FlowLayout());
+        this.setBackground(uiModel.getCanvasBGColor());
+    }
+
+    public void updateUIModel(UIViewModel model)
+    {
+        this.uiModel = model;
+        this.layoutManager.setUIModel(model);
+        this.iconsPanelUpdater.updateRoot();
+    }
+
+    public IconListModel getModel()
+    {
+        return this.iconModel;
+    }
+
+    public UIViewModel getUIViewModel()
+    {
+        return this.uiModel;
+    }
+
+    public JComponent getComponent()
+    {
+        return this;
+    }
+
+    public IconItem getComponent(int index)
+    {
+        // downcast from Component:
+        return (IconItem) super.getComponent(index);
+    }
+
+    /**
+     * Set Root Node and update UI
+     */
     public void setDataSource(ProxyNode node, boolean update)
     {
-        if (node==null)
+        if (node == null)
         {
-            setDataSource((ProxyNodeDataSource)null,true); //reset/clear 
-            return; 
+            setDataSource((ProxyNodeDataSource) null, true); // reset/clear
+            return;
         }
-        
-        ProxyNodeDataSource dataSource = new ProxyNodeDataSource (node); 
-        this.setDataSource(dataSource,update);  
+
+        ProxyNodeDataSource dataSource = new ProxyNodeDataSource(node);
+        this.setDataSource(dataSource, update);
     }
-        
-	public void setDataSource(ProxyNodeDataSource dataSource, boolean update) 
-	{
-		this.iconsPanelUpdater.setDataSource(dataSource, update);
-	}
 
-	@Override
-	public void intervalAdded(ListDataEvent e) 
-	{
-		logger.debugPrintf("intervalAdded():[%d,%d]\n",e.getIndex0(),e.getIndex1());
-		int start=e.getIndex0(); 
-		int end=e.getIndex1(); 
-		
-		uiUpdate(false,start,end); 
-	}
-
-	@Override
-	public void contentsChanged(ListDataEvent e) 
-	{
-		logger.debugPrintf("contentsChanged():[%d,%d]\n",e.getIndex0(),e.getIndex1());
-		updateAll(); 
-	}
-
-	protected void updateAll()
-	{
-		uiUpdate(true,0,-1); 
-	}
-
-	@Override
-	public void intervalRemoved(ListDataEvent e) 
-	{
-		logger.errorPrintf("FIXME: intervalRemoved():[%d,%d]\n",e.getIndex0(),e.getIndex1());
-	}
-	
-	private void uiUpdate(final boolean clear,final int start, final int _end)
-	{
-		if (UIGlobal.isGuiThread()==false)
-		{
-			Runnable updater=new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						uiUpdate(clear,start,_end);  
-					};
-				}; 
-			
-			UIGlobal.swingInvokeLater(updater); 
-			return; 
-		}
-		
-		if (clear)
-			this.removeAll(); 
-		
-		// -1 -> update all
-		int end=_end; 
-		
-		if (end<0)
-			end=getModel().getSize()-1; // end is inclusive 
-		else
-			end=_end; 
-		
-		// Appends range at END of component list ! 
-		// Assumes the range [start,end] has NOT been added yet 
-		for (int i=start;i<=end;i++)
-		{
-			IconItem comp = getModel().getElementAt(i);
-			// check anyway
-			if (this.hasComponent(comp)==false) 
-			    this.addIconItem(comp); 
-		}
-		
-		// already UI here ! 
-		this.revalidate();
-        this.repaint();  
-	}
-	
-	public void uiRepaint()
-	{
-		if (UIGlobal.isGuiThread()==false)
-		{
-			Runnable updater=new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						repaint();  
-					};
-				}; 
-			
-			UIGlobal.swingInvokeLater(updater); 
-			return; 
-		}
-		
-		this.repaint(); 
-	}
-
-	public boolean hasComponent(IconItem theComp)
+    public void setDataSource(ProxyNodeDataSource dataSource, boolean update)
     {
-	    for (Component comp:this.getComponents())
-	    {
-	        if (comp.equals(theComp))
-	            return true; 
-	    }
-	    
-	    return false; 
+        this.iconsPanelUpdater.setDataSource(dataSource, update);
     }
 
     @Override
-	public ViewNode getViewNode() 
-	{
-		return this.iconsPanelUpdater.getRootNode();
-	}
+    public void intervalAdded(ListDataEvent e)
+    {
+        logger.debugPrintf("intervalAdded():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+        int start = e.getIndex0();
+        int end = e.getIndex1();
 
-	@Override
-	public ViewNode getNodeUnderPoint(Point p) 
-	{
-		Component comp = this.getComponentAt(p);
-	
-		if (comp instanceof IconItem)
-			return ((IconItem)comp).getViewNode(); 
+        uiUpdate(false, start, end);
+    }
 
-		return null; 
-	}
+    @Override
+    public void contentsChanged(ListDataEvent e)
+    {
+        logger.debugPrintf("contentsChanged():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+        updateAll();
+    }
 
-	@Override
-	public void clearNodeSelection() 
-	{
-	    for (IconItem item:this.getIconItems())
+    protected void updateAll()
+    {
+        uiUpdate(true, 0, -1);
+    }
+
+    @Override
+    public void intervalRemoved(ListDataEvent e)
+    {
+        logger.errorPrintf("FIXME: intervalRemoved():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+    }
+
+    private void uiUpdate(final boolean clear, final int start, final int _end)
+    {
+        if (UIGlobal.isGuiThread() == false)
         {
-	        item.setSelected(false);
-        } 
-	}
+            Runnable updater = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    uiUpdate(clear, start, _end);
+                };
+            };
 
-	@Override
-	public ViewNode[] getNodeSelection() 
-	{
-		Vector<ViewNode> items=new Vector<ViewNode>(); 
-		
-		for (IconItem item:this.getIconItems())
+            UIGlobal.swingInvokeLater(updater);
+            return;
+        }
+
+        if (clear)
+            this.removeAll();
+
+        // -1 -> update all
+        int end = _end;
+
+        if (end < 0)
+            end = getModel().getSize() - 1; // end is inclusive
+        else
+            end = _end;
+
+        // Appends range at END of component list !
+        // Assumes the range [start,end] has NOT been added yet
+        for (int i = start; i <= end; i++)
         {
-			if (item.isSelected())
-				items.add(item.getViewNode()); 
-        } 
-		
-		ViewNode nodes[]=new ViewNode[items.size()];
-		nodes=items.toArray(nodes); 
-		
-		return nodes;
-	}
+            IconItem comp = getModel().getElementAt(i);
+            // check anyway
+            if (this.hasComponent(comp) == false)
+                this.addIconItem(comp);
+        }
 
-	@Override
-	public void setNodeSelection(ViewNode node, boolean isSelected) 
-	{
-        logger.debugPrintf("updateSelection %s=%s\n",node,isSelected);
-        if (node==null)
-            return; // canvas click; 
-        
-        IconItem item=getIconItem(node.getVRL());
-        if (item!=null) 
-            item.setSelected(isSelected); 
-	}
+        // already UI here !
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void uiRepaint()
+    {
+        if (UIGlobal.isGuiThread() == false)
+        {
+            Runnable updater = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    repaint();
+                };
+            };
+
+            UIGlobal.swingInvokeLater(updater);
+            return;
+        }
+
+        this.repaint();
+    }
+
+    public boolean hasComponent(IconItem theComp)
+    {
+        for (Component comp : this.getComponents())
+        {
+            if (comp.equals(theComp))
+                return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public ViewNode getViewNode()
+    {
+        return this.iconsPanelUpdater.getRootNode();
+    }
+
+    @Override
+    public ViewNode getNodeUnderPoint(Point p)
+    {
+        Component comp = this.getComponentAt(p);
+
+        if (comp instanceof IconItem)
+        {
+            return ((IconItem) comp).getViewNode();
+        }
+
+        // Canvas Select:
+        if (comp == this)
+        {
+            return this.getViewNode();
+        }
+
+        return null;
+    }
+
+    @Override
+    public void clearNodeSelection()
+    {
+        for (IconItem item : this.getIconItems())
+        {
+            item.setSelected(false);
+        }
+    }
+
+    @Override
+    public ViewNode[] getNodeSelection()
+    {
+        Vector<ViewNode> items = new Vector<ViewNode>();
+
+        for (IconItem item : this.getIconItems())
+        {
+            if (item.isSelected())
+                items.add(item.getViewNode());
+        }
+
+        ViewNode nodes[] = new ViewNode[items.size()];
+        nodes = items.toArray(nodes);
+
+        return nodes;
+    }
+
+    @Override
+    public void setNodeSelection(ViewNode node, boolean isSelected)
+    {
+        logger.debugPrintf("updateSelection %s=%s\n", node, isSelected);
+        if (node == null)
+            return; // canvas click;
+
+        IconItem item = getIconItem(node.getVRL());
+        if (item != null)
+            item.setSelected(isSelected);
+    }
 
     public IconItem getIconItem(VRL locator)
     {
-        for (IconItem item:this.getIconItems())
+        for (IconItem item : this.getIconItems())
         {
             if (item.hasLocator(locator))
-                return item; 
+                return item;
         }
-        return null; 
+        return null;
     }
-    
+
     public IconItem getIconItem(ViewNode node)
     {
-        for (IconItem item:this.getIconItems())
+        for (IconItem item : this.getIconItems())
         {
             if (item.hasViewNode(node))
-                return item; 
+                return item;
         }
-        return null; 
+        return null;
     }
 
     public IconItem[] getIconItems()
     {
-        ArrayList<IconItem> itemList=new ArrayList<IconItem>(); 
-        // filter out icon items; 
-        Component[] comps = this.getComponents(); 
-        
-        for (Component comp:comps)
+        ArrayList<IconItem> itemList = new ArrayList<IconItem>();
+        // filter out icon items;
+        Component[] comps = this.getComponents();
+
+        for (Component comp : comps)
             if (comp instanceof IconItem)
-                itemList.add((IconItem)comp); 
-        
-        IconItem items[]=new IconItem[itemList.size()]; 
-        for (int i=0;i<itemList.size();i++)
-            items[i]=itemList.get(i); 
-        
-        return items; 
+                itemList.add((IconItem) comp);
+
+        IconItem items[] = new IconItem[itemList.size()];
+        for (int i = 0; i < itemList.size(); i++)
+            items[i] = itemList.get(i);
+
+        return items;
     }
 
     @Override
-    public void setNodeSelectionRange(ViewNode node1, ViewNode node2,boolean selected)
+    public void setNodeSelectionRange(ViewNode node1, ViewNode node2, boolean selected)
     {
-        logger.debugPrintf("setSelectionRange:[%s,%s]=%s\n",node1,node2,selected);
-        
-        boolean mark=false; 
-        
-        // mark range [node1,node2] (inclusive) 
-        // mark range [node2,node1] (inclusive) 
-        for (IconItem item:this.getIconItems())
+        logger.debugPrintf("setSelectionRange:[%s,%s]=%s\n", node1, node2, selected);
+
+        boolean mark = false;
+
+        // mark range [node1,node2] (inclusive)
+        // mark range [node2,node1] (inclusive)
+        for (IconItem item : this.getIconItems())
         {
-            boolean last=false;
-            
-            // check both directions ! 
-            if (mark==false)
+            boolean last = false;
+
+            // check both directions !
+            if (mark == false)
             {
                 if (item.hasViewNode(node1))
-                    mark=true;
-                
+                    mark = true;
+
                 if (item.hasViewNode(node2))
-                    mark=true; 
+                    mark = true;
             }
             else
             {
                 if (item.hasViewNode(node1))
-                    mark=false;
-                
+                    mark = false;
+
                 if (item.hasViewNode(node2))
-                    mark=false;
-                
-                last=true; 
+                    mark = false;
+
+                last = true;
             }
-            
-            if (mark||last)
-                item.setSelected(selected); 
-                
-        }  
-        
+
+            if (mark || last)
+                item.setSelected(selected);
+
+        }
+
     }
 
     @Override
-    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu) 
+    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu)
     {
-        return this.masterBrowser.createActionMenuFor(this,node,canvasMenu); 
+        return this.masterBrowser.createActionMenuFor(this, node, canvasMenu);
     }
-    
+
     public void addIconItem(IconItem item)
     {
-        // add + update 
-        super.add(item); 
-        item.setViewComponentEventAdapter(this.viewComponentHandler); 
+        // add + update
+        super.add(item);
+        item.setViewComponentEventAdapter(this.viewComponentHandler);
     }
 
     @Override
     public boolean requestFocus(boolean value)
     {
-        if (value==true)
-            return this.requestFocusInWindow(); 
-        return false; 
+        if (value == true)
+            return this.requestFocusInWindow();
+        return false;
     }
-    
+
     @Override
-    public boolean requestNodeFocus(ViewNode node,boolean value)
+    public boolean requestNodeFocus(ViewNode node, boolean value)
     {
-        if (value==true)
-        {   
-            IconItem item=this.getIconItem(node);
+        if (value == true)
+        {
+            IconItem item = this.getIconItem(node);
             // forward request to focus subsystem!
-            if (item!=null)
-                return item.requestFocusInWindow(); 
-       }
-        
-        return false; 
+            if (item != null)
+                return item.requestFocusInWindow();
+        }
+
+        return false;
     }
 
     @Override
     public ViewNodeContainer getViewContainer()
     {
-        return null; 
+        return null;
     }
 
-	public BrowserInterface getMasterBrowser() 
-	{	
-		return this.masterBrowser;
-	}
+    public BrowserInterface getMasterBrowser()
+    {
+        return this.masterBrowser;
+    }
 
-	public DataSource getDataSource() 
-	{
-		return this.iconsPanelUpdater.getDataSource(); 
-	}
+    public DataSource getDataSource()
+    {
+        return this.iconsPanelUpdater.getDataSource();
+    }
 
     public DragGestureListener getDragGestureListener()
     {
-        return this.dragListener; 
+        return this.dragListener;
     }
 
     @Override
     public void dispose()
     {
-        
+
     }
 }

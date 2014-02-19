@@ -22,20 +22,15 @@ package nl.esciencecenter.ptk.vbrowser.ui.tree;
 
 import java.awt.Component;
 import java.awt.Point;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DropTargetContext;
+import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData;
-import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 
 /**
- * Swing/AWT Compatible DnD Support.
- * 
- * Node in a JTree can't have DropTarget's. So the Parent component (JTree)
+ * A node in a JTree can't have DropTargets. So the Parent component (JTree)
  * handle the drops.
  * 
  * @author P.T. de Boer.
@@ -55,66 +50,42 @@ public class ResourceTreeDropTarget extends ViewNodeDropTarget
 
     public ResourceTree getResourceTree()
     {
-        return (ResourceTree)this.getComponent(); 
+        return (ResourceTree) this.getComponent();
     }
-    
-    /** 
-     * Drop On Node ! 
-     */
-    public void drop(DropTargetDropEvent dtde)
-    {
-        // todo: check super: drop() !
-        // Global.debugPrintln(this,"Dropping:"+dtde);
 
-        DropTargetContext dtc = dtde.getDropTargetContext();
-        Component comp = dtc.getComponent();
-        Point p = dtde.getLocation();
-        Transferable data = dtde.getTransferable();
-        int dndAction=dtde.getDropAction(); 
-        
-        if ((comp instanceof ResourceTree) == false)
+    /*
+     * Override for ResourceTree, check which node is active under point 'p'.
+     */
+    @Override
+    protected ViewNode getViewNode(Component targetComponent, Point p)
+    {
+        if ((targetComponent instanceof ResourceTree) == false)
         {
             logger.errorPrintf("drop():Source object not a ResourceTree!!!\n");
-            dtde.rejectDrop();
-            return;
+            return null;
         }
-        
-        ResourceTree tree = ((ResourceTree) comp);
-        ResourceTreeNode rtnode = tree.getRTNodeUnderPoint(p);
-        ViewNode viewNode=null;
-        
-        if (rtnode!=null)
-        {
-            viewNode=rtnode.getViewNode(); 
-        }
-        
-        // check dropped data:
-        if (DnDData.canConvertToVRLs(data))
-        {
-            // I: accept drop:
-            dtde.acceptDrop(dndAction);
- 
-            //dtde points into ResourceTree: provide JTree as GUI Component here: 
-            boolean succes = DnDUtil.handleActualDrop(getResourceTree(), dtde.getLocation(),viewNode, data,DnDUtil.getDropAction(dndAction));
 
-            // supply ResourceTree as (J)Component but TreeNode as VComponent !
-            // DnDTransferHandler.getDefault().interActiveDrop(comp,rtnode,p,data);
-            // III: complete the drag !
-            if (succes)
-            {
-            	dtde.getDropTargetContext().dropComplete(true);
-            }
-            else
-            {
-                dtde.getDropTargetContext().dropComplete(false); 
-            }
-        }
-        else
+        ResourceTree tree = ((ResourceTree) targetComponent);
+        ResourceTreeNode rtnode = tree.getRTNodeUnderPoint(p);
+        ViewNode viewNode = null;
+
+        if (rtnode != null)
         {
-            dtde.rejectDrop();
+            viewNode = rtnode.getViewNode();
         }
+
+        return viewNode;
     }
 
-	
+    public void drop(DropTargetDropEvent dtde)
+    {
+        super.drop(dtde);
+    }
+
+    public void dragOver(DropTargetDragEvent dtde)
+    {
+        // check/update ResourceTree paths:
+        super.dragOver(dtde);
+    }
 
 }

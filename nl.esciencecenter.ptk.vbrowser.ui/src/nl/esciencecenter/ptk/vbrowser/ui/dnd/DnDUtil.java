@@ -22,18 +22,14 @@ package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetContext;
-import java.awt.dnd.DropTargetDropEvent;
 import java.util.List;
 
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
-
+import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler.DropAction;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -48,7 +44,8 @@ public class DnDUtil
 
     private static void staticInit()
     {
-        // logger.setLevelToDebug();
+        logger.setLevelToDebug();
+        //logger.setLevelToInfo();
     }
 
     public static DnDTransferHandler getDefaultTransferHandler()
@@ -71,7 +68,6 @@ public class DnDUtil
     public static void warnPrintf(String format, Object... args)
     {
         logger.warnPrintf("DnD:" + format, args);
-
     }
 
     public static void infoPrintf(String format, Object... args)
@@ -89,10 +85,14 @@ public class DnDUtil
         logger.logException(ClassLogger.ERROR, e, "DnD:" + format, args);
     }
 
+    /**
+     * Convert ambigous integer to action DropAction Enum.
+     * 
+     * @param dndAction
+     * @return
+     */
     static public DropAction getDropAction(int dndAction)
     {
-        logger.errorPrintf("DnDUtil.getDropAction:%d\n", dndAction);
-
         if ((dndAction & DnDConstants.ACTION_COPY) > 0)
         {
             return DropAction.COPY;
@@ -115,104 +115,40 @@ public class DnDUtil
     // Static Drop Handlers:
     // ========================================================================================
 
-    public static void doDrop(DropTargetDropEvent dtde)
-    {
-        // todo: see super drop() which uses delegates!
-        // for now:
-
-        int dndAction = dtde.getDropAction();
-        DnDUtil.errorPrintf("drop:(action=%d)%s\n", dndAction, dtde);
-
-        DropTargetContext dtc = dtde.getDropTargetContext();
-        Component comp = dtc.getComponent();
-        Point p = dtde.getLocation();
-
-        // II : get data:
-        Transferable data = dtde.getTransferable();
-        TransferHandler handler = null;
-
-        if (comp instanceof JComponent)
-        {
-            JComponent jcomp = ((JComponent) comp);
-            handler = jcomp.getTransferHandler();
-        }
-
-        ViewNode viewNode;
-
-        if (comp instanceof ViewNodeComponent)
-        {
-            viewNode = ((ViewNodeComponent) comp).getViewNode();
-        }
-        else
-        {
-            DnDUtil.errorPrintf("handleDrop(): Received Drop for NON ViewNodeComponent:%s\n", dtde);
-            dtde.rejectDrop();
-            return;
-        }
-
-        // check dropped data:
-        if (DnDData.canConvertToVRLs(data))
-        {
-            // I: accept drop:
-            dtde.acceptDrop(dndAction);
-
-            // Copy/Move/Link:
-            DropAction dropAction = getDropAction(dndAction);
-            // II: Do Drop:
-            handleActualDrop(comp, p, viewNode, data, dropAction);
-
-            // III: complete the drag !
-            dtde.getDropTargetContext().dropComplete(true);
-        }
-        else
-        {
-            dtde.rejectDrop();
-        }
-
-    }
-
-    // ========================================================================
-    // Drop/Paste actions
-    // ========================================================================
-
     /**
      * Paste Data call when for example CTRL-V IS called ! Supplied component is
      * the Swing Component which has the focus when CTRL-V was called !
+     * 
+     * @param dropAction
      */
-    public static boolean doPasteData(Component uiComponent, ViewNode viewNode, Transferable data)
+    public static boolean doPasteData(Component uiComponent, ViewNode viewNode, Transferable data,
+            DropAction effectiveDnDAction)
     {
-        DnDUtil.debugPrintf("doPasteData() o:" + viewNode);
+        DnDUtil.infoPrintf("doPasteData:(action:%s) on:%s\n", effectiveDnDAction, viewNode);
 
-        if (DnDData.canConvertToVRLs(data))
-        {
-            // I: accept drop:
-            // dtde.acceptDrop (DnDConstants.ACTION_COPY_OR_MOVE |
-            // DnDConstants.ACTION_LINK);
-
-            return handleActualDrop(uiComponent, null, viewNode, data, DropAction.COPY_PASTE);
-        }
-
-        return false;
+        return performAcceptedDrop(uiComponent, null, viewNode, data, null, effectiveDnDAction);
     }
 
     /**
-     * Interactive drop on ViewNode
-     * 
-     * @param dndAction
+     * Perform the actual drop, after the drop has been accepted. This could be
+     * an Interactive drop on ViewNode.
      */
-    static public boolean handleActualDrop(Component uiComp, Point point, ViewNode targetViewNode, Transferable data, DropAction dndAction)
+    static public boolean performAcceptedDrop(Component uiComp, Point point, ViewNode targetViewNode,
+            Transferable data, DropAction userDropAction, DropAction effectiveDropAction)
     {
-        DnDUtil.debugPrintf("interActiveDrop():%s -> %s\n", uiComp, targetViewNode);
+        DnDUtil.infoPrintf("performAcceptedDrop():%s -> %s\n", uiComp, targetViewNode);
 
+        // Should already be cecked
         if (DnDData.canConvertToVRLs(data) == false)
         {
-            DnDUtil.errorPrintf("interActiveDrop(): Unsupported Data/Flavor:%s\n", data);
+            ExtendedList<DataFlavor> flavs=new ExtendedList<DataFlavor>(data.getTransferDataFlavors());
+            DnDUtil.errorPrintf("performAcceptedDrop(): Unsupported Data/Flavor(s):\n%s\n",flavs.toString(" - ","","\n"));
             return false;
         }
 
         if (targetViewNode.getDnDHandler() == null)
         {
-            DnDUtil.errorPrintf("No DNDHandler for:%s\n", targetViewNode);
+            DnDUtil.errorPrintf("performAcceptedDrop(): No DNDHandler registered for:%s\n", targetViewNode);
             return false;
         }
 
@@ -221,17 +157,17 @@ public class DnDUtil
         try
         {
             List<VRL> vris = DnDData.getVRLsFrom(data);
-            DnDUtil.debugPrintf("doInterActiveDrop(): Actual Drop on ViewNode:%s\n", targetViewNode);
+            DnDUtil.debugPrintf("performAcceptedDrop(): Actual Drop on ViewNode:%s\n", targetViewNode);
             for (int i = 0; i < vris.size(); i++)
             {
                 DnDUtil.debugPrintf(" -vri[#%d]=%s\n", i, vris.get(i));
             }
 
-            result = targetViewNode.getDnDHandler().doDrop(targetViewNode, dndAction, vris);
+            result = targetViewNode.getDnDHandler().doDrop(targetViewNode, effectiveDropAction, vris);
         }
         catch (Exception e)
         {
-            DnDUtil.logException(e, "interActiveDrop(): Couldn't get VRLs from data:%s\n", data);
+            DnDUtil.logException(e, "performAcceptedDrop(): Couldn't get VRLs from data:%s\n", data);
         }
 
         return result; // Handled!

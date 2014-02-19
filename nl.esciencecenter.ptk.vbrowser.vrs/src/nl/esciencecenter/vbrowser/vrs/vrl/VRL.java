@@ -563,6 +563,7 @@ public final class VRL implements Cloneable,Comparable<VRL>, Duplicatable<VRL>, 
         }
         catch (Exception e)
         {
+            System.err.printf("Error parsing URI:'%s'\n",this);
             throw new Error(e.getMessage(),e); 
         }
     }

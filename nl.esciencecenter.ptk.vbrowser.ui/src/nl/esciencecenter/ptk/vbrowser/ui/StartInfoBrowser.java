@@ -24,6 +24,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
+import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Start Browser with virtual Info Resource.  
@@ -43,7 +45,10 @@ public class StartInfoBrowser
 		    
 		    platform.registerProxyFactory(fac); 
 		    
-			ProxyNode root = fac.openLocation("info:/");
+		    InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode(); 
+		    rootNode.addResourceLink("Links", "Root:/",new VRL("file:///"), null); 
+		    
+		    ProxyNode root = fac.openLocation("info:/");
 		
 			frame.setRoot(root,true,true); 
 			

@@ -5,9 +5,16 @@ import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
 
-public class ViewNodeDragListener implements DragSourceListener
+/** 
+ * DragSourceListener for ViewNodes. <br>
+ * This way a ViewNode source can interact with Drag and Drops. 
+ * ViewNodeDropTarget does most of the work when dragging and dropping, but when dragging into the local desktop, 
+ * the 'drag' is out of reach of the VBrowser. 
+ * 
+ */
+public class ViewNodeDragSourceListener implements DragSourceListener
 {
-    public ViewNodeDragListener()
+    public ViewNodeDragSourceListener()
     {
     }
 

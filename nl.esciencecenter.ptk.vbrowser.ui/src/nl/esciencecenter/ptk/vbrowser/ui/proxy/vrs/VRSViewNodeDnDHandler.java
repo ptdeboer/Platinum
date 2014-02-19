@@ -3,13 +3,11 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TransferMonitorDialog;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler;
-import nl.esciencecenter.vbrowser.vrs.VRSClient;
-import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.task.VRSTaskMonitor;
+import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSViewNodeDnDHandler extends ViewNodeDnDHandler
@@ -31,9 +29,9 @@ public class VRSViewNodeDnDHandler extends ViewNodeDnDHandler
         {
             monitor = vrsManager.doLinkDrop(vrls,destVrl);
         }
-        else if ((dropAction==DropAction.COPY) || (dropAction==DropAction.MOVE) || dropAction==DropAction.COPY_PASTE )
+        else if (dropAction==DropAction.COPY || dropAction==DropAction.MOVE || dropAction==DropAction.COPY_PASTE || dropAction==DropAction.CUT_PASTE)
         {
-            boolean isMove=(dropAction==DropAction.MOVE);
+            boolean isMove=( (dropAction==DropAction.MOVE) || (dropAction==DropAction.CUT_PASTE));
             monitor=vrsManager.doCopyMove(vrls,destVrl, isMove); 
         }
         else

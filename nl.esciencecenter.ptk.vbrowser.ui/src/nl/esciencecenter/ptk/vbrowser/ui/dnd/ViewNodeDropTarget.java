@@ -21,6 +21,7 @@
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -34,6 +35,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler.DropAction;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 
 /**
@@ -42,8 +44,7 @@ import nl.esciencecenter.vbrowser.vrs.VRSTypes;
  * 
  * Swing/AWT Compatible DnD Support.
  */
-public class ViewNodeDropTarget extends DropTarget implements DropTargetListener // ,
-// DragSourceListener,
+public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
 {
     private static final long serialVersionUID = 1985854014807809151L;
 
@@ -69,7 +70,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         DnDUtil.debugPrintf("dragEnter:%s\n", dtde);
         super.dragEnter(dtde);
 
-        updateAllowDrop(dtde);
+        updateDropAction(dtde);
     }
 
     public void dragOver(DropTargetDragEvent dtde)
@@ -78,7 +79,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         super.dragOver(dtde);
 
         // dtde.acceptDrag (DnDConstants.ACTION_LINK);
-        boolean accept = updateAllowDrop(dtde);
+        updateDropAction(dtde);
 
     }
 
@@ -87,7 +88,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         DnDUtil.debugPrintf("dropActionChanged:%s\n", dtde);
         super.dropActionChanged(dtde);
         // accept change ?
-        boolean accept = updateAllowDrop(dtde);
+        updateDropAction(dtde);
     }
 
     public void dragExit(DropTargetEvent dte)
@@ -101,83 +102,156 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
     {
         super.clearAutoscroll();
 
-        // boolean accept=updateAllowDrop(dtde);
+        Component uiComp = dtde.getDropTargetContext().getComponent();
+        Point p = dtde.getLocation();
 
-        DnDUtil.doDrop(dtde);
+        ViewNode targetNode = this.getViewNode(uiComp, p);
+
+        if (targetNode == null)
+        {
+            DnDUtil.errorPrintf("drop(): No Target ViewNode for:%s!\n", dtde);
+            dtde.rejectDrop();
+        }
+
+        // check actual DropEvent
+        Component targetComponent = dtde.getDropTargetContext().getComponent();
+        Transferable transferable = dtde.getTransferable();
+        int sourceActions = dtde.getSourceActions();
+        int userDropAction = dtde.getDropAction();
+        int effectiveAction = effectiveDropAction(transferable, targetNode, sourceActions, userDropAction);
+
+        boolean succes = false;
+
+        if (effectiveAction > 0)
+        {
+            dtde.acceptDrop(effectiveAction);
+            succes = DnDUtil.performAcceptedDrop(uiComp, p, targetNode, transferable, DnDUtil.getDropAction(userDropAction),
+                    DnDUtil.getDropAction(effectiveAction));
+        }
+        else
+        {
+            DnDUtil.debugPrintf("Effective Action=NONE for:%s\n",dtde);
+        }
+        
+        dtde.getDropTargetContext().dropComplete(succes);
     }
 
-    private boolean updateAllowDrop(DropTargetDragEvent dtde)
+    /**
+     * Check what the effective DropAction would be for this event and update
+     * accept/reject drag. Return effective actions if this would the final
+     * drop.
+     * 
+     * @param dtde DropTargetDropEvent 
+     * @return Effective DropAction for this drop event.
+     */
+    protected DropAction updateDropAction(DropTargetDragEvent dtde)
     {
-        Component targetComponent = dtde.getDropTargetContext().getComponent();
 
-        // TransferHandler handler;
-        // if (targetComponent instanceof JComponent)
+        // current actions:
+        int userDropAction = dtde.getDropAction();
+        // all actions allowed:
+        int sourceActions = dtde.getSourceActions();
+
+        DnDUtil.debugPrintf("> updateAllowDrop(): source actions/drop action=%x/%x\n", sourceActions, userDropAction);
+
         // {
-        // JComponent jcomp = ((JComponent) targetComponent);
-        // handler = jcomp.getTransferHandler();
+        // Object source = dtde.getSource();
+        // DragSourceContext dgctx=(DragSourceContext)source);
         // }
+
+        ViewNode targetNode = getViewNode(dtde.getDropTargetContext().getComponent(), dtde.getLocation());
 
         Transferable transferable = dtde.getTransferable();
 
-        // handler.setDragImage();
-        // As a ViewNodeDropTarget except only ViewNodeComponents!
-        if (targetComponent instanceof ViewNodeComponent)
+        if (targetNode != null)
         {
-            ViewNode targetNode;
+            // Match allowed drop actions with allowed source Actions and
+            // 'current' user drop action.
+            int effectiveAction = effectiveDropAction(transferable, targetNode, sourceActions, userDropAction);
 
-            if (targetComponent instanceof ViewNodeContainer)
+            if (effectiveAction > 0)
             {
-                ViewNodeContainer container = (ViewNodeContainer) targetComponent;
-                targetNode = container.getNodeUnderPoint(dtde.getLocation());
-            }
-            else
-            {
-                targetNode = ((ViewNodeComponent) targetComponent).getViewNode();
-            }
-
-            if (targetNode != null)
-            {
-
-                List<String> childTypes = targetNode.getAllowedChildTypes();
-
-                int actions = matchFlavorsWithResourceTypes(transferable, childTypes);
-
-                if (actions > 0)
-                {
-                    dtde.acceptDrag(actions);
-                    return true;
-                }
-                else
-                {
-                    dtde.rejectDrag();
-                    return false;
-                }
+                dtde.acceptDrag(effectiveAction);
+                return DnDUtil.getDropAction(effectiveAction);
             }
             else
             {
                 dtde.rejectDrag();
-                return false;
+                return null;
             }
-
-            // Accept all DnD actions:
-            // dtde.acceptDrag(dtde.getSourceActions());
-            // showUnderDrag(true);
         }
         else
         {
-            // DnDUtil.warnPrintf("Received drag for NON ViewNode component:%s\n",source);
             dtde.rejectDrag();
-            return false;
+            return null;
         }
     }
 
+    /** 
+     * A ViewNodeDropTarget must be installed on a ViewNode. 
+     */
+    protected ViewNode getViewNode(Component targetComponent, Point p)
+    {
+        ViewNode viewNode = null;
+
+        if (targetComponent instanceof ViewNodeComponent)
+        {
+            if (targetComponent instanceof ViewNodeContainer)
+            {
+                ViewNodeContainer container = (ViewNodeContainer) targetComponent;
+                viewNode = container.getNodeUnderPoint(p);
+            }
+            else
+            {
+                viewNode = ((ViewNodeComponent) targetComponent).getViewNode();
+            }
+        }
+
+        return viewNode;
+    }
+
     /**
-     * Check match between transferable and (Allow) ChildTypes.
+     * Match sourceActions with dropTarget action and current user (drop) action
+     * and return effective allowed action.
+     */
+    protected int effectiveDropAction(Transferable transferable, ViewNode targetNode, int sourceActions, int userDropAction)
+    {
+        List<String> childTypes = targetNode.getAllowedChildTypes();
+
+        int dropActions = matchDataTypeDropActions(transferable, childTypes);
+        // source actions and drop actions must intersect.
+        int mask = dropActions & sourceActions;
+
+        if (mask > 0)
+        {
+            // default user action is 'move'.
+            if ((mask & DnDConstants.ACTION_MOVE & userDropAction) > 0)
+            {
+                return DnDConstants.ACTION_MOVE;
+            }
+            else if ((mask & DnDConstants.ACTION_COPY & userDropAction) > 0)
+            {
+                return DnDConstants.ACTION_COPY;
+            }
+            else if ((mask & DnDConstants.ACTION_LINK) > 0)
+            {
+                return DnDConstants.ACTION_LINK;
+            }
+            else
+            {
+                return DnDConstants.ACTION_NONE;
+            }
+        }
+
+        return DnDConstants.ACTION_NONE;
+    }
+
+    /**
+     * Check match between transferable and (allowed) Resource childTypes.
      * 
      * @param transferable
+     *            - VRS Path or external object
      * 
-     * @param sourceFlavors
-     *            - source flavors from drag source
      * @param childTypes
      *            - allowed child types of current (ViewNode) drop target.
      * 
@@ -185,41 +259,33 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
      * 
      * @see DnDConstants
      */
-    public int matchFlavorsWithResourceTypes(Transferable transferable, List<String> childTypes)
+    public int matchDataTypeDropActions(Transferable transferable, List<String> childTypes)
     {
         DataFlavor[] sourceFlavors = transferable.getTransferDataFlavors();
 
-        // for (DataFlavor flav:sourceFlavors)
-        // {
-        // DnDUtil.errorPrintf("matchFlavorsWithResourceTypes(): - sourceFlavor:%s\n",flav);
-        // }
+        for (DataFlavor flav : sourceFlavors)
+        {
+            DnDUtil.debugPrintf("matchDropActions() - sourceFlavor:%s\n", flav);
+        }
 
         int matchingActions = DnDConstants.ACTION_NONE;
 
         boolean areVRLs = DnDData.canConvertToVRLs(transferable);
         boolean areVFSPaths = DnDData.canConvertToVFSPaths(transferable);
 
-        for (DataFlavor flav : sourceFlavors)
+        DnDUtil.debugPrintf("matchDropActions(): Dropped types are VFSPath =%s\n", areVFSPaths);
+        DnDUtil.debugPrintf("matchDropActions(): Dropped types are VRLs    =%s\n", areVRLs);
+
+        // Allow Links to Any VRL type:
+        if (childTypes.contains(VRSTypes.VLINK_TYPE) && areVRLs)
         {
-            String mimeType = flav.getMimeType();
+            matchingActions |= DnDConstants.ACTION_LINK;
+        }
 
-            if (mimeType == null)
-            {
-                continue;
-            }
-
-            // Allow Links to Any VRL type:
-            if (childTypes.contains(VRSTypes.VLINK_TYPE) && areVRLs)
-            {
-                matchingActions |= DnDConstants.ACTION_LINK;
-            }
-
-            // Files: Drop on directory: Allow Copy, Move and (V)Link:
-            if (areVFSPaths && childTypes.contains(VRSTypes.DIR_TYPE))
-            {
-                matchingActions |= DnDConstants.ACTION_LINK | DnDConstants.ACTION_COPY_OR_MOVE;
-            }
-
+        // Files: Drop on directory: Allow Copy, Move and (V)Link:
+        if (areVFSPaths && childTypes.contains(VRSTypes.FILE_TYPE))
+        {
+            matchingActions |= DnDConstants.ACTION_LINK | DnDConstants.ACTION_COPY_OR_MOVE;
         }
 
         return matchingActions;

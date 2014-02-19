@@ -38,7 +38,7 @@ import javax.swing.border.EtchedBorder;
 
 import nl.esciencecenter.ptk.ui.fonts.FontInfo;
 import nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings;
-import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDragListener;
+import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDragSourceListener;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
@@ -47,46 +47,50 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Icon Item. Combines Icon with a label. 
+/**
+ * Icon Item. Combines Icon with a label.
  */
 public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 {
     private static final long serialVersionUID = 4212206705193994742L;
+
     private FontInfo fontInfo;
-    private int max_icon_width; 
+
+    private int max_icon_width;
+
     private ViewNode viewNode;
+
     private boolean selected;
+
     private UIViewModel uiModel;
 
-
-    public IconItem(ViewNodeContainer parent, UIViewModel uiModel,ViewNode item) 
+    public IconItem(ViewNodeContainer parent, UIViewModel uiModel, ViewNode item)
     {
-        init(parent,uiModel,item); 
+        init(parent, uiModel, item);
     }
 
-    private void init(ViewNodeContainer parent,UIViewModel uiModel,ViewNode node) 
+    private void init(ViewNodeContainer parent, UIViewModel uiModel, ViewNode node)
     {
-        this.viewNode=node; 
-        this.uiModel=uiModel; 
-        
-        this.max_icon_width=uiModel.getMaxIconLabelWidth(); 
+        this.viewNode = node;
+        this.uiModel = uiModel;
+
+        this.max_icon_width = uiModel.getMaxIconLabelWidth();
 
         this.setIcon(viewNode.getIcon());
-        updateLabelText(viewNode.getName(),false); 
+        updateLabelText(viewNode.getName(), false);
 
-        boolean visible=true; 
+        boolean visible = true;
 
-        // Label Font + Text 
+        // Label Font + Text
         {
-            // move to UIModel ? 
-            fontInfo=FontInfo.getFontInfo(FontInfo.FONT_ICON_LABEL);
+            // move to UIModel ?
+            fontInfo = FontInfo.getFontInfo(FontInfo.FONT_ICON_LABEL);
             setForeground(this.fontInfo.getForeground());
             this.setFont(fontInfo.createFont());
         }
 
         // Label placement:
-        if (uiModel.getIconLabelPlacement()==UIViewModel.UIDirection.VERTICAL)
+        if (uiModel.getIconLabelPlacement() == UIViewModel.UIDirection.VERTICAL)
         {
             if (visible)
                 this.setIconTextGap(8);
@@ -100,181 +104,180 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
             this.setHorizontalTextPosition(JLabel.CENTER);
         }
         else
-        { 
-            this.setIconTextGap(4); 
+        {
+            this.setIconTextGap(4);
             this.setVerticalAlignment(JLabel.CENTER);
             this.setHorizontalAlignment(JLabel.LEFT);
 
             this.setVerticalTextPosition(JLabel.CENTER);
             this.setHorizontalTextPosition(JLabel.RIGHT);
         }
-        
-        // === Listeners === 
+
+        // === Listeners ===
         this.setFocusable(true);
-        // handle own focus events. 
-        this.addFocusListener(this);  
-        
+        // handle own focus events.
+        this.addFocusListener(this);
+
     }
-    
+
     public void setViewComponentEventAdapter(ViewContainerEventAdapter handler)
     {
         // IconItem handles focus event, VCEAdaptor handles mouse events (?)
-        // this.addFocusListener(handler); 
-        this.addMouseListener(handler); 
+        // this.addFocusListener(handler);
+        this.addMouseListener(handler);
     }
 
     protected void initDND(TransferHandler transferHandler, DragGestureListener dragListener)
     {
-        // One For All: Transfer Handler: 
-        //icon.setTransferHandler(VTransferHandler.getDefault());
-        
-        // reuse draglistener from iconsPanel:
-        DragSource dragSource=DragSource.getDefaultDragSource();
-        dragSource.createDefaultDragGestureRecognizer(
-                this, DnDConstants.ACTION_COPY_OR_MOVE, dragListener );
+        // One For All: Transfer Handler:
+        // icon.setTransferHandler(VTransferHandler.getDefault());
 
-        dragSource.addDragSourceListener(new ViewNodeDragListener()); 
-        
-        // Specify DROP target: 
+        // reuse draglistener from iconsPanel:
+        DragSource dragSource = DragSource.getDefaultDragSource();
+        dragSource.createDefaultDragGestureRecognizer(
+                this, DnDConstants.ACTION_COPY_OR_MOVE, dragListener);
+
+        dragSource.addDragSourceListener(new ViewNodeDragSourceListener());
+
+        // Specify DROP target:
         this.setDropTarget(new ViewNodeDropTarget(this));
-        // Have to set Keymapping to my component 
-        KeyMappings.addCopyPasteKeymappings(this); 
-        
-        this.setTransferHandler(transferHandler);   
-        
+        // Have to set Keymapping to my component
+        KeyMappings.addCopyPasteKeymappings(this);
+
+        this.setTransferHandler(transferHandler);
 
     }
-    
+
     public void updateLabelText(String text, boolean hasFocus)
     {
-        if (text==null)
-            text=""; 
+        if (text == null)
+            text = "";
 
-        String htmlText= "<html>";
+        String htmlText = "<html>";
 
         if (hasFocus)
-            htmlText+="<u>";
-        
-        // from model ? 
-        if (max_icon_width<=0) 
-            this.max_icon_width=180; 
-        
-        // Calculate Font Size 
-        Font font = getFont(); 
-        FontMetrics fmetric = getFontMetrics(font);
-        
-        // get 'widest'character
-        int charWidth=fmetric.charWidth('w'); //leniance  
-        //System.err.println("charwidth="+charWidth);
+            htmlText += "<u>";
 
-        //int lines=0; 
-        int len=text.length();  
-        //int width=0; 
-        int i=0; 
-        
-        int currentLineWidth=0; 
-        
-        while(i<len) 
+        // from model ?
+        if (max_icon_width <= 0)
+            this.max_icon_width = 180;
+
+        // Calculate Font Size
+        Font font = getFont();
+        FontMetrics fmetric = getFontMetrics(font);
+
+        // get 'widest'character
+        int charWidth = fmetric.charWidth('w'); // leniance
+        // System.err.println("charwidth="+charWidth);
+
+        // int lines=0;
+        int len = text.length();
+        // int width=0;
+        int i = 0;
+
+        int currentLineWidth = 0;
+
+        while (i < len)
         {
             switch (text.charAt(i))
             {
-                    // filter out special HTML characters: 
-                    // only a small set needs to be filtered:
-                    case '/':
-                    case '!':
-                    case '@':
-                    case '#': 
-                    case '$': 
-                    case '%': 
-                    case '^':
-                    case '&':
-                    case '*':
-                    case '<':
-                    case '>':
-                    case '-':
-                        // use numerical ASCII value: 
-                        String str="&#"+(int)text.charAt(i)+";"; 
-                        htmlText+=str; 
-                        break; 
-                    default: 
-                    	htmlText+=text.charAt(i);
-                        break;
+            // filter out special HTML characters:
+            // only a small set needs to be filtered:
+                case '/':
+                case '!':
+                case '@':
+                case '#':
+                case '$':
+                case '%':
+                case '^':
+                case '&':
+                case '*':
+                case '<':
+                case '>':
+                case '-':
+                    // use numerical ASCII value:
+                    String str = "&#" + (int) text.charAt(i) + ";";
+                    htmlText += str;
+                    break;
+                default:
+                    htmlText += text.charAt(i);
+                    break;
             }
 
-            currentLineWidth+=charWidth; 
-            if (currentLineWidth>max_icon_width)
+            currentLineWidth += charWidth;
+            if (currentLineWidth > max_icon_width)
             {
-            	htmlText+="<br>"; // Hard Break! 
-            	currentLineWidth=0;
+                htmlText += "<br>"; // Hard Break!
+                currentLineWidth = 0;
             }
-            
-            i++; 
-        }
-        
-        if (hasFocus)
-            htmlText+="</u>"; 
 
-        htmlText+="</html>"; 
+            i++;
+        }
+
+        if (hasFocus)
+            htmlText += "</u>";
+
+        htmlText += "</html>";
 
         setText(htmlText);
 
     }
-    
+
     public void updateFocusBorder(boolean hasFocus)
     {
-		  Border focusBorder;
-		  
-		  if (hasFocus)
-		  {
-		  	focusBorder=new EtchedBorder();
-		  }
-		  else
-		  {
-		  	focusBorder=new EmptyBorder(2,2,2,2); 
-		  }
-		  
-		  this.setBorder(focusBorder);
+        Border focusBorder;
+
+        if (hasFocus)
+        {
+            focusBorder = new EtchedBorder();
+        }
+        else
+        {
+            focusBorder = new EmptyBorder(2, 2, 2, 2);
+        }
+
+        this.setBorder(focusBorder);
     }
-    	
-    public ViewNode getViewNode() 
+
+    public ViewNode getViewNode()
     {
-        return this.viewNode; 
+        return this.viewNode;
     }
 
     public boolean hasLocator(VRL locator)
     {
-        return this.viewNode.getVRL().equals(locator); 
+        return this.viewNode.getVRL().equals(locator);
     }
 
     public void updateFocus(boolean hasFocus)
     {
-        updateIcon(selected,hasFocus); 
-        updateLabelText(viewNode.getName(),hasFocus); 
-        //updateFocusBorder(hasFocus); 
+        updateIcon(selected, hasFocus);
+        updateLabelText(viewNode.getName(), hasFocus);
+        // updateFocusBorder(hasFocus);
         repaint();
     }
 
     @Override
     public UIViewModel getUIViewModel()
     {
-        return this.uiModel; 
+        return this.uiModel;
     }
 
     public boolean hasViewNode(ViewNode node)
     {
-        return this.viewNode.equals(node); 
+        return this.viewNode.equals(node);
     }
-    
+
     public boolean requestFocus(boolean value)
     {
-        // forward to focus subsystem ! 
-        return this.requestFocusInWindow(); 
+        // forward to focus subsystem !
+        return this.requestFocusInWindow();
     }
 
     @Override
     public void focusGained(FocusEvent e)
     {
-        this.updateFocus(true); 
+        this.updateFocus(true);
     }
 
     @Override
@@ -288,33 +291,33 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
     {
         // parent MUST be IconPanel;
         Container parent = this.getParent();
-        return (IconsPanel)parent; 
+        return (IconsPanel) parent;
     }
-    
+
     public void setSelected(boolean val)
     {
-        this.selected=val;
-        updateIcon(selected,false);
+        this.selected = val;
+        updateIcon(selected, false);
         this.repaint();
     }
-    
-    protected void updateIcon(boolean isSelected,boolean hasFocus)
+
+    protected void updateIcon(boolean isSelected, boolean hasFocus)
     {
         if (isSelected)
         {
             if (hasFocus)
             {
                 setIcon(viewNode.getIcon(ViewNode.SELECTED_FOCUS_ICON));
-                //textLabel.setOpaque(true);
-                //prev_label_color=textLabel.getForeground();
-                setForeground(uiModel.getFontHighlightColor()); 
+                // textLabel.setOpaque(true);
+                // prev_label_color=textLabel.getForeground();
+                setForeground(uiModel.getFontHighlightColor());
             }
             else
             {
                 setIcon(viewNode.getIcon(ViewNode.SELECTED_ICON));
-                //textLabel.setOpaque(true);
-                //prev_label_color=textLabel.getForeground();
-                setForeground(uiModel.getFontHighlightColor()); 
+                // textLabel.setOpaque(true);
+                // prev_label_color=textLabel.getForeground();
+                setForeground(uiModel.getFontHighlightColor());
             }
         }
         else
@@ -322,27 +325,27 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
             if (hasFocus)
             {
                 setIcon(viewNode.getIcon(ViewNode.FOCUS_ICON));
-                //textLabel.setOpaque(false);
-                setForeground(uiModel.getFontHighlightColor()); 
+                // textLabel.setOpaque(false);
+                setForeground(uiModel.getFontHighlightColor());
             }
             else
             {
                 setIcon(viewNode.getIcon());
-                //textLabel.setOpaque(false);
-                setForeground(uiModel.getFontColor());    
+                // textLabel.setOpaque(false);
+                setForeground(uiModel.getFontColor());
             }
         }
     }
-    
+
     public boolean isSelected()
     {
-    	return this.selected; 
+        return this.selected;
     }
-    
+
     public Dimension getPreferredSize()
     {
-        Dimension size=super.getPreferredSize(); 
-        return size;  
+        Dimension size = super.getPreferredSize();
+        return size;
     }
 
 }
