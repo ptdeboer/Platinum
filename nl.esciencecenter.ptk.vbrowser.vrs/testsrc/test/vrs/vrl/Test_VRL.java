@@ -457,25 +457,7 @@ public class Test_VRL
 
     }
     
-    @Test
-    public void testRegressionLocalFileURI() throws Exception
-    {
-        // If compatible to URI/URL, the actual authorization must be removed.  
-        
-//        VRL vrl = new VRL("file://user@host.domain:1234/Directory/AFile");
-//        VRL localVrl = new VRL("file:/Directory/AFile");
-//        Assert.assertEquals("Local File URI must match.", localVrl, vrl);
-//        java.net.URL localFileUrl=vrl.toURL(); 
-//        Assert.assertEquals("Local File VRL must match local File URL. Java URL removes Authority information", localVrl,localFileUrl); 
-//
-//        vrl = new VRL("file://user@host.domain:1234/Directory/A File");
-//        localVrl = new VRL("file:/Directory/A File");
-//        Assert.assertEquals("Local File URI must match.", localVrl, vrl);
-//        localFileUrl=vrl.toURL();
-//        Assert.assertEquals("Local File VRL must match local File URL. Java URL removes Authority information", localVrl,localFileUrl); 
-
-    }
-    
+  
     @Test
     public void testRelativePaths() throws Exception
     {
@@ -710,6 +692,37 @@ public class Test_VRL
         
     }
         
+    @Test
+    public void testRegressionInfoRootToURI() throws Exception
+    {
+        // Bug in previous infors implementation: 
+        String uriStr="info:/"; 
         
+        VRL vrl=new VRL(uriStr);  
+        URI uri=vrl.toURI(); 
+        
+        String uriStr2=uri.toString(); 
+        
+        Assert.assertEquals("String converted to URI must match",uriStr,uriStr2); 
+    }
+    
+    @Test
+    public void testRegressionLocalFileURI() throws Exception
+    {
+        // If compatible to URI/URL, the actual authorization must be removed.  
+        
+//        VRL vrl = new VRL("file://user@host.domain:1234/Directory/AFile");
+//        VRL localVrl = new VRL("file:/Directory/AFile");
+//        Assert.assertEquals("Local File URI must match.", localVrl, vrl);
+//        java.net.URL localFileUrl=vrl.toURL(); 
+//        Assert.assertEquals("Local File VRL must match local File URL. Java URL removes Authority information", localVrl,localFileUrl); 
+//
+//        vrl = new VRL("file://user@host.domain:1234/Directory/A File");
+//        localVrl = new VRL("file:/Directory/A File");
+//        Assert.assertEquals("Local File URI must match.", localVrl, vrl);
+//        localFileUrl=vrl.toURL();
+//        Assert.assertEquals("Local File VRL must match local File URL. Java URL removes Authority information", localVrl,localFileUrl); 
+
+    }
     
 }

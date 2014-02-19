@@ -35,7 +35,6 @@ public class Test_URIFactory
         // NOTE: use normalized URI strings here:
         testConstructor("file:/path","file",null,-1,"/path");
         
-
         testConstructor("Constructor URIFactory(\"file\",null,\"/etc\") does not match", new URIFactory("file", null,0, "/etc"),
                 "file:/etc");
         testConstructor("Constructor URIFactory(\"file\",null,\"/etc\") does not match", new URIFactory("file", null,0, "etc"),
@@ -106,6 +105,11 @@ public class Test_URIFactory
         Assert.assertEquals("Paths don't match.",uriFactory.getPath(),expectedPath);
         Assert.assertEquals("Query parts don't match.",uriFactory.getQuery(),expectedQuery);
         Assert.assertEquals("Fragment parts don't match.",uriFactory.getFragment(),expectedFragment);
+        
+        // check actual created URI;  
+        URI uri=uriFactory.toURI(); 
+        Assert.assertNotNull("URIFactory may not create null URI",uri); 
+        
     }
     
     private void testConstructor(String message, URIFactory uriFactory, String uristr)
