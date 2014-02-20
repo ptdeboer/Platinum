@@ -639,6 +639,11 @@ public class WebClient
     {
         logger.debugPrintf("executeGet():'%s'\n", getMethod.getRequestLine());
 
+        if (this.httpClient == null)
+        {
+            throw new NullPointerException("HTTP Client not properly initialized: httpClient==null");
+        }
+        
         try
         {
             HttpResponse response;
