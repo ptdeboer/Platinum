@@ -3,20 +3,28 @@ package nl.esciencecenter.vbrowser.vrs.registry;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.crypt.Secret;
+import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ResourceSystemInfo
+public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
 {
+    // --- 
+    // Flags/Switchess
+    // --- 
+    public static final String NEED_USERINFO="needUserinfo";
+    
+    public static final String NEED_SERVERPATH="needServerPath"; 
+
+    // -----------------
+    // Server attributes
+    // -----------------
+    
     public static final String SERVER_SCHEME="serverScheme";
 
     public static final String SERVER_USERINFO="serverUserinfo";
 
-    public static final String NEED_USERINFO="needUserinfo";
-    
-    public static final String NEED_SERVERPATH="needServerPath"; 
-    
     public static final String SERVER_HOSTNAME="serverHostname";
     
     public static final String SERVER_PORT="serverPort";
@@ -32,35 +40,53 @@ public class ResourceSystemInfo
     // Instance 
     // ==================
    
-    protected VRSProperties vrsConfig;   
+    protected VRSProperties properties;   
     
-    private Secret passwd=null; 
- 
-    public ResourceSystemInfo(VRL serverVRL)
+    private Secret passwd=null;
+    
+    private ResourceSystemInfoRegistry infoRegistry=null;
+    
+    final String id;
+    
+    public ResourceSystemInfo(ResourceSystemInfoRegistry registry, VRL serverVRL, String infoId)
     {
-        vrsConfig=new VRSProperties(null);
+        this.infoRegistry=registry; 
+        properties=new VRSProperties(null);
         setServerVRL(serverVRL); 
+        this.id=infoId; 
     }
     
+    protected ResourceSystemInfo(ResourceSystemInfoRegistry registry,VRSProperties props,String infoId)
+    {
+        this.infoRegistry=registry; 
+        properties=props.duplicate(false);
+        this.id=infoId;
+    }
+            
     protected void setServerVRL(VRL vrl)
     {
-        vrsConfig.set(SERVER_SCHEME,vrl.getScheme());
-        vrsConfig.set(SERVER_HOSTNAME, vrl.getHostname());
+        properties.set(SERVER_SCHEME,vrl.getScheme());
+        properties.set(SERVER_HOSTNAME, vrl.getHostname());
         // must use default port; 
         int port=vrl.getPort(); 
         if (port<=0)
         {
             port=VRS.getDefaultPort(vrl.getScheme());
         }
-        vrsConfig.set(SERVER_PATH, port);
-        vrsConfig.set(SERVER_PATH, vrl.getPath());
+        properties.set(SERVER_PATH, port);
+        properties.set(SERVER_PATH, vrl.getPath());
         // don't check need UserInfo;
-        vrsConfig.set(SERVER_USERINFO, vrl.getUserinfo());
+        properties.set(SERVER_USERINFO, vrl.getUserinfo());
     }
-    
-    public ResourceSystemInfo(Properties properties)
+
+    public void store()
     {
-        vrsConfig=new VRSProperties(properties);
+        if (this.infoRegistry==null)
+        {
+            throw new NullPointerException("No Registry. Can not store ResourceSystemInfo!"); 
+        }
+        
+        this.infoRegistry.putInfo(this); 
     }
     
     public VRL getServerVRL()
@@ -91,17 +117,27 @@ public class ResourceSystemInfo
      */
     public VRSProperties getProperties()
     {
-        return vrsConfig.duplicate(); 
+        return properties.duplicate(); 
     }
 
     /** 
      * Replace properties. To update new properties, but keep the other properties use updateProperties(); 
      * @param properties - new properties to replace curent ones. 
      */
-    public void setProperties(VRSProperties properties)
+    public void setProperties(VRSProperties newProperties)
     {
         properties.clear(); 
-        properties.putAll(properties);
+        properties.putAll(newProperties);
+    }
+    
+    public void setProperty(String name,String value)
+    {
+        properties.set(name, value);  
+    }
+    
+    public String getProperty(String name)
+    {
+        return properties.getStringProperty(name); 
     }
     
     /** 
@@ -115,52 +151,52 @@ public class ResourceSystemInfo
 
     public String getServerScheme()
     {
-        return vrsConfig.getStringProperty(SERVER_SCHEME);
+        return properties.getStringProperty(SERVER_SCHEME);
     }
     
     public String getUserInfo()
     {
-        return vrsConfig.getStringProperty(SERVER_USERINFO);
+        return properties.getStringProperty(SERVER_USERINFO);
     }
 
     public void setUserInfo(String userInfo)
     {
-        vrsConfig.set(SERVER_USERINFO,userInfo);
+        properties.set(SERVER_USERINFO,userInfo);
     }
     
     public int getServerPort()
     {
-        return vrsConfig.getIntegerProperty(SERVER_PORT, -1); 
+        return properties.getIntegerProperty(SERVER_PORT, -1); 
     }
 
     public String getServerHostname()
     {
-        return vrsConfig.getStringProperty(SERVER_HOSTNAME);
+        return properties.getStringProperty(SERVER_HOSTNAME);
     }
 
     public String getServerPath()
     {
-        return vrsConfig.getStringProperty(SERVER_PATH); 
+        return properties.getStringProperty(SERVER_PATH); 
     }
 
     public boolean getNeedUserInfo()
     {
-        return vrsConfig.getBooleanProperty(NEED_USERINFO,false);
+        return properties.getBooleanProperty(NEED_USERINFO,false);
     }
     
     public boolean getNeedServerPath()
     {
-        return vrsConfig.getBooleanProperty(NEED_SERVERPATH,false);
+        return properties.getBooleanProperty(NEED_SERVERPATH,false);
     }
 
     public void setNeedUserInfo(boolean value)
     {
-        vrsConfig.set(NEED_USERINFO,value);
+        properties.set(NEED_USERINFO,value);
     }
     
     public void setNeedServerPath(boolean value)
     {
-        vrsConfig.set(NEED_SERVERPATH,value);
+        properties.set(NEED_SERVERPATH,value);
     }
 
     /** 
@@ -216,12 +252,43 @@ public class ResourceSystemInfo
 
     public boolean setIfNotSet(String name, String value)
     {
-        if (vrsConfig.get(name)==null)
+        if (properties.get(name)==null)
         {
-            vrsConfig.set(name, value); 
+            properties.set(name, value); 
             return true;
         }
         return false; 
     }
 
+    public String getID()
+    {
+        return this.id; 
+    }
+    
+    public String toString()
+    {
+        return "ResourceSystemInfo:[id="+id
+                +",password="+((passwd!=null)?"<PASSWORD>":"<No Password>")
+                +",properties="+properties+"]"; 
+    }
+
+    @Override
+    public boolean shallowSupported()
+    {
+        return false;
+    }
+
+    @Override
+    public ResourceSystemInfo duplicate()
+    {
+        ResourceSystemInfo info=new ResourceSystemInfo(infoRegistry,properties.duplicate(false),id); 
+        info.passwd=getPassword(); //copy ? 
+        return info; 
+    }
+
+    @Override
+    public ResourceSystemInfo duplicate(boolean shallow)
+    {
+        return duplicate(); 
+    }
 }

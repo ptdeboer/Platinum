@@ -7,7 +7,9 @@ import nl.esciencecenter.vbrowser.vrs.VRSContext;
 
 public class ResourceSystemInfoRegistry
 {
-    /** Owner Object */ 
+    /** 
+     * Owner Object of this registry.  
+     */ 
     private VRSContext vrsContext; 
     
     private Map<String,ResourceSystemInfo> resourceInfos=new Hashtable<String,ResourceSystemInfo>(); 
@@ -17,14 +19,21 @@ public class ResourceSystemInfoRegistry
         this.vrsContext=vrsContext;
     }
     
-    public void putInfo(String id, ResourceSystemInfo info)
+    public void putInfo(ResourceSystemInfo info)
     {
-        resourceInfos.put(id, info);
+        synchronized(resourceInfos)
+        {
+            // always update ID. 
+            resourceInfos.put(info.getID(),info);
+        }
     }
     
     public ResourceSystemInfo getInfo(String id)
     {
-        return resourceInfos.get(id);
+        synchronized(resourceInfos)
+        {
+            return resourceInfos.get(id);
+        }
     }
 
 }

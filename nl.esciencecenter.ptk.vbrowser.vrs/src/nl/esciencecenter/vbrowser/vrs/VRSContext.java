@@ -19,7 +19,7 @@ public class VRSContext
     
     protected VRSProperties vrsProperties;
 
-    private ResourceSystemInfoRegistry resourceInfoRegistry; 
+    protected ResourceSystemInfoRegistry resourceInfoRegistry; 
 
     protected UI ui; 
     
@@ -83,15 +83,14 @@ public class VRSContext
         
         if ((info==null) && (autoCreate==true))
         {
-            info=new ResourceSystemInfo(vrl);
-            
+            info=new ResourceSystemInfo(resourceInfoRegistry,vrl,id);
         }
         return info; 
     }
 
-    public void putResourceSystemInfo(String id, ResourceSystemInfo info)
+    public void putResourceSystemInfo(ResourceSystemInfo info)
     {
-        resourceInfoRegistry.putInfo(id, info); 
+        resourceInfoRegistry.putInfo(info); 
     }
 
     public UI getUI()

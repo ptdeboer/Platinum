@@ -111,7 +111,7 @@ public class Registry
             {
                 ResourceSystemInfo info=vrsContext.getResourceSystemInfoFor(vrl,true); 
                 info=factory.updateResourceInfo(vrsContext,info,vrl);
-                vrsContext.putResourceSystemInfo(id,info); 
+                vrsContext.putResourceSystemInfo(info); 
                 resourceSystem=factory.createResourceSystemFor(vrsContext,info,vrl);
                 instances.put(id, resourceSystem); 
             }

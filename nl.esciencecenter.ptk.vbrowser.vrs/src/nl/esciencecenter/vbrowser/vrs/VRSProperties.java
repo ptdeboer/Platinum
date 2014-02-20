@@ -232,4 +232,10 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
        properties.clear(); 
     }
 
+    @Override
+    public String toString()
+    {
+        return "VRSProperties[properties=" + properties + "]";
+    }
+
 }
