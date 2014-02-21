@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 Netherlands eScience Center.
+ * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License. 
