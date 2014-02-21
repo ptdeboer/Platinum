@@ -1,13 +1,21 @@
                   
-                        Platinum
+                                 Platinum
 
-  Copyright 2012-2013 The Netherlands eScience Center
+            Copyright 2012-2014 The Netherlands eScience Center
 
 
-This product includes the SLF4J library, which is Copyright (c) 2004-2013 QOS.ch
-See "notices/LICENSE.slf4j.txt" for the licence information of the SLF4J library. 
+Software Notices
+================
 
-This product includes the JSch library, which is Copyright (c) 2002-2012 Atsuhiko 
-Yamanaka, JCraft,Inc. See "notices/LICENSE.jsch.txt" for the licence information 
-of the JSch library.
+ This product uses com.jgoodies the "Forms" and "Looks" Freeware libraries. They are
+licensed under the BSD license. See "notices/LICENSE.com.jgoodies-forms.txt" and 
+"notices/LICENSE.jgoodies.com-looks.txt"
 
+ This product uses Image4j libraries (see: net.sf.imag4j). They are licensed under
+the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1. see "notices/LICENSE.imag4j.txt" 
+
+ This product uses the Apache HTTP-Client and related libraries. They are licensed
+under the Apache 2.0 License. See "notices/LICENSE.apache.txt"
+
+ This product includes the SLF4J library, which is Copyright (c) 2004-2013 QOS.ch
+See "notices/LICENSE.slf4j.txt" for the license information of the SLF4J library. 

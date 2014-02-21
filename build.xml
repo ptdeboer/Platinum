@@ -1,101 +1,121 @@
 <project name="Platinum" default="dist-install" basedir=".">
-    <description>
+	<description>
         Project        : Platinum 
         See build.prop for custom properties. 
     </description>
 
-    <!-- Toplevel build files are here -->
-    <property name="project.root" location="." />
-    <property environment="env" />
-    <!-- Custom properties, read before project.prop -->
-    <property file="build.prop" />
-    <!-- toplevel build properties -->
-    <property file="${project.root}/project.prop" />
+	<!-- Toplevel build files are here -->
+	<property name="project.root" location="." />
+	<property environment="env" />
+	<!-- Custom properties, read before project.prop -->
+	<property file="build.prop" />
+	<!-- toplevel build properties -->
+	<property file="${project.root}/project.prop" />
 
-    <import file="modules.xml" />
-    
-    <!-- Target: init -->
-    <target name="init">
+	<import file="modules.xml" />
 
-        <!-- Create the build directory structure used by compile -->
-        <mkdir dir="${project.dist}" />
-        <mkdir dir="${project.dist.lib}" />
-        <mkdir dir="${project.dist.etc}" />
-        <mkdir dir="${project.dist.bin}" />
-        <mkdir dir="${project.dist.doc}" />
+	<!-- Target: init -->
+	<target name="init">
 
-        <!-- project defaults -->
-        <property name="project.sourcedir" value="${project.root}" />
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${project.dist}" />
+		<mkdir dir="${project.dist.lib}" />
+		<mkdir dir="${project.dist.etc}" />
+		<mkdir dir="${project.dist.bin}" />
+		<mkdir dir="${project.dist.doc}" />
 
-        <tstamp>
-            <format property="project.tstamp" pattern="yyyy-MM-dd- HH:mm:ss" locale="en" />
-        </tstamp>
+		<!-- project defaults -->
+		<property name="project.sourcedir" value="${project.root}" />
 
-        <tstamp>
-            <format property="project.time.number" pattern="yyyyMMddHHmmss" locale="en" />
-        </tstamp>
+		<tstamp>
+			<format property="project.tstamp" pattern="yyyy-MM-dd- HH:mm:ss" locale="en" />
+		</tstamp>
 
-    </target>
+		<tstamp>
+			<format property="project.time.number" pattern="yyyyMMddHHmmss" locale="en" />
+		</tstamp>
 
-    <target name="dist-install" depends="init,modules-dist-install" />
-    
-    <target name="modules-dist-install" depends="init">
+	</target>
 
-        <antcall target="doModules">
-            <param name="target" value="dist-install" />
-        </antcall>
+	<target name="dist-install" depends="init,modules-dist-install,post-dist-install" />
 
-    </target>
+	<target name="modules-dist-install" depends="init">
 
-    <target name="test" depends="clean,modules-test" />
-        
-    <target name="modules-test" depends="init">
+		<antcall target="doModules">
+			<param name="target" value="dist-install" />
+		</antcall>
 
-        <antcall target="doModules-test">
-            <param name="target" value="test" />
-        </antcall>
+	</target>
 
-    </target>
+	<target name="post-dist-install" depends="modules-dist-install" >
 
-    <target name="clean" depends="modules-clean" description="Clean All">
+		<!-- 
+            Prepare the distribution.  
+            Update distribution root.  
+         -->
 
-        <delete dir="${project.dist}" />
+		<!-- toplevel NOTICE and README files -->
 
-    </target>
-            
-    <target name="modules-clean" depends="init">
+		<copy todir="${project.dist}">
+			<fileset file="${project.root}/NOTICE.txt" />
+			<fileset file="${project.root}/LICENSE.txt" />
+		</copy>
 
-        <antcall target="doModules">
-            <param name="target" value="clean" />
-        </antcall>
+		<copy todir="${project.dist}/notices">
+			<fileset dir="${project.root}/notices" />
+		</copy>
 
-    </target>
+	</target>
+				
+	<target name="test" depends="clean,modules-test" />
 
-    <target name="dist-zip" depends="dist-install">
+	<target name="modules-test" depends="init">
 
-        <mkdir dir="packs" />
-	
-        <!-- zippit -->
-        <property name="distro.prefix" value="platinum-dev" />
-        <property name="distro.zip.prefix" value="platinum-dev" />
-        <!-- derived -->
-        <property name="distro.zip.root" value="${distro.prefix}-${project.version}" />
-        <property name="distro.zip.filename" value="${distro.zip.prefix}-${project.version}" />
+		<antcall target="doModules-test">
+			<param name="target" value="test" />
+		</antcall>
 
-        <zip destfile="packs/${distro.zip.filename}.zip">
-            <!-- Add all excluding shell scripts and other executables -->
-            <zipfileset dir="${project.dist}" filemode="644" prefix="${distro.zip.filename}" excludes="bin/**,*.sh" />
+	</target>
 
-            <!-- Now add 'bin' shell scrips with x permissions ! -->
-            <zipfileset dir="${project.dist}/bin" filemode="755" prefix="${distro.zip.root}/bin" />
-            <!-- Now add root shell scrips with x permissions ! -->
+	<target name="clean" depends="modules-clean" description="Clean All">
 
-            <zipfileset dir="${project.dist}/" filemode="755" prefix="${distro.zip.root}" includes="*.sh">
-            </zipfileset>
+		<delete dir="${project.dist}" />
 
-        </zip>
+	</target>
 
-    </target>
+	<target name="modules-clean" depends="init">
+
+		<antcall target="doModules">
+			<param name="target" value="clean" />
+		</antcall>
+
+	</target>
+
+	<target name="dist-zip" depends="dist-install">
+
+		<mkdir dir="packs" />
+
+		<!-- zippit -->
+		<property name="distro.prefix" value="platinum-dev" />
+		<property name="distro.zip.prefix" value="platinum-dev" />
+		<!-- derived -->
+		<property name="distro.zip.root" value="${distro.prefix}-${project.version}" />
+		<property name="distro.zip.filename" value="${distro.zip.prefix}-${project.version}" />
+
+		<zip destfile="packs/${distro.zip.filename}.zip">
+			<!-- Add all excluding shell scripts and other executables -->
+			<zipfileset dir="${project.dist}" filemode="644" prefix="${distro.zip.filename}" excludes="bin/**,*.sh" />
+
+			<!-- Now add 'bin' shell scrips with x permissions ! -->
+			<zipfileset dir="${project.dist}/bin" filemode="755" prefix="${distro.zip.root}/bin" />
+			<!-- Now add root shell scrips with x permissions ! -->
+
+			<zipfileset dir="${project.dist}/" filemode="755" prefix="${distro.zip.root}" includes="*.sh">
+			</zipfileset>
+
+		</zip>
+
+	</target>
 
 </project>
 
