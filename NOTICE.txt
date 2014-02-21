@@ -1,7 +1,9 @@
                   
                                  Platinum
 
-            Copyright 2012-2014 The Netherlands eScience Center
+          Copyright (C) 2012-2014 The Netherlands eScience Center
+          This software is copyrighted under the Apache 2.0 License. 
+          See LICENSE.txt for the full license text. 
 
 
 Software Notices
