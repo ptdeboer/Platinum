@@ -510,14 +510,23 @@ public class AttributeSet extends HashMapList<String, Attribute>
         int index = 0;
 
         for (int i = 0; i < this.size(); i++)
+        {
             if (this.elementAt(i).hasChanged() == true)
+            {
                 numChanged++;
-
+            }
+        }
+        
         Attribute attrs[] = new Attribute[numChanged];
 
         for (int i = 0; i < this.size(); i++)
+        {
             if (this.elementAt(i).hasChanged() == true)
+            {
                 attrs[index++] = this.elementAt(i);
+            }
+        }
+        
 
         return attrs;
     }

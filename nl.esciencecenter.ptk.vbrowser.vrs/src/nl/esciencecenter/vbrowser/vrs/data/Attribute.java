@@ -174,7 +174,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     /**
      * Generic Object as value. The default is to use String Representation
      */
-    private Object value = null;
+    private Object _value = null;
 
     /** 
      * Whether attribute is editable. 
@@ -323,15 +323,17 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     protected void init(AttributeType type, String name, Object value)
     {
         this.name = name;
-        this.value = value;
-        checkValueType(type, value);
+        this._value = value;
+        assertValidType(type, value);
     }
 
-    protected void checkValueType(AttributeType type, Object value)
+    protected void assertValidType(AttributeType type, Object value)
     {
         if (type == AttributeType.ANY)
+        {
             return;
-
+        }
+            
         // Assert here ? 
         // Null types are either ANY or String. 
         if (value==null)
@@ -352,16 +354,20 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
         // DateTime can be stored as normalized date-time string as well as Date Object. 
         if (type == AttributeType.DATETIME && objType == AttributeType.STRING)
+        {
             return;
+        }
 
-        // Enum are stored as Strings. 
+        // Enums are stored as Strings. 
         if (type == AttributeType.ENUM && objType == AttributeType.STRING)
+        {
             return;
+        }
 
         if (objType != type)
         {
             throw new Error("Object type is not the same as expected. Expected=" + type + ",parsed=" + objType
-                    + ",value" + value);
+                    + ",value=" + value);
         }
     }
 
@@ -376,29 +382,33 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
         if ((enumValues != null) && (enumIndex >= 0) && (enumIndex < enumValues.length))
         {
-            this.value = enumValues[enumIndex];
+            this._value = enumValues[enumIndex];
         }
         else
         {
             logger.errorPrintf("Error enumIndex out of bound:%d\n", enumIndex);
-            value = "";
+            _value = "";
         }
     }
 
     /** 
      * Master setter method. All set(...) methods should call this. 
+     * If type is specified and is not equals to ANY, the object must be compatible with specified AttributeType. 
      */
     private void _setValue(AttributeType type, Object object)
     {
-        this.checkValueType(type, object);
-        this.value = object;
+        if (type!=null)
+        {
+            this.assertValidType(type, object);
+        }
+        this._value = object;
         this.changed=true; 
     }
 
     protected void copyFrom(Attribute source)
     {
         // Duplicate String objects: !
-        init(source.getType(), source.name, duplicateValue(source.getType(), source.value));
+        init(source.getType(), source.name, duplicateValue(source.getType(), source.getValue()));
 
         this.editable = source.editable;
         this.enumIndex = source.enumIndex;
@@ -433,9 +443,11 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     public AttributeType getType()
     {
         if (isEnum())
+        {
             return AttributeType.ENUM;
+        }
         
-        return AttributeType.getObjectType(value, AttributeType.ANY); 
+        return AttributeType.getObjectType(getValue(), AttributeType.ANY); 
     }
     
     public boolean isType(AttributeType type)
@@ -462,7 +474,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
      */
     public Object getValue()
     {
-        return value;
+        return _value;
     }
 
     /**
@@ -471,17 +483,17 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
      */
     public String getStringValue()
     {
-        if (value == null)
+        if (_value == null)
             return null;
 
-        if (value instanceof String)
-            return (String) value;
+        if (_value instanceof String)
+            return (String) _value;
         
         // use own normalized time-date string; 
-        if (value instanceof Date)
-            return Presentation.createNormalizedDateTimeString((Date)value); 
+        if (_value instanceof Date)
+            return Presentation.createNormalizedDateTimeString((Date)_value); 
 
-        return value.toString();
+        return _value.toString();
     }
 
     /**
@@ -593,6 +605,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     public int getIntValue()
     {
+        Object value=getValue(); 
         if (value == null)
             return 0; // by definition;
 
@@ -613,6 +626,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     public long getLongValue()
     {
+        Object value=getValue(); 
+        
         if (value == null)
             return 0; // by definition;
 
@@ -632,7 +647,9 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     public float getFloatValue()
-    {
+    { 
+        Object value=getValue(); 
+    
         if (value == null)
             return Float.NaN;
 
@@ -653,6 +670,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     public double getDoubleValue()
     {
+        Object value=getValue(); 
+        
         if (value == null)
             return Double.NaN;
 
@@ -673,6 +692,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     public boolean getBooleanValue()
     {
+        Object value=getValue(); 
+        
         if (value == null)
             return false; // by definition
 
@@ -697,6 +718,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
      */
     public VRL getVRL() throws VRLSyntaxException 
     {
+        Object value=getValue(); 
+        
         if (value == null)
             return null;
 
@@ -715,6 +738,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
      */
     public VRL getVRLorNull() 
     {
+        Object value=getValue(); 
+        
         if (value == null)
             return null;
 
@@ -757,8 +782,10 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
      */
     public int compareTo(Attribute other, boolean ignoreCase)
     {
+        Object value=getValue(); 
+        
         // NULL comparison MUST match String compare !
-        if (this.value == null)
+        if (value == null)
         {
             // / (this.value==null) < (other.value!=null)
             if ((other != null) && (other.getValue() != null))
@@ -860,11 +887,13 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     public Date getDateValue()
     {
+        Object value=getValue(); 
+        
         if (value==null)
             return null;
     
-        if (this.value instanceof java.util.Date)
-            return (Date) this.value;
+        if (value instanceof java.util.Date)
+            return (Date) value;
 
         // Millies since epoch:
         if (getType() == AttributeType.LONG)
@@ -896,13 +925,18 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     public Attribute duplicate(boolean shallow)
     {
         if (shallow)
+        {
             logger.warnPrintf("Asked for a shallow copy when this isn't supported\n");
+        }
         return new Attribute(this);
     }
     
+    /** 
+     * Set Object value, do not check type. 
+     */
     public void setObjectValue(Object newValue)
     {
-        this.value = newValue;
+        this._setValue(null, newValue); 
     }
 
     // ===============
@@ -933,7 +967,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
         // convert to Attribute Triplet
         return "{" 
-                + getType() + "," + name + "," + value + enumStr 
+                + getType() + "," + name + "," + _value + enumStr 
                 + ",[" + ((isEditable()) ? "E" : "") + ((hasChanged()) ? "C" : "") 
                 + "]}";
     }
