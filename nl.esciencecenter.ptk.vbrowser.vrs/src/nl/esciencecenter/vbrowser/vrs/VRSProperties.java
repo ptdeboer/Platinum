@@ -22,9 +22,11 @@ package nl.esciencecenter.vbrowser.vrs;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -33,28 +35,57 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 {
     private static final long serialVersionUID = 1515535666077358909L;
     
-    protected Map<String,Object>  properties=null; 
+    /** 
+     * Use LinkedHashMap to keep order of properties. 
+     */
+    protected LinkedHashMap<String,Object>  properties=null; 
+    
+    protected String propertiesName="VRSProperties"; 
     
     /**
      * Creates new VRSProperties and copies values from sourceProperties; 
      * Converts key object to String based key. 
      * @param sourceProperties source Properties to copy. 
      */
-    public VRSProperties(Map<? extends Object,Object> sourceProperties)
+    public VRSProperties(String name, Map<? extends Object,Object> sourceProperties)
     {
-        this.properties=new Hashtable<String,Object>(); 
+        init(name); 
         
-        for (Object key:properties.keySet())
+        for (Object key:sourceProperties.keySet())
         {
             this.properties.put(key.toString(), sourceProperties.get(key)); 
         }
     }
     
-    public VRSProperties()
+    public VRSProperties(String name)
     {
-        properties=new Hashtable<String,Object>(); 
+        init(name); 
     }
 
+    protected void init(String name)  
+    {
+        this.propertiesName=name; 
+        properties=new LinkedHashMap<String,Object>(); 
+    }
+    
+    public void setName(String name)
+    {
+        this.propertiesName=name; 
+    }
+    
+    public String getName()
+    {
+        return propertiesName; 
+    }
+    
+    /** 
+     * @return actual backing Map of stored properties. 
+     */
+    public Map<String,Object> getProperties()
+    {
+        return properties; 
+    }
+    
     public String getStringProperty(String name)
     {
         Object val=this.properties.get(name); 
@@ -87,7 +118,6 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         {
             return ((Long)val).intValue(); //auto-cast 
         }
-
         else
         {
             return Integer.parseInt(val.toString());
@@ -127,7 +157,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     public VRSProperties duplicate()
     {
-        return new VRSProperties(properties);
+        return new VRSProperties(propertiesName,properties);
     }
 
     @Override
@@ -142,6 +172,13 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         return duplicate(); 
     }
     
+    /**
+     * @return actual keySet of properties Map. 
+     */
+    public Set<String> keySet()
+    {
+        return this.properties.keySet(); 
+    }
     /**
      * Returns copy of Key Set as String List. 
      * @return String list of key set. 
@@ -258,4 +295,13 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         return "VRSProperties[properties=" + properties + "]";
     }
 
+
+
+//    @Override
+//    public int compareTo(VRSProperties others)
+//    {
+//        object values must be comparible 
+//    }
+
+    
 }

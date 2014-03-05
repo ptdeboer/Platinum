@@ -30,6 +30,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import nl.esciencecenter.ptk.util.StringUtil;
+import nl.esciencecenter.ptk.vbrowser.ui.GuiSettings;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 
 public class TableMouseListener implements MouseListener
@@ -45,7 +46,7 @@ public class TableMouseListener implements MouseListener
     public void mouseClicked(MouseEvent e)
     {
         System.err.printf("Event:%s\n",e);
-        if (isHeader(e) && (UIGlobal.getGuiSettings().isSelection(e)))
+        if (isHeader(e) && (table.getGuiSettings().isSelection(e)))
         {
             String  name=this.getColumnNameOf(e); 
             if(name!=null)
@@ -81,11 +82,12 @@ public class TableMouseListener implements MouseListener
         Component comp=(Component)e.getSource();
         Point clickPoint=e.getPoint(); 
        
-        
+        GuiSettings uiSettings=table.getGuiSettings();  
+                  
         //boolean ctrl=((e.getModifiersEx() & e.CTRL_DOWN_MASK) !=0);
         
         // Show Header Popup! 
-        if (isHeader(e) && (UIGlobal.getGuiSettings().isPopupTrigger(e)))
+        if (isHeader(e) && (uiSettings.isPopupTrigger(e)))
         {
             String  name=this.getColumnNameOf(e); 
             if(name!=null)
@@ -100,7 +102,7 @@ public class TableMouseListener implements MouseListener
         }
         else if (comp.equals(table))
         {
-            if (UIGlobal.getGuiSettings().isPopupTrigger(e))
+            if (uiSettings.isPopupTrigger(e))
             {
                 TablePopupMenu popupMenu=table.getPopupMenu(e,false); 
                 if (popupMenu!=null)
@@ -109,7 +111,7 @@ public class TableMouseListener implements MouseListener
         }
         else if (comp.equals(table.getParent()))
         {
-            if (UIGlobal.getGuiSettings().isPopupTrigger(e))
+            if (uiSettings.isPopupTrigger(e))
             {
                 TablePopupMenu popupMenu=table.getPopupMenu(e,true); 
                 if (popupMenu!=null)

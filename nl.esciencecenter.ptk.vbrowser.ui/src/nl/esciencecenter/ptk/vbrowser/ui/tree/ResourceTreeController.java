@@ -80,10 +80,9 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
         logger.debugPrintf("TreeExpansionHandler.treeCollapsed()\n");
     }
 
-
-    public BrowserInterface getMasterBrowser()
+    public BrowserInterface getBrowserInterface()
     {
-        return this.browser;
+        return browser; 
     }
 
 }

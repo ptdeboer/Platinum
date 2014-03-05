@@ -41,6 +41,7 @@ import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.GuiSettings;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -630,6 +631,17 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public String getSortColumnName()
     {
         return sortColumnName;
+    }
+
+    public GuiSettings getGuiSettings()
+    {
+        return getBrowserInterface().getPlatform().getGuiSettings(); 
+    }
+
+    @Override
+    public BrowserInterface getBrowserInterface()
+    {
+        return controller.getBrowserInterface(); 
     }
    
 }

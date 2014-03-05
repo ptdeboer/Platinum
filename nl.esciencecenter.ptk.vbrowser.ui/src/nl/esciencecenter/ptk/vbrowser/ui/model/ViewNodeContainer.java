@@ -24,29 +24,33 @@ import java.awt.Point;
 
 import javax.swing.JPopupMenu;
 
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+
 /**
  * Interface for any (J)Component which can contain ViewNodes.
  * A ViewNodeContainer in itself is also a ViewNodeComponent. 
  */
 public interface ViewNodeContainer  extends ViewNodeComponent
 {
-	ViewNode getNodeUnderPoint(Point p);
+    public ViewNode getNodeUnderPoint(Point p);
 
 	// === Menu === // 
-    JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu);
+    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu);
     
 	// === Selection Model === 
-	void clearNodeSelection();
+    public void clearNodeSelection();
 
-	ViewNode[] getNodeSelection();
+    public ViewNode[] getNodeSelection();
 
 	/** Toggle selection */ 
-	void setNodeSelection(ViewNode node, boolean isSelected);
+    public void setNodeSelection(ViewNode node, boolean isSelected);
 	
 	/** Toggle selection of range */ 
-    void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode,boolean isSelected);
+    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode,boolean isSelected);
 
     /** Request focus for child. Return true if it has focus. */ 
-    boolean requestNodeFocus(ViewNode node, boolean value);
-	
+    public boolean requestNodeFocus(ViewNode node, boolean value);
+
+    public BrowserInterface getBrowserInterface(); 
+    
 }

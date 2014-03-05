@@ -42,6 +42,9 @@ public class ResourceTableControler
 		
 	}
 	
-	
+	public BrowserInterface getBrowserInterface()
+	{
+	    return browserController; 
+	}
 
 }

@@ -502,6 +502,11 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     @Override
     public void dispose()
     {
+    }
 
+    @Override
+    public BrowserInterface getBrowserInterface()
+    {
+        return this.masterBrowser; 
     }
 }

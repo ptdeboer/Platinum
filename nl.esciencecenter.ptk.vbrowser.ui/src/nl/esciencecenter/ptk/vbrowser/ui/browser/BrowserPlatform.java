@@ -33,6 +33,7 @@ import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.GuiSettings;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
@@ -102,6 +103,8 @@ public class BrowserPlatform
     private IconProvider iconProvider;
 
     private VRSContext vrsContext;
+    
+    private GuiSettings guiSettings; 
 
     protected BrowserPlatform(String id) throws Exception
     {
@@ -118,6 +121,8 @@ public class BrowserPlatform
         URI cfgDir = getPlatformConfigDir(null);
         initVRSContext(cfgDir);
 
+        guiSettings=new GuiSettings(); 
+        
         // Default viewer resource Loader/Resource Handler:
         this.resourceLoader = VRSUtil.createVRSResourceLoader(getVRSContext());
         ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader);
@@ -132,7 +137,7 @@ public class BrowserPlatform
 
     private void initVRSContext(URI cfgDir)
     {
-        VRSProperties props = new VRSProperties();
+        VRSProperties props = new VRSProperties("VRSBrowserProperties");
         vrsContext = new VRSContext(props);
     }
 
@@ -209,6 +214,11 @@ public class BrowserPlatform
     public IconProvider getIconProvider()
     {
         return iconProvider;
+    }
+
+    public GuiSettings getGuiSettings()
+    {
+       return guiSettings; 
     }
 
 }

@@ -45,12 +45,12 @@ public class VRSContext
     
     public VRSContext()
     {
-        init(new VRSProperties()); 
+        init(new VRSProperties("VRSContext")); 
     }
 
     public VRSContext(Properties props)
     {
-        init(new VRSProperties(props));
+        init(new VRSProperties("VRSContext",props));
     }
     
     public VRSContext(VRSProperties props)

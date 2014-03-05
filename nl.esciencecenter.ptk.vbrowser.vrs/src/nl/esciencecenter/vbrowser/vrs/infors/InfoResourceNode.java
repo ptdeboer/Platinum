@@ -28,7 +28,6 @@ import java.util.List;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
-import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
@@ -74,7 +73,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     // Instance
     // ==========
 
-    protected VRSProperties resourceProps = new VRSProperties();
+    protected VRSProperties resourceProps = new VRSProperties("ResourceNode");
 
     protected InfoResourceNode(InfoRSNode parent, String type, VRL logicalVRL)
     {

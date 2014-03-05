@@ -180,7 +180,7 @@ public class ResourceTreeUpdater implements ProxyNodeEventListener
 
 	private void handle(String actionText,Throwable e)
     {
-	    this.tree.getMasterBrowser().handleException(actionText,e); 
+	    this.tree.getBrowserInterface().handleException(actionText,e); 
     }
 
     @Override

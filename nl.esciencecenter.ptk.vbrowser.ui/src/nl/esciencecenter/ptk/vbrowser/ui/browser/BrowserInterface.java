@@ -38,5 +38,6 @@ public interface BrowserInterface
 	public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode,boolean canvasMenu);
 
     public void handleNodeAction(ViewNode node, Action action);
+
       
 }

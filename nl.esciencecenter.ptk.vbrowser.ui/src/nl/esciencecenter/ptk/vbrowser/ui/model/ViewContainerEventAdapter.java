@@ -32,12 +32,12 @@ import javax.swing.JPopupMenu;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 
 /**
  * Generic event handler for ViewComponents. Handles Mouse and Focus events.
  */
-public class ViewContainerEventAdapter implements MouseListener, MouseMotionListener, FocusListener// ,
-                                                                                                   // DragSourceListener
+public class ViewContainerEventAdapter implements MouseListener, MouseMotionListener, FocusListener
 {
     private static final ClassLogger logger=ClassLogger.getLogger(ViewContainerEventAdapter.class);
     
@@ -61,7 +61,12 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
         //this.notifySelectionEvents=handleSelectionEvents;
         //this.notifyActionEvents=handleActionEvents;
     }
-
+    
+    public BrowserInterface getBrowserInterface()
+    {
+        return this.viewComp.getBrowserInterface(); 
+    }
+    
     public void setNotifySelectionEvent(boolean val)
     {
         this.notifySelectionEvents=val; 
@@ -323,24 +328,24 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
     // === misc/todo ===
 
-    public static boolean isAction(MouseEvent e)
+    public boolean isAction(MouseEvent e)
     {
-        return UIGlobal.getGuiSettings().isAction(e);
+        return getBrowserInterface().getPlatform().getGuiSettings().isAction(e);
     }
 
     public boolean isSelection(MouseEvent e)
     {
-        return UIGlobal.getGuiSettings().isSelection(e);
+        return getBrowserInterface().getPlatform().getGuiSettings().isSelection(e);
     }
 
     public boolean isPopupTrigger(MouseEvent e)
     {
-        return UIGlobal.getGuiSettings().isPopupTrigger(e);
+        return getBrowserInterface().getPlatform().getGuiSettings().isPopupTrigger(e);
     }
 
     private void debugPrintf(String format, Object... args)
     {
-        ;
+        // getBrowserInterface().messagePrintf("DEBUG:"+format,args); 
     }
 
 }

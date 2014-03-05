@@ -27,7 +27,6 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 public class UIGlobal
 {
-    private static GuiSettings guiSettings; 
     private static ClassLogger uiLogger;
 
     
@@ -38,7 +37,6 @@ public class UIGlobal
         
         try
         {
-            guiSettings=new GuiSettings();
             uiLogger=ClassLogger.getLogger("UIGlobal"); 
       
         }
@@ -52,11 +50,6 @@ public class UIGlobal
     {
     }
    
-    public static GuiSettings getGuiSettings()
-    {
-        return guiSettings; 
-    }
-
     public static void assertNotGuiThread(String msg) throws Error
 	{
 		assertGuiThread(false,msg);

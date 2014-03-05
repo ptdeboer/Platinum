@@ -78,7 +78,6 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
             
             prevNode=rtnode; 
         }
-    
     }
     
     // ========================================================================
@@ -110,14 +109,9 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         init(browser,viewNodeSource);    
     }
     
-    public BrowserInterface getMasterBrowser()
-    {
-    	return this.controller.getMasterBrowser();  
-    }
-    
     public BrowserPlatform getPlatform()
     {
-        return this.getMasterBrowser().getPlatform();
+        return this.getBrowserInterface().getPlatform();
     }
     
     public void populate(ResourceTreeNode node) 
@@ -374,13 +368,13 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 	public JPopupMenu createNodeActionMenuFor(ViewNode node,boolean canvasMenu)
     {
         // allowed during testing
-        if (this.controller.getMasterBrowser()==null)
+        if (this.controller.getBrowserInterface()==null)
         {
             logger.warnPrintf("getActionMenuFor() no browser registered.");
             return null;
         }
         // node menu
-        return this.controller.getMasterBrowser().createActionMenuFor(this,node,canvasMenu); 
+        return this.controller.getBrowserInterface().createActionMenuFor(this,node,canvasMenu); 
     }
 
     @Override
@@ -459,5 +453,9 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
           + autoScrollMargin);
     }
     
-    
+    @Override
+    public BrowserInterface getBrowserInterface()
+    {
+        return controller.getBrowserInterface(); 
+    }
 }

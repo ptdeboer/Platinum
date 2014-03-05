@@ -22,169 +22,178 @@ package nl.esciencecenter.ptk.vbrowser.ui;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
-import java.net.URI;
+import java.util.Map;
+
+import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 
 public class GuiSettings
 {
+    public static class UIProperties extends VRSProperties
+    {
+        private static final long serialVersionUID = -3984791544175204642L;
+        
+        public UIProperties()
+        {
+            super("UIProperties");
+        }
+        
+        public UIProperties(Map<? extends Object,Object> properties)
+        {
+            super("UIProperties",properties);
+        }
+
+    }
+
     // ========================================================================
-    // Constants 
-	// ========================================================================
+    // Configurable Properties 
+    // ========================================================================
+
+    public static final String MOUSE_SELECTION_BUTTON = "ui.mouse_selection_button";
+
+    public static final String SINGLE_CLICK_ACTION = "ui.single_click_action";
+
+    public static final String MOUSE_ALT_BUTTON = "ui.mouse_alt_button";
+
+    public static final String MOUSE_POPUP_BUTTON = "ui.popup_button";
+
+    // ==============
+    // Default values
+    // ==============
     
-	public static final String MOUSE_SELECTION_BUTTON = "ui.mouse_selection_button";
+    private static Color default_label_selected_bg_color = Color.darkGray;
 
-	public static final String SINGLE_CLICK_ACTION = "ui.single_click_action"; 
+    private static Color default_label_selected_fg_color = Color.black;
 
-	public static String MOUSE_ALT_BUTTON="ui.mouse_alt_button"; 
+    private static int default_mouse_selection_button = MouseEvent.BUTTON1;
 
-	public static String MOUSE_POPUP_BUTTON="ui.popup_button"; 
+    private static int default_mouse_action_button = MouseEvent.BUTTON1;
+
+    private static int default_mouse_alt_button = MouseEvent.BUTTON3;
+
+    private static int default_mouse_popup_button = default_mouse_alt_button;
 
     // ========================================================================
-    // Instance fields 
+    // Instance fields
     // ========================================================================
-	
-	// User Configuration properties: 
-	private ConfigProperties properties=new ConfigProperties(); 
-	
-	// UI Properties 
-	
-	private Color label_selected_bg_color=Color.darkGray;
 
-	private Color label_selected_fg_color=Color.black; 
+    // User Configuration properties:
+    private UIProperties properties = new UIProperties();
 
-	private int  mouse_selection_button=MouseEvent.BUTTON1;
+    public GuiSettings()
+    {
+        initDefaults();
+    }
 
-	private int  mouse_action_button=MouseEvent.BUTTON1;
+    protected void initDefaults()
+    {
+        setProperty(SINGLE_CLICK_ACTION, "" + true);
+    }
 
-	private int  mouse_alt_button=MouseEvent.BUTTON3;
+    public void setProperty(String name, String value)
+    {
+        properties.set(name, value);
+    }
 
-	private int  mouse_popup_button=mouse_alt_button;
-
-    public Color textfield_editable_background_color;
-
-    public Color textfield_editable_foreground_color;
-
-    public Color textfield_non_editable_background_color;
-
-    public Color textfield_non_editable_foreground_color;
-
-	public GuiSettings()
-	{
-		initDefaults();
-	}
-	
-	protected void initDefaults()
-	{
-		setProperty(SINGLE_CLICK_ACTION,""+true);
-	}
-
-	public void setProperty(String name, String value)
-	{
-		properties.setProperty(name,value); 
-	}
-	
-//    public URI getUserIconsDir()
-//    {
-//        return null;
-//    }
-//
-//    public URI getInstallationIconsDir()
-//    {
-//        return null;
-//    } 
-    
-   
     /**
-     *  This method exists because the e.isPopupTrigger() doesn't always work under windows 
-     */ 
+     * This method exists because the e.isPopupTrigger() doesn't always work
+     * under windows.
+     */
     public boolean isPopupTrigger(MouseEvent e)
     {
         if (e.isPopupTrigger())
             return true;
-       
-        if  (e.getButton()==getMousePopupButton()) 
-             
+
+        if (e.getButton() == getMousePopupButton())
+
             return true;
-        
-        return false; 
-    }
-    
-    public int getMousePopupButton()
-    {
-        return properties.getIntProperty(MOUSE_POPUP_BUTTON,mouse_popup_button);
-    }
-    
-    public int getMouseAltButton()
-    {
-        return properties.getIntProperty(MOUSE_ALT_BUTTON,mouse_alt_button);
-    }
-    
-    public int getMouseSelectionButton()
-    {
-        return properties.getIntProperty(MOUSE_SELECTION_BUTTON,mouse_selection_button);
-    }
-    
-    public int getMouseActionButton()
-    {
-		return properties.getIntProperty(MOUSE_SELECTION_BUTTON,mouse_action_button);
+
+        return false;
     }
 
-	public boolean getSingleClickAction()
+    public int getMousePopupButton()
     {
-        return properties.getBoolProperty(SINGLE_CLICK_ACTION,true);
+        return properties.getIntegerProperty(MOUSE_POPUP_BUTTON, default_mouse_popup_button);
     }
-    
+
+    public int getMouseAltButton()
+    {
+        return properties.getIntegerProperty(MOUSE_ALT_BUTTON, default_mouse_alt_button);
+    }
+
+    public int getMouseSelectionButton()
+    {
+        return properties.getIntegerProperty(MOUSE_SELECTION_BUTTON, default_mouse_selection_button);
+    }
+
+    public int getMouseActionButton()
+    {
+        return properties.getIntegerProperty(MOUSE_SELECTION_BUTTON, default_mouse_action_button);
+    }
+
+    public boolean getSingleClickAction()
+    {
+        return properties.getBooleanProperty(SINGLE_CLICK_ACTION, true);
+    }
+
     /**
-     * Wrapper to detection 'Action Events' since the PLAF
-     * way to detect event doesn't always work. 
-     * Typically this is a single mouse click or a double mouse click. 
+     * Wrapper to detection 'Action Events' since the PLAF way to detect event
+     * doesn't always work. Typically this is a single mouse click or a double
+     * mouse click.
      * 
      * @param e
      * @return
      */
     public boolean isAction(MouseEvent e)
-    {   
+    {
         int mask = e.getModifiersEx();
-        
-        if  ((mask & MouseEvent.CTRL_DOWN_MASK)>0)
+
+        if ((mask & MouseEvent.CTRL_DOWN_MASK) > 0)
         {
-            //CONTROL DOWN, not an action, but a selection !
-            return false; 
+            // CONTROL DOWN, not an action, but a selection !
+            return false;
         }
-        
-        if  ((mask & MouseEvent.SHIFT_DOWN_MASK)>0)
+
+        if ((mask & MouseEvent.SHIFT_DOWN_MASK) > 0)
         {
-            //SHIFT DOWN, not an action, but a selection !
-            return false; 
+            // SHIFT DOWN, not an action, but a selection !
+            return false;
         }
-        
-        if (e.getButton()!=getMouseActionButton())
-            return false; 
-        
-        if (getSingleClickAction() && (e.getClickCount()==1)) 
-               return true;
-        
-        if ((getSingleClickAction()==false) && (e.getClickCount()==2)) 
+
+        if (e.getButton() != getMouseActionButton())
+            return false;
+
+        if (getSingleClickAction() && (e.getClickCount() == 1))
             return true;
-        
-        return false; 
+
+        if ((getSingleClickAction() == false) && (e.getClickCount() == 2))
+            return true;
+
+        return false;
     }
 
     public boolean isSelection(MouseEvent e)
     {
-        if (e.getButton()==getMouseSelectionButton())
+        if (e.getButton() == getMouseSelectionButton())
         {
-            if (getSingleClickAction()==false && (e.getClickCount()==1)) 
-                return true; 
-         
-            if ((getSingleClickAction()) && (e.getClickCount()==1)) 
+            if (getSingleClickAction() == false && (e.getClickCount() == 1))
+                return true;
+
+            if ((getSingleClickAction()) && (e.getClickCount() == 1))
                 return true;
         }
-        
-        return false; 
+
+        return false;
     }
 
     public Color getSelectedBGColor()
     {
-    	return this.label_selected_bg_color; 
+        return default_label_selected_bg_color;
     }
+    
+    public Color getSelectedFGColor()
+    {
+        return default_label_selected_fg_color;
+    }
+    
+    
 }
