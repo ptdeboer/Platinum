@@ -22,7 +22,6 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 
 import java.util.List;
 
-import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -154,8 +153,8 @@ public class InfoRootNode extends InfoRSNode
 
     public List<String> getChildResourceTypes()
     {
-        // Root Node support default InfoRS types: 
-       return defaultFolderChildTypes;  
+        // Root Node support default InfoRS types:
+        return defaultFolderChildTypes;
     }
-    
+
 }

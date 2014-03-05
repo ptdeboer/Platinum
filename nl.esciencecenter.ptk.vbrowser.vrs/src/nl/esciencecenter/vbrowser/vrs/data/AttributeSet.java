@@ -27,11 +27,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -91,8 +93,12 @@ public class AttributeSet extends HashMapList<String, Attribute>
         }
 
         for (Attribute attr : attrs)
+        {
             if ((attr != null) && (attr.getName() != null))
+            {
                 this.put(attr.getName(), attr);
+            }
+        }
     }
 
     protected void init(Attribute[] attrs)
@@ -106,7 +112,9 @@ public class AttributeSet extends HashMapList<String, Attribute>
         for (Attribute attr : attrs)
         {
             if ((attr != null) && (attr.getName() != null))
+            {
                 this.put(attr);
+            }
         }
     }
 
@@ -161,7 +169,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
             else
             {
                 // Use VAtribute Factory:
-                attr = VAttributeUtil.createFrom(keystr, value);
+                attr = AttributeUtil.createFrom(keystr, value);
             }
 
             this.put(attr);
@@ -357,7 +365,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
         if (orgAttr == null)
         {
             // set: put new Editable Attribute with specified type:
-            Attribute attr = VAttributeUtil.createFrom(optNewType, name, val);
+            Attribute attr = AttributeUtil.createFrom(optNewType, name, val);
             attr.setEditable(true);
             this.put(attr);
             return null;
@@ -595,7 +603,9 @@ public class AttributeSet extends HashMapList<String, Attribute>
             removeIfNotIn(names);
     }
 
-    /** Returns sub set of attributes */
+    /**
+     * Returns sub set of attributes 
+     */
     public AttributeSet getAttributes(String[] names)
     {
         AttributeSet subset = new AttributeSet();
@@ -613,5 +623,29 @@ public class AttributeSet extends HashMapList<String, Attribute>
         for (Attribute attr : attrs)
             this.put(attr);
     }
-   
+
+    /**
+     * Copy to VRSProperties object. This will remove type data and enum values. 
+     * @return VRSProperties object of this AttributeSet. 
+     */
+    public VRSProperties toVRSProperties()
+    {
+        VRSProperties props=new VRSProperties(this.getName());
+        // respect order of attributes.
+        for (String key:this.keySet())
+        {
+            props.set(key, this.get(key).getValue()); 
+        }
+        return props; 
+    }
+ 
+    public Attribute[] toArray()
+    {
+        return this.toArray(new Attribute[0]); 
+    }
+    
+    public List<Attribute> toList()
+    {
+        return new ExtendedList<Attribute>(this.values());  
+    }
 }

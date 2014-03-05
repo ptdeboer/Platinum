@@ -33,6 +33,9 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.node.VPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/** 
+ * Super class for all InfoRS Nodes.   
+ */
 public class InfoRSNode extends VPathNode
 {
     private static final ClassLogger logger = ClassLogger.getLogger(InfoRSNode.class);

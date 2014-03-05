@@ -20,12 +20,15 @@
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
+import java.util.List;
+
+import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 
 /**
  * Attribute parsing and factory methods. 
  */
-public class VAttributeUtil
+public class AttributeUtil
 {
     
     public static Attribute createFromAssignment(String stat)
@@ -114,4 +117,19 @@ public class VAttributeUtil
         return newAttrs;
     }
 
+    /** 
+     * Create a deep copy of an Attribute Array 
+     */
+    public static List<Attribute> duplicate(List<Attribute> attrs)
+    {
+        if (attrs == null)
+        {
+            return null;
+        }
+        
+        ExtendedList<Attribute> newList  = new ExtendedList<Attribute>(attrs); 
+
+        return newList;     
+    }
+    
 }

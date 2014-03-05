@@ -65,7 +65,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         node.setIconUrl(optIconURL);
         node.setShowLinkIcon(false);
         node.setLogicalName(folderName);
-        
+
         return node;
     }
 
@@ -73,6 +73,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     // Instance
     // ==========
 
+    /** Store all settings of this node into persistent VRSPoperties object. */
     protected VRSProperties resourceProps = new VRSProperties("ResourceNode");
 
     protected InfoResourceNode(InfoRSNode parent, String type, VRL logicalVRL)
@@ -260,19 +261,19 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         if (isResourceLink())
         {
-            return InfoRSConstants.RESOURCELINK_MIMETYPE; 
+            return InfoRSConstants.RESOURCELINK_MIMETYPE;
         }
         else if (isResourceFolder())
         {
-            return InfoRSConstants.RESOURCEFOLDER_MIMETYPE; 
+            return InfoRSConstants.RESOURCEFOLDER_MIMETYPE;
         }
         else
         {
             // default infors-<ResourceType> mime-type;
-            return super.getMimeType(); 
+            return super.getMimeType();
         }
     }
-    
+
     public List<String> getChildResourceTypes()
     {
         if (this.isResourceFolder())
@@ -281,18 +282,18 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         }
         else if (this.isResourceLink())
         {
-            // resolve target Child Types ? 
+            // resolve target Child Types ?
         }
         return null;
     }
-    
+
     // ======================================
     // Stream Read/Write Methods (load/save)
     // ========================================
 
     public OutputStream createOutputStream() throws VrsException
     {
-        // todo: create from xml stream 
+        // todo: create from xml stream
         throw new VrsException("Not now");
     }
 

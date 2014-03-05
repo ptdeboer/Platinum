@@ -35,10 +35,15 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 {
     private static final long serialVersionUID = 1515535666077358909L;
     
+    /**
+     * Optional Parent for hierarchical properties. 
+     */
+    protected VRSProperties parent=null;  
+    
     /** 
      * Use LinkedHashMap to keep order of properties. 
      */
-    protected LinkedHashMap<String,Object>  properties=null; 
+    protected LinkedHashMap<String,Object>  _properties=null; 
     
     protected String propertiesName="VRSProperties"; 
     
@@ -51,10 +56,20 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     {
         init(name); 
         
-        for (Object key:sourceProperties.keySet())
+        if (sourceProperties!=null)
         {
-            this.properties.put(key.toString(), sourceProperties.get(key)); 
+            for (Object key:sourceProperties.keySet())
+            {
+                doPut(key.toString(), sourceProperties.get(key)); 
+            }
         }
+        
+    }
+    
+    public VRSProperties(String name, VRSProperties parent)
+    {
+        init(name);
+        this.parent=parent; 
     }
     
     public VRSProperties(String name)
@@ -65,7 +80,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     protected void init(String name)  
     {
         this.propertiesName=name; 
-        properties=new LinkedHashMap<String,Object>(); 
+        _properties=new LinkedHashMap<String,Object>(); 
     }
     
     public void setName(String name)
@@ -83,12 +98,12 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
      */
     public Map<String,Object> getProperties()
     {
-        return properties; 
+        return _properties; 
     }
     
     public String getStringProperty(String name)
     {
-        Object val=this.properties.get(name); 
+        Object val=this.doGet(name); 
         if (val==null)
         {
             return null;
@@ -105,7 +120,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     
     public int getIntegerProperty(String name,int defaultValue)
     {
-        Object val=this.properties.get(name); 
+        Object val=this.doGet(name); 
         if (val==null)
         {
             return defaultValue;
@@ -126,7 +141,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     public long getLongProperty(String name,int defaultValue)
     {
-        Object val=this.properties.get(name); 
+        Object val=this.doGet(name); 
         if (val==null)
         {
             return defaultValue;
@@ -147,17 +162,44 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     
     public void set(String name, Object value)
     {
-        this.properties.put(name, value); 
+        doPut(name, value); 
     }
     
     public Object get(String name)
     {
-        return properties.get(name); 
+        return doGet(name); 
     }
 
+    protected void doPut(String name, Object value)
+    {
+        this._properties.put(name, value); 
+    }
+
+    protected void doRemove(String name) 
+    {
+        this._properties.remove(name);  
+    }
+    
+    protected Object doGet(String name)
+    {
+        Object value=null; 
+        
+        if (parent!=null)
+        {
+            value=parent.doGet(name); 
+        }
+        
+        if (value==null)
+        {   
+            value=_properties.get(name); 
+        }
+        
+        return value; 
+    }
+    
     public VRSProperties duplicate()
     {
-        return new VRSProperties(propertiesName,properties);
+        return new VRSProperties(propertiesName,_properties);
     }
 
     @Override
@@ -177,8 +219,9 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
      */
     public Set<String> keySet()
     {
-        return this.properties.keySet(); 
+        return this._properties.keySet(); 
     }
+    
     /**
      * Returns copy of Key Set as String List. 
      * @return String list of key set. 
@@ -187,7 +230,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     {
         List<String> keys=new ArrayList<String>();  
         
-        for (Object key:properties.keySet())
+        for (Object key:_properties.keySet())
         {
             keys.add(key.toString()); 
         }
@@ -201,12 +244,12 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
      */
     public void putAll(VRSProperties vrsProps)
     {
-        properties.putAll(vrsProps.properties);
+        _properties.putAll(vrsProps._properties);
     }
 
     public boolean getBooleanProperty(String name, boolean defaultValue)
     {
-        Object val=this.properties.get(name); 
+        Object val=this.doGet(name); 
         if (val==null)
         {
             return defaultValue;
@@ -223,7 +266,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     public void set(String name, boolean value)
     {
-        properties.put(name, new Boolean(value)); 
+        doPut(name, new Boolean(value));  
     }
     
     public void set(String name, String value)
@@ -232,26 +275,27 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         
         if (value==null)
         {
-            properties.remove(name); 
-            return;
+            doRemove(name); 
         }
-        
-        properties.put(name, value); 
+        else
+        {
+            doPut(name,value); 
+        }
     }
     
     public void set(String name,int value)
     {
-        properties.put(name, new Integer(value)); 
+        doPut(name, new Integer(value)); 
     }
 
     public void remove(String name)
     {
-        properties.remove(name);
+        doRemove(name); 
     }
     
     public VRL getVRLProperty(String name) throws VRLSyntaxException
     {
-        Object val=this.properties.get(name); 
+        Object val=this.doGet(name); 
         if (val==null)
         {
             return null; 
@@ -286,22 +330,14 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     public void clear()
     {
-       properties.clear(); 
+       _properties.clear(); 
     }
 
     @Override
     public String toString()
     {
-        return "VRSProperties[properties=" + properties + "]";
+        return "VRSProperties[properties=" + _properties + "]";
     }
-
-
-
-//    @Override
-//    public int compareTo(VRSProperties others)
-//    {
-//        object values must be comparible 
-//    }
 
     
 }

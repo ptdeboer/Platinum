@@ -31,7 +31,7 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
-import nl.esciencecenter.vbrowser.vrs.data.VAttributeUtil;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -291,7 +291,7 @@ public class Test_Attribute
     public void doTestStringValueConstructor(AttributeType type,String name,String strValue,Object objectValue) 
     {
         // basic constructor tests 
-        Attribute attr=VAttributeUtil.createFrom(name, objectValue); // Create From Object. Must match actual type!
+        Attribute attr=AttributeUtil.createFrom(name, objectValue); // Create From Object. Must match actual type!
         
         // check type,name and String value 
         Assert.assertEquals("Type must be:"+type,type,attr.getType());

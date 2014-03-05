@@ -20,12 +20,11 @@
 
 package nl.esciencecenter.vbrowser.vrs.registry;
 
-import java.util.Properties;
-
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
@@ -60,7 +59,7 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     // Instance 
     // ==================
    
-    protected VRSProperties properties;   
+    protected AttributeSet properties;   
     
     private Secret passwd=null;
     
@@ -71,18 +70,18 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     public ResourceSystemInfo(ResourceSystemInfoRegistry registry, VRL serverVRL, String infoId)
     {
         this.infoRegistry=registry; 
-        properties=new VRSProperties(null);
+        properties=new AttributeSet();
         setServerVRL(serverVRL); 
         this.id=infoId; 
     }
-    
-    protected ResourceSystemInfo(ResourceSystemInfoRegistry registry,VRSProperties props,String infoId)
-    {
-        this.infoRegistry=registry; 
-        properties=props.duplicate(false);
-        this.id=infoId;
-    }
             
+    protected ResourceSystemInfo(ResourceSystemInfoRegistry registry, AttributeSet attributes, String infoId)
+    {
+        this.infoRegistry=registry;
+        this.properties=attributes;
+        this.id=infoId; 
+    }
+
     protected void setServerVRL(VRL vrl)
     {
         properties.set(SERVER_SCHEME,vrl.getScheme());
@@ -137,17 +136,7 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
      */
     public VRSProperties getProperties()
     {
-        return properties.duplicate(); 
-    }
-
-    /** 
-     * Replace properties. To update new properties, but keep the other properties use updateProperties(); 
-     * @param properties - new properties to replace curent ones. 
-     */
-    public void setProperties(VRSProperties newProperties)
-    {
-        properties.clear(); 
-        properties.putAll(newProperties);
+        return properties.toVRSProperties();  
     }
     
     public void setProperty(String name,String value)
@@ -157,26 +146,26 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     
     public String getProperty(String name)
     {
-        return properties.getStringProperty(name); 
+        return properties.getStringValue(name); 
     }
     
     /** 
      * Add extra properties. To replace all properties use setProperties.  
      * @param properties - new properties to be addded to this ResourceInfo. 
      */
-    public void updateProperties(VRSProperties properties)
+    public void updateProperties(VRSProperties newProperties)
     {
         properties.putAll(properties);
     }
 
     public String getServerScheme()
     {
-        return properties.getStringProperty(SERVER_SCHEME);
+        return properties.getStringValue(SERVER_SCHEME);
     }
     
     public String getUserInfo()
     {
-        return properties.getStringProperty(SERVER_USERINFO);
+        return properties.getStringValue(SERVER_USERINFO);
     }
 
     public void setUserInfo(String userInfo)
@@ -186,27 +175,27 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     
     public int getServerPort()
     {
-        return properties.getIntegerProperty(SERVER_PORT, -1); 
+        return properties.getIntValue(SERVER_PORT, -1); 
     }
 
     public String getServerHostname()
     {
-        return properties.getStringProperty(SERVER_HOSTNAME);
+        return properties.getStringValue(SERVER_HOSTNAME);
     }
 
     public String getServerPath()
     {
-        return properties.getStringProperty(SERVER_PATH); 
+        return properties.getStringValue(SERVER_PATH); 
     }
 
     public boolean getNeedUserInfo()
     {
-        return properties.getBooleanProperty(NEED_USERINFO,false);
+        return properties.getBooleanValue(NEED_USERINFO,false);
     }
     
     public boolean getNeedServerPath()
     {
-        return properties.getBooleanProperty(NEED_SERVERPATH,false);
+        return properties.getBooleanValue(NEED_SERVERPATH,false);
     }
 
     public void setNeedUserInfo(boolean value)
@@ -310,5 +299,13 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     public ResourceSystemInfo duplicate(boolean shallow)
     {
         return duplicate(); 
+    }
+
+    /** 
+     * @return Returns backing actual AttributeSet with configuration. 
+     */
+    public AttributeSet getAttributeSet()
+    {
+        return this.properties; 
     }
 }

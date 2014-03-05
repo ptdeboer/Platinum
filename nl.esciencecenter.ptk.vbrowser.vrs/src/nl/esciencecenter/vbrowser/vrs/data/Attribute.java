@@ -516,12 +516,17 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     public boolean hasEnumValue(String val)
     {
         if (enumValues==null) 
+        {
             return false; 
+        }
         
         for (int i=0;i<enumValues.length;i++)
+        {
             if (val.equals(enumValues[i]))
+            {
                 return true; 
-        
+            }
+        }
         return false; 
     }
     
@@ -530,7 +535,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
      */
     public void setValueFromString(AttributeType type, String stringValue) throws Exception
     {
-        this.value = parseString(type, stringValue);
+        _setValue(type, parseString(type, stringValue));
     }
 
     public void setValue(int intVal)

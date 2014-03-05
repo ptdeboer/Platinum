@@ -30,6 +30,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -53,7 +54,12 @@ public class VRSClient
         this.currentPathVRL=vrsContext.getCurrentPathVRL(); 
         this.transferManager=new VRSTranferManager(this); 
     }
-
+    
+    public VRSContext getVRSContext()
+    {
+        return this.vrsContext; 
+    }
+    
     public VPath openLocation(VRL vrl) throws VrsException
     {
         VResourceSystem resourceSystem = getVResourceSystemFor(vrl); 
@@ -129,7 +135,11 @@ public class VRSClient
         }
         
         return paths; 
-        
     }
 
+    public ResourceSystemInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
+    {
+        return this.vrsContext.getResourceSystemInfoFor(vrl, autoCreate);
+    }
+    
 }

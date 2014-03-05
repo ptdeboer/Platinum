@@ -20,29 +20,16 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui;
 
-import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.util.Hashtable;
 import java.util.Map;
 
-import nl.esciencecenter.vbrowser.vrs.VRSProperties;
-
+/** 
+ * Global Gui Settings. Also manages different UIProperties for difference widgets.
+ * Each Platform typically has one GuiSettings object, but might have more UIProperties profiles.  
+ */
 public class GuiSettings
 {
-    public static class UIProperties extends VRSProperties
-    {
-        private static final long serialVersionUID = -3984791544175204642L;
-        
-        public UIProperties()
-        {
-            super("UIProperties");
-        }
-        
-        public UIProperties(Map<? extends Object,Object> properties)
-        {
-            super("UIProperties",properties);
-        }
-
-    }
 
     // ========================================================================
     // Configurable Properties 
@@ -59,10 +46,6 @@ public class GuiSettings
     // ==============
     // Default values
     // ==============
-    
-    private static Color default_label_selected_bg_color = Color.darkGray;
-
-    private static Color default_label_selected_fg_color = Color.black;
 
     private static int default_mouse_selection_button = MouseEvent.BUTTON1;
 
@@ -77,13 +60,53 @@ public class GuiSettings
     // ========================================================================
 
     // User Configuration properties:
-    private UIProperties properties = new UIProperties();
-
+    private UIProperties guiProperties = new UIProperties();
+    
+    private Map<String,UIProperties> widgetProperties=new Hashtable<String,UIProperties>();  
+    
     public GuiSettings()
     {
         initDefaults();
     }
 
+    public UIProperties getUIProperties()
+    {
+        return guiProperties; 
+    }
+    
+    /** 
+     * Return custom UI Properties for specified widget
+     */
+    public UIProperties getUIPropertiesFor(String widget)
+    {
+        UIProperties props; 
+        
+        synchronized(widgetProperties)
+        {
+            props=widgetProperties.get(widget); 
+            if (props==null)
+            {
+                props=new UIProperties(guiProperties);
+            }
+            
+            widgetProperties.put(widget,props); 
+            
+        }
+        
+        return props;  
+    }
+    
+    /** 
+     * Return custom UI Properties for specified widget
+     */
+    public void storeUIPropertiesFor(String widget,UIProperties widgetProps)
+    {
+        synchronized(widgetProperties)
+        {
+            widgetProperties.put(widget,widgetProps);
+        }
+    }
+    
     protected void initDefaults()
     {
         setProperty(SINGLE_CLICK_ACTION, "" + true);
@@ -91,7 +114,7 @@ public class GuiSettings
 
     public void setProperty(String name, String value)
     {
-        properties.set(name, value);
+        guiProperties.set(name, value);
     }
 
     /**
@@ -112,27 +135,27 @@ public class GuiSettings
 
     public int getMousePopupButton()
     {
-        return properties.getIntegerProperty(MOUSE_POPUP_BUTTON, default_mouse_popup_button);
+        return guiProperties.getIntegerProperty(MOUSE_POPUP_BUTTON, default_mouse_popup_button);
     }
 
     public int getMouseAltButton()
     {
-        return properties.getIntegerProperty(MOUSE_ALT_BUTTON, default_mouse_alt_button);
+        return guiProperties.getIntegerProperty(MOUSE_ALT_BUTTON, default_mouse_alt_button);
     }
 
     public int getMouseSelectionButton()
     {
-        return properties.getIntegerProperty(MOUSE_SELECTION_BUTTON, default_mouse_selection_button);
+        return guiProperties.getIntegerProperty(MOUSE_SELECTION_BUTTON, default_mouse_selection_button);
     }
 
     public int getMouseActionButton()
     {
-        return properties.getIntegerProperty(MOUSE_SELECTION_BUTTON, default_mouse_action_button);
+        return guiProperties.getIntegerProperty(MOUSE_SELECTION_BUTTON, default_mouse_action_button);
     }
 
     public boolean getSingleClickAction()
     {
-        return properties.getBooleanProperty(SINGLE_CLICK_ACTION, true);
+        return guiProperties.getBooleanProperty(SINGLE_CLICK_ACTION, true);
     }
 
     /**
@@ -184,16 +207,5 @@ public class GuiSettings
 
         return false;
     }
-
-    public Color getSelectedBGColor()
-    {
-        return default_label_selected_bg_color;
-    }
-    
-    public Color getSelectedFGColor()
-    {
-        return default_label_selected_fg_color;
-    }
-    
     
 }
