@@ -26,8 +26,16 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/** 
+ * Shared interface for ResourceLoader and (vbrowser) VRS Resource Loaders.
+ * Provides method to resolve relative paths to absolute URI and openening them 
+ * for reading and writing. 
+ */
 public interface ResourceProvider
 {
+    /** 
+     * Resolve relative path, for example "image.gif" and provide full URI.<br>
+     */
     public URI resolvePathURI(String path) throws URISyntaxException;
 
     public OutputStream createOutputStream(URI uri) throws IOException;

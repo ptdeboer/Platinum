@@ -38,23 +38,18 @@ import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
- * Global File System utils and resource loaders. Used for the local file
- * system.
+ * Global File System utils and resource loaders. <br>
+ * Used to access the local file system.
  */
 public class FSUtil implements ResourceProvider
 {
+    private static final ClassLogger logger=ClassLogger.getLogger(FSUtil.class);
+    
     public static final String ENCODING_UTF8 = "UTF8";
 
     public static final String ENCODING_ASCII = "ASCII";
 
-    private static ClassLogger logger;
-
     private static FSUtil instance = null;
-
-    static
-    {
-        logger = ClassLogger.getLogger(FSUtil.class);
-    }
 
     public static FSUtil getDefault()
     {
@@ -66,7 +61,17 @@ public class FSUtil implements ResourceProvider
 
     public static class FSOptions
     {
-        public boolean resolve_tilde = true;
+        /**
+         * Resolve '~' to user home dir. 
+         */ 
+        public boolean resolveTilde = true;
+        
+        /**
+         * Whether to follow links. 
+         * @see LinkOption.NOFOLLOW_LINKS 
+         */ 
+        public boolean defaultFollowLinks = true;
+        
     }
 
     // ========================================================================
@@ -130,7 +135,7 @@ public class FSUtil implements ResourceProvider
      */
     public URI resolvePathURI(String path) throws URISyntaxException
     {
-        if ((this.fsOptions.resolve_tilde) && (path != null) && path.contains("~"))
+        if ((this.fsOptions.resolveTilde) && (path != null) && path.contains("~"))
         {
             String homePath = URIFactory.uripath(userHome.getPath());
             path = path.replace("~", homePath);
@@ -154,24 +159,45 @@ public class FSUtil implements ResourceProvider
 
         IOUtil.copyStreams(finput, foutput, false);
 
+        autoClose(finput); 
+        autoClose(foutput); 
+        return;
+    }
+
+    private boolean autoClose(InputStream finput)
+    {
+        if (finput==null)
+        {
+            return false; 
+        }
+        
         try
         {
             finput.close();
+            return true; 
         }
         catch (Exception e)
         {
-            ;
+            return false;
         }
+    }
+    
+    private boolean autoClose(OutputStream foutput)
+    {
+        if (foutput==null)
+        {
+            return false; 
+        }
+        
         try
         {
             foutput.close();
+            return true; 
         }
         catch (Exception e)
         {
-            ;
+            return false; 
         }
-
-        return;
     }
 
     /**
@@ -181,21 +207,33 @@ public class FSUtil implements ResourceProvider
     public boolean existsFile(String filePath, boolean mustBeFileType, LinkOption... linkOptions)
     {
         if (filePath == null)
+        {
             return false;
+        }
 
         try
         {
             FSNode file = newFSNode(filePath);
             if (file.exists(linkOptions) == false)
+            {
                 return false;
-
+            }
+            
             if (mustBeFileType)
+            {
                 if (file.isFile(linkOptions))
+                {
                     return true;
+                }
                 else
+                {
                     return false;
+                }
+            }
             else
+            {
                 return true;
+            }
         }
         catch (FileURISyntaxException e)
         {
@@ -215,7 +253,9 @@ public class FSUtil implements ResourceProvider
     public boolean existsDir(String directoryPath, LinkOption... linkOptions)
     {
         if (directoryPath == null)
+        {
             return false;
+        }
 
         try
         {
@@ -301,7 +341,7 @@ public class FSUtil implements ResourceProvider
             throw new FileURISyntaxException(e.getMessage(), dirPath, e);
         }
 
-        if (file.exists(null) == false)
+        if (file.exists(linkOptions) == false)
             return null;
 
         if (file.isDirectory(linkOptions) == false)
@@ -399,32 +439,31 @@ public class FSUtil implements ResourceProvider
     public String readText(String filename, String encoding, int maxSize) throws IOException, FileURISyntaxException
     {
         if (encoding == null)
+        {
             encoding = ENCODING_UTF8;
-
+        }
+        
         FSNode file = newFSNode(filename);
         int len = (int) file.getFileSize();
         if (len > maxSize)
+        {
             len = maxSize;
-
+        }
+        
         InputStream finps = file.createInputStream();
-
-        byte buffer[] = new byte[len + 1];
-
-        int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len);
-        // truncate buffer in the case of a read error:
-        buffer[numRead] = 0;
-
-        // close
         try
         {
-            finps.close();
+            byte buffer[] = new byte[len + 1];
+    
+            int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len);
+            // truncate buffer in the case of a read error:
+            buffer[numRead] = 0;
+            return new String(buffer, encoding);
         }
-        catch (IOException e)
+        finally
         {
-            ;
+            autoClose(finps);
         }
-
-        return new String(buffer, encoding);
     }
 
     public void writeText(String path, String txt) throws IOException, FileURISyntaxException
@@ -435,29 +474,37 @@ public class FSUtil implements ResourceProvider
     public void writeText(String filename, String txt, String encoding) throws IOException, FileURISyntaxException
     {
         if (encoding == null)
+        {
             encoding = ENCODING_UTF8;
-
+        }
+        
         FSNode file = newFSNode(filename);
 
         OutputStream foutps = file.createOutputStream();
-        byte bytes[] = txt.getBytes(encoding);
-        int len = bytes.length;
-        foutps.write(bytes);
-        // close
+        int len=0; 
+        
         try
         {
-            foutps.close();
+            byte bytes[] = txt.getBytes(encoding);
+            len = bytes.length;
+            foutps.write(bytes);
+            // close and flush
+            foutps.flush(); 
+            foutps.close(); 
+            foutps=null; // close successful  
+            
+            long fileLen = file.getFileSize();
+            
+            if (len != fileLen)
+            {
+                logger.warnPrintf("File NOT truncated: After writing %d byte to '%s', file length is:%d!\n", filename, len, fileLen);
+            }
         }
-        catch (IOException e)
+        finally
         {
-            ;
+            autoClose(foutps); 
         }
 
-        long fileLen = file.getFileSize();
-        if (len != fileLen)
-        {
-            logger.warnPrintf("File NOT truncated: After writing %d byte to '%s', file length is:%d!\n", filename, len, fileLen);
-        }
 
         return;
     }
