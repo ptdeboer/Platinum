@@ -148,7 +148,10 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
     {
         URI confUri=this.getResourceHandler().getViewerConfigDir();
         if (confUri==null)
+        {
+            logger.warnPrintf("No viewer configuration directory configured\n");
             return null;
+        }
         
         URIFactory factory=new URIFactory(confUri);
         factory.appendPath("/viewers/"+configPropsName);

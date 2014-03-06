@@ -24,7 +24,7 @@ import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 
-public class VRSUtil extends ResourceLoader
+public class VRSUtil
 {
     public static ResourceLoader createVRSResourceLoader(VRSContext vrsContext)
     {

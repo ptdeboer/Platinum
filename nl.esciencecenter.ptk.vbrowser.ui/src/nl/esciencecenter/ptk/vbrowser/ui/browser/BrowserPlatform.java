@@ -125,9 +125,9 @@ public class BrowserPlatform
         
         // Default viewer resource Loader/Resource Handler:
         this.resourceLoader = VRSUtil.createVRSResourceLoader(getVRSContext());
-        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader);
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader,getPlatformConfigDir("viewers"));
         // ~/.vbtk2/viewers
-        resourceHandler.setViewerConfigDir(getPlatformConfigDir("viewers"));
+
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
         // root Frame and Icon Renderer/provider:

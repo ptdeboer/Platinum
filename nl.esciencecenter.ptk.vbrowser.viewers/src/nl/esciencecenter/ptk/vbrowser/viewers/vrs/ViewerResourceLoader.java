@@ -41,6 +41,10 @@ public class ViewerResourceLoader
 {
     private static ClassLogger logger = ClassLogger.getLogger(ViewerResourceLoader.class);
 
+    // ========
+    // Instance
+    // ======== 
+    
     private ResourceLoader resourceLoader;
 
     private URI viewersConfigDir;
@@ -49,10 +53,11 @@ public class ViewerResourceLoader
 
     // === //
 
-    public ViewerResourceLoader(ResourceLoader resourceLoader)
+    public ViewerResourceLoader(ResourceLoader resourceLoader, URI viewersConfigDir)
     {
         this.resourceLoader = resourceLoader;
-        viewersConfigDir = null;
+        logger.infoPrintf("ViewerConfigDir=%s\n", viewersConfigDir);
+        this.viewersConfigDir = viewersConfigDir;
     }
 
     public void setResourceLoader(ResourceLoader resourceLoader)
@@ -60,10 +65,8 @@ public class ViewerResourceLoader
         this.resourceLoader = resourceLoader;
     }
 
-    public void setViewerConfigDir(URI configDir)
+    protected void setViewerConfigDir(URI configDir)
     {
-        logger.infoPrintf("ViewerConfigDir=%s\n", configDir);
-        this.viewersConfigDir = configDir;
     }
 
     public URI getViewerConfigDir()

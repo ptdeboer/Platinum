@@ -17,7 +17,7 @@ public class ViewerTests
     {
         if (viewerRegistry == null)
         {
-            viewerRegistry = new PluginRegistry(new ViewerResourceLoader(new ResourceLoader()));
+            viewerRegistry = new PluginRegistry(new ViewerResourceLoader(new ResourceLoader(),null));
         }
         
         return viewerRegistry;

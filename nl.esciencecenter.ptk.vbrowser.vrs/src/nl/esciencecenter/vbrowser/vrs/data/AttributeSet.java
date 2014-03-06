@@ -527,7 +527,6 @@ public class AttributeSet extends HashMapList<String, Attribute>
             }
         }
         
-
         return attrs;
     }
 
