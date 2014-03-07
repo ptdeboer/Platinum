@@ -636,6 +636,16 @@ public class ResourceLoader
         OutputStream outps = createOutputStream(uri);
         outps.write(bytes); 
         
+        this.autoClose(outps); 
+    }
+ 
+    private void autoClose(OutputStream outps)
+    {
+        if (outps==null)
+        {
+            return;
+        }
+        
         try
         {
             outps.close();
@@ -645,11 +655,11 @@ public class ResourceLoader
             logger.logException(ClassLogger.DEBUG, e, "Exception while closing outputstream:%s\n", e);
         }
     }
- 
+    
     // =================================================================
     // Random IO Interface   
     // =================================================================
-    
+
     /** 
      * Returns RandomReader if supported by the URI scheme.  
      * @throws IOException
