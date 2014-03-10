@@ -22,164 +22,175 @@ package nl.esciencecenter.ptk.web;
 
 import java.io.IOException;
 
-public class WebException extends IOException 
+/**
+ * WebException contains the HTTP Error code and optionally the (html) error
+ * response. <br>
+ * A WebExeption is thrown when an http call succeed but responded with a HTTP
+ * error status (any HTTP error &lt;200 or &gt;299). This Exception retains that
+ * information. Use <code>getServerReponse()</code> and
+ * <code>getHttpStatus()<code> to check the returned error text and HTTP Response Status.
+ * 
+ * @author Piter T. de Boer.
+ */
+public class WebException extends IOException
 {
     private static final long serialVersionUID = 6695170599026563455L;
-    
+
     public static enum Reason
     {
-        // Exception Reasons; 
-        UNAUTHORIZED("Unauthorized."),
-        FORBIDDEN("Forbidden."),
-        
+        // IO errors,
+        HTTP_ERROR("HTTP Error."),
+        HTTP_CLIENTEXCEPTION("HTTP Client Exception."),
+        HTTPS_SSLEXCEPTION("HTTPS SSL Exception."),
+        IOEXCEPTION("IOException."),
+        URI_EXCEPTION("URI Syntax Exception."),
+        // Connection error (not HTTP Errors!)
         CONNECTION_EXCEPTION("Connection Exception."),
         UNKNOWN_HOST("Hostname or server not found."),
         NO_ROUTE_TO_HOST_EXCEPTION("No route to host."),
         CONNECTION_TIME_OUT("Connection timeout."),
-        
-        RESOURCE_NOT_FOUND("Resource not found."),
-        RESOURCE_ALREADY_EXISTS("Resource already exists."),
-        
-        HTTP_ERROR("HTTP Error."), 
-        HTTP_CLIENTEXCEPTION("HTTP Client Exception."), 
-        HTTPS_SSLEXCEPTION("HTTPS SSL Exception."),
-        IOEXCEPTION("IOException."), 
-        INVALID_REQUEST("Invalid Request"), 
+        // Authentication/Authorization
+        UNAUTHORIZED("Unauthorized."),
+        FORBIDDEN("Forbidden."),
+        // Actual HTTP Errors:
+        INVALID_REQUEST("Invalid Request"),
         INVALID_RESPONSE("Invalid Response"),
-        URI_EXCEPTION("URI Syntax Exception."), 
-        ;
-        
-        // === Instance === 
-        
-        private String text=null;
-        
+        //
+        RESOURCE_NOT_FOUND("Resource not found."),
+        RESOURCE_ALREADY_EXISTS("Resource already exists.");
+
+        // =========
+        // Instance
+        // =========
+
+        private String text = null;
+
         private Reason(String text)
         {
-            this.text=text; 
+            this.text = text;
         }
-        
+
         public String getText()
         {
-            return this.text; 
+            return this.text;
         }
     }
-    
-    // === Instance ===
-    
-    private Reason reason=null; 
-    
-    private int httpCode=0; 
-    
-    private String serverResponse=null;
 
-    private String serverResponseMimeType=null; 
-    
+    // === Instance ===
+
+    private Reason reason = null;
+
+    private int httpStatus = 0;
+
+    private String serverResponse = null;
+
+    private String serverResponseMimeType = null;
+
     public WebException()
     {
-        super(); 
-    }
-    
-    public WebException(String message)
-    {
-        super(message); 
-    }
-    
-    public WebException(String message,Throwable cause)
-    {
-        super(message,cause); 
-    }
-    
-    public WebException(Reason reason,String message,Throwable cause)
-    {
-        super(message,cause); 
-        this.reason=reason; 
-    }
-   
-    public WebException(Reason reason, int httpCode, String message)
-    {
-        super(message); 
-        this.reason=reason;
-        this.httpCode=httpCode; 
-    }
-    
-    /** 
-     * Create WebException from HTML error response. 
-     * Typically the call itself succeed (no exception raised), but the web server responded with a HTTP error code and a HTML error text. 
-     * @param reason - Enum type of recognized reason. 
-     * @param httpCode - HTTP Status code (404,500,etc). 
-     * @param message - Human readable exception message 
-     * @param htmlResponse -  exact HTML formatted response from web server. 
-     */
-    public WebException(Reason reason, int httpCode, String message,String htmlResponse)
-    {
-        super(message); 
-        this.reason=reason;
-        this.httpCode=httpCode; 
-        this.serverResponseMimeType="text/html"; 
-        this.serverResponse=htmlResponse; 
-    }
-    
-    /** 
-     * Create WebException from HTML error response. 
-     * Typically the call itself succeed (no exception raised), but the web server responded with a HTTP error code and a HTML error text. 
-     * @param reason - Enum type of recognized reason. 
-     * @param httpCode - HTTP Status code (404,500,etc). 
-     * @param message - Human readable exception message 
-     * @param htmlResponse -  exact HTML formatted response from web server. 
-     */
-    public WebException(Reason reason, int httpCode, String message,String responseType,String htmlResponse)
-    {
-        super(message); 
-        this.reason=reason;
-        this.httpCode=httpCode; 
-        this.serverResponseMimeType=responseType;
-        this.serverResponse=htmlResponse; 
-    }
-    
-    
-    public Reason getReason()
-    {
-        return this.reason; 
-    }
-    
-    /**
-     * Returns HTTP Error/Result Code. 
-     * Returns 0 if unknown or no HTTP Status Code.  
-     */ 
-    public int getHttpStatus()
-    {
-        return this.httpCode;
+        super();
     }
 
-    /** 
-     * If the Remote Server responded with a (HTML) formatted error text, this method will return it. 
-     * @return - (html) formatted server response text. 
+    public WebException(String message)
+    {
+        super(message);
+    }
+
+    public WebException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
+
+    public WebException(Reason reason, String message, Throwable cause)
+    {
+        super(message, cause);
+        this.reason = reason;
+    }
+
+    public WebException(Reason reason, int httpCode, String message)
+    {
+        super(message);
+        this.reason = reason;
+        this.httpStatus = httpCode;
+    }
+
+    /**
+     * Create WebException from (HTML) error response. Typically the call itself
+     * succeeded (no exception was raised), but the web server responded with a
+     * HTTP error code and a (HTML) error text.
+     * 
+     * @param reason
+     *            - Enum type of recognized reason.
+     * @param httpCode
+     *            - HTTP Status code (404,500,314,etc).
+     * @param message
+     *            - Human readable exception message.
+     * @param responseType
+     *            - mime type of response, for example "text/html".
+     * @param htmlResponse
+     *            - Formatted response from web server, typically HTML text.
+     */
+    public WebException(Reason reason, int httpCode, String message, String responseType, String htmlResponse)
+    {
+        super(message);
+        this.reason = reason;
+        this.httpStatus = httpCode;
+        this.serverResponseMimeType = responseType;
+        this.serverResponse = htmlResponse;
+    }
+
+    public Reason getReason()
+    {
+        return this.reason;
+    }
+
+    /**
+     * Returns HTTP Error/Result Code, returns 0 if unknown or no HTTP Status
+     * Code.<br>
+     * <strong>note</strong>: Codes in the range:[200,299] arn't really errors.
+     */
+    public int getHttpStatus()
+    {
+        return this.httpStatus;
+    }
+
+    /**
+     * Return Server response if any was given. <br>
+     * Check {@link #getResponseMimeType()} what mime-type the error response
+     * has. This might be HTML if the Remote Server responded with a (HTML)
+     * formatted error text.
+     * 
+     * @return - (html) formatted server response text.
      */
     public String getServerResponse()
     {
-        return this.serverResponse; 
+        return this.serverResponse;
     }
-    
-    /** 
-     * If the Remote Server responded with a (HTML) formatted error text, this method will return the actual mime type of the response. 
-     * @return - mime-type of server response. Typically "text/html".   
+
+    /**
+     * If the Remote Server responded with a formatted error text, this method
+     * will return the actual mime type of the response, for example "text/html"
+     * if the server responded with an HTML error text.
+     * 
+     * @return - mime-type of server response. Typically "text/html" for HTML
+     *         formatted errors.
      */
     public String getResponseMimeType()
     {
-        return this.serverResponseMimeType; 
+        return this.serverResponseMimeType;
     }
-    
+
     public String toString()
     {
         String str = getClass().getName();
         String message = getLocalizedMessage();
-        
-        str+="["+getReason()+"]";
-        if (message!=null)
+
+        str += "[" + getReason() + "]";
+        if (message != null)
         {
-            str+=":"+message;
+            str += ":" + message;
         }
-        
-        return str;  
+
+        return str;
     }
 }

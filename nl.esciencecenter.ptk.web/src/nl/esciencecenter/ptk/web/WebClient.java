@@ -68,7 +68,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -76,8 +75,10 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicHeader;
 
 /**
- * Generic Rest and Web Service client. 
+ * Generic Rest and Web Service client.<br>
  * Updated methods to HttpClient 4.2.
+ * 
+ * @see WebConfig class which holds most configurable settings for the WebClient class. 
  * 
  * @author Piter T. de Boer
  */
@@ -113,17 +114,24 @@ public class WebClient
 
     // === Instance ===
 
-    // config: 
+    // config:
     private WebConfig config;
+
     private java.net.URI serverUri;
+
     private UI ui = null;
+
     private ResourceLoader resourceLoader;
+
     private CertificateStore certStore;
-    
-    // status: 
+
+    // status:
     private DefaultHttpClient httpClient;
+
     private String jsessionID;
+
     private int lastHttpStatus;
+
     private URI serviceUri;
 
     protected WebClient()
@@ -149,7 +157,7 @@ public class WebClient
         {
             ui = new SimpelUI();
         }
-        
+
         this.config = config;
         this.httpClient = null;
         this.resourceLoader = new ResourceLoader();
@@ -201,14 +209,16 @@ public class WebClient
     }
 
     /**
-     * Specify UI interface, set to null if no UI interactions are allowed. 
-     * @param newUI - new UI interface or null to disable UI actions.
+     * Specify UI interface, set to null if no UI interactions are allowed.
+     * 
+     * @param newUI
+     *            - new UI interface or null to disable UI actions.
      */
     public void setUI(UI newUI)
     {
-        this.ui=newUI; 
+        this.ui = newUI;
     }
-    
+
     public void setCredentials(String username, Secret password)
     {
         config.setCredentials(username, password);
@@ -246,7 +256,7 @@ public class WebClient
     }
 
     // ========================================================================
-    // Initialization/Authentication 
+    // Initialization/Authentication
     // ========================================================================
 
     public boolean connect() throws WebException
@@ -274,7 +284,7 @@ public class WebClient
                 }
             }
 
-            if ((config.getUseBasicAuthentication()) && (config.hasPassword() == false) && (this.jsessionID==null) && (this.hasUI()))
+            if ((config.getUseBasicAuthentication()) && (config.hasPassword() == false) && (this.jsessionID == null) && (this.hasUI()))
             {
                 String user = getUsername();
 
@@ -323,7 +333,7 @@ public class WebClient
         }
         catch (WebException e)
         {
-            throw (e); // pass 
+            throw (e); // pass
         }
         catch (IOException e)
         {
@@ -331,7 +341,7 @@ public class WebClient
         }
         finally
         {
-            // check connected state... 
+            // check connected state...
         }
     }
 
@@ -343,28 +353,28 @@ public class WebClient
         {
             this.jsessionID = null;
         }
-        
+
         String uri = null;
 
-        // re-use JSESSIONID: 
-        if (this.jsessionID!=null)
+        // re-use JSESSIONID:
+        if (this.jsessionID != null)
         {
-            
-            BasicClientCookie cookie=new BasicClientCookie(WebConst.COOKIE_JSESSIONID,jsessionID); 
-            cookie.setPath(config.servicePath); 
-            cookie.setDomain(config.hostname);
-            logger.infoPrintf (" - Using JSessionID   = %s\n", jsessionID);
-            logger.debugPrintf(" - Cookie Domain/Path = %s/%s\n",cookie.getDomain(),cookie.getPath()); 
+
+            BasicClientCookie cookie = new BasicClientCookie(WebConst.COOKIE_JSESSIONID, jsessionID);
+            cookie.setPath(config.servicePath);
+            cookie.setDomain(config.serverHostname);
+            logger.infoPrintf(" - Using JSessionID   = %s\n", jsessionID);
+            logger.debugPrintf(" - Cookie Domain/Path = %s/%s\n", cookie.getDomain(), cookie.getPath());
 
             this.httpClient.getCookieStore().addCookie(cookie);
-            
-            return ; 
+
+            return;
         }
         else
         {
-            logger.debugPrintf("initJSession():NO JSESSIONID\n"); 
+            logger.debugPrintf("initJSession():NO JSESSIONID\n");
         }
-        
+
         try
         {
             uri = getServerURI().toString();
@@ -374,13 +384,13 @@ public class WebClient
             {
                 uri = uri + "/";
             }
-            
+
             uri = uri + config.servicePath + "/" + config.jsessionInitPart;
 
             HttpPost postMethod = new HttpPost(uri);
             // get.setFollowRedirects(true);
 
-            int result = executeAuthenticatedPut(postMethod,null,null); 
+            int result = executeAuthenticatedPut(postMethod, null, null);
 
             List<Cookie> cookies = this.httpClient.getCookieStore().getCookies();
 
@@ -389,12 +399,12 @@ public class WebClient
                 if (cookie.getName().equals(WebConst.COOKIE_JSESSIONID))
                 {
                     this.jsessionID = cookie.getValue();
-                    logger.infoPrintf (" - new JSessionID     = %s\n", jsessionID);
-                    logger.debugPrintf(" - Cookie Domain/Path = '%s','%s'\n",cookie.getDomain(),cookie.getPath()); 
+                    logger.infoPrintf(" - new JSessionID     = %s\n", jsessionID);
+                    logger.debugPrintf(" - Cookie Domain/Path = '%s','%s'\n", cookie.getDomain(), cookie.getPath());
                 }
             }
 
-            checkHttpStatus(result, "initJSession(): Couldn't initialize JSessionID.",null,null);
+            checkHttpStatus(result, "initJSession(): Couldn't initialize JSessionID.", null, null);
 
             // all ok here.
         }
@@ -408,16 +418,18 @@ public class WebClient
             }
             else if (reason == Reason.UNAUTHORIZED)
             {
-                if (this.config.useAuthentication()==false)
+                if (this.config.useAuthentication() == false)
                 {
-                    throw new WebException(reason, "Need proper authentication for this service, but authentication is disabled for:"+this.getServiceURI()+".\n" + e.getMessage(), e);
+                    throw new WebException(reason, "Need proper authentication for this service, but authentication is disabled for:"
+                            + this.getServiceURI() + ".\n" + e.getMessage(), e);
                 }
-                
-                throw new WebException(reason, "Failed to authenticate: User or password wrong for URI:"+this.getServiceURI()+".\n" + e.getMessage(), e);
+
+                throw new WebException(reason, "Failed to authenticate: User or password wrong for URI:" + this.getServiceURI() + ".\n"
+                        + e.getMessage(), e);
             }
             else
             {
-                throw new WebException(reason, "Failed to initialize JSession to: "+this.getServiceURI()+"\n" + e.getMessage(), e);
+                throw new WebException(reason, "Failed to initialize JSession to: " + this.getServiceURI() + "\n" + e.getMessage(), e);
             }
         }
     }
@@ -467,7 +479,7 @@ public class WebClient
             // get.setFollowRedirects(true);
 
             int result = this.executeDelete(delMethod, null, null);
-            checkHttpStatus(result, "deleteJSession(): Couldn't invalidate JSessionID.",null,null);
+            checkHttpStatus(result, "deleteJSession(): Couldn't invalidate JSessionID.", null, null);
             // all ok here.
             jsessionID = null; // cleared
         }
@@ -502,8 +514,8 @@ public class WebClient
 
     protected void initHTTPS() throws CertificateStoreException
     {
-        // Create SSL Socket factory with custom Certificate Store. 
-        // Default protocol is TLS (newer when SSL).  
+        // Create SSL Socket factory with custom Certificate Store.
+        // Default protocol is TLS (newer when SSL).
         // SSLContext sslContext = certStore.createSSLContext("SSLv3");
         SSLContext sslContext = certStore.createSSLContext(SslConst.PROTOCOL_TLS);
         AbstractVerifier verifier;
@@ -517,30 +529,29 @@ public class WebClient
             verifier = new StrictHostnameVerifier();
         }
 
-        // Create and register HTTPS socket factory 
+        // Create and register HTTPS socket factory
         SSLSocketFactory socketFactory = new SSLSocketFactory(sslContext, verifier);
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("https", config.getPort(), socketFactory));
         ClientConnectionManager manager = this.httpClient.getConnectionManager();
         manager.getSchemeRegistry().register(new Scheme("https", config.getPort(), socketFactory));
     }
-    
+
     // ========================================================================
     // Get,Put,Post and Delete methods
     // ========================================================================
 
     /**
      * Execute Put or Post method and handle the (optional) String response.
-     * Returns actual HTTP Status. 
-     * Method does not do any (http) response status handling.
-     * If the Put method succeeded but the HTTP status != 200 then this value is returned
-     * and no Exception is thrown.  
+     * Returns actual HTTP Status. Method does not do any (http) response status
+     * handling. If the Put method succeeded but the HTTP status != 200 then
+     * this value is returned and no Exception is thrown.
      * 
      * @param putOrPostmethod
      *            - HttpPut or HttpPost method to execute
      * @param responseTextHolder
      *            - Optional StringHolder for the Response: Put and Post might
-     *              nor return any response.
+     *            nor return any response.
      * @param contentTypeHolder
      *            - Optional StringHolder for the contentType (mimeType).
      * 
@@ -567,8 +578,8 @@ public class WebClient
                     + putOrPostmethod.getClass());
         }
 
-        String actualUser; 
-        
+        String actualUser;
+
         try
         {
             HttpResponse response;
@@ -621,8 +632,8 @@ public class WebClient
     }
 
     /**
-     * Execute Get Method and handle the String response. 
-     * Returns actual HTTP Status. Does not do any HTTP status handling. 
+     * Execute Get Method and handle the String response. Returns actual HTTP
+     * Status. Does not do any HTTP status handling.
      * 
      * @param getMethod
      *            - HttpGet method to execute
@@ -643,7 +654,7 @@ public class WebClient
         {
             throw new NullPointerException("HTTP Client not properly initialized: httpClient==null");
         }
-        
+
         try
         {
             HttpResponse response;
@@ -654,8 +665,7 @@ public class WebClient
 
             int status = handleStringResponse("HttpGet:" + getMethod.getRequestLine(), response, responseTextHolder,
                     contentTypeHolder);
-            
-            
+
             this.lastHttpStatus = status;
             return status;
 
@@ -670,7 +680,7 @@ public class WebClient
         }
         finally
         {
-            getMethod.releaseConnection(); 
+            getMethod.releaseConnection();
         }
     }
 
@@ -703,7 +713,7 @@ public class WebClient
         }
         finally
         {
-            delMethod.releaseConnection(); 
+            delMethod.releaseConnection();
         }
     }
 
@@ -711,14 +721,14 @@ public class WebClient
             StringHolder contentTypeHolder) throws WebException
     {
         HttpEntity entity = response.getEntity();
-        
+
         StatusLine status = response.getStatusLine();
         int statusCode = status.getStatusCode();
         this.lastHttpStatus = statusCode;
-        
+
         if (entity == null)
         {
-            throw new WebException(WebException.Reason.IOEXCEPTION,lastHttpStatus, "Response Entity is NULL");
+            throw new WebException(WebException.Reason.IOEXCEPTION, lastHttpStatus, "Response Entity is NULL");
         }
 
         InputStream contentInputstream = null;
@@ -734,14 +744,15 @@ public class WebClient
         {
             contentTypeValue = contentType.getValue();
         }
-        
+
         logger.debugPrintf("--------------- Response -------------------------\n");
         logger.debugPrintf("> Response Status line      = %s\n", response.getStatusLine());
         logger.debugPrintf("> Response content length   = %d\n", entity.getContentLength());
-        logger.debugPrintf("> Response content type     = %s\n", contentTypeValue); 
+        logger.debugPrintf("> Response content type     = %s\n", contentTypeValue);
         logger.debugPrintf("> Response content encoding = %s\n", contentEncoding);
 
-        for (Header header : new Header[] { contentType, contentEncoding })
+        for (Header header : new Header[]
+        { contentType, contentEncoding })
         {
             if (header != null)
             {
@@ -782,15 +793,13 @@ public class WebClient
         {
             throw new WebException(WebException.Reason.IOEXCEPTION, e.getMessage(), e);
         }
-        
+
         org.apache.http.Header[] headers = response.getAllHeaders();
 
         for (int i = 0; i < headers.length; i++)
         {
             logger.debugPrintf("  - Header: '%s'='%s'\n", headers[i].getName(), headers[i].getValue());
         }
-
-  
 
         return statusCode;
     }
@@ -819,7 +828,7 @@ public class WebClient
         // EXECUTE
         int result = executeGet(getMethod, resultTextHolder, contentTypeHolder);
         // POST
-        checkHttpStatus(result, "doGet(): Failed for uri:'" + uri + "'.",resultTextHolder,contentTypeHolder);
+        checkHttpStatus(result, "doGet(): Failed for uri:'" + uri + "'.", resultTextHolder, contentTypeHolder);
         return result;
     }
 
@@ -831,7 +840,7 @@ public class WebClient
     public ResponseInputStream doGetInputStream(URI uri) throws WebException
     {
         HttpGet getMethod = new HttpGet(uri);
-        
+
         try
         {
             logger.debugPrintf("doGetInputStream()[thread:%d]:'%s'\n", Thread.currentThread().getId(),
@@ -849,15 +858,15 @@ public class WebClient
             {
                 logger.debugPrintf("NULL Entity\n");
                 getMethod.releaseConnection();
-                int httpStatus=response.getStatusLine().getStatusCode();
-                throw new WebException(WebException.Reason.IOEXCEPTION, httpStatus,"Response Entity is NULL");
+                int httpStatus = response.getStatusLine().getStatusCode();
+                throw new WebException(WebException.Reason.IOEXCEPTION, httpStatus, "Response Entity is NULL");
             }
 
-            // Status must be ok, for the content to be streamed: 
-            handleResponseStatus(response, "doGetInputStream:'" + getMethod + "' for:+"+uri+"\n");
-            // 
+            // Status must be ok, for the content to be streamed:
+            handleResponseStatus(response, "doGetInputStream:'" + getMethod + "' for:+" + uri + "\n");
+            //
             ResponseInputStream responseInps = new ResponseInputStream(this, getMethod, entity);
-            
+
             return responseInps;
         }
         catch (ClientProtocolException e)
@@ -894,7 +903,7 @@ public class WebClient
         // EXECUTE
         int result = executeDelete(delMethod, resultTextHolder, contentTypeHolder);
         // POST
-        checkHttpStatus(result, "doDelete(): Failed for query:'" + query + "'.",resultTextHolder,contentTypeHolder);
+        checkHttpStatus(result, "doDelete(): Failed for query:'" + query + "'.", resultTextHolder, contentTypeHolder);
         return result;
     }
 
@@ -919,17 +928,17 @@ public class WebClient
      */
     public int doPut(URI uri, StringHolder resultTextH, StringHolder contentTypeH) throws WebException
     {
-        // Pre: 
+        // Pre:
         HttpPut putMethod = new HttpPut(uri);
         // Method:
-        int status=executePut(putMethod,resultTextH,contentTypeH);
-        // Status: 
-        return checkHttpStatus(status, "doPut:'" + uri, resultTextH,contentTypeH); 
+        int status = executePut(putMethod, resultTextH, contentTypeH);
+        // Status:
+        return checkHttpStatus(status, "doPut:'" + uri, resultTextH, contentTypeH);
     }
 
-    public int doPutFile(String query, String filePath, StringHolder resultStrH,PutMonitor putMonitor) throws WebException
+    public int doPutFile(String query, String filePath, StringHolder resultStrH, PutMonitor putMonitor) throws WebException
     {
-        return doPutFile(resolve(query), filePath, resultStrH,putMonitor);
+        return doPutFile(resolve(query), filePath, resultStrH, putMonitor);
     }
 
     /**
@@ -944,17 +953,17 @@ public class WebClient
      *         (Web)Exceptions
      * @throws WebException
      */
-    public int doPutFile(URI uri, String filePath, StringHolder resultStrH,PutMonitor putMonitor) throws WebException
+    public int doPutFile(URI uri, String filePath, StringHolder resultStrH, PutMonitor putMonitor) throws WebException
     {
-        logger.debugPrintf("doPutFile() file='%s' to:%s\n",filePath,uri); 
-        
+        logger.debugPrintf("doPutFile() file='%s' to:%s\n", filePath, uri);
+
         MultipartEntity multiPart = new MultipartEntity();
-        
-        // Java.io.File: 
+
+        // Java.io.File:
         // FileBody fileB = new FileBody(file);
         // Add the part to the MultipartEntity.
-        
-        // FSNode: 
+
+        // FSNode:
         FSNode node;
         try
         {
@@ -962,25 +971,27 @@ public class WebClient
         }
         catch (IOException e)
         {
-            throw new WebException(Reason.IOEXCEPTION,"Failed to resolve File:"+filePath,e); 
-        } 
-        StringHolder contentTypeH=new StringHolder(); 
-        FSNodeBody fileB=new FSNodeBody(node,putMonitor); 
+            throw new WebException(Reason.IOEXCEPTION, "Failed to resolve File:" + filePath, e);
+        }
+        StringHolder contentTypeH = new StringHolder();
+        FSNodeBody fileB = new FSNodeBody(node, putMonitor);
         multiPart.addPart("file", fileB);
 
         HttpPut putMethod = new HttpPut(uri);
         putMethod.setEntity(multiPart);
-        
-        // Execute 
-        int status=executePut(putMethod,resultStrH,contentTypeH);
-        // Status: 
-        return checkHttpStatus(status, "doPutFile:'" + uri+"', file="+filePath, resultStrH,contentTypeH); 
+
+        // Execute
+        int status = executePut(putMethod, resultStrH, contentTypeH);
+        // Status:
+        return checkHttpStatus(status, "doPutFile:'" + uri + "', file=" + filePath, resultStrH, contentTypeH);
     }
 
-    public int doPutBytes(String query, byte bytes[], String optMimeType, StringHolder resultStrH, PutMonitor optPutMonitor) throws WebException
+    public int doPutBytes(String query, byte bytes[], String optMimeType, StringHolder resultStrH, PutMonitor optPutMonitor)
+            throws WebException
     {
-        return doPutBytes(resolve(query),bytes,optMimeType, resultStrH,optPutMonitor);
+        return doPutBytes(resolve(query), bytes, optMimeType, resultStrH, optPutMonitor);
     }
+
     /**
      * Performs a managed HttpPut with a byte array as attachment. Recognized
      * HTTP Error codes are transformed to Web Exceptions.
@@ -998,32 +1009,32 @@ public class WebClient
      *         (Web)Exceptions
      * @throws WebException
      */
-    public int doPutBytes(URI uri, byte bytes[], String mimeType, StringHolder resultStrH,PutMonitor optPutMonitor) throws WebException
+    public int doPutBytes(URI uri, byte bytes[], String mimeType, StringHolder resultStrH, PutMonitor optPutMonitor) throws WebException
     {
-        if (bytes==null)
+        if (bytes == null)
         {
             throw new NullPointerException("Argument by bytes[] is NULL!");
         }
-        
-        logger.debugPrintf("doPutBytes() numBytes=%s to:%s\n",bytes.length,uri); 
-        
+
+        logger.debugPrintf("doPutBytes() numBytes=%s to:%s\n", bytes.length, uri);
+
         if (mimeType == null)
         {
             mimeType = "application/octet-stream";
         }
-        StringHolder contentTypeH=new StringHolder(); 
+        StringHolder contentTypeH = new StringHolder();
         HttpPut putMethod = new HttpPut(uri.toString());
         MultipartEntity multiPart = new MultipartEntity();
-        ByteBufferBody byteBody = new ByteBufferBody(bytes, mimeType, "bytes",optPutMonitor);
+        ByteBufferBody byteBody = new ByteBufferBody(bytes, mimeType, "bytes", optPutMonitor);
 
         // Add the part to the MultipartEntity.
         multiPart.addPart("bytes", byteBody);
         putMethod.setEntity(multiPart);
-        
-        // Execute Method: 
-        int status=executePut(putMethod, resultStrH,contentTypeH);
+
+        // Execute Method:
+        int status = executePut(putMethod, resultStrH, contentTypeH);
         // Status
-        return this.checkHttpStatus(status,"doPutBytes() uri="+uri,resultStrH,contentTypeH);
+        return this.checkHttpStatus(status, "doPutBytes() uri=" + uri, resultStrH, contentTypeH);
     }
 
     public ResponseOutputStream doPutOutputStream(String query, StringHolder resultStrH) throws WebException
@@ -1045,12 +1056,12 @@ public class WebClient
 
         URI uri = resolve(query);
 
-        StringHolder contentTypeH=new StringHolder(); 
+        StringHolder contentTypeH = new StringHolder();
         putMethod = new HttpPut(uri.toString());
         MultipartEntity multiPart = new MultipartEntity();
 
         StringBody stringB;
-        
+
         try
         {
             stringB = new StringBody(text);
@@ -1063,16 +1074,16 @@ public class WebClient
 
         putMethod.setEntity(multiPart);
         // Method
-        int status=executePut(putMethod,resultTextH,contentTypeH); 
+        int status = executePut(putMethod, resultTextH, contentTypeH);
         // Status
-        return this.checkHttpStatus(status,"doPutString():"+query,resultTextH,contentTypeH);
+        return this.checkHttpStatus(status, "doPutString():" + query, resultTextH, contentTypeH);
     }
-   
-    /** 
-     * Actual call to HttpClient.execute.
-     * Handles response and closed the connection. 
+
+    /**
+     * Actual call to HttpClient.execute. Handles response and closed the
+     * connection.
      */
-    protected int executePut(HttpPut putMethod, StringHolder resultStrH,StringHolder contentTypeH) throws WebException
+    protected int executePut(HttpPut putMethod, StringHolder resultStrH, StringHolder contentTypeH) throws WebException
     {
         try
         {
@@ -1087,9 +1098,9 @@ public class WebClient
             URI uri = putMethod.getURI();
             int status = handleStringResponse("executePut():" + uri, response, resultStrH, contentTypeH);
             this.lastHttpStatus = status;
-            
-            logger.debugPrintf("v() result='%s'\n", resultStrH.value);            
-            
+
+            logger.debugPrintf("v() result='%s'\n", resultStrH.value);
+
             return status;
         }
         catch (IOException e)
@@ -1101,11 +1112,11 @@ public class WebClient
             putMethod.releaseConnection();
         }
     }
-    
+
     // ========================================================================
     // Other
     // ========================================================================
-  
+
     /**
      * Resolve relative URI against this Service URI of the client.
      * 
@@ -1175,7 +1186,7 @@ public class WebClient
         StatusLine statusLine = response.getStatusLine();
         int status = statusLine.getStatusCode();
         this.lastHttpStatus = status;
-        this.checkHttpStatus(status, message,null,null);
+        this.checkHttpStatus(status, message, null, null);
     }
 
     /**
@@ -1184,45 +1195,55 @@ public class WebClient
      * @param httpStatus
      *            - actual HTTP Status code
      * @param message
-     * @param contentTypeHolder 
-     * @throws WebException Matching WebException 
+     * @param contentTypeHolder
+     * @throws WebException
+     *             Matching WebException
      */
     private int checkHttpStatus(int httpStatus, String message, StringHolder responseH, StringHolder contentTypeH) throws WebException
     {
-        String response=null; 
-        String responseType=null;
-        if (responseH!=null)
-            response=responseH.value; 
-        if (contentTypeH!=null)
-            responseType=contentTypeH.value;
-                
-        if (response!=null)
+        String response = null;
+        String responseType = null;
+        
+        if (responseH != null)
         {
-            message=message+"\n--- response ---\n"+response; 
+            response = responseH.value;
+        }
+        
+        if (contentTypeH != null)
+        {
+            responseType = contentTypeH.value;
+        }
+        
+        if (response != null)
+        {
+            message = message + "\n--- response[type="+responseType+"] ---\n" + response;
         }
 
         if (httpStatus == org.apache.http.HttpStatus.SC_NOT_FOUND)
         {
-            throw new WebException(WebException.Reason.RESOURCE_NOT_FOUND, httpStatus, message + "\nReason:Resource Not Found.",responseType,response);
+            throw new WebException(WebException.Reason.RESOURCE_NOT_FOUND, httpStatus, message + "\nReason:Resource Not Found.",
+                    responseType, response);
         }
         else if (httpStatus == org.apache.http.HttpStatus.SC_UNAUTHORIZED)
         {
-            throw new WebException(WebException.Reason.UNAUTHORIZED, httpStatus, message + "\nReason:Unauthorized",responseType,response);
+            throw new WebException(WebException.Reason.UNAUTHORIZED, httpStatus, message + "\nReason:Unauthorized", responseType, response);
         }
         else if (httpStatus == org.apache.http.HttpStatus.SC_FORBIDDEN)
         {
-            throw new WebException(WebException.Reason.UNAUTHORIZED, httpStatus, message + "\nReason:Forbidden",responseType,response);
+            throw new WebException(WebException.Reason.UNAUTHORIZED, httpStatus, message + "\nReason:Forbidden", responseType, response);
         }
         else if (httpStatus == org.apache.http.HttpStatus.SC_EXPECTATION_FAILED)
         {
-            throw new WebException(WebException.Reason.INVALID_REQUEST, httpStatus, message + "\nReason:Expectation Failed/Invalid request.",responseType,response);
+            throw new WebException(WebException.Reason.INVALID_REQUEST, httpStatus, message
+                    + "\nReason:Expectation Failed/Invalid request.", responseType, response);
         }
         else if (isHttpStatusOK(httpStatus) == false)
         {
-            throw new WebException(WebException.Reason.HTTP_ERROR, httpStatus, message + "Error (" + httpStatus + "):" + httpStatus,responseType,response);
+            throw new WebException(WebException.Reason.HTTP_ERROR, httpStatus, message + "Error (" + httpStatus + "):" + httpStatus,
+                    responseType, response);
         }
-        
-        return httpStatus; 
+
+        return httpStatus;
     }
 
     public boolean isHttpStatusOK(int status)
@@ -1257,9 +1278,9 @@ public class WebClient
         return false;
     }
 
-    /** 
-     * An WebClient is a statefull client. 
-     * Current HTTP status can returned by calling this method. 
+    /**
+     * An WebClient is a statefull client. Current HTTP status can returned by
+     * calling this method.
      * 
      * @return
      */
@@ -1274,7 +1295,7 @@ public class WebClient
         {
             return false; // no UI present!
         }
-        
+
         boolean result = getUI().askAuthentication(message, secretHolder);
 
         if (result == true)
@@ -1287,17 +1308,17 @@ public class WebClient
 
         return result;
     }
-    // === Misc. === 
-    
+
+    // === Misc. ===
+
     public String toString()
     {
-        return "WebClient:[uri:"+this.getServiceURI()+", isAuthenticated:"+this.isAuthenticated()+"]"; 
+        return "WebClient:[uri:" + this.getServiceURI() + ", isAuthenticated:" + this.isAuthenticated() + "]";
     }
-    
+
     protected ClassLogger getLogger()
     {
         return logger;
     }
-
 
 }

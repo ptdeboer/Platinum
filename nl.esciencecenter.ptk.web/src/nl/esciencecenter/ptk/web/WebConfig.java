@@ -27,250 +27,266 @@ import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.ssl.SslConst;
 
 /**
- * All configurable parameters to connect to a web service. 
+ * All configurable parameters to connect to a web service.
  */
 public class WebConfig
 {
     public static class SslOptions
     {
-        public String protocol=SslConst.PROTOCOL_TLS;
-        public boolean disable_strict_hostname_checking=true;
+        /**
+         * Default SSL/TSL protocol to use.
+         */
+        public String protocol = SslConst.PROTOCOL_TLS;
+
+        /**
+         * Whether to check fully qualified hostnames or not.
+         */
+        public boolean disable_strict_hostname_checking = true;
     }
-    
-    public static enum AuthenticationType {NONE,BASIC}; 
-    
-    /** 
-     * Default time out of 30 seconds. 
-     * The is the time to setup a TCP connection. 
-     * It is not a request time out. 
-     */
-    protected int tcpConnectionTimeout=30000; // 30 seconds; 
-    
-    protected String hostname="localhost"; 
-    
-    protected int port=80; 
-    
-    protected AuthenticationType authenticationType = AuthenticationType.NONE; 
-    
-    protected String username=null;
-    
-    protected Secret password; 
-    
-    /** 
-     * Service path is the path in the URL after the hostname, without a slash. 
-     */
-    protected String servicePath="";  
-    
-    /** 
-     * Protocol is either http or https. 
-     */
-    protected String protocol="http";
-    
-    /** 
-     * Whether to use a HTTP proxy. 
-     */
-    protected boolean useProxy=false;  
 
-    protected String proxyHostname; 
-    
-    protected int proxyPort;  
-    
-    protected boolean isMultiThreaded=false;
-    
-    protected boolean allowUserInteraction=true; 
-    
+    public static enum AuthenticationType
+    {
+        NONE, BASIC
+    };
+
     /**
-     *  URI part after serviceUri which initializes a new JSESSION ID. 
-     *  If set to null, no JSESSION ID will be requested. 
-     *  Use WebClient.setJSessionID() to manually specify the used JSESSION ID.  
-     */ 
-    protected String jsessionInitPart="REST/JSESSION";
+     * Default time out of 30 seconds. The is the time to setup a TCP
+     * connection. It is not a request time out.
+     */
+    protected int tcpConnectionTimeout = 30000; // 30 seconds;
 
-    protected SslOptions sslOptions=new SslOptions(); // defaults 
-    
+    protected String serverHostname = "localhost";
+
+    protected int serverPort = 80;
+
+    protected AuthenticationType authenticationType = AuthenticationType.NONE;
+
+    protected String username = null;
+
+    protected Secret password;
+
+    /**
+     * Service path is the path in the URL after the hostname, without a slash.
+     */
+    protected String servicePath = "";
+
+    /**
+     * Protocol is either http or https.
+     */
+    protected String protocol = "http";
+
+    /**
+     * Whether to use a HTTP proxy.
+     */
+    protected boolean useProxy = false;
+
+    protected String proxyHostname;
+
+    protected int proxyPort;
+
+    protected boolean isMultiThreaded = false;
+
+    protected boolean allowUserInteraction = true;
+
+    /**
+     * URI part after serviceUri which initializes a new JSESSION ID. If set to
+     * null, no JSESSION ID will be requested. Use WebClient.setJSessionID() to
+     * manually specify the used JSESSION ID.
+     */
+    protected String jsessionInitPart = "REST/JSESSION";
+
+    protected SslOptions sslOptions = new SslOptions(); // defaults
+
     protected WebConfig()
     {
     }
-    
-    public WebConfig(java.net.URI serviceUri) 
+
+    public WebConfig(java.net.URI serviceUri)
     {
-        init(serviceUri);
-    }
-    
-    public WebConfig(URI serviceUri, AuthenticationType authenticationType, boolean multiThreaded)
-    {
-        this.authenticationType=authenticationType;
-        this.isMultiThreaded=multiThreaded;
         init(serviceUri);
     }
 
+    public WebConfig(URI serviceUri, AuthenticationType authenticationType, boolean multiThreaded)
+    {
+        this.authenticationType = authenticationType;
+        this.isMultiThreaded = multiThreaded;
+        init(serviceUri);
+    }
+
+    /**
+     * Parse scheme,host,port and optional the username from this URI and update
+     * the configuration settings.
+     */
     public void updateURI(java.net.URI uri)
     {
-        init(uri); 
+        init(uri);
     }
-    
+
     protected void init(java.net.URI serviceUri)
     {
-        this.protocol=serviceUri.getScheme().toLowerCase(); 
-        this.hostname=serviceUri.getHost(); 
-        this.port=serviceUri.getPort(); 
-        
-        if (this.port<=0) 
+        this.protocol = serviceUri.getScheme().toLowerCase();
+        this.serverHostname = serviceUri.getHost();
+        this.serverPort = serviceUri.getPort();
+
+        if (this.serverPort <= 0)
         {
             if (this.isHTTPS())
             {
-                port=SslConst.HTTPS_PORT;
+                serverPort = SslConst.HTTPS_PORT;
             }
             else
             {
-                port=SslConst.HTTP_PORT;
+                serverPort = SslConst.HTTP_PORT;
             }
         }
-        
+
         // =========
-        // sanitize: 
+        // sanitize:
         // =========
-        
-        this.servicePath=serviceUri.getPath(); 
-        
-        if (servicePath!=null)
+
+        this.servicePath = serviceUri.getPath();
+
+        if (servicePath != null)
         {
             if (servicePath.equals(""))
             {
-                servicePath="/"; 
+                servicePath = "/";
             }
 
-            // make absolute: 
-            if (servicePath.startsWith("/")==false)
+            // make absolute:
+            if (servicePath.startsWith("/") == false)
             {
-                servicePath="/"+servicePath; 
+                servicePath = "/" + servicePath;
             }
-                
-            // strip last slash: 
-            if ( (servicePath.length()>1) && (servicePath.endsWith("/")) ) 
+
+            // strip last slash:
+            if ((servicePath.length() > 1) && (servicePath.endsWith("/")))
             {
-                servicePath=this.servicePath.substring(0,servicePath.length()-1);
+                servicePath = this.servicePath.substring(0, servicePath.length() - 1);
             }
-        }            
-        
-        if (serviceUri.getUserInfo()!=null)
+        }
+
+        if (serviceUri.getUserInfo() != null)
         {
-            this.username=serviceUri.getUserInfo(); 
+            this.username = serviceUri.getUserInfo();
         }
     }
 
-    /** 
-     * Return Web Service URI as java.net.URI including the web service path name, for example "https://www.cnn.nl:443/theNews/"
+    /**
+     * Return Web Service URI as java.net.URI including the web service path
+     * name, for example "https://www.cnn.nl:443/theNews/"
      * 
      * @return The Web service URI as java.net.URI
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public java.net.URI getServiceURI() throws URISyntaxException
     {
-        return new java.net.URI(this.protocol,this.username,this.hostname,this.port,this.servicePath,null,null); 
+        return new java.net.URI(this.protocol, this.username, this.serverHostname, this.serverPort, this.servicePath, null, null);
     }
 
-    /** 
-     * Return web server URI as java.net.URI, for example "http://www.cnn.nl/" 
-     *  
-     * This is the HOST URI without the service path name. 
+    /**
+     * Return web server URI as java.net.URI, for example "http://www.cnn.nl/"
+     * 
+     * This is the HOST URI without the service path name.
+     * 
      * @return The server or host URI as java.net.URI
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public java.net.URI getServerURI() throws URISyntaxException
     {
-        return new java.net.URI(this.protocol,this.username,this.hostname,this.port,null,null,null); 
+        return new java.net.URI(this.protocol, this.username, this.serverHostname, this.serverPort, null, null, null);
     }
 
     public boolean hasPassword()
     {
-        return ((password!=null) && (!password.isEmpty()));
+        return ((password != null) && (!password.isEmpty()));
     }
-    
-    public boolean isHTTPS() 
+
+    public boolean isHTTPS()
     {
-        return (protocol!=null?(protocol.equals(SslConst.HTTPS_SCHEME)):false);  
+        return (protocol != null ? (protocol.equals(SslConst.HTTPS_SCHEME)) : false);
     }
-    
+
     public boolean isHTTP()
     {
-        return (protocol!=null?(protocol.equals(SslConst.HTTP_SCHEME)):false);
-    }    
-   
-    public void setCredentials(String user,Secret passwd)
-    {
-        this.username=user;
-        this.password=passwd; 
+        return (protocol != null ? (protocol.equals(SslConst.HTTP_SCHEME)) : false);
     }
-    
+
+    public void setCredentials(String user, Secret passwd)
+    {
+        this.username = user;
+        this.password = passwd;
+    }
+
     public boolean hasCredentials()
     {
-        return ((username!=null) && (password!=null) && (password.isEmpty()==false) ); 
+        return ((username != null) && (password != null) && (password.isEmpty() == false));
     }
-    
+
     public void setJSessionInitPart(String part)
     {
-        this.jsessionInitPart=part; 
+        this.jsessionInitPart = part;
     }
 
     public String getHostname()
     {
-        return hostname; 
+        return serverHostname;
     }
 
     public int getPort()
     {
-        return port;
+        return serverPort;
     }
 
     public String getUsername()
     {
-        return username; 
+        return username;
     }
-    
+
     /**
-     * Returns password as char array. 
-     * Please clear array after usage. 
-     * @return - password as char array. 
+     * Returns password as char array. Please clear array after usage.
+     * 
+     * @return - password as char array.
      */
     public char[] getPasswordChars()
     {
-        if (this.password==null)
-            return null; 
-        
-        return this.password.getChars(); 
+        if (this.password == null)
+            return null;
+
+        return this.password.getChars();
     }
 
-    /** 
-     * Returns whether a JSESSION must be initialized when connecting. 
+    /**
+     * Returns whether a JSESSION must be initialized when connecting.
+     * 
      * @return
      */
     public boolean useJSession()
     {
-       return (this.jsessionInitPart!=null); 
+        return (this.jsessionInitPart != null);
     }
 
     public boolean getUseBasicAuthentication()
     {
-        return (this.authenticationType==AuthenticationType.BASIC); 
+        return (this.authenticationType == AuthenticationType.BASIC);
     }
-        
+
     public boolean useAuthentication()
     {
-        if (this.authenticationType==null)
-            return false; 
-        
-        return (this.authenticationType!=AuthenticationType.NONE); 
+        if (this.authenticationType == null)
+            return false;
+
+        return (this.authenticationType != AuthenticationType.NONE);
     }
 
     public boolean isMultiThreaded()
     {
-        return isMultiThreaded; 
+        return isMultiThreaded;
     }
-    
+
     public void setMultiThreaded(boolean value)
     {
-        this.isMultiThreaded=value;
+        this.isMultiThreaded = value;
     }
 
     public boolean getAllowUserInteraction()
@@ -279,17 +295,17 @@ public class WebConfig
     }
 
     /**
-     * Create URI string without throwing URISyntax Exceptions 
+     * Create URI string without throwing URISyntax Exceptions
      */
     public String getServiceURIString()
     {
-        String uriStr= this.protocol+"://";
-        if (this.username!=null)
-            uriStr+=this.getUsername()+"@";
-        
-        uriStr+=this.hostname+"/"; 
-        uriStr+=this.servicePath; 
-        return uriStr; 
+        String uriStr = this.protocol + "://";
+        if (this.username != null)
+            uriStr += this.getUsername() + "@";
+
+        uriStr += this.serverHostname + "/";
+        uriStr += this.servicePath;
+        return uriStr;
     }
 
     public String getProtocol()
@@ -301,5 +317,5 @@ public class WebConfig
     {
         return servicePath;
     }
-    
+
 }

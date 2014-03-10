@@ -44,6 +44,9 @@ public class Test_HashMapList
     public void testInserts()
     {
         
+        HashMapList<String,String> hash=new HashMapList<String,String>(); 
+        hash.put("aap", "nut"); 
+        
     }
 
 }
