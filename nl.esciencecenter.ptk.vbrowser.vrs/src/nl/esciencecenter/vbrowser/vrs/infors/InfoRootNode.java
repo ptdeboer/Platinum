@@ -123,6 +123,8 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
 
     public VInfoResource addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
     {
+        logger.infoPrintf("Adding new resourceLink:%s\n",targetLink);
+        
         InfoRSNode parentNode;
 
         if (folderName != null)
@@ -235,6 +237,7 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
     {
         if (this.getVRSContext().hasPersistantConfig()==false)
         {
+            logger.debugPrintf("save():hasPersistantConfig=False\n");
             return; 
         }
         
@@ -252,6 +255,8 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
     
     protected void saveTo(VRL configVrl) throws VrsException 
     {
+        logger.infoPrintf("Saving InfoRootNode to:%s\n",configVrl); 
+       
         VRSClient vrsClient=this.infors.getVRSClient(); 
         String xml=toXML();
         xml=XMLData.prettyFormat(xml, 3); 

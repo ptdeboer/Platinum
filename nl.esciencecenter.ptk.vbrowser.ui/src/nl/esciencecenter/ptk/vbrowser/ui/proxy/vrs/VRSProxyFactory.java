@@ -27,14 +27,12 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
-
-import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.VPath;
-import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
+import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
  * VRS Proxy Factory for VRSProxyNodes.  
@@ -48,29 +46,15 @@ public class VRSProxyFactory extends ProxyFactory
     	logger=ClassLogger.getLogger(VRSProxyFactory.class);
     }
     
-    private static VRSContext staticContext; 
-    
     public static VRSProxyFactory createFor(BrowserPlatform platform) 
     {
         return new VRSProxyFactory(platform);
-    }
-    
-    public static synchronized VRSContext getProxyVRSContext()
-    {
-        if (staticContext==null)
-        {
-            staticContext=VRS.createVRSContext(null);
-        }
-        
-        return staticContext;
     }
     
     // ========================================================================
     // 
     // ========================================================================
 
-    private VRSContext vrsContext;
-    
     private VRSClient vrsClient;
 
     private VRSTranferManager transferManager; 
@@ -81,7 +65,7 @@ public class VRSProxyFactory extends ProxyFactory
     {
         super(platform); 
         
-        this.vrsContext=getProxyVRSContext();
+        VRSContext vrsContext = platform.getVRSContext(); 
         this.vrsClient=new VRSClient(vrsContext);
         this.transferManager=vrsClient.getVRSTransferManager(); 
         this.viewNodeDnDHandler=new VRSViewNodeDnDHandler(transferManager); 
@@ -89,7 +73,7 @@ public class VRSProxyFactory extends ProxyFactory
     
     public VRSContext getVRSContext()
     {
-        return vrsContext; 
+        return vrsClient.getVRSContext(); 
     }
     
     public VRSClient getVRSClient()

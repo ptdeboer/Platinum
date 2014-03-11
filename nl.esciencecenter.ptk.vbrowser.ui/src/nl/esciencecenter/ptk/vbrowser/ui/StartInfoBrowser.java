@@ -20,11 +20,13 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui;
 
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -46,7 +48,15 @@ public class StartInfoBrowser
 		    
 		    platform.registerProxyFactory(fac); 
 		    
-		    InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode(); 
+		    VRSContext context=platform.getVRSContext();
+		    VRL config=context.getHomeVRL().resolvePath(".vrsrc"); 
+		    context.setPersistantConfigLocation(config, true);
+
+		    ClassLogger.getLogger(InfoRootNode.class).setLevelToDebug();
+		    
+		    InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
+		    rootNode.loadPersistantConfig(); 
+		    // add links:
 		    rootNode.addResourceLink("Links", "Root:/",new VRL("file:///"), null); 
 		    
 		    ProxyNode root = fac.openLocation("info:/");

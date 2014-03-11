@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -27,14 +27,15 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 
 public abstract class FileAttributes implements BasicFileAttributes
 {
+    @Override
     public boolean isSymbolicLink()
     {
-        return false; 
+        return false;
     }
 
     public boolean isHidden()
     {
-        return false; 
+        return false;
     }
 
     public java.util.Date getModificationTimeDate()
@@ -70,7 +71,7 @@ public abstract class FileAttributes implements BasicFileAttributes
     @Override
     public boolean isOther()
     {
-        return (!isRegularFile() || !isDirectory() || !isSymbolicLink());
+        return !(isRegularFile() || isDirectory() || isSymbolicLink());
     }
 
     @Override
@@ -80,22 +81,22 @@ public abstract class FileAttributes implements BasicFileAttributes
     }
 
     @Override
-    abstract public FileTime lastModifiedTime(); 
+    abstract public FileTime lastModifiedTime();
 
     @Override
-    abstract public FileTime lastAccessTime(); 
+    abstract public FileTime lastAccessTime();
 
     @Override
-    abstract public FileTime creationTime(); 
+    abstract public FileTime creationTime();
 
     @Override
-    abstract public boolean isRegularFile(); 
+    abstract public boolean isRegularFile();
 
     @Override
-    abstract public boolean isDirectory(); 
+    abstract public boolean isDirectory();
 
     @Override
-    abstract public long size(); 
+    abstract public long size();
 
 
 }
