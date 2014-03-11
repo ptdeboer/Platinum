@@ -8,12 +8,13 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/nl.esciencecenter.ptk"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/jmimemagic/jmimemagic-0.1.2.jar"/>
-	<classpathentry kind="lib" path="lib/jackson/jackson-annotations-2.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson/jackson-core-2.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson/jackson-databind-2.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson/jackson-dataformat-csv-2.1.2.jar"/>
-	<classpathentry kind="lib" path="lib/jackson/jackson-dataformat-xml-2.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/jackson/stax2-api-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson/woodstox-core-asl-4.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson/jackson-annotations-2.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson/jackson-core-2.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson/jackson-dataformat-xml-2.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson/jackson-databind-2.3.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.esciencecenter.ptk.web"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

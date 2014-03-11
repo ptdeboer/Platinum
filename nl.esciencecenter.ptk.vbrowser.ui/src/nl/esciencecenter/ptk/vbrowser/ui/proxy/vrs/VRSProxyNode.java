@@ -33,6 +33,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -204,22 +205,7 @@ public class VRSProxyNode extends ProxyNode
 		return (VRSProxyFactory)super.getProxyFactory();  
 	}
 	
-	protected boolean isResourceLink()
-    {
-	    // at startup this might occur. 
-        if (vnode.getVRL()==null) 
-        {
-        	return false; 
-        }
-//        if (vnode instanceof VResourceLink)
-//            return true; 
-
-        // All .vlink AND .vrsx files are ResourceLinks ! 
-        if (vnode.getVRL().isVLink() == true)
-            return true;
-        
-        return false;
-    }
+	
 	
 	public String toString()
 	{
@@ -387,6 +373,40 @@ public class VRSProxyNode extends ProxyNode
     // resolve target path and return as PNode. 
     public ProxyNode getTargetPNode()
     {
+        return null;
+    }
+
+    @Override
+    protected boolean doIsResourceLink()
+    {
+        if (this.vnode instanceof VInfoResource)
+        {
+            return ((VInfoResource)vnode).isResourceLink(); 
+        }
+        
+        // Race Condition: During prefetch phase this might ocure !  
+        if (vnode.getVRL()==null) 
+        {
+            logger.errorPrintf("FIXME:getVRL() of vnode is null:%s\n",vnode); 
+            return false; 
+        }
+        
+        // All .vlink AND .rsfx .rslx files are ResourceLinks ! 
+        if (vnode.getVRL().isVLink() == true)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    @Override
+    protected VRL doGetResourceLinkVRL()
+    {
+        if (this.vnode instanceof VInfoResource)
+        {
+            return ((VInfoResource)vnode).getTargetVRL(); 
+        }
         return null;
     }
 

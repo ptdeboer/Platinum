@@ -20,23 +20,28 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.util.ResourceLoader;
+import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
-import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
+import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
+public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VInfoResourceFolder
 {
     private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
 
@@ -44,7 +49,6 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
             boolean showLinkIcon) throws VRLSyntaxException
     {
         VRL logicalVRL = parent.createSubNodeVRL("node" + parent.getNumNodes());
-
         InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
 
         node.setTargetVRL(targetLink);
@@ -55,7 +59,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         return node;
     }
 
-    public static InfoResourceNode createFolderNode(InfoRootNode parentNode, String folderName, String optIconURL)
+    public static InfoResourceNode createFolderNode(InfoRSNode parentNode, String folderName, String optIconURL)
             throws VRLSyntaxException
     {
         VRL logicalVRL = parentNode.createSubNodeVRL(folderName);
@@ -69,13 +73,27 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         return node;
     }
 
+    public static InfoResourceNode createResourceNode(InfoRSNode parentNode, String type, AttributeSet infoAttrs) throws VrsException
+    {
+        VRL logicalVRL = parentNode.createSubNodeVRL("node" + parentNode.getNumNodes());
+        
+        String folderName = infoAttrs.getStringValue(InfoRSConstants.RESOURCE_NAME);
+        
+        if (StringUtil.notEmpty(folderName))
+        {
+            logicalVRL = parentNode.createSubNodeVRL(folderName);
+        }
+        
+        InfoResourceNode node = new InfoResourceNode(parentNode, type, logicalVRL);
+        node.updateAttributes(infoAttrs); 
+
+        return node;
+    }
+
     // ==========
     // Instance
     // ==========
-
-    /** Store all settings of this node into persistent VRSPoperties object. */
-    protected VRSProperties resourceProps = new VRSProperties("ResourceNode");
-
+    
     protected InfoResourceNode(InfoRSNode parent, String type, VRL logicalVRL)
     {
         super(parent, type, logicalVRL);
@@ -93,33 +111,33 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
 
     protected void setLogicalName(String name)
     {
-        this.resourceProps.set(InfoRSConstants.RESOURCE_NAME, name);
+        this.attributes.set(InfoRSConstants.RESOURCE_NAME, name);
     }
 
     protected void setIconUrl(String iconUrl)
     {
-        this.resourceProps.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
+        this.attributes.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
     }
 
     protected void setShowLinkIcon(boolean val)
     {
-        this.resourceProps.set(InfoRSConstants.RESOURCE_SHOWLINKICON, val);
+        this.attributes.set(InfoRSConstants.RESOURCE_SHOWLINKICON, val);
     }
 
     public boolean getShowLinkIcon(boolean defaultValue)
     {
-        return resourceProps.getBooleanProperty(InfoRSConstants.RESOURCE_SHOWLINKICON, defaultValue);
+        return attributes.getBooleanValue(InfoRSConstants.RESOURCE_SHOWLINKICON, defaultValue);
     }
 
     @Override
     public String getIconURL(int size)
     {
-        return resourceProps.getStringProperty(InfoRSConstants.RESOURCE_ICONURL);
+        return attributes.getStringValue(InfoRSConstants.RESOURCE_ICONURL);
     }
 
     public String getName()
     {
-        String name = resourceProps.getStringProperty(InfoRSConstants.RESOURCE_NAME);
+        String name = attributes.getStringValue(InfoRSConstants.RESOURCE_NAME);
 
         if (name == null)
         {
@@ -141,7 +159,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         try
         {
-            return resourceProps.getVRLProperty(InfoRSConstants.RESOURCE_TARGETVRL);
+            return attributes.getVRLValue(InfoRSConstants.RESOURCE_TARGETVRL);
         }
         catch (VRLSyntaxException e)
         {
@@ -154,57 +172,35 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
     {
         if (vrl == null)
         {
-            resourceProps.remove(InfoRSConstants.RESOURCE_TARGETVRL);
+            attributes.remove(InfoRSConstants.RESOURCE_TARGETVRL);
         }
         else
         {
-            resourceProps.set(InfoRSConstants.RESOURCE_TARGETVRL, vrl);
+            attributes.set(InfoRSConstants.RESOURCE_TARGETVRL, vrl);
         }
     }
 
     public List<? extends VPath> list() throws VrsException
     {
-        if (isResourceLink())
-        {
-            VRL vrl = this.getTargetVRL();
-
-            if (vrl == null)
-            {
-                return nodes;
-            }
-
-            VPath node = resolveTarget(vrl);
-            if ((node == null) || (node.isComposite() == false))
-            {
-                return null;
-            }
-
-            return node.list();
-
-        }
-        else if (isResourceFolder())
-        {
-            return nodes;
-        }
-        else
-        {
-            return nodes;
-        }
+        // sync() ? 
+        return nodes;
     }
-
+    
+    @Override
     public boolean isResourceLink()
     {
         return InfoRSConstants.RESOURCELINK.equals(getResourceType());
     }
-
+    
+    @Override 
     public boolean isResourceFolder()
     {
         return InfoRSConstants.RESOURCEFOLDER.equals(getResourceType());
     }
-
+    
     public VPath resolveTarget(VRL vrl) throws VrsException
     {
-        return getInfoRS().getVRSClient().openLocation(vrl);
+        return getInfoRS().getVRSClient().openPath(vrl);
     }
 
     public List<AttributeDescription> getAttributeDescriptions()
@@ -256,6 +252,18 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
 
         return attr;
     }
+    
+    protected void updateAttributes(AttributeSet attrs)
+    {
+        // update attributes: 
+        for (String key:attrs.keySet())
+        {
+            Attribute attr=attrs.get(key); 
+            logger.debugPrintf("updating attribute=%s\n", attr); 
+            // delegate to AttributeSet: 
+            this.attributes.update(attr,true); 
+        }
+    }
 
     public String getMimeType()
     {
@@ -286,7 +294,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
         }
         return null;
     }
-
+    
     // ======================================
     // Stream Read/Write Methods (load/save)
     // ========================================
@@ -299,8 +307,107 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable
 
     public InputStream createInputStream() throws VrsException
     {
-        // todo: to xml stream
-        throw new VrsException("Not now");
+        String xml =  new XMLData(this.getVRSContext()).toXML(this);  
+        ByteArrayInputStream binps;
+        try
+        {
+            binps = new ByteArrayInputStream(xml.getBytes(ResourceLoader.CHARSET_UTF8));
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        }
+        return binps; 
     }
 
+    // ======================================
+    // Links/ResourceFolders 
+    // ========================================
+    
+    protected InfoResourceNode createResourceFolder(String folderName, String optIconURL) throws VrsException
+    {
+        InfoRSNode node = this.getSubNode(folderName);
+
+        if (node instanceof InfoResourceNode)
+        {
+            return (InfoResourceNode) node;
+        }
+        else if (node != null)
+        {
+            throw new VrsException("Type Mismatch: InfoRSNode name'" + folderName + "' already exists, but is not a InfoResourceNode:"
+                    + node);
+        }
+        else
+        {
+            InfoResourceNode folder = InfoResourceNode.createFolderNode(this, folderName, optIconURL);
+            this.addNode(folder);
+            return folder;
+        }
+    }
+    
+    public InfoResourceNode createSubNode(String type,AttributeSet attrs,boolean add) throws VrsException
+    {
+        InfoResourceNode node; 
+        
+        if (StringUtil.equals(type,InfoRSConstants.RESOURCELINK))
+        {
+            node =createResourceNode(this,type,attrs);  
+        }
+        else if (StringUtil.equals(type,InfoRSConstants.RESOURCEFOLDER))
+        {
+            node =createResourceNode(this,type,attrs);
+        }
+        else
+        {
+            throw new VrsException("Unsupported type:"+type); 
+        }
+        
+        if (add)
+        {
+            this.addNode(node); 
+        }
+        
+        return node;
+    }
+
+    @Override
+    public void addSubNode(InfoRSNode subNode) throws VrsException
+    {
+        addNode(subNode); 
+    }
+
+    @Override
+    public InfoResourceNode createFolder(String name) throws VrsException
+    {
+        return createResourceFolder(name, null); 
+    }
+
+    @Override
+    public VInfoResource createResourceLink(VRL targetVRL, String logicalName) throws VrsException
+    {
+        InfoResourceNode subNode = InfoResourceNode.createLinkNode(this, logicalName, targetVRL, null, true); 
+        addNode(subNode);
+        return subNode;
+    }
+
+    /** 
+     * If context is persistent, save InfoNodes. 
+     */
+    protected void save()
+    {
+        if (getVRSContext().hasPersistantConfig()==false)
+        {
+            logger.debugPrintf("Not saving InfoNodes. Non persistant context"); 
+            return; 
+        }
+        
+        InfoRootNode rootNode = this.getRootNode(); 
+        
+        if (rootNode==null)
+        {
+            logger.errorPrintf("save(): Cat not save InfoNodes: No RootNode!\n");
+        }
+        
+        rootNode.save(); 
+    }
 }

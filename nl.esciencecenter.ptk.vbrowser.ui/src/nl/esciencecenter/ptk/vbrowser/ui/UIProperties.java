@@ -49,12 +49,12 @@ public class UIProperties extends VRSProperties
     
     public UIProperties(Map<? extends Object, Object> properties)
     {
-        super("UIProperties", properties);
+        super("UIProperties", properties, false);
     }
 
     public UIProperties(String name, Map<? extends Object, Object> properties)
     {
-        super(name, properties);
+        super(name, properties, false);
     }
 
     public UIProperties duplicate()

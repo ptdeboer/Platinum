@@ -262,7 +262,9 @@ public final class VRL implements Cloneable,Comparable<VRL>, Duplicatable<VRL>, 
         return uriFactory.toNormalizedString(); 
     }
     
-    /** Calls toURI().toURL() */ 
+    /** 
+     * Calls toURI().toURL() 
+     */ 
     public java.net.URL toURL() throws MalformedURLException
     {
         try

@@ -20,14 +20,26 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.vbrowser.vrs.VFSPath;
+import nl.esciencecenter.vbrowser.vrs.VPath;
+import nl.esciencecenter.vbrowser.vrs.VRSClient;
+import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoRootNode extends InfoRSNode
+public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
 {
-
+    private static final ClassLogger logger=ClassLogger.getLogger(InfoRootNode.class);
+    
+    // ========
+    // Instance
+    // ========
+    
     protected InfoRS infors;
 
     protected LocalSystem localSystem;
@@ -36,7 +48,7 @@ public class InfoRootNode extends InfoRSNode
 
     public InfoRootNode(InfoRS infoRS) throws VrsException
     {
-        super(infoRS, InfoRSConstants.INFOROOTNODE, new VRL("info", null, 0, "/"));
+        super(infoRS, InfoRSConstants.INFOSYSTEMROOTNODE, new VRL("info", null, 0, "/"));
         infors = infoRS;
         init();
     }
@@ -68,7 +80,7 @@ public class InfoRootNode extends InfoRSNode
 
         if (n > 0)
         {
-            InfoRSNode node = this.findNode(vrl, true);
+            InfoRSNode node = this.findSubNode(vrl, true);
 
             if (node != null)
             {
@@ -109,7 +121,7 @@ public class InfoRootNode extends InfoRSNode
         configNode = new InfoConfigNode(this);
     }
 
-    public void addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
+    public VInfoResource addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
     {
         InfoRSNode parentNode;
 
@@ -128,12 +140,16 @@ public class InfoRootNode extends InfoRSNode
 
         InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, optIconURL, true);
         parentNode.addNode(node);
+        save(); 
+        return node; 
     }
 
-    protected InfoResourceNode createResourceFolder(String folderName, String optIconURL) throws VrsException
+    public InfoResourceNode createResourceFolder(String folderName, String optIconURL) throws VrsException
     {
         InfoRSNode node = this.getSubNode(folderName);
-
+        
+        InfoResourceNode folder; 
+        
         if (node instanceof InfoResourceNode)
         {
             return (InfoResourceNode) node;
@@ -145,10 +161,12 @@ public class InfoRootNode extends InfoRSNode
         }
         else
         {
-            InfoResourceNode folder = InfoResourceNode.createFolderNode(this, folderName, optIconURL);
+            folder = InfoResourceNode.createFolderNode(this, folderName, optIconURL);
             this.addNode(folder);
-            return folder;
+            
         }
+        save();
+        return folder;  
     }
 
     public List<String> getChildResourceTypes()
@@ -157,4 +175,151 @@ public class InfoRootNode extends InfoRSNode
         return defaultFolderChildTypes;
     }
 
+    @Override
+    public void addSubNode(InfoRSNode subNode) throws VrsException
+    {
+        this.addNode(subNode); 
+    }
+
+    @Override
+    public InfoResourceNode createFolder(String name) throws VrsException
+    {
+        return this.createResourceFolder(name, null); 
+    }
+
+    @Override
+    public boolean isResourceLink()
+    {
+        return false;
+    }
+
+    @Override
+    public VRL getTargetVRL()
+    {
+        return null;
+    }
+
+    @Override
+    public boolean isResourceFolder()
+    {
+        return true; 
+    }
+
+    @Override
+    public VInfoResource createResourceLink(VRL targetVRL,String logicalName) throws VrsException
+    {
+        return addResourceLink(null,logicalName,targetVRL,null); 
+    }
+
+    public String toXML() throws VrsException
+    {
+        XMLData xmlData=new XMLData(this.getVRSContext()); 
+        String xml=xmlData.toXML(this); 
+        return xml; 
+    }
+
+    public VRL getPersistantConfigVRL()
+    {
+        VRL configVrl=this.getVRSContext().getPersistantConfigLocation();
+        if (configVrl==null)
+        {
+            logger.errorPrintf("Persistant configuration enabled, but no persistant save location defined\n");
+            return null;
+        }
+        
+        VRL rootConfigVrl=configVrl.appendPath("infors.rsfx");
+        return rootConfigVrl;
+    }
+    
+    protected void save()
+    {
+        if (this.getVRSContext().hasPersistantConfig()==false)
+        {
+            return; 
+        }
+        
+        VRL saveVrl=getPersistantConfigVRL(); 
+        
+        try
+        {
+            saveTo(saveVrl);
+        }
+        catch(VrsException e)
+        {
+            logger.logException(ClassLogger.ERROR, e,"Failed to save RootNode:%s to:%s\n",this,saveVrl);
+        }
+    }
+    
+    protected void saveTo(VRL configVrl) throws VrsException 
+    {
+        VRSClient vrsClient=this.infors.getVRSClient(); 
+        String xml=toXML();
+        xml=XMLData.prettyFormat(xml, 3); 
+        try
+        {
+            VFSPath path = vrsClient.openVFSPath(configVrl); 
+            VFSPath dir=path.getParent();
+            
+            if (dir.exists()==false)
+            {
+                logger.infoPrintf("Creating new config dir:%s\n",dir);
+                dir.mkdirs(true);
+            }
+            
+            vrsClient.createResourceLoader().writeTextTo(configVrl.toURI(), xml);
+        }
+        catch (IOException | URISyntaxException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        }
+    }
+    
+    protected void load()
+    {
+        if (this.getVRSContext().hasPersistantConfig()==false)
+        {
+            return; 
+        }
+        
+        VRL loadVrl=getPersistantConfigVRL(); 
+        
+        try
+        {
+            loadFrom(loadVrl);
+        }
+        catch(VrsException e)
+        {
+            logger.logException(ClassLogger.ERROR, e,"Failed to save RootNode:%s to:%s\n",this,loadVrl);
+        }
+    }
+
+    protected void loadFrom(VRL loadVrl) throws VrsException
+    {
+        VRSClient vrsClient=this.infors.getVRSClient();
+            
+        try
+        {
+            VFSPath path = vrsClient.openVFSPath(loadVrl); 
+            if (path.exists()==false)
+            {
+                logger.infoPrintf("Root xonfig XML file not found:%s", loadVrl);
+                return;
+            }
+            
+            String xml=vrsClient.createResourceLoader().readText(loadVrl.toURI());
+            XMLData data=new XMLData(this.getVRSContext()); 
+            data.addXMLResourceNodesTo(this, xml);
+            
+        }
+        catch (IOException | URISyntaxException e)
+        {
+            throw new VrsException(e.getMessage(),e); 
+        }
+    }
+    
+    public void loadPersistantConfig()
+    {
+        this.load();
+    }
+    
 }

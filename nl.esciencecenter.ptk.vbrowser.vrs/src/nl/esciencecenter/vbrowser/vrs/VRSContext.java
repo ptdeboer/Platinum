@@ -27,6 +27,8 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.Registry;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
@@ -35,6 +37,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSContext
 {
+    private static final ClassLogger logger=ClassLogger.getLogger(VRSContext.class); 
+    
     protected Registry registry;
     
     protected VRSProperties vrsProperties;
@@ -50,7 +54,7 @@ public class VRSContext
 
     public VRSContext(Properties props)
     {
-        init(new VRSProperties("VRSContext",props));
+        init(new VRSProperties("VRSContext",props,true));
     }
     
     public VRSContext(VRSProperties props)
@@ -120,7 +124,8 @@ public class VRSContext
     
     public VRL getHomeVRL()
     {
-        return new VRL("file",null,GlobalProperties.getGlobalUserHome());
+        VRL vrl=new VRL("file",null,GlobalProperties.getGlobalUserHome());
+        return vrl; 
     }
 
     public VRL getCurrentPathVRL()
@@ -133,4 +138,28 @@ public class VRSContext
         return GlobalProperties.getGlobalUserName(); 
     }
 
+    public void setPersistantConfigLocation(VRL configHome, boolean enabled) 
+    {
+        this.vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION,configHome); 
+        this.vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_ENABLED,enabled);
+    }
+    
+    public VRL getPersistantConfigLocation()
+    {
+        try
+        {
+            return vrsProperties.getVRLProperty(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION);
+        }
+        catch (VRLSyntaxException e)
+        {
+            logger.logException(ClassLogger.ERROR, e, "Invalid VRL. Exception=%s\n",e);
+            return null;
+        } 
+    }
+    
+    public boolean hasPersistantConfig() 
+    {
+        return vrsProperties.getBooleanProperty(VRSContextProperties.VRS_PERSISTANT_CONFIG_ENABLED,false); 
+    }
+    
 }

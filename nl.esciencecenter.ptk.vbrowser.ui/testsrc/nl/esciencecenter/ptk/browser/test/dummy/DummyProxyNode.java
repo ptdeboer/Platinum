@@ -204,7 +204,18 @@ public class DummyProxyNode extends ProxyNode
     @Override
     protected String doGetIconURL(String status, int size) throws ProxyException
     {
-        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected boolean doIsResourceLink()
+    {
+        return false;
+    }
+
+    @Override
+    protected VRL doGetResourceLinkVRL()
+    {
         return null;
     }
 

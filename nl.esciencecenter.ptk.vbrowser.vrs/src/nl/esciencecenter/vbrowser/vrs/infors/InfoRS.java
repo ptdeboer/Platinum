@@ -49,7 +49,7 @@ public class InfoRS extends VResourceSystemNode // implements VStreamCreator
     public InfoRS(VRSContext context) throws VrsException
     {
         super(context, new VRL("info:/"));
-        vrsClient = new VRSClient(this.getVRSContext());
+        vrsClient = new VRSClient(context); 
     }
 
     protected InfoRootNode getRootNode() throws VrsException
@@ -95,5 +95,11 @@ public class InfoRS extends VResourceSystemNode // implements VStreamCreator
     {
         return vrsClient;
     }
+    
+    protected VRSContext getVRSContext()
+    {
+        return vrsClient.getVRSContext(); 
+    }
+    
 
 }

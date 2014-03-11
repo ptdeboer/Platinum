@@ -122,7 +122,7 @@ public class VRSProxyFactory extends ProxyFactory
     	
         try
         {
-            VPath vnode=vrsClient.openLocation(createVRL(locator));
+            VPath vnode=vrsClient.openPath(createVRL(locator));
             return new VRSProxyNode(this,vnode,locator);
         }
         catch (Exception e)

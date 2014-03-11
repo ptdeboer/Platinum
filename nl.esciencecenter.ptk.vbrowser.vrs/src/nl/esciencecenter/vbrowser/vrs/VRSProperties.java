@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import nl.esciencecenter.ptk.object.Duplicatable;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -51,8 +53,9 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
      * Creates new VRSProperties and copies values from sourceProperties; 
      * Converts key object to String based key. 
      * @param sourceProperties source Properties to copy. 
+     * @param duplicateProperties - if all property values implement the Duplicatable interface, duplicate values as well. 
      */
-    public VRSProperties(String name, Map<? extends Object,Object> sourceProperties)
+    public VRSProperties(String name, Map<? extends Object,Object> sourceProperties,boolean duplicateProperties)
     {
         init(name); 
         
@@ -60,10 +63,40 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         {
             for (Object key:sourceProperties.keySet())
             {
-                doPut(key.toString(), sourceProperties.get(key)); 
+                Object value=sourceProperties.get(key);
+                
+                if (duplicateProperties)
+                {
+                    Object dupValue=null;  
+                    
+                    // use Attribute: 
+                    AttributeType type=AttributeType.getObjectType(value, null);
+                    
+                    if (type!=null)
+                    {
+                        dupValue= AttributeUtil.duplicateObject(value);
+                    }
+                    
+                    if (dupValue==null)
+                    {
+                        String typeStr="<NONE>";  
+                        
+                        if (type!=null) 
+                        {
+                            typeStr=type.toString(); 
+                        }    
+                       
+                        throw new Error("Cannot duplicate or clone property (attribute type='"+typeStr+"'<"+value.getClass()+">:"+value); 
+                    }
+                    else
+                    {
+                        value=dupValue;
+                    }
+                }
+                
+                doPut(key.toString(), value); 
             }
         }
-        
     }
     
     public VRSProperties(String name, VRSProperties parent)
@@ -199,19 +232,20 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     
     public VRSProperties duplicate()
     {
-        return new VRSProperties(propertiesName,_properties);
+        return duplicate(false); 
+
     }
 
     @Override
     public boolean shallowSupported()
     {
-        return false;
+        return true;
     }
 
     @Override
     public VRSProperties duplicate(boolean shallow)
     {
-        return duplicate(); 
+        return new VRSProperties(propertiesName,_properties,!shallow);
     }
     
     /**
@@ -291,6 +325,18 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     public void remove(String name)
     {
         doRemove(name); 
+    }
+    
+    public VRL getVRLProperty(String name, VRL defaultValue) throws VRLSyntaxException
+    {
+        VRL vrl=getVRLProperty(name);
+            
+        if (vrl!=null)
+        {
+            return vrl;
+        }
+        
+        return defaultValue; 
     }
     
     public VRL getVRLProperty(String name) throws VRLSyntaxException

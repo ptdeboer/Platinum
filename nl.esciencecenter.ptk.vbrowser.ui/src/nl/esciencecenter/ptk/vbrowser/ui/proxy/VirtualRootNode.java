@@ -148,6 +148,17 @@ public class VirtualRootNode extends ProxyNode
     {
         return iconUrl; 
     }
-    
+
+    @Override
+    protected boolean doIsResourceLink()
+    {
+        return false;
+    }
+
+    @Override
+    protected VRL doGetResourceLinkVRL()
+    {
+        return null;
+    }
 
 }

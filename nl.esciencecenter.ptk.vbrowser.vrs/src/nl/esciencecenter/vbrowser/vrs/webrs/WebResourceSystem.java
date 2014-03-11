@@ -27,6 +27,7 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.web.WebClient;
 import nl.esciencecenter.ptk.web.WebException;
+import nl.esciencecenter.ptk.web.WebConfig.AuthenticationType;
 import nl.esciencecenter.ptk.web.WebException.Reason;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -46,13 +47,9 @@ public class WebResourceSystem extends VResourceSystemNode
 
     private VRSContext vrsContext;
 
-    private Proxy httpProxy;
-
-    private Proxy httpsProxy;
-
     private VRL sourceVrl;
 
-    WebClient webClient; 
+    protected WebClient webClient; 
     
     public WebResourceSystem(VRSContext context, ResourceSystemInfo info) throws VrsException
     {
@@ -66,7 +63,7 @@ public class WebResourceSystem extends VResourceSystemNode
             CertificateStore certStore=context.getCertificateStore();
             
             // multithreaded web client (!) 
-            webClient=WebClient.createMultiThreadedFor(info.getServerVRL().toURI(),null);
+            webClient=WebClient.createMultiThreadedFor(info.getServerVRL().toURI(),AuthenticationType.NONE);
             webClient.setCertificateStore(certStore);
             
         }

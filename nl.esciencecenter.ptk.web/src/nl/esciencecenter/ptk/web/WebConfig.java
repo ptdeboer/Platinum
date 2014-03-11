@@ -263,7 +263,14 @@ public class WebConfig
      */
     public boolean useJSession()
     {
-        return (this.jsessionInitPart != null);
+        if (useAuthentication())
+        {
+            return (this.jsessionInitPart != null);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public boolean getUseBasicAuthentication()

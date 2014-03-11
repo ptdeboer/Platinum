@@ -299,9 +299,13 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
             paths.add(path);  
         }
         
-        for (int i=paths.size()-1;i>=0;i++)
+        for (int i=(paths.size()-1);i>=0;i--)
         {
-            paths.get(i).mkdir(ignoreExisting); 
+            VFSPath dir = paths.get(i);
+            if (dir.exists()==false)
+            {
+                dir.mkdir(false);
+            }
         }
         
         mkdir(ignoreExisting); 

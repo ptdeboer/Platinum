@@ -20,7 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-public class ValueException extends Exception 
+public class ValueException extends VrsException 
 {
     private static final long serialVersionUID = 9158591583323556443L;
 

@@ -20,10 +20,13 @@
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
+import java.util.Date;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Attribute parsing and factory methods. 
@@ -47,7 +50,33 @@ public class AttributeUtil
         Object value=Attribute.parseString(attrType,valueStr);
         return new Attribute(attrType,attrName,value); 
     }
+    
+    public static Attribute parseFromString(AttributeType attrType, String attrName, String valueStr,String optEnumValues[]) throws Exception
+    {
+        if (attrType==AttributeType.ENUM)
+        {
+            return createEnumerate(attrName,optEnumValues,valueStr);
+        }
+        else
+        {
+            Object value=Attribute.parseString(attrType,valueStr);
+            return new Attribute(attrType,attrName,value);
+        }
+    }
 
+    public static Attribute createFrom(AttributeType type, String name, Object value, String[] enumValues)
+    {
+        if (type==AttributeType.ENUM)
+        {
+            return createEnumerate(name,enumValues,value.toString());
+        }
+        else
+        {
+            return createFrom(type,name,value); 
+        }
+    }
+
+    
     /**
      * Type safe factory method. Object must have specified type
      */
@@ -55,7 +84,9 @@ public class AttributeUtil
     {
         // null value is allowed: 
         if (value==null)
+        {
             return new Attribute(type,name, null); 
+        }
         
         if (type==AttributeType.ANY)
         {
@@ -63,8 +94,11 @@ public class AttributeUtil
         }
         
         AttributeType objType = AttributeType.getObjectType(value, null);
+        
         if (objType != type)
+        {
             throw new Error("Incompatible Object Type. Specified type=" + type + ", object type=" + objType);
+        }
 
         return new Attribute(type, name, value);
     }
@@ -131,5 +165,90 @@ public class AttributeUtil
 
         return newList;     
     }
+ 
+    /** 
+     * If object is a know object type, create a non-shallow duplicate (clone). 
+     * @param value - primitive object to be copiedl 
+     * @return copied object or NULL if object couldn't be copied !  
+     */
+    public static Object duplicateObject(Object value)
+    {
+        AttributeType type = AttributeType.getObjectType(value, null);
+            
+        if ((type==null) || (type==AttributeType.ANY))
+        {
+            return null; 
+        }
+        // create specific copy of object: 
+        return duplicateValue(type,value); 
+    }
     
+    public static Object duplicateValue(AttributeType type, Object object)
+    {
+        if (object == null)
+        {
+            return null;
+        }
+        
+        switch (type)
+        {
+            case BOOLEAN:
+            {
+                return new Boolean((Boolean) object);
+            }
+            case INT:
+            {
+                return new Integer((Integer) object);
+            }
+            case LONG:
+            {
+                return new Long((Long) object);
+            }
+            case FLOAT:
+            {
+                return new Float((Float) object);
+            }
+            case DOUBLE:
+            {
+                return new Double((Double) object);
+            }
+            case ENUM: // enums are stored as String
+            {
+                return new String((String) object);
+            }
+            case DATETIME:
+            { 
+                if (object instanceof Date)
+                {
+                    return ((Date)object).clone(); 
+                }
+                else if (object instanceof String)
+                {
+                    return new String((String) object);
+                }
+                else
+                {
+                   throw new Error("Invalid DATETIME Type:"+object.getClass());  
+                }
+            }
+            case STRING:
+            {
+                return new String((String) object);
+            }
+            case VRL:
+            {
+                return ((VRL) object).duplicate();
+            }
+            case ANY:
+            default:
+            {
+                if (object instanceof Duplicatable)
+                {
+                    return ((Duplicatable<?>) object).duplicate(false);
+                }
+                
+                throw new Error("Cannot clone/duplicate value object:" + object);
+            }
+        }
+    }
 }

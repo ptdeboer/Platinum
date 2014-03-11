@@ -28,7 +28,7 @@ public class InfoRSConstants
 
     public static final String LOCALSYSTEM = "LocalSystem";
 
-    public static final String INFOROOTNODE = "InfoSystem";
+    public static final String INFOSYSTEMROOTNODE = "InfoSystemRoot";
 
     public static final String INFOCONFIGNODE = "InfoConfig";
 

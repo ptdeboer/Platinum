@@ -43,4 +43,5 @@ public class InfoConfigNode extends InfoRSNode
         return "Config";
     }
 
+
 }

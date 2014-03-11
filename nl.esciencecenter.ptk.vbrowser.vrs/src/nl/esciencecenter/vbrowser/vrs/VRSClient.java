@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
@@ -32,6 +33,7 @@ import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
+import nl.esciencecenter.vbrowser.vrs.util.VRSResourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSClient
@@ -60,12 +62,25 @@ public class VRSClient
         return this.vrsContext; 
     }
     
-    public VPath openLocation(VRL vrl) throws VrsException
+    public VPath openPath(VRL vrl) throws VrsException
     {
         VResourceSystem resourceSystem = getVResourceSystemFor(vrl); 
         return resourceSystem.resolvePath(vrl);  
     }
-    
+
+    public VFSPath openVFSPath(VRL vrl) throws VrsException
+    {
+        VPath path=this.openPath(vrl); 
+        if (path instanceof VFSPath)
+        {
+            return (VFSPath)path;
+        }
+        else
+        {
+            throw new VrsException("Location is not a filesystem path:(type="+path.getResourceType()+"):"+vrl); 
+        }
+        
+    }
     public VResourceSystem getVResourceSystemFor(VRL vrl) throws VrsException
     {
         VResourceSystem resourceSystem = vrsContext.getRegistry().getVResourceSystemFor(vrsContext,vrl); 
@@ -81,13 +96,28 @@ public class VRSClient
         return vrsContext.getRegistry().getVResourceSystemFactoryFor(vrsContext,scheme); 
     }
 
+    /** 
+     * Resolve relative path against current working path and return VRL. 
+     * @param path relative path 
+     * @return resolved absolute VRL 
+     * @throws VRLSyntaxException if path string contains invalid characters 
+     */
     public VRL resolvePath(String path) throws VRLSyntaxException
     {
         return currentPathVRL.resolvePath(path);
     }
     
-    public void setCurrentPath(VRL vrl) throws VRLSyntaxException
+    /** 
+     * Set current location to which relative paths and URIs are resolve to. 
+     * @param vrl current workind director or URI to resolve relative paths against. 
+     */
+    public void setCurrentPath(VRL vrl)
     {
+        if (vrl==null)
+        {
+            throw new NullPointerException("Current path can not be NULL!"); 
+        }
+        
         this.currentPathVRL=vrl; 
     }
 
@@ -122,16 +152,16 @@ public class VRSClient
 
     public InfoRootNode getInfoRootNode() throws VrsException
     {
-        return (InfoRootNode)openLocation(new VRL("info:/")); 
+        return (InfoRootNode)openPath(new VRL("info:/")); 
     }
 
-    public List<VPath> openLocations(List<VRL> vrls) throws VrsException
+    public List<VPath> openPaths(List<VRL> vrls) throws VrsException
     {
         ArrayList<VPath> paths=new ArrayList<VPath>();
         
         for (VRL vrl:vrls)
         {
-            paths.add(openLocation(vrl)); 
+            paths.add(openPath(vrl)); 
         }
         
         return paths; 
@@ -141,5 +171,16 @@ public class VRSClient
     {
         return this.vrsContext.getResourceSystemInfoFor(vrl, autoCreate);
     }
+
+    /** 
+     * Create stateful resourceloader using this VRSClient. 
+     */
+    public ResourceLoader createResourceLoader()
+    {
+        VRSResourceProvider prov=new VRSResourceProvider(this); 
+        ResourceLoader loader = new ResourceLoader(prov,null); 
+        return loader; 
+    }
+
     
 }

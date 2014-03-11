@@ -220,6 +220,18 @@ public class AttributeSet extends HashMapList<String, Attribute>
         this.put(attribute);
     }
 
+    public AttributeType getTypeOf(String key)
+    {
+        Attribute attr=this.get(key);
+        
+        if (attr==null)
+        {
+            return null;
+        }
+        
+        return attr.getType(); 
+    }
+    
     /**
      * Create from Array. Duplicate entries are overwritten. Last entry is kept,
      * NULL entries are skipped.
@@ -656,4 +668,28 @@ public class AttributeSet extends HashMapList<String, Attribute>
     {
         return new ExtendedList<Attribute>(this.values());  
     }
+
+    public void update(Attribute attr, boolean checkType)
+    {
+        Attribute org=this.get(attr.getName());
+        if (org==null)
+        {
+            this.put(attr.getName(),attr);
+            return; 
+        }
+        
+        AttributeType orgType=org.getType();
+        if (checkType)
+        {
+            // use same type
+            org.setValue(orgType, attr.getValue());
+        }
+        else
+        {
+            // use new type: 
+            org.setValue(attr.getType(), attr.getValue()); 
+        }
+        
+    }
+
 }
