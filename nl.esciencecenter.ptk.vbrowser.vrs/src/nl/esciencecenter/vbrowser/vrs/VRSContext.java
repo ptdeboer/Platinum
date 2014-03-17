@@ -45,7 +45,11 @@ public class VRSContext
 
     protected ResourceSystemInfoRegistry resourceInfoRegistry; 
 
-    protected UI ui; 
+    protected UI ui;
+
+    private VRL persistantConfigLocation;
+
+    private boolean hasPersistantConfig; 
     
     public VRSContext()
     {
@@ -140,26 +144,18 @@ public class VRSContext
 
     public void setPersistantConfigLocation(VRL configHome, boolean enabled) 
     {
-        this.vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION,configHome); 
-        this.vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_ENABLED,enabled);
+        this.persistantConfigLocation=configHome; 
+        this.hasPersistantConfig=enabled; 
     }
     
     public VRL getPersistantConfigLocation()
     {
-        try
-        {
-            return vrsProperties.getVRLProperty(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION);
-        }
-        catch (VRLSyntaxException e)
-        {
-            logger.logException(ClassLogger.ERROR, e, "Invalid VRL. Exception=%s\n",e);
-            return null;
-        } 
+        return this.persistantConfigLocation; 
     }
     
     public boolean hasPersistantConfig() 
     {
-        return vrsProperties.getBooleanProperty(VRSContextProperties.VRS_PERSISTANT_CONFIG_ENABLED,false); 
+        return this.hasPersistantConfig; 
     }
     
 }
