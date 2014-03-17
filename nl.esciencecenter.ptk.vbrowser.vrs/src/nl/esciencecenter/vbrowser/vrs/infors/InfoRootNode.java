@@ -46,6 +46,8 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
 
     protected InfoConfigNode configNode;
 
+    protected boolean autoSaveConfig=true; 
+    
     public InfoRootNode(InfoRS infoRS) throws VrsException
     {
         super(infoRS, InfoRSConstants.INFOSYSTEMROOTNODE, new VRL("info", null, 0, "/"));
@@ -233,7 +235,8 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
     
     protected void save()
     {
-        if (this.getVRSContext().hasPersistantConfig()==false)
+        // check autosave 
+        if ((this.getVRSContext().hasPersistantConfig()==false) || (autoSaveConfig==false)) 
         {
             return; 
         }
@@ -313,7 +316,7 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
         }
         catch (IOException | URISyntaxException e)
         {
-            throw new VrsException(e.getMessage(),e); 
+            throw new VrsException("Failed to load config from:"+loadVrl+".\n"+e.getMessage(),e); 
         }
     }
     
