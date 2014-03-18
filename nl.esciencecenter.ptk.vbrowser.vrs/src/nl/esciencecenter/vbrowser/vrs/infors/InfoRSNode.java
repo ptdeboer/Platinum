@@ -35,28 +35,29 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.node.VPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Super class for all InfoRS Nodes.   
+/**
+ * Super class for all InfoRS Nodes.
  */
 public class InfoRSNode extends VPathNode
 {
     private static final ClassLogger logger = ClassLogger.getLogger(InfoRSNode.class);
 
-    // =============== 
-    // Class Constants 
     // ===============
-    
-    public static List<String> defaultFolderChildTypes = new StringList( InfoRSConstants.RESOURCEFOLDER,InfoRSConstants.RESOURCELINK,VRSTypes.VLINK_TYPE ); 
+    // Class Constants
+    // ===============
+
+    public static List<String> defaultFolderChildTypes = new StringList(InfoRSConstants.RESOURCEFOLDER, InfoRSConstants.RESOURCELINK,
+            VRSTypes.VLINK_TYPE);
 
     // ===============
     // Instance
     // ===============
 
-    /** 
-     * Store all settings of this node into persistent VRSPoperties object. 
+    /**
+     * Store all settings of this node into persistent VRSPoperties object.
      */
-    protected AttributeSet attributes=null; 
-    
+    protected AttributeSet attributes = null;
+
     protected ArrayList<InfoRSNode> subNodes = new ArrayList<InfoRSNode>();
 
     protected InfoRSNode parent;
@@ -67,14 +68,14 @@ public class InfoRSNode extends VPathNode
     {
         super(fileSystem, vrl);
         this.resourceType = type;
-        this.attributes=new AttributeSet(type);
+        this.attributes = new AttributeSet(type);
     }
 
     protected VRSContext getVRSContext()
     {
-        return this.getInfoRS().getVRSContext(); 
+        return this.getInfoRS().getVRSContext();
     }
-    
+
     protected InfoRS getInfoRS()
     {
         return (InfoRS) resourceSystem;
@@ -84,7 +85,7 @@ public class InfoRSNode extends VPathNode
     {
         super(parent.resourceSystem, vrl);
         this.resourceType = type;
-        this.attributes=new AttributeSet(type);
+        this.attributes = new AttributeSet(type);
     }
 
     final public String getResourceType()
@@ -96,12 +97,12 @@ public class InfoRSNode extends VPathNode
     {
         return (parent != null);
     }
-    
+
     public AttributeSet getAttributeSet()
     {
-        return this.attributes.duplicate(true);  
+        return this.attributes.duplicate(true);
     }
-    
+
     public boolean isComposite()
     {
         return true;
@@ -109,7 +110,7 @@ public class InfoRSNode extends VPathNode
 
     public String getMimeType()
     {
-        return VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX+"-infors-"+getResourceType();
+        return VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX + "-infors-" + getResourceType();
     }
 
     public InfoRSNode getParent()
@@ -123,7 +124,7 @@ public class InfoRSNode extends VPathNode
         {
             return parent.getVRL();
         }
-        
+
         return new VRL("info", null, 0, "/");
     }
 
@@ -136,44 +137,44 @@ public class InfoRSNode extends VPathNode
     public List<? extends InfoResourceNode> listResourceNodes() throws VrsException
     {
         // todo: Generic filter of sub classes.
-        
-        ArrayList<InfoResourceNode> filteredNodes=new ArrayList<InfoResourceNode>();
 
-        if ((subNodes==null) || (subNodes.size()<0)) 
+        ArrayList<InfoResourceNode> filteredNodes = new ArrayList<InfoResourceNode>();
+
+        if ((subNodes == null) || (subNodes.size() < 0))
         {
-            return null; 
+            return null;
         }
-        
-        for (InfoRSNode node:subNodes)
+
+        for (InfoRSNode node : subNodes)
         {
             if (node instanceof InfoResourceNode)
             {
-                filteredNodes.add((InfoResourceNode)node);
+                filteredNodes.add((InfoResourceNode) node);
             }
         }
-        return filteredNodes; 
+        return filteredNodes;
     }
-    
+
     final protected void setParent(InfoRSNode newParent) throws VrsException
     {
-        if (newParent==null)
+        if (newParent == null)
         {
-            this.parent=null; 
+            this.parent = null;
         }
-        else if ( (parent!=null) && (parent!=newParent)) 
+        else if ((parent != null) && (parent != newParent))
         {
-             throw new VrsException("Internal Error. Node can not switch parents: current="+parent+", new ="+newParent);
+            throw new VrsException("Internal Error. Node can not switch parents: current=" + parent + ", new =" + newParent);
         }
-        this.parent=newParent;  
+        this.parent = newParent;
     }
-    
+
     final protected void addSubNode(InfoRSNode node) throws VrsException
     {
-        synchronized(node)
+        synchronized (node)
         {
-            node.setParent(this);  
+            node.setParent(this);
         }
-        
+
         synchronized (subNodes)
         {
             subNodes.add(node);
@@ -185,25 +186,26 @@ public class InfoRSNode extends VPathNode
         synchronized (subNodes)
         {
             subNodes.remove(node);
-            node.setParent(null); 
+            node.setParent(null);
         }
     }
 
     final protected void initSubNodes()
     {
-        if (subNodes==null)
+        if (subNodes == null)
         {
-            subNodes=new ArrayList<InfoRSNode>(); 
+            subNodes = new ArrayList<InfoRSNode>();
         }
         else
         {
-            // keep object as it is used as mutex. 
-            synchronized(subNodes)
+            // keep object as it is used as mutex.
+            synchronized (subNodes)
             {
                 subNodes.clear();
             }
         }
     }
+
     /**
      * Performs optional recursive linear search on ArrayList.
      */
@@ -214,7 +216,7 @@ public class InfoRSNode extends VPathNode
         {
             return null;
         }
-        
+
         // unsynchronized access
         for (InfoRSNode node : subNodes)
         {
@@ -247,7 +249,7 @@ public class InfoRSNode extends VPathNode
      */
     protected InfoRSNode getSubNode(String name)
     {
-        // unsynchronized access: 
+        // unsynchronized access:
         for (InfoRSNode node : subNodes)
         {
             if (StringUtil.equals(node.getName(), name))
@@ -259,9 +261,14 @@ public class InfoRSNode extends VPathNode
         return null;
     }
 
-    protected VRL createSubNodeVRL(String subPath) throws VRLSyntaxException
+    protected VRL createSubPathVRL(String subPath) throws VRLSyntaxException
     {
         return getVRL().resolvePath(subPath);
+    }
+
+    protected VRL createNewSubNodeVRL() throws VRLSyntaxException
+    {
+        return getVRL().resolvePath("v" + this.getNumNodes());
     }
 
     public int getNumNodes()
@@ -269,30 +276,34 @@ public class InfoRSNode extends VPathNode
         return subNodes.size();
     }
 
-    /** 
-     * Get top level root resource node. 
+    /**
+     * Get top level root resource node.
      */
     protected InfoRootNode getRootNode()
     {
-        InfoRSNode node=this; 
-        
-        while(node.parent!=null)
+        InfoRSNode node = this;
+
+        while (node.parent != null)
         {
-            if (node==node.parent)
+            if (node == node.parent)
             {
-                throw new Error("Hierachy error. parent equal to current node:"+node); 
+                throw new Error("Hierachy error: parent equal to current node:" + node);
             }
-            node=node.parent; 
+            node = node.parent;
         }
-        
+
         if (node instanceof InfoRootNode)
         {
-            return (InfoRootNode)node; 
+            return (InfoRootNode) node;
         }
         else
         {
             return null;
         }
     }
-    
+
+    public String toString()
+    {
+        return "<InfoRSNode:" + this.getResourceType() + ">:" + getVRL();
+    }
 }

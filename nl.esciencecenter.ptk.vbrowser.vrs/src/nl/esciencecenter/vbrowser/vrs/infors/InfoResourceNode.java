@@ -48,9 +48,9 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
     public static InfoResourceNode createLinkNode(InfoRSNode parent, String logicalName, VRL targetLink, String optIconURL,
             boolean showLinkIcon) throws VRLSyntaxException
     {
-        VRL logicalVRL = parent.createSubNodeVRL("node" + parent.getNumNodes());
+        VRL logicalVRL = parent.createNewSubNodeVRL();
         InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
-
+        
         node.setTargetVRL(targetLink);
         node.setIconUrl(optIconURL);
         node.setShowLinkIcon(showLinkIcon);
@@ -62,7 +62,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
     public static InfoResourceNode createFolderNode(InfoRSNode parentNode, String folderName, String optIconURL)
             throws VRLSyntaxException
     {
-        VRL logicalVRL = parentNode.createSubNodeVRL(folderName);
+        VRL logicalVRL = parentNode.createNewSubNodeVRL();// (folderName);
         InfoResourceNode node = new InfoResourceNode(parentNode, InfoRSConstants.RESOURCEFOLDER, logicalVRL);
 
         node.setTargetVRL(null);
@@ -75,13 +75,13 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
 
     public static InfoResourceNode createResourceNode(InfoRSNode parentNode, String type, AttributeSet infoAttrs) throws VrsException
     {
-        VRL logicalVRL = parentNode.createSubNodeVRL("node" + parentNode.getNumNodes());
+        VRL logicalVRL = parentNode.createNewSubNodeVRL(); // ("node" + parentNode.getNumNodes());
         
         String folderName = infoAttrs.getStringValue(InfoRSConstants.RESOURCE_NAME);
         
         if (StringUtil.notEmpty(folderName))
         {
-            logicalVRL = parentNode.createSubNodeVRL(folderName);
+            logicalVRL = parentNode.createNewSubNodeVRL(); // (folderName);
         }
         
         InfoResourceNode node = new InfoResourceNode(parentNode, type, logicalVRL);

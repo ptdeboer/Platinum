@@ -76,7 +76,7 @@ public class LocalSystem extends InfoRSNode
         VRL vrl = new VRL(uri);
         String name = vrl.getPath();
         String subPath = "Home";
-        homeNode = CreateLinkNode(subPath, vrl, name, "info/home_folder-48.png");
+        homeNode = createSubPathLinkNode(subPath, vrl, name, "info/home_folder-48.png");
         this.addSubNode(homeNode);
         return homeNode;
     }
@@ -96,13 +96,13 @@ public class LocalSystem extends InfoRSNode
 
             String subPath = "Root " + index++;
 
-            this.addSubNode(CreateLinkNode(subPath, vrl, name, "info/hdd_mount-128.png"));
+            this.addSubNode(createSubPathLinkNode(subPath, vrl, name, "info/hdd_mount-128.png"));
         }
     }
 
-    protected InfoResourceNode CreateLinkNode(String subPath, VRL targetVrl, String name, String iconUrl) throws VRLSyntaxException
+    protected InfoResourceNode createSubPathLinkNode(String subPath, VRL targetVrl, String name, String iconUrl) throws VRLSyntaxException
     {
-        VRL logicalVrl = this.createSubNodeVRL(subPath);
+        VRL logicalVrl = this.createSubPathVRL(subPath);
 
         InfoLinkNode node = new InfoLinkNode(this, logicalVrl, targetVrl);
         node.setLogicalName(name);

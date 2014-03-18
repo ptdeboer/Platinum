@@ -126,7 +126,7 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
 
     public VInfoResource addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
     {
-        logger.infoPrintf("Adding new resourceLink:%s\n",targetLink);
+        logger.infoPrintf(">>>Adding new resourceLink:%s\n",targetLink);
         
         InfoRSNode parentNode;
 
