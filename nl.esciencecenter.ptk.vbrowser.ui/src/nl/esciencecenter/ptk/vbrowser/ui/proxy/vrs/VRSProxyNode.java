@@ -97,54 +97,59 @@ public class VRSProxyNode extends ProxyNode
     	 
         try
         {
+            VPath targetPath=vnode; 
+            
         	// check links first: 
         	if (isResourceLink())
         	{
-        		return resolve().doGetChilds(offset,range,numChildsLeft);  
-        	}
-        	else
-        	{ 
-        		if (vnode.isComposite()==false)  
-        		{
-        			return null; 
-        		}
-        		
-        		List<? extends VPath> nodes = vnode.list();
-
-            	return subrange(createNodes(nodes),offset,range); 
+        	    VRSProxyNode targetNode=(VRSProxyNode)this.resolveResourceLink(); 
+        	    targetPath=targetNode.vnode; 
         	}
         	
+        	if (targetPath.isComposite()==false)  
+        	{
+        	    return null; 
+    		}
+        	
+        	List<? extends VPath> nodes = targetPath.list();
+        	
+        	return subrange(createNodes(nodes),offset,range); 
         }
         catch (Exception e)
         {
         	throw createProxyException("Couldn't get childs of:"+locator,e); 
         }
-         
     }
-    
-    protected VRSProxyNode resolve() throws ProxyException
-    {
-    	logger.debugPrintf("resolve():%s\n",this.vnode); 
 
-    	return this; 
-    	
-//    	if ((vnode instanceof VResourceLink)==false)
+
+    // Done by superclass: 
+    
+//    protected VRSProxyNode resolve() throws ProxyException
+//    {
+//    	logger.debugPrintf("resolve():%s\n",this.vnode);
+//    	
+//    	if (true)
+//    	    return this; 
+//    	
+//    	if ((vnode instanceof VInfoResource)==false)
+//    	{
 //    		return this; 
+//    	}
 //    	
 //    	VRL vrl;
 //    	
 //		try 
 //		{
-//			vrl = ((VResourceLink)vnode).getTargetLocation();
+//			vrl = ((VInfoResource)vnode).getTargetVRL();
 //	    	VRSProxyNode node = factory()._openLocation(vrl); 
-//	    	debug("Resolved to:"+node);
+//	    	logger.debugPrintf("Resolved target node=%s\n", node); 
 //	    	return node; 
 //		}
 //		catch (Exception e) 
 //		{
 //			throw createProxyException("Failed to resolve node:"+this.vnode,e); 
 //		}
-    }
+//    }
     
     protected List<VRSProxyNode> createNodes(List<? extends VPath> nodes) throws ProxyException
     {
@@ -370,18 +375,12 @@ public class VRSProxyNode extends ProxyNode
         }  
     }
 
-    // resolve target path and return as PNode. 
-    public ProxyNode getTargetPNode()
-    {
-        return null;
-    }
-
     @Override
     protected boolean doIsResourceLink()
     {
         if (this.vnode instanceof VInfoResource)
         {
-            return ((VInfoResource)vnode).isResourceLink(); 
+            return ((VInfoResource)vnode).isResourceLink();
         }
         
         // Race Condition: During prefetch phase this might ocure !  
@@ -405,9 +404,37 @@ public class VRSProxyNode extends ProxyNode
     {
         if (this.vnode instanceof VInfoResource)
         {
-            return ((VInfoResource)vnode).getTargetVRL(); 
+            return ((VInfoResource)vnode).getTargetVRL();
         }
         return null;
     }
+
+    @Override
+    protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException
+    {       
+        try
+        {
+            VPath newPath=vnode.create(type, optNewName);
+            return this.createNode(newPath); 
+        }
+        catch (VrsException e)
+        {
+            throw new ProxyException(e.getMessage(),e); 
+        }
+    }
+
+    @Override
+    protected void doDelete(boolean recurse) throws ProxyException
+    {
+        try
+        {
+            this.vnode.delete(recurse);
+        }
+        catch (VrsException e)
+        {
+            throw new ProxyException(e.getMessage(),e); 
+        } 
+    }
+    
 
 }

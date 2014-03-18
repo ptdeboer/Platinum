@@ -41,7 +41,9 @@ public class ProxyNodeEventNotifier
         instance=new ProxyNodeEventNotifier(); 
     }
     
-    /** Single instance for all ProxyModels! */ 
+    /** 
+     * Single instance for all ProxyModels! 
+     */ 
     public static ProxyNodeEventNotifier getInstance()
     {
         return instance; 

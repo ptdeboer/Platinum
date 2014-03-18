@@ -62,9 +62,10 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
 
     protected void initChilds() throws VrsException
     {
-        this.nodes.clear();
-        this.addNode(getConfigNode());
-        this.addNode(getLocalSystem());
+        this.subNodes.clear();
+        
+        this.addSubNode(getConfigNode());
+        this.addSubNode(getLocalSystem());
     }
 
     public InfoRSNode getNode(VRL vrl) throws VrsException
@@ -143,8 +144,8 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
         }
 
         InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, optIconURL, true);
-        parentNode.addNode(node);
-        save(); 
+        parentNode.addSubNode(node); 
+         
         return node; 
     }
 
@@ -166,10 +167,9 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
         else
         {
             folder = InfoResourceNode.createFolderNode(this, folderName, optIconURL);
-            this.addNode(folder);
-            
+            this.addSubNode(folder);
         }
-        save();
+        
         return folder;  
     }
 
@@ -180,9 +180,9 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
     }
 
     @Override
-    public void addSubNode(InfoRSNode subNode) throws VrsException
+    public void addInfoNode(InfoRSNode subNode) throws VrsException
     {
-        this.addNode(subNode); 
+        this.addSubNode(subNode);
     }
 
     @Override
@@ -249,6 +249,7 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
         try
         {
             saveTo(saveVrl);
+            logger.errorPrintf("Saved to %s\n", saveVrl);
         }
         catch(VrsException e)
         {

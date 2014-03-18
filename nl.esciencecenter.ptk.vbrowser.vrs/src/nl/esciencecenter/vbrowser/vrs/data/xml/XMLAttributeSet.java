@@ -10,6 +10,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
@@ -43,19 +44,20 @@ public class XMLAttributeSet
         @JacksonXmlProperty(localName = "attributeType", isAttribute = true)
         public AttributeType attributeType;
 
+        @JacksonXmlProperty(localName = "attributeEnumValue")
+        @JacksonXmlElementWrapper(localName = "attributeEnumValue", useWrapping = false)
+        public String attributeEnumValues[];
+
         @JacksonXmlProperty(localName = "attributeValue")
         public Object attributeValue;
 
-        @JacksonXmlProperty(localName = "attributeEnumValues")
-        public String attributeEnumValues[];
-
         public Attribute toAttribute() throws Exception
         {
-            if (attributeType==null)
+            if (attributeType == null)
             {
-                throw new NullPointerException("Internal Error:No AttributeType!"); 
+                throw new NullPointerException("Internal Error:No AttributeType!");
             }
-            
+
             // when parsed from XML, default type is String.
             if (attributeValue instanceof String)
             {
@@ -66,24 +68,25 @@ public class XMLAttributeSet
                 return AttributeUtil.createFrom(attributeType, attributeName, attributeValue, attributeEnumValues);
             }
         }
-        
+
         @Override
         public String toString()
         {
-            return "XMLAttribute[attributeName=" + attributeName 
-                    + ", attributeType=" + attributeType 
-                    + ", attributeValue=" + attributeValue 
-                    + ", attributeEnumValues=" 
+            return "XMLAttribute[attributeName=" + attributeName
+                    + ", attributeType=" + attributeType
+                    + ", attributeValue=" + attributeValue
+                    + ", attributeEnumValues="
                     + Arrays.toString(attributeEnumValues) + "]";
         }
-
     }
 
     @JacksonXmlProperty(localName = "setName", isAttribute = true)
-    protected String setName;
+    public String setName;
 
-    @JacksonXmlProperty(localName = "attributes")
-    protected XMLAttribute attributes[] = null; 
+    // Jackson Note: localName is used as wrapper name for array elements elements, use 'attribute' as array element name and not 'attributes'.
+    @JacksonXmlProperty(localName = "attribute")
+    @JacksonXmlElementWrapper(localName = "attribute", useWrapping = false)
+    public XMLAttribute attributes[] = null;
 
     public XMLAttributeSet()
     {
@@ -94,18 +97,6 @@ public class XMLAttributeSet
         init(attrs.getName(), attrs);
     }
 
-    @JacksonXmlProperty(localName = "setName", isAttribute = true)
-    public void setSetName(String name)
-    {
-        this.setName = name;
-    }
-
-    @JacksonXmlProperty(localName = "setName", isAttribute = true)
-    public String getSetName()
-    {
-        return setName;
-    }
-
     @JsonIgnore
     protected void init(String name, Map<String, Attribute> attrs)
     {
@@ -113,49 +104,43 @@ public class XMLAttributeSet
         setAttributes(attrs);
     }
 
-    @JacksonXmlProperty(localName = "attributes")
+    @JsonIgnore
     public void setXMLAttributes(XMLAttribute attrs[])
     {
-        attributes=attrs; 
-    }
-
-    @JacksonXmlProperty(localName = "attributes")
-    public XMLAttribute[] getXMLAttributes()
-    {
-        return attributes;
+        attributes = attrs;
     }
 
     @JsonIgnore
     public void setAttributes(Map<String, Attribute> attrs)
     {
-        if (attrs==null)
+        if (attrs == null)
         {
-            this.attributes=null; 
+            this.attributes = null;
         }
-        
-        attributes=new XMLAttribute[attrs.size()]; 
 
-        String keys[]=attrs.keySet().toArray(new String[0]); 
-        
-        for (int i=0;i<keys.length;i++)
+        attributes = new XMLAttribute[attrs.size()];
+
+        String keys[] = attrs.keySet().toArray(new String[0]);
+
+        for (int i = 0; i < keys.length; i++)
         {
-            attributes[i]=new XMLAttribute(attrs.get(keys[i])); 
+            attributes[i] = new XMLAttribute(attrs.get(keys[i]));
         }
     }
 
     @JsonIgnore
     public AttributeSet toAttributeSet() throws Exception
     {
-        AttributeSet attrSet = new AttributeSet(this.getSetName());
-        
-        if ((attributes==null) || (attributes.length<=0)) 
+        AttributeSet attrSet = new AttributeSet(this.setName);
+
+        if ((attributes == null) || (attributes.length <= 0))
         {
-            return null; 
+            return null;
         }
-        
-        for (XMLAttribute attr:attributes) 
+
+        for (XMLAttribute attr : attributes)
         {
-            attrSet.put(attr.attributeName,attr.toAttribute());
+            attrSet.put(attr.attributeName, attr.toAttribute());
         }
 
         return attrSet;

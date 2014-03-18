@@ -267,4 +267,16 @@ public class VPathNode implements VPath
         throw new VrsException("Can not create new '"+type+"' node named:"+name); 
     }
 
+    @Override
+    public void delete(boolean recurse) throws VrsException
+    {
+        throw new VrsException("Can not delete:"+this);  
+    }
+
+    @Override
+    public VPath renameTo(String nameOrPath) throws VrsException
+    {
+        throw new VrsException("Can not rename:"+nameOrPath); 
+    }
+
 }

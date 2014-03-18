@@ -30,8 +30,12 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.data.History;
+import nl.esciencecenter.ptk.data.SecretHolder;
+import nl.esciencecenter.ptk.ui.SimpelUI;
+import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMenu;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMenuListener;
@@ -70,7 +74,19 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     // ========================================================================
     // Inner Classes
     // ========================================================================
-
+    
+    /** 
+     * Proxy Browser's UI interface.  
+     */
+    public class ProxyUI extends SimpelUI
+    {
+        @Override
+        public boolean isEnabled()
+        {
+            return true; 
+        }
+    }
+    
     public class NavBarHandler implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
@@ -145,6 +161,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     private ViewerManager viewerManager;
 
+    private ProxyUI proxyUI=new ProxyUI(); 
+    
     public ProxyBrowserController(BrowserPlatform platform, boolean show)
     {
         init(platform, show);
@@ -291,8 +309,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case BROWSE_UP:
                 doBrowseUp();
                 break;
-            case CREATE:
-                this.proxyActionHandler.handleCreate(action, node);
+            case CREATE_NEW:
+                this.proxyActionHandler.handleCreate(action, node,action.getArg0(),action.getArg1());
                 break;
             case CREATE_NEW_WINDOW:
                 createBrowser(node);
@@ -361,8 +379,10 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
     }
 
-    private void doRefresh(ViewNode node)
+    protected void doRefresh(ViewNode node)
     {
+        logger.errorPrintf(">>>Refresh:%s\n",node); 
+        
         ProxyNodeEventNotifier.getInstance().scheduleEvent(
                 ProxyNodeEvent.createRefreshEvent(null, node.getVRL()));
     }
@@ -489,8 +509,6 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
         final VRL loc = this.getCurrentViewNode().getVRL();
 
-        final ProxyFactory factory = this.platform.getProxyFactoryFor(loc);
-
         ProxyBrowserTask task = new ProxyBrowserTask(this, "doBrowseUp():" + loc)
         {
             @Override
@@ -499,7 +517,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 try
                 {
 
-                    ProxyNode node = factory.openLocation(loc);
+                    ProxyNode node = openProxyNode(loc);
                     VRL parentLoc = node.getParentLocation();
                     if (parentLoc == null)
                         return; // NO parent;
@@ -663,17 +681,29 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
     }
 
-    public void openLocation(final VRL locator, final boolean addToHistory, final boolean newTab)
+    /** 
+     * Resolve locator and open Proxy Node. 
+     * Must not use this method during swing's event thread, as this method might block the GUI. 
+     */
+    protected ProxyNode openProxyNode(VRL locator) throws ProxyException 
     {
-        logger.debugPrintf(">>> openLocation: %s\n", locator);
-
+        UIGlobal.assertNotGuiThread("Internal Error: Cannot open location during Swing's event thread. VRL="+locator); 
+        
         final ProxyFactory factory = this.platform.getProxyFactoryFor(locator);
 
         if (factory == null)
         {
-            handleException("Couldn't open new location:" + locator, new Exception("Cannot find factory for:" + locator));
-            return;
+            throw new ProxyException("Couldn't open new location, no ProxyFactory for:" + locator); 
         }
+        
+        ProxyNode node = factory.openLocation(locator);
+        
+        return node;
+    }
+    
+    public void openLocation(final VRL locator, final boolean addToHistory, final boolean newTab)
+    {
+        logger.debugPrintf(">>> openLocation: %s\n", locator);
 
         // pre: update nav bar:
         this.updateNavBar(locator, null);
@@ -685,7 +715,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             {
                 try
                 {
-                    ProxyNode node = factory.openLocation(locator);
+                    ProxyNode node=openProxyNode(locator); 
                     setViewedNode(node, addToHistory, newTab);
                 }
                 catch (Throwable e)
@@ -751,4 +781,14 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         logger.infoPrintf("HasActiveTasks=%s\n", active);
     }
 
+   
+
+    @Override
+    public UI getUI()
+    {
+        return proxyUI; 
+    }
+
+
+    
 }

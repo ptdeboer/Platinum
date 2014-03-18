@@ -22,6 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import javax.swing.JPopupMenu;
 
+import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
@@ -39,5 +40,7 @@ public interface BrowserInterface
 
     public void handleNodeAction(ViewNode node, Action action);
 
-      
+    /** Return simple UI Interface */ 
+    public UI getUI(); 
+
 }

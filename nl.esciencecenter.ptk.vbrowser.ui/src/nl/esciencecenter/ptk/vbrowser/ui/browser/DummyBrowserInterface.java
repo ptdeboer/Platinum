@@ -22,6 +22,8 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import javax.swing.JPopupMenu;
 
+import nl.esciencecenter.ptk.ui.SimpelUI;
+import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
@@ -62,6 +64,12 @@ public class DummyBrowserInterface  implements BrowserInterface
     public void handleNodeAction(ViewNode node, Action action)
     {
         
+    }
+
+    @Override
+    public UI getUI()
+    {
+        return new SimpelUI(); 
     }
 
 }

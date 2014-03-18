@@ -311,6 +311,20 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         mkdir(ignoreExisting); 
     }
     
+    @Override
+    public void delete(boolean recurse) throws VrsException
+    {
+        // todo make option: default link behaviour 
+        delete(recurse,LinkOption.NOFOLLOW_LINKS); 
+    }
+
+    @Override
+    public VFSPath renameTo(String nameOrPath) throws VrsException
+    {
+        VFSPath newPath=this.resolvePath(nameOrPath); 
+        return this.renameTo(newPath); 
+    }
+    
     // ===================
     // Abstract Interface
     // ===================
@@ -347,6 +361,12 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
     
     public abstract void delete(boolean recurse, LinkOption... linkOptions) throws VrsException;
 
-    public abstract VFSPath renameTo(VFSPath other) throws VrsException;
+    /** 
+     * Path must be an same FileSystem. 
+     * @param newPath - target path 
+     * @return similar path 
+     * @throws VrsException
+     */
+    public abstract VFSPath renameTo(VFSPath newPath) throws VrsException;
 
 }

@@ -137,7 +137,9 @@ public class VirtualRootNode extends ProxyNode
         for (ProxyNode node:this.childs)
         {
             if (node.hasLocator(locator))
-                return node; 
+            {
+                return node;
+            }
         }
         
         return null; 
@@ -159,6 +161,18 @@ public class VirtualRootNode extends ProxyNode
     protected VRL doGetResourceLinkVRL()
     {
         return null;
+    }
+
+    @Override
+    protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException
+    {
+        throw new ProxyException("Virtual root cannot create new nodes."); 
+    }
+
+    @Override
+    protected void doDelete(boolean recurse) throws ProxyException
+    {
+        throw new ProxyException("Virtual root cannot be deleted."); 
     }
 
 }

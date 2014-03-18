@@ -67,6 +67,14 @@ public interface VPath
     public List<String> getAttributeNames() throws VrsException;
 
     // =====================
+    // Delete/Rename 
+    // =====================
+    
+    public void delete(boolean recurse) throws VrsException; 
+    
+    public VPath renameTo(String nameOrPath) throws VrsException; 
+
+    // =====================
     // VComposite Interface
     // =====================
     

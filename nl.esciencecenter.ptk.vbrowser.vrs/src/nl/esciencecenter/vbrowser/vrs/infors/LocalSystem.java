@@ -54,7 +54,7 @@ public class LocalSystem extends InfoRSNode
 
     protected void initChilds() throws VrsException
     {
-        nodes.clear();
+        initSubNodes(); 
         initHome();
         initDrives();
     }
@@ -77,7 +77,7 @@ public class LocalSystem extends InfoRSNode
         String name = vrl.getPath();
         String subPath = "Home";
         homeNode = CreateLinkNode(subPath, vrl, name, "info/home_folder-48.png");
-        this.addNode(homeNode);
+        this.addSubNode(homeNode);
         return homeNode;
     }
 
@@ -96,9 +96,8 @@ public class LocalSystem extends InfoRSNode
 
             String subPath = "Root " + index++;
 
-            this.addNode(CreateLinkNode(subPath, vrl, name, "info/hdd_mount-128.png"));
+            this.addSubNode(CreateLinkNode(subPath, vrl, name, "info/hdd_mount-128.png"));
         }
-
     }
 
     protected InfoResourceNode CreateLinkNode(String subPath, VRL targetVrl, String name, String iconUrl) throws VRLSyntaxException

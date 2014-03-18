@@ -219,4 +219,16 @@ public class DummyProxyNode extends ProxyNode
         return null;
     }
 
+    @Override
+    protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException
+    {
+        return null;
+    }
+
+    @Override
+    protected void doDelete(boolean recurse) throws ProxyException
+    {
+        return;
+    }
+
 }

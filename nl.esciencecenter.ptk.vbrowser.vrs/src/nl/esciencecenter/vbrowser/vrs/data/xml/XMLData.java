@@ -29,6 +29,9 @@ import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourceFolder;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 /**
@@ -48,8 +51,20 @@ public class XMLData
 
     public XMLData(VRSContext context)
     {
+        VRSJacksonXmlAnnotarionIntrospector introspector=new VRSJacksonXmlAnnotarionIntrospector(); 
+        
+        AnnotationIntrospector intr = new AnnotationIntrospectorPair(
+                new VRSJacksonXmlAnnotarionIntrospector(),
+                new JacksonXmlAnnotationIntrospector()
+                );
+
         xmlMapper = new XmlMapper();
         vrsContext = context;
+
+        // xmlMapper.setAnnotationIntrospectors(new VRSJacksonXmlAnnotarionIntrospector(),new JacksonXmlAnnotationIntrospector()); 
+        xmlMapper.getSerializationConfig().withInsertedAnnotationIntrospector(introspector);
+        // optional mixin module. 
+        xmlMapper.registerModule(new VRSXMLMixinModule()); 
     }
 
     public String toXML(AttributeSet attrSet) throws Exception
@@ -257,7 +272,7 @@ public class XMLData
                         xmlNode.getResourceType(), 
                         xmlNode.getXMLAttributes().toAttributeSet());
                 
-                resourceFolder.addSubNode(subNode);
+                resourceFolder.addInfoNode(subNode);
                 addXMLResourceNodesTo(subNode, xmlNode);
             }
             catch (Exception e)

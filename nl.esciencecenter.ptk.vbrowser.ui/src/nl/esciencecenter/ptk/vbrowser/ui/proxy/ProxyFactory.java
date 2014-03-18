@@ -39,7 +39,7 @@ public abstract class ProxyFactory
         logger=ClassLogger.getLogger(ProxyFactory.class);
     }
     
-	public class ProxyCacheElement
+	protected class ProxyCacheElement
 	{
 	    /** Atomic locator ! */ 
 	    public final VRL locator;
@@ -66,19 +66,42 @@ public abstract class ProxyFactory
             return (this.node!=null);  
         }
     }
+	
+	protected class ProxyCache
+	{
+	    protected Map<VRL,ProxyCacheElement> _nodes=new Hashtable<VRL,ProxyCacheElement>();
+
+        public ProxyCacheElement get(VRL locator)
+        {
+            return _nodes.get(locator); 
+        }
+
+        public ProxyCacheElement put(VRL locator, ProxyCacheElement proxyCacheElement)
+        {
+            return _nodes.put(locator,proxyCacheElement);
+        }
+        
+        public void clear()
+        {
+            _nodes.clear(); 
+        }
+        
+	}
+	
     // ========================================================================
     // 
     // ========================================================================
 	
 	protected boolean enableCache=true;
 	
-	protected Map<VRL,ProxyCacheElement> nodeCache=new Hashtable<VRL,ProxyCacheElement>();
+    protected ProxyCache proxyCache=new ProxyCache();  
 	
 	protected BrowserPlatform platform; 
 	
 	protected ProxyFactory(BrowserPlatform browserPlatform)
 	{
 	    this.platform=browserPlatform; 
+	    initProxyEventCacheUpdater(); 
 	}
 	
 	public BrowserPlatform getPlatform()
@@ -86,6 +109,11 @@ public abstract class ProxyFactory
         return platform;
     }
 
+	protected void initProxyEventCacheUpdater()
+	{
+	    ProxyNodeEventNotifier.getInstance().addListener(new ProxyNodeCacheUpdater(this));
+	}
+	
     // ========================================================================
     // 
     // ========================================================================
@@ -109,6 +137,11 @@ public abstract class ProxyFactory
 	
 	final public ProxyNode openLocation(VRL locator) throws ProxyException
 	{
+	    if (locator==null)
+	    {
+	        throw new ProxyException("NULL Locator!"); 
+	    }
+	    
 	    if (enableCache==false)
         {
 	        return doOpenLocation(locator); 
@@ -117,13 +150,13 @@ public abstract class ProxyFactory
 	    {
 	        ProxyCacheElement cacheEl;
 	        
-	        synchronized(this.nodeCache)
+	        synchronized(this.proxyCache)
 	        {
-	            cacheEl = this.nodeCache.get(locator);
+	            cacheEl = this.proxyCache.get(locator);
 	            // create new element
 	            if (cacheEl==null)
 	            {
-	                this.nodeCache.put(locator,cacheEl=new ProxyCacheElement(locator));
+	                this.proxyCache.put(locator,cacheEl=new ProxyCacheElement(locator));
                     logger.debugPrintf("+++ Cache: new element for:%s\n",locator); 
 	            }
 	            
@@ -164,9 +197,30 @@ public abstract class ProxyFactory
 	
 	public void clearCache()
 	{
-	   this.nodeCache.clear(); 
+	    synchronized(proxyCache)
+	    {
+	        this.proxyCache.clear();
+	    }
 	}
 	
+    public void refreshChilds(VRL parentVrl)
+    {
+        ProxyCacheElement cacheEl = this.proxyCache.get(parentVrl); 
+        if (cacheEl!=null)
+        {
+            cacheEl.getNode().refresh(); 
+        }
+    }
+
+    public void refreshNode(VRL vrl)
+    {
+        ProxyCacheElement cacheEl = this.proxyCache.get(vrl); 
+        if (cacheEl!=null)
+        {
+            cacheEl.getNode().refresh(); 
+        }
+    }
+    
     protected void handleException(String message, Exception e)
     {
         logger.logException(ClassLogger.ERROR, e, " %s\n",message); 

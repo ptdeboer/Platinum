@@ -44,7 +44,9 @@ public class InfoRSConstants
 
     public static final String RESOURCE_NAME = "resourceName";
 
-    public static final String RESOURCE_TARGETVRL = "resourceVRL";
+    public static final String RESOURCE_TARGETVRL = "resourceTargetVRL"; 
+
+    public static final String RESOURCE_TARGET_ISCOMPOSITE = "resourceTargateIsComposite";
 
     public static final String LOCALSYSTEM_OSTYPE = "localsystem.os.type";
 

@@ -35,7 +35,7 @@ public enum ActionMethod
     // Menu actions 
     DELETE("Delete"), 
 	SHOW_PROPERTIES("Properties"),
-    CREATE("Create"),
+    CREATE_NEW("Create"),
     RENAME("Rename"),
     COPY("Copy"),
     PASTE("Paste"),

@@ -320,9 +320,11 @@ public abstract class ProxyNode
 
         String iconUrl = this.getIconURL(getResourceStatus(), size);
 
+        boolean isLink=this.isResourceLink();
+        
         return provider.createDefaultIcon(iconUrl,
                 this.isComposite(),
-                false, // islink
+                isLink,
                 mimeType,
                 size,
                 greyOut,
@@ -430,9 +432,11 @@ public abstract class ProxyNode
 
     public List<? extends ProxyNode> getChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException
     {
+        boolean autoResolve=false;
+        
         // auto resolve LinkNodes: 
         ProxyNode targetNode = this;
-        if (this.isResourceLink())
+        if ((autoResolve) &&  (this.isResourceLink()))
         {
             targetNode = this.resolveResourceLink();
         }
@@ -655,6 +659,10 @@ public abstract class ProxyNode
         if (this.cache.resolved_node == null)
         {
             VRL vrl = this.getResourceLinkVRL();
+            if (vrl==null)
+            {
+                throw new ProxyException("ResourceLink has NULL Target location:"+this); 
+            }
             ProxyNode node = proxyFactory.openLocation(vrl);
             this.cache.resolved_node = node;
         }
@@ -685,6 +693,17 @@ public abstract class ProxyNode
         return cache.is_resource_link_vrl;
     }
 
+    public ProxyNode createNew(String type, String name) throws ProxyException
+    {
+        ProxyNode node = doCreateNew(type,name);     
+        return node; 
+    }
+
+    public void delete(boolean recursive) throws ProxyException
+    {
+        doDelete(recursive); 
+    }
+
     // ========================================================================
     // Protected implementation interface !
     // ========================================================================
@@ -706,7 +725,7 @@ public abstract class ProxyNode
     abstract protected boolean doGetIsComposite() throws ProxyException;
 
     /** Uncached doGetChilds, using optional range */
-    abstract protected List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException;
+    protected abstract List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException;
 
     /** Uncached doGetParent() */
     abstract protected ProxyNode doGetParent() throws ProxyException;
@@ -731,5 +750,15 @@ public abstract class ProxyNode
     abstract protected boolean doIsResourceLink();
 
     abstract protected VRL doGetResourceLinkVRL() throws ProxyException;
+
+    // =====================
+    // Create/Delete/Rename
+    // =====================
+    
+    abstract protected ProxyNode doCreateNew(String type,String optNewName) throws ProxyException;
+   
+    abstract protected void doDelete(boolean recurse) throws ProxyException;
+
+    
 
 }

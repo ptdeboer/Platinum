@@ -22,7 +22,9 @@ public class Test_XMLAttributeSet
         testXMLAttributeSet("field3","3.3");
         testXMLAttributeSet("field4","http://host.domain:8443/helloWorld");
         testXMLAttributeSet("field5","http://host.domain:8443/helloWorld?query#fragment");
-
+        testXMLAttributeSet("field5", AttributeUtil.createEnumerate("enumField",new String[]{"enum1","enum2","enum3","enum4","enum2"},"enum2")); 
+         
+        		
         testXMLAttributeSet("intField",new Integer(3));
         testXMLAttributeSet("floatField",new Float(3.14));
         testXMLAttributeSet("doubleField",new Double(3.14));
@@ -43,8 +45,10 @@ public class Test_XMLAttributeSet
     
     private void testXMLAttributeSet(String name, Object value) throws Exception
     {
+        Attribute attr=AttributeUtil.createFrom(name, value);
+        
         AttributeSet attrs=new AttributeSet("Test");
-        Attribute attr=AttributeUtil.createFrom(name, value); 
+ 
         attrs.set(attr); 
         
         XMLData data=new XMLData(new VRSContext()); 

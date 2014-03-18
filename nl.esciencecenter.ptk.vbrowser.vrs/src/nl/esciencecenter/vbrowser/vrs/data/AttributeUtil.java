@@ -124,6 +124,12 @@ public class AttributeUtil
      */
     public static Attribute createFrom(String name, Object obj)
     {
+        // avoid nesting of attributes as objects ! 
+        if (obj instanceof Attribute)
+        {
+            return ((Attribute)obj).duplicate();  
+        }   
+        
         AttributeType newtype = AttributeType.getObjectType(obj, AttributeType.STRING);
         Attribute attr = new Attribute(newtype, name, obj);
         // check?

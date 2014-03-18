@@ -57,7 +57,7 @@ public class InfoRSNode extends VPathNode
      */
     protected AttributeSet attributes=null; 
     
-    protected ArrayList<InfoRSNode> nodes = new ArrayList<InfoRSNode>();
+    protected ArrayList<InfoRSNode> subNodes = new ArrayList<InfoRSNode>();
 
     protected InfoRSNode parent;
 
@@ -128,33 +128,30 @@ public class InfoRSNode extends VPathNode
     }
 
     @Override
-    public List<? extends VPath> list() throws VrsException
+    public List<? extends InfoRSNode> list() throws VrsException
     {
-        return nodes;
-    }
-
-    public List<? extends InfoRSNode> listNodes() throws VrsException
-    {
-        return nodes;
+        return subNodes;
     }
 
     public List<? extends InfoResourceNode> listResourceNodes() throws VrsException
     {
-        ArrayList<InfoResourceNode> subNodes=new ArrayList<InfoResourceNode>();
+        // todo: Generic filter of sub classes.
+        
+        ArrayList<InfoResourceNode> filteredNodes=new ArrayList<InfoResourceNode>();
 
-        if ((nodes==null) || (nodes.size()<0)) 
+        if ((subNodes==null) || (subNodes.size()<0)) 
         {
             return null; 
         }
         
-        for (InfoRSNode node:nodes)
+        for (InfoRSNode node:subNodes)
         {
             if (node instanceof InfoResourceNode)
             {
-                subNodes.add((InfoResourceNode)node);
+                filteredNodes.add((InfoResourceNode)node);
             }
         }
-        return subNodes; 
+        return filteredNodes; 
     }
     
     final protected void setParent(InfoRSNode newParent) throws VrsException
@@ -170,27 +167,43 @@ public class InfoRSNode extends VPathNode
         this.parent=newParent;  
     }
     
-    final protected void addNode(InfoRSNode node) throws VrsException
+    final protected void addSubNode(InfoRSNode node) throws VrsException
     {
         synchronized(node)
         {
             node.setParent(this);  
         }
-        synchronized (nodes)
+        
+        synchronized (subNodes)
         {
-            nodes.add(node);
+            subNodes.add(node);
         }
     }
 
-    final protected void delNode(InfoRSNode node) throws VrsException
+    final protected void delSubNode(InfoRSNode node) throws VrsException
     {
-        synchronized (nodes)
+        synchronized (subNodes)
         {
-            nodes.remove(node);
+            subNodes.remove(node);
             node.setParent(null); 
         }
     }
 
+    final protected void initSubNodes()
+    {
+        if (subNodes==null)
+        {
+            subNodes=new ArrayList<InfoRSNode>(); 
+        }
+        else
+        {
+            // keep object as it is used as mutex. 
+            synchronized(subNodes)
+            {
+                subNodes.clear();
+            }
+        }
+    }
     /**
      * Performs optional recursive linear search on ArrayList.
      */
@@ -202,7 +215,8 @@ public class InfoRSNode extends VPathNode
             return null;
         }
         
-        for (InfoRSNode node : nodes)
+        // unsynchronized access
+        for (InfoRSNode node : subNodes)
         {
             if (node.getVRL().equals(vrl))
             {
@@ -233,7 +247,8 @@ public class InfoRSNode extends VPathNode
      */
     protected InfoRSNode getSubNode(String name)
     {
-        for (InfoRSNode node : nodes)
+        // unsynchronized access: 
+        for (InfoRSNode node : subNodes)
         {
             if (StringUtil.equals(node.getName(), name))
             {
@@ -251,7 +266,7 @@ public class InfoRSNode extends VPathNode
 
     public int getNumNodes()
     {
-        return nodes.size();
+        return subNodes.size();
     }
 
     /** 
@@ -279,6 +294,5 @@ public class InfoRSNode extends VPathNode
             return null;
         }
     }
-    
     
 }

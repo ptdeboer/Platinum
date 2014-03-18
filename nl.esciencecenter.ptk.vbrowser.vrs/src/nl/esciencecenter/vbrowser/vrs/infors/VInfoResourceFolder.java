@@ -9,7 +9,7 @@ public interface VInfoResourceFolder extends VInfoResource
      * Add node to internal node list. 
      * Either parent of subNode is null or should already be set to this ResourceFolder. 
      */
-    public void addSubNode(InfoRSNode subNode)  throws VrsException; 
+    public void addInfoNode(InfoRSNode subNode)  throws VrsException; 
     
     public VInfoResourceFolder createFolder(String name) throws VrsException; 
     

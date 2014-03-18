@@ -225,4 +225,16 @@ public class FSNodeProxyNode extends ProxyNode
         return null;
     }
 
+    @Override
+    protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException
+    {
+        throw new ProxyException("Not Implemented.");
+    }
+
+    @Override
+    protected void doDelete(boolean recurse) throws ProxyException
+    {
+        throw new ProxyException("Not Implemented.");
+    }
+
 }

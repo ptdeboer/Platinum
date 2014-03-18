@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
@@ -18,7 +20,9 @@ public class XMLResourceNode
     @JacksonXmlProperty(localName = "infoAttributes")
     protected XMLAttributeSet infoAttributes;
 
-    @JacksonXmlProperty(localName = "subNodes")
+    // Use unwrapped elements, and use 'subNode' as elements name. Do not use 'subNodes' as element name nor as element wrapper.  
+    @JacksonXmlProperty(localName = "subNode")
+    @JacksonXmlElementWrapper(localName = "subNode", useWrapping = false)
     protected ArrayList<XMLResourceNode> subNodes;
 
     @JacksonXmlProperty(localName = "resourceType", isAttribute = true)
@@ -44,8 +48,8 @@ public class XMLResourceNode
     {
         return resourceType;
     }
-
-    @JacksonXmlProperty(localName = "subNodes")
+    
+    @JsonIgnore // use ArrayList<> field 
     public void setSubNodes(Collection<? extends XMLResourceNode> nodes)
     {
         if (nodes == null)
@@ -60,8 +64,8 @@ public class XMLResourceNode
             this.subNodes.addAll(nodes);
         }
     }
-
-    @JacksonXmlProperty(localName = "subNodes")
+    
+    @JsonIgnore // use ArrayList<> field 
     public List<XMLResourceNode> getSubNodes()
     {
         return subNodes;
