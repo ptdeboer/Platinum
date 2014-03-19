@@ -75,14 +75,16 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
 
     public static InfoResourceNode createResourceNode(InfoRSNode parentNode, String type, AttributeSet infoAttrs) throws VrsException
     {
-        VRL logicalVRL = parentNode.createNewSubNodeVRL(); // ("node" + parentNode.getNumNodes());
+        VRL logicalVRL = parentNode.createNewSubNodeVRL(); 
         
-        String folderName = infoAttrs.getStringValue(InfoRSConstants.RESOURCE_NAME);
-        
-        if (StringUtil.notEmpty(folderName))
-        {
-            logicalVRL = parentNode.createNewSubNodeVRL(); // (folderName);
-        }
+//        if (isPathNode)
+//        {
+//            String folderName = infoAttrs.getStringValue(InfoRSConstants.RESOURCE_NAME);
+//            if (StringUtil.notEmpty(folderName))
+//            {
+//                logicalVRL = parentNode.createSubPathVRL(folderName); 
+//            }
+//        }
         
         InfoResourceNode node = new InfoResourceNode(parentNode, type, logicalVRL);
         node.updateAttributes(infoAttrs); 
@@ -257,6 +259,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
             // delegate to AttributeSet: 
             this.attributes.update(attr,true); 
         }
+        // check//assert new attributes 
     }
 
     public String getMimeType()
