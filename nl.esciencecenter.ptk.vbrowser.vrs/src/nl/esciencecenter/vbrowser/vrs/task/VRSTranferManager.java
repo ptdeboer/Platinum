@@ -24,6 +24,7 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.task.ActionTask;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
@@ -46,66 +47,12 @@ public class VRSTranferManager
         // Use static instance for now:
         this.taskWatcher = VRSTaskWatcher.getTaskWatcher();
     }
-
-    public VRSTaskMonitor doLinkDrop(final List<VRL> vrls, final VRL destVrl)
-    {
-        final VRSTaskMonitor monitor = new VRSTaskMonitor(VRSActionType.LINK, vrls, destVrl);
-
-        ActionTask task = new ActionTask(taskWatcher, "Link drop on:" + destVrl, monitor)
-        {
-
-            @Override
-            protected void doTask() throws Exception
-            {
-                doLinkDrop(vrls, destVrl, monitor);
-            }
-
-            @Override
-            protected void stopTask() throws Exception
-            {
-                // set canceled flag.
-                monitor.setIsCancelled();
-            }
-
-        };
-
-        task.startTask();
-
-        return monitor;
-    }
-
-    public VRSTaskMonitor doCopyMove(final List<VRL> vrls, final VRL destVrl, final boolean isMove)
-    {
-        VRSActionType type = isMove ? VRSActionType.MOVE : VRSActionType.COPY;
-        final VRSTaskMonitor monitor = new VRSTaskMonitor(type, vrls, destVrl);
-
-        ActionTask task = new ActionTask(taskWatcher, "VRS " + type + "to:" + destVrl, monitor)
-        {
-
-            @Override
-            protected void doTask() throws Exception
-            {
-                doCopyMove(vrls, destVrl, isMove, monitor);
-            }
-
-            @Override
-            protected void stopTask() throws Exception
-            {
-                monitor.setIsCancelled();
-            }
-
-        };
-
-        task.startTask();
-
-        return monitor;
-    }
-
+    
     // ===
     // Implementation
     // ===
 
-    protected void doLinkDrop(List<VRL> vrls, VRL destVrl, VRSTaskMonitor monitor)
+    public void doLinkDrop(List<VRL> vrls, VRL destVrl, ITaskMonitor monitor)
     {
         String taskName = "LinkDrop to:" + destVrl;
         logger.errorPrintf("***FIXME:doLinkDrop():%s, vrls=%s\n", destVrl, new ExtendedList<VRL>(vrls));
@@ -151,7 +98,7 @@ public class VRSTranferManager
         monitor.endTask(taskName);
     }
 
-    protected void doCopyMove(List<VRL> vrls, VRL destVrl, boolean isMove, VRSTaskMonitor monitor) throws VrsException
+    public void doCopyMove(List<VRL> vrls, VRL destVrl, boolean isMove, ITaskMonitor monitor) throws VrsException
     {
         logger.errorPrintf("***FIXME:doCopyMove():%s, vrls=%s\n", destVrl, new ExtendedList<VRL>(vrls));
 

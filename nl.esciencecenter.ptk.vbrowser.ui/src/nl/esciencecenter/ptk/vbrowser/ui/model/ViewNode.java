@@ -62,8 +62,6 @@ public class ViewNode
 
     protected String mimeType;
 
-    private ViewNodeDnDHandler nodeDnDHandler;
-
     private StringList allowedChildTypes;
 
     protected ViewNode(VRL locator)
@@ -166,16 +164,6 @@ public class ViewNode
     public String getResourceStatus()
     {
         return resourceStatus;
-    }
-
-    public void setDnDHandler(ViewNodeDnDHandler dropHandler)
-    {
-        this.nodeDnDHandler = dropHandler;
-    }
-
-    public ViewNodeDnDHandler getDnDHandler()
-    {
-        return nodeDnDHandler;
     }
 
     public void setChildTypes(List<String> childTypes)

@@ -29,8 +29,11 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler.DropAction;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class DnDUtil
@@ -99,7 +102,28 @@ public class DnDUtil
             throw new Error("Invalid Drop Action:" + dndAction);
         }
     }
-
+    
+    // ====================
+    // BrowserInterface
+    // ====================
+    
+    public static BrowserInterface getBrowserInterface(Component component)
+    {
+        if (component instanceof ViewNodeComponent)
+        {
+            if (component instanceof ViewNodeContainer)
+            {
+                ViewNodeContainer container = (ViewNodeContainer) component;
+                return container.getBrowserInterface(); 
+            }
+            else
+            {
+                return ((ViewNodeComponent) component).getViewContainer().getBrowserInterface(); 
+            }
+        }      
+        return null; 
+    }    
+    
     // ========================================================================================
     // Static Drop Handlers:
     // ========================================================================================
@@ -122,10 +146,10 @@ public class DnDUtil
      * Perform the actual drop, after the drop has been accepted. This could be
      * an Interactive drop on ViewNode.
      */
-    static public boolean performAcceptedDrop(Component uiComp, Point point, ViewNode targetViewNode,
+    static public boolean performAcceptedDrop(Component uiComponent, Point point, ViewNode targetViewNode,
             Transferable data, DropAction userDropAction, DropAction effectiveDropAction)
     {
-        DnDUtil.infoPrintf("performAcceptedDrop():%s -> %s\n", uiComp, targetViewNode);
+        DnDUtil.infoPrintf("performAcceptedDrop():%s -> %s\n", uiComponent, targetViewNode);
 
         // Should already be cecked
         if (DnDData.canConvertToVRLs(data) == false)
@@ -134,10 +158,12 @@ public class DnDUtil
             DnDUtil.errorPrintf("performAcceptedDrop(): Unsupported Data/Flavor(s):\n%s\n",flavs.toString(" - ","","\n"));
             return false;
         }
-
-        if (targetViewNode.getDnDHandler() == null)
+        
+        BrowserInterface browser=DnDUtil.getBrowserInterface(uiComponent); 
+        
+        if (browser == null)
         {
-            DnDUtil.errorPrintf("performAcceptedDrop(): No DNDHandler registered for:%s\n", targetViewNode);
+            DnDUtil.errorPrintf("performAcceptedDrop(): No BrowserInterface registered for:%s\n", targetViewNode);
             return false;
         }
 
@@ -152,7 +178,7 @@ public class DnDUtil
                 DnDUtil.debugPrintf(" -vri[#%d]=%s\n", i, vris.get(i));
             }
 
-            result = targetViewNode.getDnDHandler().doDrop(targetViewNode, effectiveDropAction, vris);
+            result = browser.doDrop(uiComponent,point,targetViewNode, effectiveDropAction, vris);
         }
         catch (Exception e)
         {

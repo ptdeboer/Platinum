@@ -20,20 +20,30 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
+import java.awt.Component;
+import java.awt.Point;
+import java.util.List;
+
 import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
  * Default Browser Interface Adaptor
  */
 public class DummyBrowserInterface  implements BrowserInterface
 {
-
+    final static ClassLogger logger=ClassLogger.getLogger(DummyBrowserInterface.class); 
+    
     private BrowserPlatform platform;
 
     public DummyBrowserInterface(BrowserPlatform platform)
@@ -48,10 +58,9 @@ public class DummyBrowserInterface  implements BrowserInterface
     }
 
     @Override
-    public void handleException(String message,Throwable exception)
+    public void handleException(String message,Throwable e)
     {
-        System.err.printf("%s\n",message);
-        exception.printStackTrace(); 
+        logger.logException(ClassLogger.ERROR, e, message, "Exception:%s\n"); 
     }
 
     @Override
@@ -63,13 +72,27 @@ public class DummyBrowserInterface  implements BrowserInterface
     @Override
     public void handleNodeAction(ViewNode node, Action action)
     {
-        
+        logger.errorPrintf("handleNodeAction:%s", node); 
     }
 
     @Override
     public UI getUI()
     {
         return new SimpelUI(); 
+    }
+
+    @Override
+    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris)
+    {
+        try
+        {
+            return ProxyNodeDnDHandler.getInstance().doDrop(viewNode, dropAction, vris, null);
+        }
+        catch (ProxyException e)
+        {
+            handleException("Drop Failed",e);
+            return false;
+        }
     }
 
 }

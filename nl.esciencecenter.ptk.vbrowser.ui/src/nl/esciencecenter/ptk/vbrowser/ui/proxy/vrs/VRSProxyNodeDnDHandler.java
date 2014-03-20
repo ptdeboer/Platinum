@@ -23,44 +23,49 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.ui.panels.monitoring.TransferMonitorDialog;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler;
-import nl.esciencecenter.vbrowser.vrs.task.VRSTaskMonitor;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSViewNodeDnDHandler extends ViewNodeDnDHandler
+public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler
 {
     protected VRSTranferManager vrsManager; 
     
-    public VRSViewNodeDnDHandler(VRSTranferManager vrsTaskManager)
+    public VRSProxyNodeDnDHandler(VRSTranferManager vrsTaskManager)
     {
         vrsManager=vrsTaskManager; 
     }
-
-    public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls)
-    {
-        VRSTaskMonitor monitor;
-        
+    
+    @Override
+    public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls, ITaskMonitor taskMonitor) throws ProxyException
+     {
         VRL destVrl=targetDropNode.getVRL(); 
                 
         if (dropAction==DropAction.LINK)
         {
-            monitor = vrsManager.doLinkDrop(vrls,destVrl);
+            vrsManager.doLinkDrop(vrls,destVrl, taskMonitor);
         }
         else if (dropAction==DropAction.COPY || dropAction==DropAction.MOVE || dropAction==DropAction.COPY_PASTE || dropAction==DropAction.CUT_PASTE)
         {
             boolean isMove=( (dropAction==DropAction.MOVE) || (dropAction==DropAction.CUT_PASTE));
-            monitor=vrsManager.doCopyMove(vrls,destVrl, isMove); 
+            try
+            {
+                vrsManager.doCopyMove(vrls,destVrl, isMove,taskMonitor);
+            }
+            catch (VrsException e)
+            {
+                throw new ProxyException(e.getMessage(),e); 
+            } 
         }
         else
         {
             System.err.printf("FIXME: VRSViewNodeDnDHandler unrecognized DROP:%s:on %s, list=%s\n",dropAction,targetDropNode,new ExtendedList<VRL>(vrls));
             return false; 
         }
-        
-        TransferMonitorDialog.showTransferDialog(monitor, 0); 
         
         return true; 
     }

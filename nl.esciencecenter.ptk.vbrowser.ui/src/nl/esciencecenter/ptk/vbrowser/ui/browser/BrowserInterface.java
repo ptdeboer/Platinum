@@ -20,12 +20,18 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
+import java.awt.Component;
+import java.awt.Point;
+import java.util.List;
+
 import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface BrowserInterface
 {
@@ -40,7 +46,11 @@ public interface BrowserInterface
 
     public void handleNodeAction(ViewNode node, Action action);
 
-    /** Return simple UI Interface */ 
-    public UI getUI(); 
+    /**
+     *  Return simple UI Interface 
+     */ 
+    public UI getUI();
+
+    public boolean doDrop(Component uiComponent, Point optPoint,ViewNode viewNode, DropAction dropAction, List<VRL> vris); 
 
 }

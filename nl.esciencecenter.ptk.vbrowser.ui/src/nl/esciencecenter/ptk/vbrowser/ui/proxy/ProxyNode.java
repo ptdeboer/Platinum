@@ -34,7 +34,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeNames;
 import nl.esciencecenter.vbrowser.vrs.task.VRSActionType;
@@ -400,20 +400,13 @@ public abstract class ProxyNode
         viewNode.setResourceType(this.getResourceType());
         viewNode.setMimeType(this.getMimeType());
         viewNode.setResourceStatus(this.getResourceStatus());
-        // handlers:
-        viewNode.setDnDHandler(getViewNodeDnDHandlerFor(viewNode));
-
-        // other
+        
+         // other
         viewNode.setIcon(ViewNode.FOCUS_ICON, getIcon(model, false, true));
         viewNode.setIcon(ViewNode.SELECTED_ICON, getIcon(model, true, false));
         viewNode.setIcon(ViewNode.SELECTED_FOCUS_ICON, getIcon(model, true, true));
         viewNode.setChildTypes(this.getChildTypes());
         return viewNode;
-    }
-
-    protected ViewNodeDnDHandler getViewNodeDnDHandlerFor(ViewNode viewNode)
-    {
-        return ViewNodeDnDHandler.getInstance();
     }
 
     public boolean hasLocator(VRL locator)

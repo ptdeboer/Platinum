@@ -26,6 +26,8 @@ import java.util.Map;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -224,6 +226,15 @@ public abstract class ProxyFactory
     protected void handleException(String message, Exception e)
     {
         logger.logException(ClassLogger.ERROR, e, " %s\n",message); 
+    }
+    
+    // ========================================================================
+    // DND Handler  
+    // ========================================================================
+
+    public ProxyNodeDnDHandler getProxyDnDHandler(ViewNode viewNode)
+    {
+        return ProxyNodeDnDHandler.getInstance();
     }
     
 	// ========================================================================

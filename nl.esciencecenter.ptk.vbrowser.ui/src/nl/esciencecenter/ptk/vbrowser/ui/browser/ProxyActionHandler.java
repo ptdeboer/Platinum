@@ -20,12 +20,20 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
+import java.awt.Component;
+import java.awt.Point;
+import java.util.List;
+
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TaskMonitorDialog;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TransferMonitorDialog;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEvent;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEventNotifier;
@@ -169,6 +177,56 @@ public class ProxyActionHandler
         }
     }
     
+    // ===
+    // 
+    // ===
+    
+
+    public boolean handleDrop(Component uiComponent, Point optPoint, final ViewNode viewNode, final DropAction dropAction, final List<VRL> vrls)
+    {
+        //===================================
+        // Do interactive UI stuff here ... 
+        //===================================
+        
+        // UIGlobal.assertGuiThread("Interface drop most be called during Swings Event thread!");
+        
+        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "doDrop "+dropAction+"on targetNode:"+viewNode) 
+        {
+            @Override
+            protected void doTask()
+            {
+                try
+                {
+                    doDrop(viewNode,dropAction,vrls,this.getTaskMonitor());  
+                }
+                catch (Throwable e)
+                {
+                    proxyBrowser.handleException("Failed to drop  open location:" + viewNode.getVRL(), e);
+                }
+            }
+        };
+
+        task.startTask();
+        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0); 
+        return true; 
+    }
+    
+    protected void doDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,ITaskMonitor taskMonitor)
+    {
+        logger.debugPrintf("*** doDrop %s on:%s\n",viewNode.getVRL(),dropAction);  
+            
+        try
+        {
+            ProxyFactory factory = this.proxyBrowser.getProxyFactoryFor(viewNode.getVRL()); 
+            ProxyNodeDnDHandler dndHandler = factory.getProxyDnDHandler(viewNode); 
+            dndHandler.doDrop(viewNode, dropAction, vrls,taskMonitor);
+        }
+        catch (Throwable ex) 
+        {
+            this.proxyBrowser.handleException("Failed doDrop() type '"+dropAction+" on :"+viewNode.getVRL(),ex); 
+        }
+    }
+    
     public void fireNewNodeEvent(ProxyNode parent, ProxyNode childNode)
     {
         ProxyNodeEventNotifier.getInstance().scheduleEvent(
@@ -184,4 +242,5 @@ public class ProxyActionHandler
                         (parent!=null)?parent.getVRL():null,
                             actualNode.getVRL()));
     }
+
 }

@@ -280,12 +280,6 @@ public class VRSProxyNode extends ProxyNode
             throw new ProxyException(e.getMessage(),e); 
         }
     }
-
-    @Override 
-    public VRSViewNodeDnDHandler getViewNodeDnDHandlerFor(ViewNode viewNode)
-    {
-    	return factory().getVRSProxyDnDHandler(viewNode);
-    }
     
 	// ========================================================================
 	// Misc 

@@ -20,17 +20,19 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
+import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.data.History;
-import nl.esciencecenter.ptk.data.SecretHolder;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
@@ -45,6 +47,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.viewers.ProxyObjectViewer;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.viewers.ViewerManager;
 import nl.esciencecenter.ptk.vbrowser.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
@@ -74,19 +77,19 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     // ========================================================================
     // Inner Classes
     // ========================================================================
-    
-    /** 
-     * Proxy Browser's UI interface.  
+
+    /**
+     * Proxy Browser's UI interface.
      */
     public class ProxyUI extends SimpelUI
     {
         @Override
         public boolean isEnabled()
         {
-            return true; 
+            return true;
         }
     }
-    
+
     public class NavBarHandler implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
@@ -161,8 +164,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     private ViewerManager viewerManager;
 
-    private ProxyUI proxyUI=new ProxyUI(); 
-    
+    private ProxyUI proxyUI = new ProxyUI();
+
     public ProxyBrowserController(BrowserPlatform platform, boolean show)
     {
         init(platform, show);
@@ -209,7 +212,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     @Override
     public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode, boolean canvasMenu)
     {
-        return ActionMenu.createSimpleMenu(this.getPlatform(),this, container, viewNode, canvasMenu);
+        return ActionMenu.createSimpleMenu(this.getPlatform(), this, container, viewNode, canvasMenu);
     }
 
     /**
@@ -310,7 +313,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 doBrowseUp();
                 break;
             case CREATE_NEW:
-                this.proxyActionHandler.handleCreate(action, node,action.getArg0(),action.getArg1());
+                this.proxyActionHandler.handleCreate(action, node, action.getArg0(), action.getArg1());
                 break;
             case CREATE_NEW_WINDOW:
                 createBrowser(node);
@@ -372,7 +375,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 break;
             case SELECTION_ACTION:
                 doDefaultSelectedAction(node);
-                break; 
+                break;
             default:
                 logger.errorPrintf("<<< FIXME: ACTION NOT IMPLEMENTED:%s >>>\n", action);
                 break;
@@ -381,8 +384,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     protected void doRefresh(ViewNode node)
     {
-        logger.errorPrintf(">>>Refresh:%s\n",node); 
-        
+        logger.errorPrintf(">>>Refresh:%s\n", node);
+
         ProxyNodeEventNotifier.getInstance().scheduleEvent(
                 ProxyNodeEvent.createRefreshEvent(null, node.getVRL()));
     }
@@ -433,7 +436,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             {
                 doStartViewer(loc, viewer, optMenuMethod, standaloneWindow);
             }
-            
+
         }
         catch (Exception e)
         {
@@ -548,18 +551,18 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     public void doDefaultSelectedAction(ViewNode actionNode)
     {
-        // Container listeners should update selections. 
+        // Container listeners should update selections.
         // Perform here optional Menu updates...
-        logger.errorPrintf("***>>>> New Selection Node:%s\n", actionNode); 
+        logger.errorPrintf("***>>>> New Selection Node:%s\n", actionNode);
     }
 
     public void doDefaultAction(ViewNode actionNode)
     {
-        if (actionNode==null)
+        if (actionNode == null)
         {
-            logger.errorPrintf("FIXME: Null ActionNode\n"); 
+            logger.errorPrintf("FIXME: Null ActionNode\n");
         }
-        
+
         // Determine default action to view node:
         if (actionNode.isComposite())
         {
@@ -573,8 +576,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     protected void createNewTab(ViewNode node)
     {
-        if (node==null)
-            throw new NullPointerException("createNewTab(): Node can not be null!"); 
+        if (node == null)
+            throw new NullPointerException("createNewTab(): Node can not be null!");
         this.openLocation(node.getVRL(), true, true);
     }
 
@@ -597,7 +600,6 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     {
         TabContentPanel tab;
         tab = this.browserFrame.getCurrentTab();
-
 
         if (tab == null)
             newTab = true; // auto add !
@@ -633,7 +635,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 {
                     String mimeType = node.getMimeType();
                     String resourceType = node.getResourceType();
-                    doOpenViewer(node.getVRL(),resourceType, mimeType, null,null,false);
+                    doOpenViewer(node.getVRL(), resourceType, mimeType, null, null, false);
                 }
                 catch (ProxyException e)
                 {
@@ -649,7 +651,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
 
         browserFrame.setTabTitle(tab, node.getName());
-        
+
         try
         {
             Icon icon = node.getIcon(16, false, false);
@@ -657,7 +659,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.WARN,e,"No icon for node:%s\n",node);
+            logger.logException(ClassLogger.WARN, e, "No icon for node:%s\n", node);
         }
 
         if (addHistory)
@@ -681,26 +683,31 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
     }
 
-    /** 
-     * Resolve locator and open Proxy Node. 
-     * Must not use this method during swing's event thread, as this method might block the GUI. 
-     */
-    protected ProxyNode openProxyNode(VRL locator) throws ProxyException 
+    protected ProxyFactory getProxyFactoryFor(VRL locator)
     {
-        UIGlobal.assertNotGuiThread("Internal Error: Cannot open location during Swing's event thread. VRL="+locator); 
-        
+        return platform.getProxyFactoryFor(locator); 
+    }
+    
+    /**
+     * Resolve locator and open Proxy Node. Must not use this method during
+     * swing's event thread, as this method might block the GUI.
+     */
+    protected ProxyNode openProxyNode(VRL locator) throws ProxyException
+    {
+        UIGlobal.assertNotGuiThread("Internal Error: Cannot open location during Swing's event thread. VRL=" + locator);
+
         final ProxyFactory factory = this.platform.getProxyFactoryFor(locator);
 
         if (factory == null)
         {
-            throw new ProxyException("Couldn't open new location, no ProxyFactory for:" + locator); 
+            throw new ProxyException("Couldn't open new location, no ProxyFactory for:" + locator);
         }
-        
+
         ProxyNode node = factory.openLocation(locator);
-        
+
         return node;
     }
-    
+
     public void openLocation(final VRL locator, final boolean addToHistory, final boolean newTab)
     {
         logger.debugPrintf(">>> openLocation: %s\n", locator);
@@ -715,7 +722,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             {
                 try
                 {
-                    ProxyNode node=openProxyNode(locator); 
+                    ProxyNode node = openProxyNode(locator);
                     setViewedNode(node, addToHistory, newTab);
                 }
                 catch (Throwable e)
@@ -743,10 +750,10 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         if (node != null)
             return node;
         node = this.browserFrame.getResourceTree().getCurrentSelectedNode();
-        if (node!=null)
-            return null; 
-        
-        return browserFrame.getResourceTree().getModel().getRoot().getViewNode();    
+        if (node != null)
+            return null;
+
+        return browserFrame.getResourceTree().getModel().getRoot().getViewNode();
     }
 
     private ProxyBrowserController createBrowser(ViewNode node)
@@ -781,14 +788,18 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         logger.infoPrintf("HasActiveTasks=%s\n", active);
     }
 
-   
-
     @Override
     public UI getUI()
     {
-        return proxyUI; 
+        return proxyUI;
+    }
+
+    @Override
+    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris)
+    {
+        // delegate to action handler.
+        return this.proxyActionHandler.handleDrop(uiComponent, optPoint, viewNode, dropAction, vris); 
     }
 
 
-    
 }

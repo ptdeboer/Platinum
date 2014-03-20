@@ -59,7 +59,7 @@ public class VRSProxyFactory extends ProxyFactory
 
     private VRSTranferManager transferManager; 
     
-    protected VRSViewNodeDnDHandler viewNodeDnDHandler=null;
+    protected VRSProxyNodeDnDHandler proxyDnDHandler=null;
     
     protected VRSProxyFactory(BrowserPlatform platform)
     {
@@ -68,7 +68,7 @@ public class VRSProxyFactory extends ProxyFactory
         VRSContext vrsContext = platform.getVRSContext(); 
         this.vrsClient=new VRSClient(vrsContext);
         this.transferManager=vrsClient.getVRSTransferManager(); 
-        this.viewNodeDnDHandler=new VRSViewNodeDnDHandler(transferManager); 
+        this.proxyDnDHandler=new VRSProxyNodeDnDHandler(transferManager); 
     }
     
     public VRSContext getVRSContext()
@@ -145,9 +145,9 @@ public class VRSProxyFactory extends ProxyFactory
 		return false; 
 	}
 
-    public VRSViewNodeDnDHandler getVRSProxyDnDHandler(ViewNode viewNode)
+    public VRSProxyNodeDnDHandler getProxyDnDHandler(ViewNode viewNode)
     {
-        return viewNodeDnDHandler;
+        return proxyDnDHandler;
     }
 
 }

@@ -32,10 +32,11 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.util.List;
 
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDnDHandler.DropAction;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 
 /**
@@ -208,6 +209,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         return viewNode;
     }
 
+    
     /**
      * Match sourceActions with dropTarget action and current user (drop) action
      * and return effective allowed action.
