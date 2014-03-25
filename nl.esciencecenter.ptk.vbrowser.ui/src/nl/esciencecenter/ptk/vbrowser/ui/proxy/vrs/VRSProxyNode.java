@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +27,14 @@ import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.presentation.IPresentable;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
+import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
-import nl.esciencecenter.vbrowser.vrs.VPath;
 
 /** 
  * VRS ProxyNode 
@@ -48,7 +45,7 @@ public class VRSProxyNode extends ProxyNode
     
     private VPath vnode;
 
-    public VRSProxyNode(VRSProxyFactory vrsProxyFactory, VPath vnode,VRL locator) throws ProxyException, URISyntaxException
+    public VRSProxyNode(VRSProxyFactory vrsProxyFactory, VPath vnode,VRL locator) throws ProxyException
     {
         super(vrsProxyFactory,locator);
         this.vnode=vnode; 
@@ -70,6 +67,10 @@ public class VRSProxyNode extends ProxyNode
 //        }
     }
     
+    protected VPath vpath()
+    {
+        return vnode; 
+    }
     
     @Override
     protected VRSProxyNode doGetParent() throws ProxyException

@@ -117,11 +117,11 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
         }
     }
 
-    public OutputStream createOutputStream() throws VrsException
+    public OutputStream createOutputStream(boolean append) throws VrsException
     {
         try
         {
-            return fsNode.createOutputStream();
+            return fsNode.createOutputStream(append);
         }
         catch (IOException e)
         {
@@ -219,5 +219,23 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
             
     }
 
+    @Override
+    public boolean sync()
+    {
+        return false;
+    }
+
+    @Override
+    public long getLength(LinkOption... linkOptions) throws VrsIOException
+    {
+        try
+        {
+            return fsNode.getFileSize();
+        }
+        catch (IOException e)
+        {
+            throw new VrsIOException(e.getMessage(),e); 
+        } 
+    }
     
 }

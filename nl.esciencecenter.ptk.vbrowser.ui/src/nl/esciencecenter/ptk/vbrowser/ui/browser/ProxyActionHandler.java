@@ -234,6 +234,16 @@ public class ProxyActionHandler
                         parent.getVRL(),
                         childNode.getVRL()));
     }
+
+    public void fireNewNodesEvent(ProxyNode parent, List<ProxyNode> childNodes)
+    {
+        VRL vrls[] = ProxyNode.toVRLArray(childNodes); 
+ 
+        parent.getProxyNodeEventNotifier().scheduleEvent(
+                ProxyNodeEvent.createChildsAddedEvent(
+                        parent.getVRL(),
+                        vrls));
+    }
     
     public void fireDeletedNodeEvent(ProxyNode parent, ProxyNode actualNode)
     {

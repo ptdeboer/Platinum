@@ -32,7 +32,7 @@ import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
+public class InfoRootNode extends InfoRSNode implements VInfoResourcePath
 {
     private static final ClassLogger logger=ClassLogger.getLogger(InfoRootNode.class);
     
@@ -124,7 +124,7 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
         configNode = new InfoConfigNode(this);
     }
 
-    public VInfoResource addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
+    public VInfoResourcePath addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
     {
         logger.infoPrintf(">>>Adding new resourceLink:%s\n",targetLink);
         
@@ -210,7 +210,7 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourceFolder
     }
 
     @Override
-    public VInfoResource createResourceLink(VRL targetVRL,String logicalName) throws VrsException
+    public VInfoResourcePath createResourceLink(VRL targetVRL,String logicalName) throws VrsException
     {
         return addResourceLink(null,logicalName,targetVRL,null); 
     }

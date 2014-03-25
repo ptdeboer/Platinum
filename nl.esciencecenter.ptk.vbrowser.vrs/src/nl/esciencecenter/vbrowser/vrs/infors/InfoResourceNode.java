@@ -41,7 +41,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VInfoResourceFolder
+public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VInfoResourcePath
 {
     private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
 
@@ -296,7 +296,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
     // Stream Read/Write Methods (load/save)
     // ======================================
 
-    public OutputStream createOutputStream() throws VrsException
+    public OutputStream createOutputStream(boolean append) throws VrsException
     {
         // todo: create from xml stream
         throw new VrsException("Not now");

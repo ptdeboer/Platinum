@@ -22,7 +22,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.Icon;
 
@@ -31,13 +30,10 @@ import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeNames;
-import nl.esciencecenter.vbrowser.vrs.task.VRSActionType;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -65,9 +61,41 @@ public abstract class ProxyNode
 
         return nodes.toArray(new ProxyNode[0]);
     }
+    
+    // Null pointer safe toList() method.
+    public static List<VRL> toVRLList(List<? extends ProxyNode> nodes)
+    {
+        if (nodes==null)
+            return null; 
+        
+        ArrayList<VRL> list = new ArrayList<VRL>(nodes.size());
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            list.add(nodes.get(i).getVRL());
+        }
+        return list;
+    }
 
+    // Null pointer safe toArray() method.
+    public static VRL[] toVRLArray(List<? extends ProxyNode> nodes)
+    {
+        if (nodes==null)
+            return null; 
+        
+        VRL vrls[]=new VRL[nodes.size()];
+        
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            vrls[i]=nodes.get(i).getVRL();
+        }
+        return vrls;
+    }
+    
     public static List<? extends ProxyNode> toList(ProxyNode[] nodes)
     {
+        if (nodes==null)
+            return null; 
+        
         ArrayList<ProxyNode> list = new ArrayList<ProxyNode>(nodes.length);
         for (int i = 0; i < nodes.length; i++)
             list.add(nodes[i]);
@@ -697,6 +725,11 @@ public abstract class ProxyNode
         doDelete(recursive); 
     }
 
+    public ProxyNodeEventNotifier getProxyNodeEventNotifier()
+    {
+        return proxyFactory.getProxyNodeEventNotifier(); 
+    }
+    
     // ========================================================================
     // Protected implementation interface !
     // ========================================================================

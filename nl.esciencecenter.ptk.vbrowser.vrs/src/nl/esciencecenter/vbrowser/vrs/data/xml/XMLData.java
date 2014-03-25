@@ -25,7 +25,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.XMLDataException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRSNode;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoResourceNode;
-import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourceFolder;
+import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,8 +51,8 @@ public class XMLData
 
     public XMLData(VRSContext context)
     {
-        VRSJacksonXmlAnnotarionIntrospector introspector=new VRSJacksonXmlAnnotarionIntrospector(); 
-        
+        VRSJacksonXmlAnnotarionIntrospector introspector = new VRSJacksonXmlAnnotarionIntrospector();
+
         AnnotationIntrospector intr = new AnnotationIntrospectorPair(
                 new VRSJacksonXmlAnnotarionIntrospector(),
                 new JacksonXmlAnnotationIntrospector()
@@ -61,10 +61,12 @@ public class XMLData
         xmlMapper = new XmlMapper();
         vrsContext = context;
 
-        // xmlMapper.setAnnotationIntrospectors(new VRSJacksonXmlAnnotarionIntrospector(),new JacksonXmlAnnotationIntrospector()); 
+        // xmlMapper.setAnnotationIntrospectors(new
+        // VRSJacksonXmlAnnotarionIntrospector(),new
+        // JacksonXmlAnnotationIntrospector());
         xmlMapper.getSerializationConfig().withInsertedAnnotationIntrospector(introspector);
-        // optional mixin module. 
-        xmlMapper.registerModule(new VRSXMLMixinModule()); 
+        // optional mixin module.
+        xmlMapper.registerModule(new VRSXMLMixinModule());
     }
 
     public String toXML(AttributeSet attrSet) throws Exception
@@ -93,7 +95,7 @@ public class XMLData
     {
         for (String key : props.keySet())
         {
-            Object value  = props.get(key);
+            Object value = props.get(key);
 
             // VRL still not 100% serializable, use URI encoding.
             if (value instanceof VRL)
@@ -102,8 +104,8 @@ public class XMLData
                 {
                     java.net.URI uri;
                     uri = ((VRL) value).toURI();
-                    value=uri;
-                    props.set(key,value);
+                    value = uri;
+                    props.set(key, value);
                 }
                 catch (URISyntaxException e)
                 {
@@ -122,7 +124,7 @@ public class XMLData
 
         return props;
     }
-    
+
     public AttributeSet checkSerialization(AttributeSet attrs) throws XMLDataException
     {
         for (String key : attrs.keySet())
@@ -187,7 +189,8 @@ public class XMLData
         return rootXmlNode;
     }
 
-    protected XMLResourceNode addSubNodesTo(XMLResourceNode xmlNode, InfoRSNode infoNode, boolean recursive) throws VrsException, XMLDataException
+    protected XMLResourceNode addSubNodesTo(XMLResourceNode xmlNode, InfoRSNode infoNode, boolean recursive) throws VrsException,
+            XMLDataException
     {
         List<? extends InfoResourceNode> subNodes = infoNode.listResourceNodes();
         List<XMLResourceNode> xmlSubNodes = null;
@@ -223,8 +226,9 @@ public class XMLData
         }
     }
 
-    /** 
-     * Parse XML String which should be serialized ResourceNodes and add these parsed nodes. 
+    /**
+     * Parse XML String which should be serialized ResourceNodes and add these
+     * parsed nodes.
      */
     public void addXMLResourceNodesTo(InfoRSNode parentNode, String xmlString) throws XMLDataException
     {
@@ -239,9 +243,9 @@ public class XMLData
         }
     }
 
-    /** 
-     * Add sub-nodes of XMLResourceNode to actual InfoResourceNode. 
-     * Parent node 'xmlRootNode' is not added.  
+    /**
+     * Add sub-nodes of XMLResourceNode to actual InfoResourceNode. Parent node
+     * 'xmlRootNode' is not added.
      */
     protected void addXMLResourceNodesTo(InfoRSNode parentNode, XMLResourceNode xmlRootNode) throws XMLDataException
     {
@@ -251,27 +255,27 @@ public class XMLData
         {
             return;
         }
-        
-        VInfoResourceFolder resourceFolder;
-        
-        if (parentNode instanceof VInfoResourceFolder)
+
+        VInfoResourcePath resourceFolder;
+
+        if (parentNode instanceof VInfoResourcePath)
         {
-            resourceFolder=(VInfoResourceFolder)parentNode; 
+            resourceFolder = (VInfoResourcePath) parentNode;
         }
         else
         {
-            throw new XMLDataException("Incompatible types, cannot add new ResourceNodes to non ResourceFolder type:"+parentNode); 
+            throw new XMLDataException("Incompatible types, cannot add new ResourceNodes to non ResourceFolder type:" + parentNode);
         }
-        
+
         for (XMLResourceNode xmlNode : subNodes)
         {
             try
             {
                 // construct ResourceNode Structure:
-                InfoResourceNode subNode = InfoResourceNode.createResourceNode(parentNode, 
-                        xmlNode.getResourceType(), 
+                InfoResourceNode subNode = InfoResourceNode.createResourceNode(parentNode,
+                        xmlNode.getResourceType(),
                         xmlNode.getXMLAttributes().toAttributeSet());
-                
+
                 resourceFolder.addInfoNode(subNode);
                 addXMLResourceNodesTo(subNode, xmlNode);
             }
@@ -298,7 +302,7 @@ public class XMLData
         }
         catch (Exception e)
         {
-            System.err.printf("=== XML Parse Error ===\n%s\n",input);
+            System.err.printf("=== XML Parse Error ===\n%s\n", input);
             throw new RuntimeException(e);
         }
     }
@@ -331,7 +335,7 @@ public class XMLData
         {
             XMLProperties xmlProps;
             xmlProps = xmlMapper.readValue(xmlString, XMLProperties.class);
-            VRSProperties props  = xmlProps.toVRSProperties(); 
+            VRSProperties props = xmlProps.toVRSProperties();
             return props;
         }
         catch (Exception e)
@@ -339,5 +343,5 @@ public class XMLData
             throw new XMLDataException(e.getMessage(), e);
         }
     }
-    
+
 }

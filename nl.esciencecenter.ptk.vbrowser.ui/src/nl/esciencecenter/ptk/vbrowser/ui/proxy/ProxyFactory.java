@@ -41,53 +41,99 @@ public abstract class ProxyFactory
         logger=ClassLogger.getLogger(ProxyFactory.class);
     }
     
+    /** 
+     * Proxy Cache element stores actual ProxyNode and cache satus. 
+     * The element is also used a mutex when opening a location. 
+     */
 	protected class ProxyCacheElement
 	{
-	    /** Atomic locator ! */ 
-	    public final VRL locator;
+	    /** 
+	     * Atomic locator ! 
+	     */ 
+	    protected final VRL locator;
 	    
 	    private ProxyNode node;
 	    
-	    public ProxyCacheElement(VRL locator)
+	    private long time; 
+	    
+	    protected ProxyCacheElement(VRL locator)
 	    {
 	        this.locator=locator; 
 	    }
 	    
-	    public synchronized ProxyNode getNode()
+	    public ProxyCacheElement(VRL vrl, ProxyNode newNode)
+        {
+            this.locator=vrl;
+            this.node=newNode; 
+            mark(); 
+        }
+
+        public synchronized ProxyNode getNode()
 	    {
 	        return node; 
 	    }
 	    
-	    public synchronized void setNode(ProxyNode node)
+	    protected synchronized void setNode(ProxyNode node)
         {
             this.node=node; 
+            mark(); 
         }
-	    
+	    	    
 	    public synchronized boolean hasNode()
         {
             return (this.node!=null);  
         }
+	    
+	    protected void mark()
+	    {
+	        time=System.currentTimeMillis();
+	    }
+	    
+	    public long getTime()
+	    {
+	        return time; 
+	    }
     }
 	
 	protected class ProxyCache
 	{
 	    protected Map<VRL,ProxyCacheElement> _nodes=new Hashtable<VRL,ProxyCacheElement>();
 
-        public ProxyCacheElement get(VRL locator)
+	    protected ProxyCacheElement get(VRL locator)
         {
             return _nodes.get(locator); 
         }
 
-        public ProxyCacheElement put(VRL locator, ProxyCacheElement proxyCacheElement)
+	    protected ProxyCacheElement put(VRL locator, ProxyCacheElement proxyCacheElement)
         {
             return _nodes.put(locator,proxyCacheElement);
         }
         
-        public void clear()
+	    protected void clear()
         {
             _nodes.clear(); 
         }
         
+	    protected  boolean exists(VRL locator)
+        {
+            return (_nodes.get(locator)!=null);
+        }
+
+	    protected ProxyCacheElement createEntry(VRL locator)
+        {
+            ProxyCacheElement cacheEl=new ProxyCacheElement(locator); 
+            proxyCache.put(locator,cacheEl);
+            return cacheEl; 
+        }
+	    
+	    protected synchronized ProxyCacheElement put(ProxyNode node)
+	    {
+	        VRL vrl=node.getVRL(); 
+            ProxyCacheElement cacheEl=new ProxyCacheElement(vrl,node);  
+            proxyCache.put(vrl,cacheEl);
+            return cacheEl; 
+        }
+
 	}
 	
     // ========================================================================
@@ -128,7 +174,7 @@ public abstract class ProxyFactory
     	}
 	    catch (VRLSyntaxException e)
 	    {
-	        throw new ProxyException("VRISyntaxException",e); 
+	        throw new ProxyException("VRLSyntaxException",e); 
 	    }          
 	}
 
@@ -158,7 +204,7 @@ public abstract class ProxyFactory
 	            // create new element
 	            if (cacheEl==null)
 	            {
-	                this.proxyCache.put(locator,cacheEl=new ProxyCacheElement(locator));
+	                cacheEl=this.proxyCache.createEntry(locator); 
                     logger.debugPrintf("+++ Cache: new element for:%s\n",locator); 
 	            }
 	            
@@ -172,25 +218,31 @@ public abstract class ProxyFactory
 	        {
 	            if (cacheEl.hasNode()==true)
 	            {
+                    // ====================
+                    // Cache hit 
+                    // ====================
+	                
 	                node = cacheEl.getNode();
 	                logger.debugPrintf("<<< Cache: Cache Hit: cached proxy node for:%s\n",locator);
 	                return node; 
 	            }
-	            
-                logger.debugPrintf(">>> Cache: START OpenLocation for:%s\n",locator);
-	              
-                // ====================
-	            // Actual openLocation
-                // ====================
-                {
-                	node=doOpenLocation(locator); 
-                	cacheEl.setNode(node); 
-                }
-                
-	            logger.debugPrintf(">>> Cache: FINISHED OpenLocation for:%s\n",locator);
+	            else
+	            {
+                    // ====================
+                    // Actual openLocation
+                    // ====================
+                    logger.debugPrintf(">>> Cache: START OpenLocation for:%s\n",locator);
+    	              
+                    {
+                    	node=doOpenLocation(locator); 
+                    	cacheEl.setNode(node); 
+                    }
+                    
+    	            logger.debugPrintf(">>> Cache: FINISHED OpenLocation for:%s\n",locator);
+	            }
 	        }
 	        
-	        // New Node: Perform prefetch here. 
+	        // New Node: Perform prefetch here, but outside mutex erea. 
 	        node.doPrefetchAttributes();
 	        
             return node; 
@@ -226,6 +278,35 @@ public abstract class ProxyFactory
     protected void handleException(String message, Exception e)
     {
         logger.logException(ClassLogger.ERROR, e, " %s\n",message); 
+    }    
+
+    protected boolean existsInCache(VRL vrl)
+    {
+        synchronized(proxyCache)
+        {
+            return proxyCache.exists(vrl);
+        }
+    }
+    
+    protected ProxyNode fetchFromCache(VRL locator)
+    {
+        synchronized(proxyCache)
+        {
+            ProxyCacheElement el = proxyCache.get(locator);
+            if (el==null)
+            {
+                return null;
+            }
+            return el.node; 
+        }
+    }
+
+    protected void updateCache(ProxyNode node)
+    {
+        synchronized(proxyCache)
+        {
+            proxyCache.put(node); 
+        }
     }
     
     // ========================================================================
@@ -237,6 +318,16 @@ public abstract class ProxyFactory
         return ProxyNodeDnDHandler.getInstance();
     }
     
+    // ========================================================================
+    // Proxy Node Events   
+    // ========================================================================
+    
+    public ProxyNodeEventNotifier getProxyNodeEventNotifier()
+    {
+        // Cross ProxyNode event notifier. 
+        return ProxyNodeEventNotifier.getInstance();
+    }
+    
 	// ========================================================================
 	// Abstract interface 
 	// ========================================================================
@@ -244,6 +335,7 @@ public abstract class ProxyFactory
 	abstract public ProxyNode doOpenLocation(VRL locator) throws ProxyException;
 
 	abstract public boolean canOpen(VRL locator,StringHolder reason);
+
 
 
 

@@ -53,7 +53,7 @@ public class ProxyNodeEvent
         return createChildsAddedEvent(parent,childs);
     }
 	
-	public static ProxyNodeEvent createChildDeletedEvent(VRL optionalParent,VRL childs[])
+	public static ProxyNodeEvent createChildsDeletedEvent(VRL optionalParent,VRL childs[])
     {
         ProxyNodeEvent event=new ProxyNodeEvent(ProxyNodeEventType.RESOURCES_DELETED);
         event.parent=optionalParent; 
@@ -70,6 +70,15 @@ public class ProxyNodeEvent
         return event; 
     }
     
+	public static ProxyNodeEvent createNodesDeletedEvent(VRL nodeVrls[])
+    {
+        ProxyNodeEvent event=new ProxyNodeEvent(ProxyNodeEventType.RESOURCES_DELETED);
+        // multi event without parent. 
+        event.parent=null;  
+        event.resources=nodeVrls; 
+        return event; 
+    }
+	
     public static ProxyNodeEvent createRefreshEvent(VRL optionalParent, VRL res)
     {
         ProxyNodeEvent event=new ProxyNodeEvent(ProxyNodeEventType.REFRESH_RESOURCES);

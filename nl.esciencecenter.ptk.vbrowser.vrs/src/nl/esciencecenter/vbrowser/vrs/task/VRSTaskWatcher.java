@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.task;
 
+import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
@@ -29,20 +30,16 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class VRSTaskWatcher extends TaskWatcher
 {
-    private static ClassLogger logger;
+    private static ClassLogger logger=ClassLogger.getLogger(TaskWatcher.class); 
     
     private static VRSTaskWatcher instance=null;
-    
-    static
-    {
-        logger=ClassLogger.getLogger(TaskWatcher.class); 
-    }
     
     public static VRSTaskWatcher getTaskWatcher()
     {
         if (instance==null)
         {
-            instance=new VRSTaskWatcher("VRSTaskWatcher"); 
+            instance=new VRSTaskWatcher("VRSTaskWatcher");
+            logger.setLevelToDebug(); 
         }
         
         return instance; 
@@ -53,5 +50,18 @@ public class VRSTaskWatcher extends TaskWatcher
         super(name); 
     }
     
+    @Override
+    public void notifyTaskStarted(ActionTask actionTask)
+    {
+        logger.errorPrintf("+++ notifyTaskStarted:%s\n", actionTask);
+        super.notifyTaskStarted(actionTask); 
+    }
     
+    @Override
+    public void notifyTaskTerminated(ActionTask actionTask)
+    {
+        logger.errorPrintf("--- notifyTaskTerminated:%s\n", actionTask);
+        super.notifyTaskTerminated(actionTask); 
+    }
+
 }

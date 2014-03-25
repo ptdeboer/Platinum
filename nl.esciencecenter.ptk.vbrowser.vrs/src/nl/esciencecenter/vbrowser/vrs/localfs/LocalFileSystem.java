@@ -27,9 +27,7 @@ import java.io.OutputStream;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
-import nl.esciencecenter.vbrowser.vrs.node.VFSPathNode;
 import nl.esciencecenter.vbrowser.vrs.node.VFileSystemNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -66,10 +64,8 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
     @Override
     public OutputStream createOutputStream(VRL vrl) throws VrsException
     {
-        return createVFSNode(vrl).createOutputStream();  
+        return createVFSNode(vrl).createOutputStream(false);  
     }
-
-
     
 
 }

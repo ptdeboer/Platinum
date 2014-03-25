@@ -40,7 +40,7 @@ public interface VPath
         
     public String getResourceType() throws VrsException; 
 
-    public VResourceSystem VResourceSystem() throws VrsException; 
+    public VResourceSystem getResourceSystem() throws VrsException; 
 
     public VRL resolvePathVRL(String path) throws VrsException; 
 
@@ -66,6 +66,13 @@ public interface VPath
 
     public List<String> getAttributeNames() throws VrsException;
 
+    /** 
+     * Refresh cached attributes and sync with local resources. 
+     * @return true if sync is supported and sync was successful. false if not supported or not applicable.  
+     * @throws VrsException 
+     */
+    public boolean sync() throws VrsException;  
+    
     // =====================
     // Delete/Rename 
     // =====================

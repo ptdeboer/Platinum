@@ -75,7 +75,7 @@ public class VPathNode implements VPath
         return vrl.toURINoException(); 
     }
     
-    public VResourceSystem VResourceSystem()
+    public VResourceSystem getResourceSystem()
     {
         return this.resourceSystem; 
     }
@@ -277,6 +277,12 @@ public class VPathNode implements VPath
     public VPath renameTo(String nameOrPath) throws VrsException
     {
         throw new VrsException("Can not rename:"+nameOrPath); 
+    }
+
+    @Override
+    public boolean sync() throws VrsException
+    {
+        return false;
     }
 
 }

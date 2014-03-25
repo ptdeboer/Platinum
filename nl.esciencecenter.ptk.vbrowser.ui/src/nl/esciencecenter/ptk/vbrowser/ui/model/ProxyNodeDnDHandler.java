@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.model;
 
-import java.awt.Point;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;

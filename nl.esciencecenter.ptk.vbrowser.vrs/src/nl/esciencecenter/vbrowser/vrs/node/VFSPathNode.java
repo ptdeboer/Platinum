@@ -70,7 +70,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         super(fileSystem, vrl);
     }
 
-    public VFileSystem getVFileSystem()
+    public VFileSystem getFileSystem()
     {
         return (VFileSystem) resourceSystem;
     }
@@ -82,9 +82,10 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
     }
 
     @Override
-    public VFSPath resolvePath(String path) throws VrsException
+    public VFSPath resolvePath(String relativePath) throws VrsException
     {
-        return getVFileSystem().resolvePath(path);
+        VRL resolvedVrl=vrl.resolvePath(relativePath);  
+        return getFileSystem().resolvePath(resolvedVrl); 
     }
 
     @Override
@@ -323,6 +324,11 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
     {
         VFSPath newPath=this.resolvePath(nameOrPath); 
         return this.renameTo(newPath); 
+    }
+    
+    public String toString()
+    {
+        return "<VFSPathNode>:[vrl="+getVRL()+"]"; 
     }
     
     // ===================

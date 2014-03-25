@@ -23,10 +23,14 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.data.Holder;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEvent;
+import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -35,26 +39,77 @@ public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler
 {
     protected VRSTranferManager vrsManager; 
     
-    public VRSProxyNodeDnDHandler(VRSTranferManager vrsTaskManager)
+    protected VRSProxyFactory proxyFactory; 
+    
+    public VRSProxyNodeDnDHandler(VRSProxyFactory vrsProxyFactory, VRSTranferManager vrsTaskManager)
     {
         vrsManager=vrsTaskManager; 
+        proxyFactory=vrsProxyFactory;
     }
     
     @Override
     public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls, ITaskMonitor taskMonitor) throws ProxyException
      {
-        VRL destVrl=targetDropNode.getVRL(); 
-                
+        VRL destVrl=targetDropNode.getVRL();
+        
+        Holder<VPath> destPathH=new Holder<VPath>(); 
+        Holder<List<VPath>>resultNodesH = new Holder<List<VPath>>(); 
+        Holder<List<VPath>>deletedNodesH = new Holder<List<VPath>>(); 
+        
         if (dropAction==DropAction.LINK)
         {
-            vrsManager.doLinkDrop(vrls,destVrl, taskMonitor);
+            try
+            {
+                boolean result = vrsManager.doLinkDrop(vrls,destVrl, destPathH,resultNodesH,taskMonitor);
+                
+                if (result)
+                {
+                    // register proxy nodes: 
+                    ProxyNode targetNode = proxyFactory.updateProxyNode(destPathH.value,true); 
+
+                    // register proxy nodes: 
+                    List<ProxyNode> dropNodes=proxyFactory.updateProxyNodes(resultNodesH.value,true);
+                    this.fireNewNodesEvent(targetNode,dropNodes); 
+                }
+                
+                return result;  
+            }
+            catch (VrsException e)
+            {
+                throw new ProxyException(e.getMessage(),e); 
+            }
         }
         else if (dropAction==DropAction.COPY || dropAction==DropAction.MOVE || dropAction==DropAction.COPY_PASTE || dropAction==DropAction.CUT_PASTE)
         {
             boolean isMove=( (dropAction==DropAction.MOVE) || (dropAction==DropAction.CUT_PASTE));
             try
             {
-                vrsManager.doCopyMove(vrls,destVrl, isMove,taskMonitor);
+                boolean result=vrsManager.doCopyMove(vrls,destVrl, isMove,destPathH,resultNodesH,deletedNodesH,taskMonitor);
+             
+                if (result)
+                {
+                    if (destPathH.value==null)
+                    {
+                        throw new VrsException("CopyMove has NULL destination path holder value!"); 
+                    }
+                    if (resultNodesH.value==null)
+                    {
+                        throw new VrsException("CopyMove has NULL destination nodes holder value!"); 
+                    }
+                    
+                    // register proxy nodes: 
+                    ProxyNode targetNode = proxyFactory.updateProxyNode(destPathH.value,true); 
+
+                    // register proxy nodes: 
+                    List<ProxyNode> dropNodes=proxyFactory.updateProxyNodes(resultNodesH.value,true);
+                    this.fireNewNodesEvent(targetNode,dropNodes); 
+                    
+                    if ((deletedNodesH.value!=null) && (deletedNodesH.value.size()>0)) 
+                    {
+                        List<ProxyNode> deletedNodes=proxyFactory.updateProxyNodes(deletedNodesH.value,true);
+                        this.fireNodesDeletedEvent(deletedNodes); 
+                    }
+                }
             }
             catch (VrsException e)
             {
@@ -68,5 +123,17 @@ public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler
         }
         
         return true; 
+    }
+
+    public void fireNewNodesEvent(ProxyNode targetNode, List<ProxyNode> dropNodes)
+    {
+        ProxyNodeEvent event=ProxyNodeEvent.createChildsAddedEvent(targetNode.getVRL(), ProxyNode.toVRLArray(dropNodes)); 
+        proxyFactory.getProxyNodeEventNotifier().scheduleEvent(event);
+    }
+    
+    public void fireNodesDeletedEvent(List<ProxyNode> deletedNodes)
+    {
+        ProxyNodeEvent event=ProxyNodeEvent.createNodesDeletedEvent(ProxyNode.toVRLArray(deletedNodes)); 
+        proxyFactory.getProxyNodeEventNotifier().scheduleEvent(event);
     }
 }

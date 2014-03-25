@@ -35,7 +35,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public interface VFSPath extends VPath
 {
     // downcast to VFileSystem. 
-    public VFileSystem getVFileSystem() throws VrsException; 
+    public VFileSystem getFileSystem() throws VrsException; 
     
     @Override
     public VRL resolvePathVRL(String path) throws VrsException; 
@@ -58,6 +58,8 @@ public interface VFSPath extends VPath
     public abstract boolean isFile(LinkOption... linkOptions) throws VrsException; 
  
     public abstract boolean exists(LinkOption... linkOptions) throws VrsException; 
+    
+    public abstract long getLength(LinkOption... linkOptions) throws VrsException; 
     
     public abstract List<? extends VFSPath> list() throws VrsException; 
  

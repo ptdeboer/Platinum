@@ -58,5 +58,35 @@ public abstract class VResourceSystemNode extends VPathNode implements VResource
     {
         return vrsContext.getResourceSystemInfoFor(getVRL(), true);
     }
+
+    @Override
+    public int hashCode()
+    {
+        return this.getServerVRL().hashCode(); 
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (this == other)
+            return true;
+        if (other == null)
+            return false;
+        if (getClass() != other.getClass())
+            return false;
+
+        if ((other instanceof VResourceSystem)==false)
+            return false; 
+        
+        VResourceSystem otherRS=(VResourceSystem)other;
+        // equal Server VRL means equal.
+        return this.getServerVRL().equals(otherRS.getServerVRL());
+    }
  
+    public String toString()
+    {
+        return "<VResourceSystem>[serverVrl="+getServerVRL()+"]"; 
+    }
+    
+
 }
