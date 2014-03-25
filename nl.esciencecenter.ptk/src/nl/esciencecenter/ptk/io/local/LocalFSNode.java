@@ -30,7 +30,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -194,9 +196,24 @@ public class LocalFSNode extends FSNode
     }
 
     @Override
-    public OutputStream createOutputStream() throws IOException
+    public OutputStream createOutputStream(boolean append) throws IOException
     {
-        return Files.newOutputStream(_path); // OpenOptions..
+        int n=3; 
+        if (append)
+            n=4; 
+        
+        OpenOption openOptions[]=new OpenOption[n];
+        
+        openOptions[0]=StandardOpenOption.WRITE; 
+        openOptions[1]=StandardOpenOption.CREATE;  // create if not exists 
+        openOptions[2]=StandardOpenOption.TRUNCATE_EXISTING; 
+        
+        if (append)
+        {
+            openOptions[3]=StandardOpenOption.APPEND; 
+        }
+                
+        return Files.newOutputStream(_path,openOptions); // OpenOptions..
     }
 
     @Override

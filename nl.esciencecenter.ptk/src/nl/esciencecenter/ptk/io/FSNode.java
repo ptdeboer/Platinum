@@ -185,7 +185,7 @@ public abstract class FSNode
         throw new Error("Not supported: createInputStream() of:" + this);
     }
 
-    public OutputStream createOutputStream() throws IOException
+    public OutputStream createOutputStream(boolean append) throws IOException
     {
         throw new Error("Not supported: createOutputStream() of:" + this);
     }
@@ -232,8 +232,8 @@ public abstract class FSNode
     {
         byte bytes[] = new byte[0];
 
-        // create file by writing zero bytes:
-        OutputStream outps = this.createOutputStream();
+        // Default way to create a file is by writing zero bytes:
+        OutputStream outps = this.createOutputStream(false);
         outps.write(bytes);
         outps.close();
 

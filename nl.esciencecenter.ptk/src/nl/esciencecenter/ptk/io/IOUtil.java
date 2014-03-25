@@ -129,23 +129,23 @@ public class IOUtil
      */
     public static long copyStreams(InputStream input, OutputStream output, boolean autoCloseStreams) throws IOException
     {
-        return directStreamCopy(null, input, output, defaultBufferSize, -1, autoCloseStreams);
+        return directStreamCopy(input, output, defaultBufferSize, -1, autoCloseStreams, null);
     }
 
-    public static long circularCopyStreams(InputStream input, OutputStream output, boolean autoCloseStreams) throws IOException
+    public static long circularStreamCopy(InputStream input, OutputStream output, boolean autoCloseStreams) throws IOException
     {
-        return circularStreamCopy(null, input, output, -1, defaultBufferSize, autoCloseStreams);
+        return circularStreamCopy(input, output, -1, defaultBufferSize, autoCloseStreams, null);
     }
 
     public static long copyStreams(
-            ITaskMonitor monitor,
             int bufSize,
             long nrBytes,
             InputStream input,
             OutputStream output,
-            boolean autoClose) throws IOException
+            boolean autoClose,
+            ITaskMonitor monitor) throws IOException
     {
-        return directStreamCopy(monitor, input, output, bufSize, nrBytes, autoClose);
+        return directStreamCopy(input, output, bufSize, nrBytes, autoClose, monitor);
         // return
         // circularStreamCopy(null,input,output,-1,defaultBufferSize,true);
     }
@@ -168,12 +168,13 @@ public class IOUtil
      *            copy.
      * @throws IOException
      */
-    public static long directStreamCopy(ITaskMonitor monitor,
+    public static long directStreamCopy(
             InputStream input,
             OutputStream output,
             int bufSize,
             long totalToTransfer, // -1 => continue
-            boolean autoClose) throws IOException
+            boolean autoClose, 
+            ITaskMonitor monitor) throws IOException
     {
         logger.debugPrintf("directStreamCopy():START: bufSize=%d,totalToTransfer=%d\n", bufSize, totalToTransfer);
 
@@ -287,13 +288,11 @@ public class IOUtil
      * background to enable full duplex reading and writing.
      */
     public static long circularStreamCopy(
-            ITaskMonitor monitor,
             InputStream inps,
             OutputStream outps,
             long nrToTransfer,
             int bufferSize,
-            boolean autoClose) throws IOException
-
+            boolean autoClose, ITaskMonitor monitor) throws IOException
     {
         logger.debugPrintf("circularStreamCopy():START: bufSize=%d, totalToTransfer=%d\n", bufferSize, nrToTransfer);
 
@@ -334,8 +333,10 @@ public class IOUtil
             int optimalReadChunkSize = 1024 * 1024;
 
             if (optimalReadChunkSize > 0)
+            {
                 cbuffer.setMaxReadChunkSize(optimalReadChunkSize);
-
+            }
+            
             logger.debugPrintf(" + streamCopy transferSize   =%d\n", nrToTransfer);
             logger.debugPrintf(" + streamCopy readChunkSize  =%d\n", cbuffer.getReadChunkSize());
             logger.debugPrintf(" + streamCopy writeChunkSize =%d\n", cbuffer.getWriteChunkSize());
@@ -572,6 +573,42 @@ public class IOUtil
         logger.debugPrintf("syncReadBytes: Finished totalRead=%d\n", totalRead);
 
         return totalRead;
+    }
+
+    public static void autoClose(InputStream inps)
+    {
+        if (inps==null)
+        {
+            return;
+        }
+        
+        try 
+        { 
+            inps.close();  
+        }
+        catch (IOException e)
+        {
+            logger.logException(ClassLogger.DEBUG, e,  "Exception when closing input stream:%s\n",inps); 
+        }
+        
+    }
+
+    public static void autoClose(OutputStream outps)
+    {
+        if (outps==null)
+        {
+            return;
+        }
+        
+        try 
+        { 
+            outps.close();  
+        }
+        catch (IOException e)
+        {
+            logger.logException(ClassLogger.DEBUG, e,  "Exception when closing output stream:%s\n",outps); 
+        }
+        
     }
 
 }

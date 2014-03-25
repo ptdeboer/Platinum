@@ -123,12 +123,15 @@ public class TaskWatcher implements ITaskSource
         {
             this.terminatedTasks.add(actionTask);
         }
+        
         synchronized (this.terminatedTasks)
         {
             if (this.terminatedTasks.size() > maxTerminatedTasks)
             {
-                for (int i = 0; i < maxTerminatedTasks; i++)
+                for (int i = 0; (i < maxTerminatedTasks) && (terminatedTasks.size()>0) ; i++)
+                {
                     terminatedTasks.remove(0); // not efficient array remove.
+                }
             }
         }
 

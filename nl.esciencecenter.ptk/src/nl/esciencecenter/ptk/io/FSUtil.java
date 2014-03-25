@@ -155,7 +155,7 @@ public class FSUtil implements ResourceProvider
     public void copyFile(URI source, URI destination) throws IOException
     {
         InputStream finput = newFSNode(source).createInputStream();
-        OutputStream foutput = newFSNode(destination).createOutputStream();
+        OutputStream foutput = newFSNode(destination).createOutputStream(false);
 
         IOUtil.copyStreams(finput, foutput, false);
 
@@ -393,7 +393,7 @@ public class FSUtil implements ResourceProvider
      */
     public OutputStream createOutputStream(String filename) throws IOException, FileURISyntaxException
     {
-        return newFSNode(filename).createOutputStream();
+        return newFSNode(filename).createOutputStream(false);
     }
 
     public RandomReader createRandomReader(FSNode node) throws IOException
@@ -480,7 +480,7 @@ public class FSUtil implements ResourceProvider
         
         FSNode file = newFSNode(filename);
 
-        OutputStream foutps = file.createOutputStream();
+        OutputStream foutps = file.createOutputStream(false);
         int len=0; 
         
         try
@@ -669,7 +669,7 @@ public class FSUtil implements ResourceProvider
     {
         if (isLocalFSUri(uri))
         {
-            return localFSHandler.newFSNode(uri).createOutputStream();
+            return localFSHandler.newFSNode(uri).createOutputStream(false);
         }
         else
         {
