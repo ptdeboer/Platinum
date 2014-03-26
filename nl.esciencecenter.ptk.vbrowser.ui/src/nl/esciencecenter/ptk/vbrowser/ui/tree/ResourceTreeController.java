@@ -51,7 +51,7 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
 
     public void handleNodeActionEvent(ViewNode node, Action action)
     {
-        this.browser.handleNodeAction(node, action);
+        this.browser.handleNodeAction(tree, node, action);
     }
 
     // From TreeExpansionListener
@@ -82,7 +82,7 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
 
     public BrowserInterface getBrowserInterface()
     {
-        return browser; 
+        return browser;
     }
 
 }

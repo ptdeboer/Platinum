@@ -20,7 +20,9 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.actionmenu;
 
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
+
 public interface ActionMenuListener
 {
-	void handleMenuAction(Action theAction); 
+	void handleMenuAction(ViewNodeComponent viewComp, Action theAction); 
 }

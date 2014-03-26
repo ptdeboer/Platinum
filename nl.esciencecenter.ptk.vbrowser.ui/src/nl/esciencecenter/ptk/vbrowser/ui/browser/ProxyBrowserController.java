@@ -49,6 +49,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -98,12 +99,16 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
     }
 
-    public class ActionHandler implements ActionListener
+    public class GlobalMenuActionHandler implements ActionListener
     {
+        public GlobalMenuActionHandler()
+        {
+        }
+        
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            ProxyBrowserController.this.handleActionEvent(e);
+            ProxyBrowserController.this.handleGlobalMenuBarEvent(e);
         }
     }
 
@@ -186,7 +191,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     private void init(BrowserPlatform platform, boolean show)
     {
         this.platform = platform;
-        this.browserFrame = new BrowserFrame(this, new ActionHandler());
+        this.browserFrame = new BrowserFrame(this, new GlobalMenuActionHandler());
         this.taskWatcher = new ProxyBrowserTaskWatcher(this);
         this.browserFrame.addWindowListener(new BrowserFrameListener());
         browserFrame.setNavigationBarListener(new NavBarHandler());
@@ -232,23 +237,23 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     /**
      * Event from Menu Bar
      */
-    public void handleActionEvent(ActionEvent e)
+    public void handleGlobalMenuBarEvent(ActionEvent e)
     {
         Action theAction = Action.createFrom(getCurrentViewNode(), e);
-        handleAction(theAction);
+        handleAction(null,theAction);
     }
 
     @Override
-    public void handleMenuAction(Action theAction)
+    public void handleMenuAction(ViewNodeComponent viewComp,Action theAction)
     {
-        handleAction(theAction);
+        handleAction(viewComp,theAction);
     }
 
-    public void handleAction(Action theAction)
+    public void handleAction(ViewNodeComponent viewComp,Action theAction)
     {
         logger.debugPrintf(">>> ActionPerformed:%s\n", theAction);
         ViewNode source = theAction.getActionSource();
-        handleNodeAction(source, theAction);
+        handleNodeAction(viewComp,source, theAction);
     }
 
     public void handleNavBarEvent(ActionEvent e)
@@ -283,12 +288,12 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         if (meth != null)
         {
             Action action = Action.createGlobalAction(meth);
-            handleAction(action);
+            handleAction(null,action);
         }
     }
 
     @Override
-    public void handleNodeAction(ViewNode node, Action action)
+    public void handleNodeAction(ViewNodeComponent viewComp,ViewNode node, Action action)
     {
         logger.debugPrintf(">>> nodeAction: %s on:%s\n", action, node);
         boolean global = false;
@@ -332,7 +337,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 doDefaultAction(node);
                 break;
             case DELETE_SELECTION:
-                this.proxyActionHandler.handleDeleteSelection(action, node);
+                this.proxyActionHandler.handleDeleteSelection(viewComp,action, node);
                 break;
             case OPEN_LOCATION:
                 doDefaultAction(node);

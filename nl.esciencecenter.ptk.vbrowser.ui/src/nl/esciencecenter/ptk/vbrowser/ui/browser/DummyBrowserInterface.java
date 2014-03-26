@@ -33,6 +33,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -70,7 +71,7 @@ public class DummyBrowserInterface  implements BrowserInterface
     }
 
     @Override
-    public void handleNodeAction(ViewNode node, Action action)
+    public void handleNodeAction(ViewNodeComponent viewComp, ViewNode node, Action action)
     {
         logger.errorPrintf("handleNodeAction:%s", node); 
     }

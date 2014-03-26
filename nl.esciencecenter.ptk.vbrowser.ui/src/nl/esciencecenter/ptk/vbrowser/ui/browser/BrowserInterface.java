@@ -30,27 +30,28 @@ import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface BrowserInterface
 {
-    /** 
+    /**
      * Returns master platform this browser is associated with
-     */ 
-    public BrowserPlatform getPlatform(); 
-    
-    public void handleException(String actionText,Throwable exception);
+     */
+    public BrowserPlatform getPlatform();
 
-	public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode,boolean canvasMenu);
+    public void handleException(String actionText, Throwable exception);
 
-    public void handleNodeAction(ViewNode node, Action action);
+    public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode, boolean canvasMenu);
+
+    public void handleNodeAction(ViewNodeComponent viewComponent, ViewNode node, Action action);
 
     /**
-     *  Return simple UI Interface 
-     */ 
+     * Return simple UI Interface
+     */
     public UI getUI();
 
-    public boolean doDrop(Component uiComponent, Point optPoint,ViewNode viewNode, DropAction dropAction, List<VRL> vris); 
+    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris);
 
 }

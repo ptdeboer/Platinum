@@ -32,6 +32,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -70,42 +71,34 @@ public class ProxyActionHandler
         logger.debugPrintf("*** Copy Selection:%s\n", node);
     }
 
-    public void handleDeleteSelection(Action action, ViewNode node)
+    public void handleDeleteSelection(ViewNodeComponent viewComp,Action action, ViewNode node)
     {
         Object source = action.getEventSource();
 
-        logger.errorPrintf("FIXME: *** Delete Selection: %s\n", node);
+        logger.debugPrintf("Delete Selection: %s\n", node);
+        ViewNode selections[] = ((ViewNodeContainer)viewComp).getNodeSelection();
 
-//        if ((source instanceof ViewNodeContainer)==false) 
-//        {
-//            proxyBrowser.handleException("Object source if NOT a ViewNodeContainer!:"+source,new ProxyException("Invalid ViewNodeContainer source"));
-//            return;
-//        }
+        final VRL vrls[]=ViewNode.toVRLs(selections); 
         
-//        ViewNodeContainer container = (ViewNodeContainer) source;
-//        ViewNode selections[] = container.getNodeSelection();
-//
-//        final VRL vrls[]=ViewNode.toVRLs(selections); 
-//        
-//        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Deleting resources")
-//        {
-//            @Override
-//            protected void doTask()
-//            {
-//                try
-//                {
-//                    doDeleteNodes(vrls, this.getTaskMonitor());
-//                }
-//                catch (Throwable e)
-//                {
-//                    proxyBrowser.handleException("Couldn't delete resources.", e);
-//                }
-//            }
-//
-//        };
-//
-//        task.startTask();
-//        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
+        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Deleting resources")
+        {
+            @Override
+            protected void doTask()
+            {
+                try
+                {
+                    doDeleteNodes(vrls, this.getTaskMonitor());
+                }
+                catch (Throwable e)
+                {
+                    proxyBrowser.handleException("Couldn't delete resources.", e);
+                }
+            }
+
+        };
+
+        task.startTask();
+        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
         
 
@@ -273,6 +266,7 @@ public class ProxyActionHandler
                 // must notify parent as well !
                 fireDeletedNodeEvent(parentNode, delNode);
                 taskMonitor.updateSubTaskDone(taskStr, 1);
+                taskMonitor.logPrintf(" - deleted:%s\n",vrl); 
                 taskMonitor.endSubTask(taskStr);
             }
             catch (Throwable ex)

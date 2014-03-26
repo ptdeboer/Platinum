@@ -98,7 +98,7 @@ public class BrowserFrame extends JFrame
         {
             // redirect to ProxyBrowser controller: 
             // actionListener.actionPerformed(new ActionEvent(tabPane,e.getID(),e.getActionCommand()));
-            actionListener.actionPerformed(e);
+            menuActionListener.actionPerformed(e);
         }
     }
     
@@ -114,7 +114,7 @@ public class BrowserFrame extends JFrame
     private NavigationBar uiNavigationBar;
 	private JTabbedPane uiLeftTabPane;
 	private JMenuBar uiMainMenuBar;
-	private ActionListener actionListener;
+	private ActionListener menuActionListener;
 
     private JToolBar uiViewBar;
 
@@ -129,7 +129,7 @@ public class BrowserFrame extends JFrame
 	public BrowserFrame(BrowserInterface controller,ActionListener actionListener)
 	{
 		this.browserController=controller;
-		this.actionListener=actionListener; 
+		this.menuActionListener=actionListener; 
 		initGUI();
 	}
 	
@@ -142,7 +142,7 @@ public class BrowserFrame extends JFrame
 			this.uiMainPanel.setLayout(new BorderLayout()); 
 			
 			{
-				   uiMainMenuBar = createMenuBar(actionListener);
+				   uiMainMenuBar = createMenuBar(menuActionListener);
 				   setJMenuBar(uiMainMenuBar);
 			}
 			{
@@ -178,7 +178,7 @@ public class BrowserFrame extends JFrame
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons.png"));
                             uiViewAsIconsBtn.setActionCommand(ActionMethod.VIEW_AS_ICONS.toString());
-                            uiViewAsIconsBtn.addActionListener(actionListener);
+                            uiViewAsIconsBtn.addActionListener(menuActionListener);
                            // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
                         {
@@ -187,7 +187,7 @@ public class BrowserFrame extends JFrame
                             // viewAsIconRows.setText("ICR");
                             uiViewAsIconListBtn.setIcon(loadIcon("menu/viewasiconlist_medium.png"));
                             uiViewAsIconListBtn.setActionCommand(ActionMethod.VIEW_AS_ICON_LIST.toString());
-                            uiViewAsIconListBtn.addActionListener(actionListener);
+                            uiViewAsIconListBtn.addActionListener(menuActionListener);
                             uiViewAsIconListBtn.setEnabled(true);
                         }
                         {
@@ -195,7 +195,7 @@ public class BrowserFrame extends JFrame
                             uiViewBar.add(uiViewAsTableBtn);
                             // viewAsListBut.setText("AL");
                             uiViewAsTableBtn.setActionCommand(ActionMethod.VIEW_AS_TABLE.toString());
-                            uiViewAsTableBtn.addActionListener(actionListener);
+                            uiViewAsTableBtn.addActionListener(menuActionListener);
                             uiViewAsTableBtn.setIcon(loadIcon("menu/viewastablelist.png"));
                             //uiViewAsTableBtn.setEnabled(false); 
                            // uiViewAsTableBtn.setToolTipText(Messages.TT_VIEW_AS_TABLE);

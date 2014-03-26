@@ -227,7 +227,7 @@ public class ActionMenu extends JPopupMenu
         {
             String cmdStr = e.getActionCommand();
             Action theAction = Action.createFrom(viewComp.getViewNode(), e);
-            menuActionListener.handleMenuAction(theAction);
+            menuActionListener.handleMenuAction(viewComp,theAction);
 
         }
     }

@@ -20,8 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
-import javax.swing.JPopupMenu;
-
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -29,22 +27,20 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
 public class IconsPanelController implements ViewNodeActionListener
 {
-	private BrowserInterface browser;
-	
-	private IconsPanel iconsPanel;
+    private BrowserInterface browser;
 
-	public IconsPanelController(BrowserInterface browser, IconsPanel iconsPanel) 
-	{
-		this.browser=browser; 
-		this.iconsPanel=iconsPanel;
-	}
+    private IconsPanel iconsPanel;
+
+    public IconsPanelController(BrowserInterface browser, IconsPanel iconsPanel)
+    {
+        this.browser = browser;
+        this.iconsPanel = iconsPanel;
+    }
 
     @Override
     public void handleNodeActionEvent(ViewNode node, Action action)
     {
-        this.browser.handleNodeAction(node,action); 
+        this.browser.handleNodeAction(iconsPanel, node, action);
     }
-
-	
 
 }
