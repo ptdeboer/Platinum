@@ -26,11 +26,11 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Combines DataSource and AttributeDataSource and adds Presentation.  
+ * Combined DataSource and AttributeDataSource and adds Presentation.  
  * 
  * @author Piter T. de Boer. 
  */
-public interface ExtendedDataSource extends DataSource, AttributeDataSource
+public interface ExtendedDataSource extends ViewNodeSource, AttributeDataSource
 {
     Presentation getPresentation() throws ProxyException;
 

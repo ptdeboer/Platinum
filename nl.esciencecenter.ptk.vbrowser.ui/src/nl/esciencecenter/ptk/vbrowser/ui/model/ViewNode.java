@@ -45,6 +45,20 @@ public class ViewNode
 
     public static final String SELECTED_FOCUS_ICON = "selectedFocusIcon";
 
+    public static VRL[] toVRLs(ViewNode[] selections)
+    {
+        VRL vrls[]=new VRL[selections.length]; 
+        for (int i=0;i<selections.length;i++)
+        {
+            vrls[i]=selections[i].getVRL(); 
+        }
+        return vrls; 
+    }
+
+    // ==========
+    // Instance
+    // ==========
+
     /**
      * Atomic Locator, never changes during the lifetime of this object.
      */
@@ -88,6 +102,11 @@ public class ViewNode
         return locator;
     }
 
+    public boolean matches(VRL vrl)
+    {
+        return locator.equals(vrl);
+    }
+
     public boolean isComposite()
     {
         return isComposite;
@@ -96,6 +115,11 @@ public class ViewNode
     public String getName()
     {
         return name;
+    }
+
+    public void setName(String newName)
+    {
+        name = newName;
     }
 
     public void setResourceType(String resourceType)
@@ -186,4 +210,5 @@ public class ViewNode
         return "ViewNode [locator=" + locator + ", isComposite=" + isComposite + ", name=" + name + ", resourceType=" + resourceType
                 + ", resourceStatus=" + resourceStatus + ", mimeType=" + mimeType + ", allowedChildTypes=" + allowedChildTypes + "]";
     }
+
 }

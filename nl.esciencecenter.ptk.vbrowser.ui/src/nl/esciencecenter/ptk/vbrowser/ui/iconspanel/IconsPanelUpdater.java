@@ -20,22 +20,23 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
-import nl.esciencecenter.ptk.vbrowser.ui.model.DataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class IconsPanelUpdater implements VRSEventListener 
 {
-	private DataSource dataSource;
+	private ViewNodeSource dataSource;
 	
 	private IconsPanel iconsPanel;
 
 	private ViewNode rootNode;
 
-	public IconsPanelUpdater(IconsPanel panel,DataSource dataSource) 
+	public IconsPanelUpdater(IconsPanel panel,ViewNodeSource dataSource) 
 	{
 		this.iconsPanel=panel; 
 		this.dataSource=dataSource;
@@ -53,7 +54,7 @@ public class IconsPanelUpdater implements VRSEventListener
 		return this.iconsPanel.getUIViewModel(); 		
 	}
 	
-	public void setDataSource(DataSource dataSource,boolean update)
+	public void setDataSource(ViewNodeSource dataSource,boolean update)
 	{
 		// unregister
 		if (this.dataSource!=null)
@@ -72,12 +73,50 @@ public class IconsPanelUpdater implements VRSEventListener
 	@Override
 	public void notifyVRSEvent(VRSEvent e) 
 	{
-		System.err.println("FIXME: DataSourceEvent:"+e); 
-		refresh(); 
+	    VRL vrls[]=e.getResources(); 
+	    VRL parent=e.getParent(); 
+	    	    
+	    // check parent: 
+	    if ( (parent!=null) && (rootNode.getVRL().equals(parent)==false))
+	    {
+	        return; 
+	    }
+	    
+	    switch (e.getType())
+	    {
+	        case RESOURCES_ADDED: 
+	        {
+	            refresh(); 
+	            break; 
+	        }
+	        case RESOURCES_DELETED:
+	        {
+	            deleteChilds(vrls); 
+	            break; 
+	        }
+	        default: 
+	        {
+	            refresh(); 
+	            break; 
+	        }
+	    }
 	}
 
 
-	public void refresh()
+	private void deleteChilds(VRL[] vrls)
+    {
+	    IconListModel model = iconsPanel.getModel(); 
+	    
+	    for (VRL vrl:vrls)
+	    {
+	        this.iconsPanel.getModel().deleteItem(vrl,true);
+	    }
+	    
+	    iconsPanel.revalidate(); 
+    }
+
+
+    public void refresh()
 	{
 	    updateRoot(); 
 	    iconsPanel.revalidate(); 
@@ -105,7 +144,7 @@ public class IconsPanelUpdater implements VRSEventListener
 
 	private void updateChilds(ViewNode[] childs) 
 	{
-		this.iconsPanel.getModel().setChilds(createIconItems(childs));   
+	    this.iconsPanel.getModel().setItems(createIconItems(childs));   
 	}
 
 	private IconItem[] createIconItems(ViewNode[] nodes)
@@ -138,7 +177,7 @@ public class IconsPanelUpdater implements VRSEventListener
 		
 	}
 
-	public DataSource getDataSource() 
+	public ViewNodeSource getDataSource() 
 	{
 		return this.dataSource; 
 	}

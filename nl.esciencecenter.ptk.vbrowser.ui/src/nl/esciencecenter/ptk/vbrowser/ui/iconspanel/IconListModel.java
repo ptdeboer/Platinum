@@ -28,140 +28,204 @@ import javax.swing.event.ListDataListener;
 
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class IconListModel // implements ListModel 
+public class IconListModel // implements ListModel
 {
-	protected Vector<IconItem> icons=new Vector<IconItem>();  
-	
-	protected Vector<ListDataListener> listeners=new Vector<ListDataListener>(); 
-	
-	public IconListModel()
-	{
-		
-	}
-	
-	//@Override
-	public int getSize()
-	{
-		return icons.size();
-	}
+    protected Vector<IconItem> icons = new Vector<IconItem>();
 
-	//@Override
-	public IconItem getElementAt(int index) 
-	{
-		return icons.get(index); 
-	}
+    protected Vector<ListDataListener> listeners = new Vector<ListDataListener>();
 
-	//@Override
-	public void addListDataListener(ListDataListener l) 
-	{
-		listeners.add(l); 
-	}
+    public IconListModel()
+    {
 
-	//@Override
-	public void removeListDataListener(ListDataListener l) 
-	{
-		listeners.remove(l); 
-	}
+    }
 
-	public ListDataListener[] getListeners()
-	{
-		synchronized(this.listeners)
-		{
-			ListDataListener _arr[]=new ListDataListener[this.listeners.size()]; 
-			_arr=this.listeners.toArray(_arr); 
-			return _arr;
-		}
-	}
-	
-	public void setChilds(IconItem[] childs)
-	{
-		if (this.icons==null)
-		{
-			icons=new Vector<IconItem>();
-		}
-		else
-		{
-			synchronized(this.icons)
-			{
-				icons.clear(); 
-			}
-		}
-		
-		synchronized(this.icons)
-		{
-			// add child and fire event per child if this is an incremental update;
-			if (childs!=null)
-				for (IconItem child:childs)
-				{
-					addChild(child,false); 
-				}
-		}
-		
-		this.uiFireContentsChanged(); 
-	}
-	
-	public void addChild(IconItem child,boolean fireEvent) 
-	{
-		int pos;
-		
-		synchronized(icons)
-		{
-			pos=this.icons.size(); 
-			this.icons.add(child); 
-		}
-		
-		if (fireEvent)
-			uiFireChildAdded(child,pos);
-	}
-	
-	public void uiFireChildAdded(final IconItem icon, final int pos)
-	{
-		if (UIGlobal.isGuiThread()==false)
-		{
-			Runnable updater=new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					uiFireChildAdded(icon,pos);
-				}
-			};
-			
-			UIGlobal.swingInvokeLater(updater); 
-			return; 
-		}
-		
-		// range is inclusive: [pos,pos]
-		ListDataEvent event=new ListDataEvent(this,ListDataEvent.INTERVAL_ADDED,pos, pos); 
-		
-		for (ListDataListener l:getListeners())
-			l.intervalAdded(event);
-	}
-	
-	public void uiFireContentsChanged()
-	{
-		if (UIGlobal.isGuiThread()==false)
-		{
-			Runnable updater=new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					uiFireContentsChanged();
-				}
-			};
-			
-			UIGlobal.swingInvokeLater(updater); 
-			return; 
-		}
-		
-		// range is inclusive: [pos,pos]
-		ListDataEvent event=new ListDataEvent(this,ListDataEvent.CONTENTS_CHANGED,0,icons.size()-1); 
-		
-		for (ListDataListener l:getListeners())
-			l.contentsChanged(event);
-	}
+    // @Override
+    public int getSize()
+    {
+        return icons.size();
+    }
 
+    // @Override
+    public IconItem getElementAt(int index)
+    {
+        return icons.get(index);
+    }
+
+    // @Override
+    public void addListDataListener(ListDataListener l)
+    {
+        listeners.add(l);
+    }
+
+    // @Override
+    public void removeListDataListener(ListDataListener l)
+    {
+        listeners.remove(l);
+    }
+
+    public ListDataListener[] getListeners()
+    {
+        synchronized (this.listeners)
+        {
+            ListDataListener _arr[] = new ListDataListener[this.listeners.size()];
+            _arr = this.listeners.toArray(_arr);
+            return _arr;
+        }
+    }
+
+    public void setItems(IconItem[] items)
+    {
+        if (this.icons == null)
+        {
+            icons = new Vector<IconItem>();
+        }
+        else
+        {
+            synchronized (this.icons)
+            {
+                icons.clear();
+            }
+        }
+
+        synchronized (this.icons)
+        {
+            // add item and fire event per item if this is an incremental
+            // update;
+            if (items != null)
+                for (IconItem item : items)
+                {
+                    addItem(item, false);
+                }
+        }
+
+        this.uiFireContentsChanged();
+    }
+
+    public void addItem(IconItem item, boolean fireEvent)
+    {
+        int pos;
+
+        synchronized (icons)
+        {
+            pos = this.icons.size();
+            this.icons.add(item);
+        }
+
+        if (fireEvent)
+        {
+            uiFireChildAdded(pos);
+        }
+    }
+
+    public void deleteItem(VRL vrl, boolean fireEvent)
+    {
+        IconItem delItem = null;
+
+        synchronized (icons)
+        {
+            for (IconItem item : icons)
+            {
+                if (item.getViewNode().matches(vrl))
+                {
+                    delItem = item;
+                    break; 
+                }
+            }
+        }
+
+        deleteItem(delItem, fireEvent);
+    }
+
+    public void deleteItem(IconItem item, boolean fireEvent)
+    {
+        synchronized(icons)
+        {
+            int pos = this.icons.indexOf(item);
+            this.icons.remove(item);
+            this.uiFireRangeRemoved(pos, pos);
+        }
+    }
+
+    public void uiFireRangeRemoved(final int pos)
+    {
+        uiFireRangeRemoved(pos, pos);
+    }
+
+    public void uiFireRangeRemoved(final int pos, final int inclusiveEndPos)
+    {
+
+        if (UIGlobal.isGuiThread() == false)
+        {
+            Runnable updater = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    uiFireRangeRemoved(pos, inclusiveEndPos);
+                }
+            };
+
+            UIGlobal.swingInvokeLater(updater);
+            return;
+        }
+
+        // range is inclusive: [pos,pos]
+        ListDataEvent event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, pos, inclusiveEndPos);
+
+        for (ListDataListener l : getListeners())
+        {
+            l.intervalRemoved(event);
+        }
+    }
+
+    public void uiFireChildAdded(final int pos)
+    {
+        if (UIGlobal.isGuiThread() == false)
+        {
+            Runnable updater = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    uiFireChildAdded(pos);
+                }
+            };
+
+            UIGlobal.swingInvokeLater(updater);
+            return;
+        }
+
+        // range is inclusive: [pos,pos]
+        ListDataEvent event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, pos, pos);
+
+        for (ListDataListener l : getListeners())
+            l.intervalAdded(event);
+    }
+
+    public void uiFireContentsChanged()
+    {
+        if (UIGlobal.isGuiThread() == false)
+        {
+            Runnable updater = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    uiFireContentsChanged();
+                }
+            };
+
+            UIGlobal.swingInvokeLater(updater);
+            return;
+        }
+
+        // range is inclusive: [pos,pos]
+        ListDataEvent event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, icons.size() - 1);
+
+        for (ListDataListener l : getListeners())
+            l.contentsChanged(event);
+    }
 
 }

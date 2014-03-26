@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.tree;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
 
@@ -31,8 +30,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 
 public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer
 {
-	//public static Color COLOR_LIGHT_BLUE=new Color(128,128,255); 
-	
+    // public static Color COLOR_LIGHT_BLUE=new Color(128,128,255);
+
     /** */
     private static final long serialVersionUID = -2947025684699355279L;
 
@@ -40,9 +39,9 @@ public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer
 
     public ResourceTreeCellRenderer(ResourceTree tree)
     {
-    	this.myTree=tree; 
+        this.myTree = tree;
     }
-    
+
     public Component getTreeCellRendererComponent(
             JTree jtree,
             Object value,
@@ -50,47 +49,45 @@ public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer
             boolean expanded,
             boolean leaf,
             int row,
-            boolean hasFocus) 
+            boolean hasFocus)
     {
-        // let DefaultTreeCellRender do the main work 
-    	Component c=super.getTreeCellRendererComponent(
-            jtree, value, selected,
-            expanded, leaf, row,
-            hasFocus);
+        // let DefaultTreeCellRender do the main work
+        Component c = super.getTreeCellRendererComponent(
+                jtree, value, selected,
+                expanded, leaf, row,
+                hasFocus);
 
-    	// ===
-    	// Assert: Component 'c' should be equal to >>>this<<<
-    	// ===
-    	
-        ResourceTreeNode node = (ResourceTreeNode)value;
-        //ResourceTree tree=(ResourceTree)jtree; 
-        
-        ViewNode item=node.getViewItem(); 
-        this.setIcon(item.getIcon()); 
-        this.setEnabled(item.isBusy()==false);
-        
-        if(node.hasFocus())
-        { 
-        	// use HTML make up
-           //setBackgroundNonSelectionColor(Color.YELLOW);
-    	   this.setText("<html><u>"+node.getName()+"</u></html");
+        // ===
+        // Assert: Component 'c' should be equal to >>>this<<<
+        // ===
+
+        ResourceTreeNode node = (ResourceTreeNode) value;
+        // ResourceTree tree=(ResourceTree)jtree;
+
+        ViewNode item = node.getViewItem();
+        this.setIcon(item.getIcon());
+        this.setEnabled(item.isBusy() == false);
+
+        if (node.hasFocus())
+        {
+            // use HTML make up
+            // setBackgroundNonSelectionColor(Color.YELLOW);
+            this.setText("<html><u>" + node.getName() + "</u></html");
         }
         else
         {
-    	   //setBackgroundNonSelectionColor(UIManager.getColor("Tree.textBackground"));
-    	   this.setText(node.getName());
+            // setBackgroundNonSelectionColor(UIManager.getColor("Tree.textBackground"));
+            this.setText(node.getName());
         }
-        
+
         return this;
     }
-    
-    public boolean imageUpdate2(Image img, int infoflags,
-            int x, int y, int w, int h) 
-    {
-    	return super.imageUpdate(img, infoflags, x, y, w, h);
-    	
-    }
-    
 
-    
+    public boolean imageUpdate2(Image img, int infoflags,
+            int x, int y, int w, int h)
+    {
+        return super.imageUpdate(img, infoflags, x, y, w, h);
+
+    }
+
 }

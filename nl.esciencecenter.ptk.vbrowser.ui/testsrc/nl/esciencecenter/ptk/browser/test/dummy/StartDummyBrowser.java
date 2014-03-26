@@ -42,7 +42,7 @@ public class StartDummyBrowser
 		    
 		    platform.registerProxyFactory(dummyFac); 
 		    
-			ProxyNode root = dummyFac.openLocation("proxy:///");
+			ProxyNode root = dummyFac.openLocation("dummy:///");
 		
 			frame.setRoot(root,true,true); 
 			

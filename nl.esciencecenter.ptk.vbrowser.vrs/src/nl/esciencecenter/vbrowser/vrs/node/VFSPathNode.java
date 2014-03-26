@@ -41,9 +41,10 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
+import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRenamable, VPathDeletable
+public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRenamable, VRenamable, VPathDeletable
 {
     public static final String[] vfsAttributeNames =
     {
@@ -175,7 +176,9 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         // else if (name.compareTo(ATTR_ISWRITABLE) == 0)
         // return new Attribute(name, getFileAttributes().isWritable());
         else if (name.compareTo(ATTR_ISHIDDEN) == 0)
+        {
             return new Attribute(name, getFileAttributes().isHidden());
+        }
         else if (name.compareTo(ATTR_MODIFICATION_TIME) == 0)
         {
             Date date = getFileAttributes().getModificationTimeDate();
@@ -245,6 +248,12 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         }
     }
 
+    @Override
+    public VFSPath create(String type, String name) throws VrsException
+    {
+        return create(type,name,false); 
+    }
+    
     public VFSPath create(String type,String name,boolean ignoreExisting) throws VrsException
     {
         if (isFile()) 
@@ -322,7 +331,9 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
     @Override
     public VFSPath renameTo(String nameOrPath) throws VrsException
     {
-        VFSPath newPath=this.resolvePath(nameOrPath); 
+        // resolve name against parent directory, the names applies to this location. 
+        VFSPath parentDir=this.getParent(); 
+        VFSPath newPath=parentDir.resolvePath(nameOrPath); 
         return this.renameTo(newPath); 
     }
     

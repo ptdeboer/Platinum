@@ -33,6 +33,8 @@ import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
+import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
+import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -429,6 +431,27 @@ public class VRSProxyNode extends ProxyNode
         {
             throw new ProxyException(e.getMessage(),e); 
         } 
+    }
+
+    @Override
+    protected ProxyNode doRenameTo(String nameOrNewPath) throws ProxyException
+    {
+        if (vnode instanceof VRenamable)
+        {
+            try
+            {
+                VPath newPath=((VRenamable)vnode).renameTo(nameOrNewPath);  
+                return factory().updateProxyNode(newPath, true); 
+            }
+            catch (VrsException e)
+            {
+                throw new ProxyException(e.getMessage(),e); 
+            }    
+        }
+        else
+        {
+            throw new ProxyException("Resource can't be renamed:"+vnode); 
+        }
     }
     
 

@@ -47,7 +47,7 @@ import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMethod;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.TabTopLabelPanel.TabButtonType;
 import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
-import nl.esciencecenter.ptk.vbrowser.ui.model.DataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
@@ -610,7 +610,7 @@ public class BrowserFrame extends JFrame
     	
     	if (comp instanceof IconsPanel)
     	{
-    	   	DataSource dataSource= ((IconsPanel)comp).getDataSource(); 
+    	   	ViewNodeSource dataSource= ((IconsPanel)comp).getDataSource(); 
     	   	if (dataSource instanceof ProxyNodeDataSource)
     	   	{
     	   		return ((ProxyNodeDataSource)dataSource).getRootNode(); 

@@ -37,21 +37,24 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
 {
     private ResourceTreeNode parent = null;
+
     private Vector<ResourceTreeNode> childs = new Vector<ResourceTreeNode>();
 
     private boolean isRoot = false;
+
     private boolean isPopulated = false;
+
     private boolean hasFocus;
-    
+
     protected ViewNode viewNode;
 
-    public ResourceTreeNode(ResourceTreeNode parent,ViewNode item, boolean isRoot)
+    public ResourceTreeNode(ResourceTreeNode parent, ViewNode item, boolean isRoot)
     {
-        if ((parent == null) && (isRoot==false))
+        if ((parent == null) && (isRoot == false))
         {
             throw new NullPointerException("NULL parent not allowed for non root node.");
         }
-        
+
         this.viewNode = item;
         this.parent = parent;
         this.isRoot = false;
@@ -189,7 +192,7 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
     }
 
     /**
-     *  Clears childs and set isPopulated to FALSE ! 
+     * Clears childs and set isPopulated to FALSE !
      */
     protected void clear()
     {
@@ -268,4 +271,8 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
         return viewNode;
     }
 
+    public void updateName(String newName)
+    {
+        this.viewNode.setName(newName);
+    }
 }

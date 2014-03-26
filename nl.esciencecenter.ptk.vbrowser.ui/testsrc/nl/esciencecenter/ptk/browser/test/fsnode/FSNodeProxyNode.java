@@ -29,7 +29,6 @@ import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.FSUtil;
-
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -233,6 +232,12 @@ public class FSNodeProxyNode extends ProxyNode
 
     @Override
     protected void doDelete(boolean recurse) throws ProxyException
+    {
+        throw new ProxyException("Not Implemented.");
+    }
+
+    @Override
+    protected ProxyNode doRenameTo(String nameOrNewPath) throws ProxyException
     {
         throw new ProxyException("Not Implemented.");
     }

@@ -27,57 +27,62 @@ import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class DummyProxyNode extends ProxyNode
 {
     static private Presentation dummyPresentation;
 
-    static private StringList attrNames=null; 
-    
+    static private StringList attrNames = null;
+
     static
     {
-        attrNames=new StringList(new String[]{"attr1","attr2","attr3","attr4"});
-        
-        dummyPresentation=Presentation.createDefault();
-        for (int i=0;i<attrNames.size();i++)
-            dummyPresentation.setAttributePreferredWidths(attrNames.get(i),new int[]{42,42+i*42,42+4*42}); 
-        dummyPresentation.setChildAttributeNames(attrNames); 
-        
+        attrNames = new StringList(new String[]
+        { "attr1", "attr2", "attr3", "attr4" });
+
+        dummyPresentation = Presentation.createDefault();
+        for (int i = 0; i < attrNames.size(); i++)
+            dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[]
+            { 42, 42 + i * 42, 42 + 4 * 42 });
+        dummyPresentation.setChildAttributeNames(attrNames);
+
     }
 
-    // --- 
-    
+    // ---
+
     private DummyProxyNode parent;
+
     private List<DummyProxyNode> childs;
-	private boolean isComposite=true; 
-	private String mimetype="text/plain";
-	
+
+    private boolean isComposite = true;
+
+    private String mimetype = "text/plain";
+
+    private String logicalName="<None>"; 
+    
     protected DummyProxyNode createChild(String childname)
     {
-        return new DummyProxyNode(this,getVRL().appendPath(childname)); 
+        return new DummyProxyNode(this, getVRL().appendPath(childname));
     }
-    
+
     public DummyProxyNode(DummyProxyFactory dummyProxyFactory, VRL locator)
     {
-        super(dummyProxyFactory,locator); 
-        this.parent=null; 
+        super(dummyProxyFactory, locator);
+        this.parent = null;
     }
-    
-    protected DummyProxyNode(DummyProxyNode parent,VRL locator)
+
+    protected DummyProxyNode(DummyProxyNode parent, VRL locator)
     {
-        super(parent.getProxyFactory(),locator);
-        this.parent=parent; 
-        init(); 
+        super(parent.getProxyFactory(), locator);
+        this.parent = parent;
+        init();
     }
 
     private void init()
     {
-    	;
+        logicalName="DummyProxy:" + this.getID();
     }
     
     @Override
@@ -89,19 +94,19 @@ public class DummyProxyNode extends ProxyNode
     @Override
     public String getName()
     {
-        return "DummyProxy:"+this.getID(); 
+        return logicalName;
     }
 
     @Override
     public boolean hasChildren()
-    {   
-        return true; 
+    {
+        return true;
     }
 
     @Override
     public boolean isComposite()
     {
-        return isComposite; 
+        return isComposite;
     }
 
     @Override
@@ -109,72 +114,72 @@ public class DummyProxyNode extends ProxyNode
     {
         return getProxyFactory().doOpenLocation(this.locator.getParent());
     }
-    
+
     @Override
     public String getMimeType()
     {
-        return this.mimetype; 
+        return this.mimetype;
     }
 
     @Override
-    public List<? extends ProxyNode> doGetChilds(int offset, int range,LongHolder numChildsLeft)
+    public List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft)
     {
-        if (childs==null)
-        {	
-        	
-        	childs=new ArrayList<DummyProxyNode>(); 
-            childs.add(createChild("child-"+id+".1")); 
-            childs.add(createChild("child-"+id+".2")); 
-            childs.add(createChild("child-"+id+".3")); 
-            
-            DummyProxyNode node = createChild("leaf-"+id+".4");
-            node.isComposite=false; 
-            node.mimetype="text/html"; 
-            childs.add(node); 
-            
-            node = createChild("leaf-"+id+".5");
-            node.isComposite=false; 
-            node.mimetype="text/rtf"; 
-            childs.add(node); 
+        if (childs == null)
+        {
+
+            childs = new ArrayList<DummyProxyNode>();
+            childs.add(createChild("child-" + id + ".1"));
+            childs.add(createChild("child-" + id + ".2"));
+            childs.add(createChild("child-" + id + ".3"));
+
+            DummyProxyNode node = createChild("leaf-" + id + ".4");
+            node.isComposite = false;
+            node.mimetype = "text/html";
+            childs.add(node);
+
+            node = createChild("leaf-" + id + ".5");
+            node.isComposite = false;
+            node.mimetype = "text/rtf";
+            childs.add(node);
         }
-                
-        return subrange(childs,offset,range);  
+
+        return subrange(childs, offset, range);
     }
 
-	@Override
-	protected String doGetMimeType() throws ProxyException 
-	{
-		return this.mimetype; 
-	}
-
-	@Override
-	protected boolean doGetIsComposite() throws ProxyException
-	{
-		return this.isComposite; 
-	}
-
     @Override
-    protected String doGetName() 
+    protected String doGetMimeType() throws ProxyException
     {
-        return this.getVRL().getBasename(); 
+        return this.mimetype;
     }
 
     @Override
-    protected String doGetResourceType() 
+    protected boolean doGetIsComposite() throws ProxyException
     {
-        return "DummyType"; 
+        return this.isComposite;
     }
 
     @Override
-    protected String doGetResourceStatus() 
+    protected String doGetName()
+    {
+        return this.getVRL().getBasename();
+    }
+
+    @Override
+    protected String doGetResourceType()
+    {
+        return "DummyType";
+    }
+
+    @Override
+    protected String doGetResourceStatus()
     {
         return "NOP";
     }
 
     @Override
-    protected List<String> doGetChildTypes() 
+    protected List<String> doGetChildTypes()
     {
-        return new StringList("DummyType"); 
+        return new StringList("DummyType");
     }
 
     @Override
@@ -186,19 +191,19 @@ public class DummyProxyNode extends ProxyNode
     @Override
     protected List<Attribute> doGetAttributes(List<String> names) throws ProxyException
     {
-        ArrayList<Attribute> attrs=new ArrayList<Attribute>(names.size()); 
-        
-        for (int i=0;i<names.size();i++)
-            attrs.add(new Attribute(names.get(i),"Value:"+names.get(i)));  
-        
+        ArrayList<Attribute> attrs = new ArrayList<Attribute>(names.size());
+
+        for (int i = 0; i < names.size(); i++)
+            attrs.add(new Attribute(names.get(i), "Value:" + names.get(i)));
+
         return attrs;
-        
+
     }
 
     @Override
     protected Presentation doGetPresentation()
     {
-        return dummyPresentation; 
+        return dummyPresentation;
     }
 
     @Override
@@ -229,6 +234,13 @@ public class DummyProxyNode extends ProxyNode
     protected void doDelete(boolean recurse) throws ProxyException
     {
         return;
+    }
+
+    @Override
+    protected ProxyNode doRenameTo(String name) throws ProxyException
+    {
+       this.logicalName=name; 
+       return this;
     }
 
 }

@@ -42,7 +42,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
-import nl.esciencecenter.ptk.vbrowser.ui.model.DataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -79,12 +79,12 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     private nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener dragListener;
 
-    public IconsPanel(BrowserInterface browser, DataSource viewNodeSource)
+    public IconsPanel(BrowserInterface browser, ViewNodeSource viewNodeSource)
     {
         init(browser, viewNodeSource);
     }
 
-    private void init(BrowserInterface browser, DataSource dataSource)
+    private void init(BrowserInterface browser, ViewNodeSource dataSource)
     {
         this.masterBrowser = browser;
         this.uiModel = UIViewModel.createIconsModel(48);
@@ -226,7 +226,25 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     @Override
     public void intervalRemoved(ListDataEvent e)
     {
-        logger.errorPrintf("FIXME: intervalRemoved():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+        logger.errorPrintf("intervalRemoved():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+
+        int start=e.getIndex0(); 
+        int end=e.getIndex1(); // inclusive
+
+
+        for (int i=start;i<=end;i++)
+        {
+            delete(i); 
+        }
+    }
+    
+    protected void delete(int index)
+    {
+        // remove and leave empty spot: 
+        Component comp=this.getComponent(index);
+        this.remove(comp);
+        comp.setEnabled(false);
+        
     }
 
     private void uiUpdate(final boolean clear, final int start, final int _end)
@@ -489,7 +507,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         return this.masterBrowser;
     }
 
-    public DataSource getDataSource()
+    public ViewNodeSource getDataSource()
     {
         return this.iconsPanelUpdater.getDataSource();
     }

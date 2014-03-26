@@ -38,10 +38,11 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VInfoResourcePath
+public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VInfoResourcePath,VRenamable
 {
     private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
 
@@ -359,12 +360,6 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
             return folder;
         }
     }
-    @Override
-    public InfoResourceNode renameTo(String nameOrPath) throws VrsException
-    {
-        this.setLogicalName(nameOrPath); 
-        return this; 
-    }   
     
     @Override
     public void delete(boolean recursive) throws VrsException
@@ -442,4 +437,12 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
             rootNode.save();
         }
     }
+
+    @Override
+    public InfoResourceNode renameTo(String newName) throws VrsException
+    {
+        this.setLogicalName(newName);
+        // name change doesn't change path
+        return this; 
+    }        
 }

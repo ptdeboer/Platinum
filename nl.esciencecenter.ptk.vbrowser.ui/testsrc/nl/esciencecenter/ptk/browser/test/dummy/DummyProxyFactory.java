@@ -51,7 +51,7 @@ public class DummyProxyFactory extends ProxyFactory
 	@Override
     public boolean canOpen(VRL locator,StringHolder reason) 
 	{
-	    return locator.hasScheme("proxy");
+	    return locator.hasScheme("dummy");
 	}
 
 

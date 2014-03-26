@@ -31,6 +31,7 @@ import javax.swing.JSeparator;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry.MimeMenuEntry;
@@ -44,16 +45,17 @@ public class ActionMenu extends JPopupMenu
     public static ActionMenu createSimpleMenu(BrowserPlatform browserPlatform, ActionMenuListener actionListener, ViewNodeContainer container,
             ViewNode viewNode, boolean canvasMenu)
     {
-
         VRL locator = viewNode.getVRL();
-        ActionMenu menu = new ActionMenu(browserPlatform,viewNode, actionListener);
+        ActionMenu menu = new ActionMenu(browserPlatform,container, actionListener);
 
-        ViewNode[] selected = null;
+        ViewNode[] selections = null;
         if (container != null)
-            selected = container.getNodeSelection();
-
-        boolean hasSelection = ((selected != null) && (selected.length > 0));
-        boolean multiSelection = ((selected != null) && (selected.length > 1));
+        {
+            selections = container.getNodeSelection();
+        }
+        
+        boolean hasSelection = ((selections != null) && (selections.length > 0));
+        boolean multiSelection = ((selections != null) && (selections.length > 1));
 
         String nodeMimeType = null;
 
@@ -78,14 +80,14 @@ public class ActionMenu extends JPopupMenu
 
         JSeparator sep = new JSeparator();
         menu.add(sep);
-        menu.add(menu.createItem(viewNode, "Open ", ActionMethod.OPEN_LOCATION));
+        menu.add(menu.createItem(container,viewNode, "Open ", ActionMethod.OPEN_LOCATION));
 
         {
             JMenu openMenu = new JMenu("Open in");
             menu.add(openMenu);
 
-            openMenu.add(menu.createItem(viewNode, "New Window", ActionMethod.OPEN_IN_NEW_WINDOW));
-            openMenu.add(menu.createItem(viewNode, "New Tab", ActionMethod.OPEN_IN_NEW_TAB));
+            openMenu.add(menu.createItem(container,viewNode, "New Window", ActionMethod.OPEN_IN_NEW_WINDOW));
+            openMenu.add(menu.createItem(container,viewNode, "New Tab", ActionMethod.OPEN_IN_NEW_TAB));
         }
 
         // Mime Menu Options + "View With"
@@ -93,20 +95,20 @@ public class ActionMenu extends JPopupMenu
         {
             if (nodeMimeType != null)
             {
-                menu.addMimeViewerMenuMethods(viewNode, nodeMimeType);
+                menu.addMimeViewerMenuMethods(container,viewNode, nodeMimeType);
             }
 
         }
 
         // View With ->
         {
-            menu.createViewersMenu(viewNode);
+            menu.createViewersMenu(container,viewNode);
         }
 
         // Default options:
         menu.add(new JSeparator());
         {
-            menu.add(createNewMenu(menu,viewNode)); 
+            menu.add(createNewMenu(container,menu,viewNode)); 
         }
         
         // --------------
@@ -115,14 +117,13 @@ public class ActionMenu extends JPopupMenu
         
         if (multiSelection)
         {
-            menu.add(menu.createItem(viewNode, "Delete All", ActionMethod.DELETE_SELECTION));
+            menu.add(menu.createItem(container,viewNode, "Delete All", ActionMethod.DELETE_SELECTION));
         }
         else
         {
-            menu.add(menu.createItem(viewNode, "Delete", ActionMethod.DELETE));
+            menu.add(menu.createItem(container,viewNode, "Delete", ActionMethod.DELETE));
+            menu.add(menu.createItem(container,viewNode, "Rename", ActionMethod.RENAME));
         }
-
-        menu.add(menu.createItem(viewNode, "Rename", ActionMethod.RENAME));
 
         // CopyPasta
         menu.add(new JSeparator());
@@ -133,19 +134,25 @@ public class ActionMenu extends JPopupMenu
             if (multiSelection)
                 name = "Copy All";
 
-            menu.add(item = menu.createItem(viewNode, name, ActionMethod.COPY_SELECTION));
+            menu.add(item = menu.createItem(container,viewNode, name, ActionMethod.COPY_SELECTION));
 
-            // enable copy in cancas menu only when there is something selected
+            // enable copy in canvas menu only when there is something selected
             if (canvasMenu)
+            {
                 if (hasSelection)
+                {
                     item.setEnabled(true);
+                }
                 else
+                {
                     item.setEnabled(false);
+                }
+            }
 
-            menu.add(menu.createItem(viewNode, "Paste", ActionMethod.PASTE));
+            menu.add(menu.createItem(container,viewNode, "Paste", ActionMethod.PASTE));
             sep = new JSeparator();
             menu.add(sep);
-            menu.add(menu.createItem(viewNode, "Refresh", ActionMethod.REFRESH));
+            menu.add(menu.createItem(container,viewNode, "Refresh", ActionMethod.REFRESH));
         }
 
         // Resource Sub Menu:
@@ -160,7 +167,7 @@ public class ActionMenu extends JPopupMenu
                 menu.add(subMenu);
             }
             {
-                menu.add(menu.createItem(viewNode, "Properties", ActionMethod.SHOW_PROPERTIES));
+                menu.add(menu.createItem(container,viewNode, "Properties", ActionMethod.SHOW_PROPERTIES));
             }
         }
 
@@ -172,7 +179,7 @@ public class ActionMenu extends JPopupMenu
     // Sub Menu Factory methods 
     // ========================================================================
     
-    public static JMenu createNewMenu(ActionMenu menu,ViewNode viewNode)
+    public static JMenu createNewMenu(Object eventSource,ActionMenu menu,ViewNode viewNode)
     {
         List<String> types = viewNode.getAllowedChildTypes();
         // filter 
@@ -189,7 +196,7 @@ public class ActionMenu extends JPopupMenu
         {
             String args[] = new String[1];
             args[0] = type; 
-            subMenu.add(menu.createMethodItem(viewNode, type, ActionMethod.CREATE_NEW, args));
+            subMenu.add(menu.createMethodItem(eventSource,viewNode, type, ActionMethod.CREATE_NEW, args));
         }
 
         subMenu.setEnabled(true); 
@@ -207,19 +214,19 @@ public class ActionMenu extends JPopupMenu
     {
         private ActionMenuListener menuActionListener;
 
-        private ViewNode viewNode;
+        private ViewNodeComponent viewComp;
 
-        public PopupHandler(ViewNode viewNode, ActionMenuListener listener)
+        public PopupHandler(ViewNodeComponent viewComp, ActionMenuListener listener)
         {
             this.menuActionListener = listener;
-            this.viewNode = viewNode;
+            this.viewComp = viewComp;
         }
 
         @Override
         public void actionPerformed(ActionEvent e)
         {
             String cmdStr = e.getActionCommand();
-            Action theAction = Action.createFrom(viewNode, e);
+            Action theAction = Action.createFrom(viewComp.getViewNode(), e);
             menuActionListener.handleMenuAction(theAction);
 
         }
@@ -233,48 +240,48 @@ public class ActionMenu extends JPopupMenu
     
     private BrowserPlatform platform;
 
-    public ActionMenu(BrowserPlatform browserPlatform, ViewNode viewNode, ActionMenuListener actionListener)
+    public ActionMenu(BrowserPlatform browserPlatform, ViewNodeComponent viewNode, ActionMenuListener actionListener)
     {
         init(browserPlatform,viewNode, actionListener);
     }
 
-    public void init(BrowserPlatform browserPlatform, ViewNode viewNode, ActionMenuListener actionListener)
+    public void init(BrowserPlatform browserPlatform, ViewNodeComponent viewNode, ActionMenuListener actionListener)
     {
         this.popupHandler = new PopupHandler(viewNode, actionListener);
         this.platform=browserPlatform;
     }
 
-    protected JMenuItem createItem(ViewNode viewNode, String name, ActionMethod actionMeth)
+    protected JMenuItem createItem(Object eventSource,ViewNode viewNode, String name, ActionMethod actionMeth)
     {
         JMenuItem mitem = new JMenuItem();
         mitem.setText(name);
-        mitem.setActionCommand(new Action(null, viewNode, actionMeth).toString());
+        mitem.setActionCommand(new Action(eventSource, viewNode, actionMeth).toString());
         mitem.addActionListener(this.popupHandler);
 
         return mitem;
     }
 
-    protected JMenuItem createItem(ViewNode viewNode, String name, ActionMethod actionMeth, String argument)
+    protected JMenuItem createItem(Object eventSource,ViewNode viewNode, String name, ActionMethod actionMeth, String argument)
     {
         JMenuItem mitem = new JMenuItem();
         mitem.setText(name);
-        mitem.setActionCommand(new Action(null, viewNode, actionMeth, argument).toString());
+        mitem.setActionCommand(new Action(eventSource, viewNode, actionMeth, argument).toString());
         mitem.addActionListener(this.popupHandler);
 
         return mitem;
     }
 
-    protected JMenuItem createMethodItem(ViewNode viewNode, String name, ActionMethod actionMeth, String arguments[])
+    protected JMenuItem createMethodItem(Object eventSource,ViewNode viewNode, String name, ActionMethod actionMeth, String arguments[])
     {
         JMenuItem mitem = new JMenuItem();
         mitem.setText(name);
-        mitem.setActionCommand(new Action(null, viewNode, actionMeth, arguments).toString());
+        mitem.setActionCommand(new Action(eventSource, viewNode, actionMeth, arguments).toString());
         mitem.addActionListener(this.popupHandler);
 
         return mitem;
     }
 
-    private void addMimeViewerMenuMethods(ViewNode viewNode, String mimeType)
+    private void addMimeViewerMenuMethods(Object eventSource,ViewNode viewNode, String mimeType)
     {
         PluginRegistry viewReg = platform.getViewerRegistry();
 
@@ -291,12 +298,12 @@ public class ActionMenu extends JPopupMenu
             args[0] = entry.getViewerClassName();
             // optional method name to invoke when viewer is started, may be null. 
             args[1] = entry.getMethodName(); 
-            add(createMethodItem(viewNode, entry.getMenuName(), ActionMethod.VIEW_WITH, args));
+            add(createMethodItem(eventSource,viewNode, entry.getMenuName(), ActionMethod.VIEW_WITH, args));
         }
 
     }
 
-    protected void createViewersMenu(ViewNode viewNode)
+    protected void createViewersMenu(Object eventSource,ViewNode viewNode)
     {
         PluginRegistry viewReg = platform.getViewerRegistry();
 
@@ -305,7 +312,7 @@ public class ActionMenu extends JPopupMenu
 
         for (ViewerEntry viewer : viewers)
         {
-            JMenuItem item = createItem(viewNode, viewer.getName(), ActionMethod.VIEW_WITH, viewer.getViewerClass()
+            JMenuItem item = createItem(eventSource,viewNode, viewer.getName(), ActionMethod.VIEW_WITH, viewer.getViewerClass()
                     .getCanonicalName());
             subMenu.add(item);
         }

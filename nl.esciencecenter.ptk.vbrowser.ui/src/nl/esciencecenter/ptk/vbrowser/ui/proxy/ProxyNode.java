@@ -726,6 +726,12 @@ public abstract class ProxyNode
         doDelete(recursive); 
     }
 
+
+    public ProxyNode renameTo(String newName) throws ProxyException
+    {
+        return doRenameTo(newName); 
+    }
+    
     public VRSEventNotifier getProxyNodeEventNotifier()
     {
         return proxyFactory.getProxyNodeEventNotifier(); 
@@ -785,6 +791,8 @@ public abstract class ProxyNode
     abstract protected ProxyNode doCreateNew(String type,String optNewName) throws ProxyException;
    
     abstract protected void doDelete(boolean recurse) throws ProxyException;
+
+    abstract protected ProxyNode doRenameTo(String nameOrNewPath) throws ProxyException;
 
     
 

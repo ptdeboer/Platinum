@@ -175,4 +175,11 @@ public class VirtualRootNode extends ProxyNode
         throw new ProxyException("Virtual root cannot be deleted."); 
     }
 
+    @Override
+    protected ProxyNode doRenameTo(String newName) throws ProxyException
+    {
+        this.name=newName; 
+        return this; 
+    }
+
 }

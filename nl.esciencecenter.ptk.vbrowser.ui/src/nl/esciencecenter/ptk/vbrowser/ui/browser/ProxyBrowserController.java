@@ -364,6 +364,9 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case VIEW_AS_TABLE:
                 doViewAsTable();
                 break;
+            case RENAME: 
+                this.proxyActionHandler.handleRename(action, node); 
+                break;
             case SHOW_PROPERTIES:
                 doOpenViewer(node, ProxyObjectViewer.class.getCanonicalName(), null, true);
                 break;

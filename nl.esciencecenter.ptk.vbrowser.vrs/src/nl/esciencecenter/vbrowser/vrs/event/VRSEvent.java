@@ -20,11 +20,15 @@
 
 package nl.esciencecenter.vbrowser.vrs.event;
 
+import java.io.Serializable;
+
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSEvent
+public class VRSEvent implements Serializable 
 {
-	public static enum VRSEventType
+    private static final long serialVersionUID = -6655387700048315217L;
+
+    public static enum VRSEventType
 	{
 		RESOURCES_ADDED,
 		RESOURCES_DELETED,
@@ -87,6 +91,15 @@ public class VRSEvent
         return event;
     }
 
+    public static VRSEvent createNodeRenamedEvent(VRL optParentVRL, VRL oldVrl,VRL newVrl)
+    {
+        VRSEvent event=new VRSEvent(VRSEventType.RESOURCES_RENAMED);
+        // multi event with optional parent.
+        event.parent=optParentVRL;
+        event.resources=new VRL[]{oldVrl}; 
+        event.otherResources=new VRL[]{newVrl}; 
+        return event;
+    }
 
 	// ========================================================================
     //
@@ -94,13 +107,24 @@ public class VRSEvent
 
 	protected VRSEventType type;
 
-	/** Optional parent resource. */
+	/** 
+	 * Optional parent resource.
+	 */
 	protected VRL parent;
 
-	/** Sources this event applies to */
+	/** 
+	 * Sources this event applies to
+	 */
 	protected VRL[] resources;
 
-	/** Optional attribute names involved */
+	/** 
+     * Optional new resources, when specified otherResources[i] is the new VRL for resources[i]. 
+     */
+    protected VRL[] otherResources;
+
+	/** 
+	 * Optional attribute names involved
+	 */
 	protected String attributeNames[];
 
 	protected VRSEvent(VRSEventType type)
@@ -119,6 +143,11 @@ public class VRSEvent
 		return this.resources;
 	}
 
+	/** Resources this event applies to. */
+    public VRL[] getOtherResources()
+    {
+        return this.otherResources;
+    }
     /**
      * If the parent resource has been specified, it is the parent
      * of all the resource from getResources()
@@ -155,6 +184,8 @@ public class VRSEvent
 
         return str;
     }
+
+
 
 
 }
