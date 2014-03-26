@@ -45,8 +45,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     protected boolean allowNull = true;
 
     /**
-     * Construct list from Array. Creates new backing array, does create not a
-     * copy of the elements.
+     * Construct list from Array. Creates new backing array, does not copy/clone the elements. 
      */
     public ExtendedList(T[] values)
     {
@@ -56,12 +55,19 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         }
         add(values);
     }
-
+    
+    /** 
+     * Create empty list. 
+     */
     public ExtendedList()
     {
         super();// =default;
     }
 
+    /**
+     * Construct list around one value. 
+     * @param value
+     */
     public ExtendedList(T value)
     {
         add(value);
@@ -79,6 +85,9 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         super(capacity);
     }
 
+    /** 
+     * Clone list, values wil not be copied. 
+     */
     public ExtendedList(Collection<? extends T> list)
     {
         super(list);
