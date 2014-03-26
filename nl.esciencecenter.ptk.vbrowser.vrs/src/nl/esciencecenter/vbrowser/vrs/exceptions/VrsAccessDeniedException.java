@@ -20,43 +20,31 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-
 /**
- * Super class of all VRS Exceptions.
- * <p>
- * The Class VrsException provides more high-level information about the
- * Exception which occurred and hides the original System Exception.
- * <p>
- * It it recommend to wrap low level exceptions and nested them into more descriptive Exceptions 
- * providing extra information from the underlying implementation. 
- * <br>
+ * Access denied or wrong permissions.
  */
 public class VrsAccessDeniedException extends VrsException
 {
     public static final String ACCES_DENIED = "Access Denied";
-    
+
     private static final long serialVersionUID = 1829852296515159771L;
 
     public VrsAccessDeniedException(Throwable cause)
     {
-        super(cause);
-        this.setName(ACCES_DENIED);
-    };
-    
-    public VrsAccessDeniedException(String message)
-    {
-        super(message);
-        this.setName(ACCES_DENIED);
+        super(ACCES_DENIED, cause, ACCES_DENIED);
     };
 
-    /** 
+    public VrsAccessDeniedException(String message)
+    {
+        super(message, null, ACCES_DENIED);
+    };
+
+    /**
      * Public constructor which holds original system exception.
      */
     public VrsAccessDeniedException(String message, Throwable cause)
     {
-        super(message, cause);
-        this.setName(ACCES_DENIED);
+        super(message, cause, ACCES_DENIED);
     };
 
- 
 }

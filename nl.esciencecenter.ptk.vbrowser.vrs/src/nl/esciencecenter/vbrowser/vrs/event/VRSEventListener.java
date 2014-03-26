@@ -18,10 +18,10 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.ui.proxy;
+package nl.esciencecenter.vbrowser.vrs.event;
 
 
-public interface ProxyNodeEventListener 
+public interface VRSEventListener 
 {
-	void notifyDataSourceEvent(ProxyNodeEvent e); 
+	void notifyVRSEvent(VRSEvent e); 
 }

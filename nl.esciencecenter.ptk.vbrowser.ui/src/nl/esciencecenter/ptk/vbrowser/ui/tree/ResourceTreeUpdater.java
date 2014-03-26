@@ -27,15 +27,15 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.DataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEvent;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEventListener;
 import nl.esciencecenter.ptk.vbrowser.ui.tasks.UITask;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Gets relevant data from DataSource and updates the ResourceTreeModel.  
  */
-public class ResourceTreeUpdater implements ProxyNodeEventListener 
+public class ResourceTreeUpdater implements VRSEventListener 
 {
 	private static ClassLogger logger;
 
@@ -184,7 +184,7 @@ public class ResourceTreeUpdater implements ProxyNodeEventListener
     }
 
     @Override
-	public void notifyDataSourceEvent(ProxyNodeEvent e) 
+	public void notifyVRSEvent(VRSEvent e) 
 	{
         logger.debugPrintf("notifyDataSourceEvent:%s\n",e);
         

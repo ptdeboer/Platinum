@@ -34,6 +34,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeNames;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -725,7 +726,7 @@ public abstract class ProxyNode
         doDelete(recursive); 
     }
 
-    public ProxyNodeEventNotifier getProxyNodeEventNotifier()
+    public VRSEventNotifier getProxyNodeEventNotifier()
     {
         return proxyFactory.getProxyNodeEventNotifier(); 
     }

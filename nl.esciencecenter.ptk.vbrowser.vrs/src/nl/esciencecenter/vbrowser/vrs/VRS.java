@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import nl.esciencecenter.vbrowser.vrs.registry.Registry;
-
 public class VRS
 {
     public final static String FILE_SCHEME="file"; 

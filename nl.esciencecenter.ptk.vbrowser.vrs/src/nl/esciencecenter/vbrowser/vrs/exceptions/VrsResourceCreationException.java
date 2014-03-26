@@ -18,30 +18,33 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.ui.tasks;
+package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-import nl.esciencecenter.ptk.task.ActionTask;
-import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.task.ITaskSource;
-
-public abstract class UITask extends ActionTask
+/**
+ * Access denied or wrong permissions.
+ */
+public class VrsResourceCreationException extends VrsException
 {
+    public static final String CREATION_FAILED = "Resource Creation Failed";
 
-    public UITask(ITaskSource taskWatcher, String taskName)
-    {
-        super(taskWatcher, taskName);
-    }
-    
-    public UITask(String taskName)
-    {
-        // Global UI Task Source ? 
-        super(null, taskName);
-    }
+    private static final long serialVersionUID = 1829852296515159771L;
 
-    public UITask(ITaskSource taskWatcher, String taskName, ITaskMonitor monitor)
+    public VrsResourceCreationException(Throwable cause)
     {
-        super(taskWatcher, taskName,monitor);
-    }
-	
+        super(CREATION_FAILED, cause, CREATION_FAILED);
+    };
+
+    public VrsResourceCreationException(String message)
+    {
+        super(message, null, CREATION_FAILED);
+    };
+
+    /**
+     * Public constructor which holds original system exception.
+     */
+    public VrsResourceCreationException(String message, Throwable cause)
+    {
+        super(message, cause, CREATION_FAILED);
+    };
 
 }

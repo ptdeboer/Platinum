@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -43,11 +43,12 @@ import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Browser Platform.
- * 
+ *
  * Typically one Platform instance per application environment is created.
  */
 public class BrowserPlatform
@@ -103,8 +104,8 @@ public class BrowserPlatform
     private IconProvider iconProvider;
 
     private VRSContext vrsContext;
-    
-    private GuiSettings guiSettings; 
+
+    private GuiSettings guiSettings;
 
     protected BrowserPlatform(String id) throws Exception
     {
@@ -121,13 +122,13 @@ public class BrowserPlatform
         URI cfgDir = getPlatformConfigDir(null);
         initVRSContext(cfgDir);
 
-        guiSettings=new GuiSettings(); 
-        
+        guiSettings=new GuiSettings();
+
         // Default viewer resource Loader/Resource Handler:
 
-        VRSClient vrsClient=new VRSClient(getVRSContext()); 
+        VRSClient vrsClient=new VRSClient(getVRSContext());
         this.resourceLoader = vrsClient.createResourceLoader();
-        
+
         ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader,getPlatformConfigDir("viewers"));
         // ~/.vbtk2/viewers
 
@@ -221,7 +222,12 @@ public class BrowserPlatform
 
     public GuiSettings getGuiSettings()
     {
-       return guiSettings; 
+       return guiSettings;
+    }
+
+    public VRSEventNotifier getVRSEventNotifier()
+    {
+        return VRSEventNotifier.getInstance();
     }
 
 }

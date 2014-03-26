@@ -22,7 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEventListener;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 
@@ -35,9 +35,9 @@ public interface DataSource
 	 * Register listener to receive data source update events.
 	 * Listeners received events about created ViewNodes
 	 */ 
-	void addDataSourceListener(ProxyNodeEventListener listener); 
+	void addDataSourceListener(VRSEventListener listener); 
 	
-	void removeDataSourceListener(ProxyNodeEventListener listener); 
+	void removeDataSourceListener(VRSEventListener listener); 
 	
 	/** 
 	 * Toplevel resource or root node. 

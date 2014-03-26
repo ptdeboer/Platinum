@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -28,10 +28,12 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ExtendedDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * DataSource which produces ViewItems from ProxyItems. 
+ * DataSource which produces ViewItems from ProxyItems.
  * Bridging class connects ProxyNode (Resource) with ViewItem (UI Object).
  */
 public class ProxyNodeDataSource implements ExtendedDataSource
@@ -40,13 +42,13 @@ public class ProxyNodeDataSource implements ExtendedDataSource
 
     private ProxyFactory proxyFactory;
 
-    private ProxyNodeEventNotifier eventNotifier;
+    private VRSEventNotifier eventNotifier;
 
     public ProxyNodeDataSource(ProxyNode sourceNode)
     {
         this.rootNode = sourceNode;
         this.proxyFactory = sourceNode.getProxyFactory();
-        this.eventNotifier = ProxyNodeEventNotifier.getInstance();
+        this.eventNotifier = proxyFactory.getProxyNodeEventNotifier();
     }
 
     @Override
@@ -93,13 +95,13 @@ public class ProxyNodeDataSource implements ExtendedDataSource
     }
 
     @Override
-    public void addDataSourceListener(ProxyNodeEventListener listener)
+    public void addDataSourceListener(VRSEventListener listener)
     {
         eventNotifier.addListener(listener);
     }
 
     @Override
-    public void removeDataSourceListener(ProxyNodeEventListener listener)
+    public void removeDataSourceListener(VRSEventListener listener)
     {
         eventNotifier.removeListener(listener);
     }
@@ -164,8 +166,9 @@ public class ProxyNodeDataSource implements ExtendedDataSource
         return this.rootNode;
     }
 
+    @Override
     public String toString()
     {
-        return "<ProxyNodeDataSource>:"+rootNode; 
+        return "<ProxyNodeDataSource>:"+rootNode;
     }
 }

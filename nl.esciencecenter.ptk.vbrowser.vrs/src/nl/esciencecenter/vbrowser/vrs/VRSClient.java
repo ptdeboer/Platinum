@@ -25,14 +25,20 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.data.Holder;
+import nl.esciencecenter.ptk.data.ListHolder;
+import nl.esciencecenter.ptk.data.VARHolder;
+import nl.esciencecenter.ptk.data.VARListHolder;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
+import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
-import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
 import nl.esciencecenter.vbrowser.vrs.util.VRSResourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -45,16 +51,17 @@ public class VRSClient
     protected VRL homeVRL=null;
     
     /** 
-     * TaskManager for this client. 
+     * Copy/Move TaskManager for this client. 
+     * Typically one VRSClient is linked with one transferManager. 
      */
-    protected VRSTranferManager transferManager=null;
+    protected VRSCopyManager transferManager=null;
     
     public VRSClient(VRSContext vrsContext)
     {
         this.vrsContext=vrsContext;
         this.homeVRL=vrsContext.getHomeVRL(); 
         this.currentPathVRL=vrsContext.getCurrentPathVRL(); 
-        this.transferManager=new VRSTranferManager(this); 
+        this.transferManager=new VRSCopyManager(this); 
     }
     
     public VRSContext getVRSContext()
@@ -108,8 +115,8 @@ public class VRSClient
     }
     
     /** 
-     * Set current location to which relative paths and URIs are resolve to. 
-     * @param vrl current workind director or URI to resolve relative paths against. 
+     * Set current location to which relative paths and URIs are resolved to. 
+     * @param vrl current "working directory" or URI to resolve relative paths against. 
      */
     public void setCurrentPath(VRL vrl)
     {
@@ -145,11 +152,20 @@ public class VRSClient
         return ((VInputStreamCreator)vrs).createInputStream(vrl);
     }
     
-    public VRSTranferManager getVRSTransferManager()
+    /** 
+     * VRS copy and move manager. 
+     * @return VRSCopyManager
+     */
+    public VRSCopyManager getVRSTransferManager()
     {
         return transferManager; 
     }
 
+    /** 
+     * Return the Root Node of the Info Resource System. Virtual location to start browsing. 
+     * @return InfoRootNode which is the logical root of the Virtual Resource System. 
+     * @throws VrsException
+     */
     public InfoRootNode getInfoRootNode() throws VrsException
     {
         return (InfoRootNode)openPath(new VRL("info:/")); 
@@ -182,5 +198,17 @@ public class VRSClient
         return loader; 
     }
 
+    public VPath copyFileToDir(VRL sourceFile,VRL destDirectory) throws VrsException
+    {
+       VARListHolder<VPath> resultPathsH=new ListHolder<VPath>(); 
+       boolean result=transferManager.doCopyMove(new ExtendedList<VRL>(sourceFile), destDirectory,false, null,resultPathsH,null,null); 
+       if ( (result==false) || (resultPathsH.isEmpty()) )
+       {
+           throw new VrsResourceCreationException("No results for CopyMove action:"+sourceFile+"to:"+destDirectory);  
+       }
+       return resultPathsH.get().get(0); 
+    }
+    
+    
     
 }

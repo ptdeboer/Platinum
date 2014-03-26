@@ -18,7 +18,7 @@
  */
 // source:
 
-package nl.esciencecenter.vbrowser.vrs.task;
+package nl.esciencecenter.vbrowser.vrs.io.copy;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,6 +29,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.Holder;
 import nl.esciencecenter.ptk.data.VARHolder;
+import nl.esciencecenter.ptk.data.VARListHolder;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
@@ -40,18 +41,19 @@ import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
-import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
+import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
+import nl.esciencecenter.vbrowser.vrs.task.VRSTaskWatcher;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Default Copy and move manager to perform both VFS and non VFS Copy/Move
  * actions. Not all resources can be read from or written to.
  */
-public class VRSTranferManager
+public class VRSCopyManager
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(VRSTranferManager.class);
+    private static final ClassLogger logger = ClassLogger.getLogger(VRSCopyManager.class);
 
     // ========
     // Instance
@@ -61,7 +63,7 @@ public class VRSTranferManager
 
     protected VRSTaskWatcher taskWatcher;
 
-    public VRSTranferManager(VRSClient vrsClient)
+    public VRSCopyManager(VRSClient vrsClient)
     {
         this.vrsClient = vrsClient;
         // Use static instance for now:
@@ -72,7 +74,7 @@ public class VRSTranferManager
     // Implementation
     // ===
 
-    public boolean doLinkDrop(List<VRL> vrls, VRL destVrl, VARHolder<VPath> destPathH, VARHolder<List<VPath>> resultPathsH,
+    public boolean doLinkDrop(List<VRL> vrls, VRL destVrl, VARHolder<VPath> destPathH, VARListHolder<VPath> resultNodesH,
             ITaskMonitor monitor) throws VrsException
     {
         String taskName = "LinkDrop to:" + destVrl;
@@ -125,7 +127,7 @@ public class VRSTranferManager
 
                 monitor.updateTaskDone(++index);
             }
-            resultPathsH.set(nodes);
+            resultNodesH.set(nodes);
             monitor.endTask(taskName);
             return true;
         }
@@ -139,8 +141,8 @@ public class VRSTranferManager
         // return false;
     }
 
-    public boolean doCopyMove(List<VRL> vrls, VRL destVrl, boolean isMove, VARHolder<VPath> destPathH, VARHolder<List<VPath>> resultPathsH,
-            Holder<List<VPath>> deletedNodesH, ITaskMonitor monitor) throws VrsException
+    public boolean doCopyMove(List<VRL> vrls, VRL destVrl, boolean isMove, VARHolder<VPath> destPathH, VARListHolder<VPath> resultPathsH,
+            VARListHolder<VPath> deletedNodesH, ITaskMonitor monitor) throws VrsException
     {
         logger.errorPrintf("***FIXME:doCopyMove():%s, vrls=%s\n", destVrl, new ExtendedList<VRL>(vrls));
 
@@ -166,22 +168,23 @@ public class VRSTranferManager
 
             if (vfsDestPath.isDir())
             {
-                status = doCopyMoveToDir(vrls, vfsDestPath, isMove, resultPathsH,deletedNodesH, monitor);
+                status = doCopyMoveToDir(vrls, vfsDestPath, isMove, resultPathsH, deletedNodesH, monitor);
             }
             else if (vfsDestPath.isFile())
             {
                 if (vrls.size() > 1)
                 {
                     // could be arguments for a script/binary here
-                    throw new VrsException("Cannot drop multiple resources onto single file");
+                    throw new VrsException("Cannot drop multiple resources onto a single file");
                 }
 
                 status = doCopyMoveResourceToFile(firstPath, vfsDestPath, isMove, monitor);
                 if (isMove)
                 {
-                    ArrayList<VPath> deletedPaths=new ArrayList<VPath>(); 
+                    ArrayList<VPath> deletedPaths = new ArrayList<VPath>();
                     deletedPaths.add(firstPath);
                     deletedNodesH.set(deletedPaths);
+                    
                 }
             }
             else
@@ -209,33 +212,25 @@ public class VRSTranferManager
 
         if ((isMove) && (targetVFS.equals(sourceRs)))
         {
-            // rename/move on same filesystem
-            String renameTask = "Renaming:" + sourcePath.getVRL().getPath() + " to:" + targetPath.getVRL().getPath();
-
-            monitor.startSubTask(renameTask, 1);
-            monitor.logPrintf("%s\n", renameTask);
-            VPath newPath = sourcePath.renameTo(sourcePath.getVRL().getPath());
-            monitor.updateSubTaskDone(renameTask, 1);
-            monitor.endSubTask(renameTask);
-            return true;
+            return fileSystemRename(sourcePath,targetPath,monitor); 
         }
 
-        VDeletable deletable = null;
+        VPathDeletable deletable = null;
 
         // ---------------------------
         // Check move.
-        // A Move-Drop is a Copy+Delete. (like windows).
+        // A cross resource system Move-Drop is a Copy+Delete (like windows).
         // ---------------------------
 
         if (isMove)
         {
-            if (sourcePath instanceof VDeletable)
+            if (sourcePath instanceof VPathDeletable)
             {
-                deletable = (VDeletable) sourcePath;
+                deletable = (VPathDeletable) sourcePath;
             }
             else
             {
-                throw new VrsException("Can not move resource if original source path can't be deleted:" + sourcePath);
+                throw new VrsException("Can not move resource(s) if original source path can't be deleted:" + sourcePath);
             }
         }
 
@@ -252,17 +247,31 @@ public class VRSTranferManager
         return true;
     }
 
-    private boolean doCopyMoveToDir(List<VRL> vrls, VFSPath targetDirPath, boolean isMove, VARHolder<List<VPath>> resultPathsH,
-            Holder<List<VPath>> deletedNodesH, ITaskMonitor monitor) throws VrsException
+    private boolean fileSystemRename(VPath sourcePath, VFSPath targetPath,ITaskMonitor monitor) throws VrsException
+    {
+        // rename/move on same filesystem
+        String renameTask = "Renaming:" + sourcePath.getVRL().getPath() + " to:" + targetPath.getVRL().getPath();
+
+        monitor.startSubTask(renameTask, 1);
+        monitor.logPrintf("%s\n", renameTask);
+        VPath newPath = sourcePath.renameTo(targetPath.getVRL().getPath());
+        monitor.updateSubTaskDone(renameTask, 1);
+        monitor.endSubTask(renameTask);
+        return true;
+
+    }
+
+    private boolean doCopyMoveToDir(List<VRL> vrls, VFSPath targetDirPath, boolean isMove, VARListHolder<VPath> resultPathsH,
+            VARListHolder<VPath> deletedNodesH, ITaskMonitor monitor) throws VrsException
     {
 
         monitor.logPrintf("CopyMove to Directory:%s\n", targetDirPath);
 
         List<VPath> resultPaths = new ArrayList<VPath>();
         resultPathsH.set(resultPaths);
-        
+
         List<VPath> deletedPaths = new ArrayList<VPath>();
-        deletedNodesH.set(resultPaths);
+        deletedNodesH.set(deletedPaths);
 
         for (VRL vrl : vrls)
         {
@@ -271,19 +280,19 @@ public class VRSTranferManager
 
             if (sourcePath instanceof VFSPath)
             {
-                VFSPath destSubPath = targetDirPath.resolvePath(sourcePath.getVRL().getBasename());
+                VFSPath actualTargetFile = targetDirPath.resolvePath(sourcePath.getVRL().getBasename());
                 logger.errorPrintf("Resolve: '%s' + '%s' => '%s'\n", targetDirPath.getVRL(), sourcePath.getVRL().getBasename(),
-                        destSubPath.getVRL());
+                        actualTargetFile.getVRL());
 
                 VFSPath vfsPath = (VFSPath) sourcePath;
 
                 if (vfsPath.isFile())
                 {
-                    this.doCopyMoveResourceToFile(vfsPath, destSubPath, isMove, monitor);
-                    resultPaths.add(destSubPath);
+                    this.doCopyMoveResourceToFile(vfsPath, actualTargetFile, isMove, monitor);
+                    resultPaths.add(actualTargetFile);
                     if (isMove)
                     {
-                        deletedPaths.add(vfsPath);
+                        deletedPaths.add(sourcePath);
                     }
                 }
                 else

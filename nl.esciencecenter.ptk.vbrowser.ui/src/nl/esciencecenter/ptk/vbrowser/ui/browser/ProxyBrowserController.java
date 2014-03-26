@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -54,17 +54,16 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEvent;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEventNotifier;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Proxy Resource Browser.
- * 
+ *
  */
 public class ProxyBrowserController implements BrowserInterface, ActionMenuListener
 {
@@ -92,6 +91,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     public class NavBarHandler implements ActionListener
     {
+        @Override
         public void actionPerformed(ActionEvent e)
         {
             ProxyBrowserController.this.handleNavBarEvent(e);
@@ -100,6 +100,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     public class ActionHandler implements ActionListener
     {
+        @Override
         public void actionPerformed(ActionEvent e)
         {
             ProxyBrowserController.this.handleActionEvent(e);
@@ -385,9 +386,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     protected void doRefresh(ViewNode node)
     {
         logger.errorPrintf(">>>Refresh:%s\n", node);
-
-        ProxyNodeEventNotifier.getInstance().scheduleEvent(
-                ProxyNodeEvent.createRefreshEvent(null, node.getVRL()));
+        platform.getVRSEventNotifier().scheduleEvent(VRSEvent.createRefreshEvent(null, node.getVRL()));
     }
 
     private void doViewAsTable()
@@ -561,6 +560,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         if (actionNode == null)
         {
             logger.errorPrintf("FIXME: Null ActionNode\n");
+            new Exception().printStackTrace();
+            return;
         }
 
         // Determine default action to view node:
@@ -685,9 +686,9 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     protected ProxyFactory getProxyFactoryFor(VRL locator)
     {
-        return platform.getProxyFactoryFor(locator); 
+        return platform.getProxyFactoryFor(locator);
     }
-    
+
     /**
      * Resolve locator and open Proxy Node. Must not use this method during
      * swing's event thread, as this method might block the GUI.
@@ -798,7 +799,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris)
     {
         // delegate to action handler.
-        return this.proxyActionHandler.handleDrop(uiComponent, optPoint, viewNode, dropAction, vris); 
+        return this.proxyActionHandler.handleDrop(uiComponent, optPoint, viewNode, dropAction, vris);
     }
 
 

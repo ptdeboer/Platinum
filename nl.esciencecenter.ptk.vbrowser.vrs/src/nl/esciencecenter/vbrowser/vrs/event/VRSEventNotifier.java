@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,63 +12,63 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.ui.proxy;
+package nl.esciencecenter.vbrowser.vrs.event;
 
 import java.util.Vector;
 
+import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.tasks.UITask;
 
-public class ProxyNodeEventNotifier
+public class VRSEventNotifier
 {
     // ========================================================================
-    // 
+    //
     // ========================================================================
 
-    private static ProxyNodeEventNotifier instance;
-    
-    private static ClassLogger logger; 
-    
+    private static VRSEventNotifier instance;
+
+    private static ClassLogger logger;
+
     static
     {
-        logger=ClassLogger.getLogger(ProxyNodeEventNotifier.class); 
-        instance=new ProxyNodeEventNotifier(); 
+        logger=ClassLogger.getLogger(VRSEventNotifier.class);
+        instance=new VRSEventNotifier();
     }
-    
-    /** 
-     * Single instance for all ProxyModels! 
-     */ 
-    public static ProxyNodeEventNotifier getInstance()
+
+    /**
+     * Single instance for all VRSEvents!
+     */
+    public static VRSEventNotifier getInstance()
     {
-        return instance; 
+        return instance;
     }
 
     // ========================================================================
-    // 
+    //
     // ========================================================================
-    
-    private Vector<ProxyNodeEventListener> listeners=new Vector<ProxyNodeEventListener>(); 
-    
-    private Vector<ProxyNodeEvent> events=new Vector<ProxyNodeEvent>();
-    
-    private UITask notifierTask; 
-    
-    private volatile boolean doNotify=true; 
-    
-    protected ProxyNodeEventNotifier()
+
+    private Vector<VRSEventListener> listeners=new Vector<VRSEventListener>();
+
+    private Vector<VRSEvent> events=new Vector<VRSEvent>();
+
+    private ActionTask notifierTask;
+
+    private volatile boolean doNotify=true;
+
+    protected VRSEventNotifier()
     {
         startNotifier();
     }
-    
+
     protected void startNotifier()
     {
-        this.notifierTask=new UITask(null,"ProxyViewNodeEventNotifier task")
+        this.notifierTask=new ActionTask(null,"ProxyViewNodeEventNotifier task")
             {
                 @Override
                 protected void doTask() throws Exception
@@ -83,30 +83,30 @@ public class ProxyNodeEventNotifier
                         t.printStackTrace();
                     }
                 }
-    
+
 
                 @Override
                 protected void stopTask() throws Exception
                 {
-                    stopNotifier();  
+                    stopNotifier();
                 }
             };
-        
-        this.notifierTask.startTask(); 
+
+        this.notifierTask.startDaemonTask();
     }
-    
+
     public void stopNotifier()
     {
         this.doNotify=false;
     }
-    
+
     protected void doNotifyLoop()
     {
-        logger.infoPrintf("Starting notifyerloop"); 
-        
+        logger.infoPrintf("Starting notifyerloop");
+
         while(doNotify)
         {
-            ProxyNodeEvent event=getNextEvent(); 
+            VRSEvent event=getNextEvent();
             if (event!=null)
             {
                 notifyEvent(event);
@@ -123,72 +123,72 @@ public class ProxyNodeEventNotifier
                 }
             }
         }
-        
+
         logger.infoPrintf("Notifyerloop has stopped.");
     }
 
-    private void notifyEvent(ProxyNodeEvent event)
+    private void notifyEvent(VRSEvent event)
     {
-        for(ProxyNodeEventListener listener:getListeners())
+        for(VRSEventListener listener:getListeners())
         {
             try
             {
-                listener.notifyDataSourceEvent(event);
+                listener.notifyVRSEvent(event);
             }
             catch (Throwable t)
             {
-                logger.errorPrintf("***Exception during event notifiation:%s\n",t); 
-                t.printStackTrace(); 
+                logger.errorPrintf("***Exception during event notifiation:%s\n",t);
+                t.printStackTrace();
             }
         }
     }
 
-    private ProxyNodeEventListener[] getListeners()
+    private VRSEventListener[] getListeners()
     {
-        // create private copy 
+        // create private copy
         synchronized(this.listeners)
         {
-            ProxyNodeEventListener _arr[]=new ProxyNodeEventListener[this.listeners.size()];
+            VRSEventListener _arr[]=new VRSEventListener[this.listeners.size()];
             _arr=this.listeners.toArray(_arr);
-            return _arr; 
+            return _arr;
         }
     }
 
-    private ProxyNodeEvent getNextEvent()
+    private VRSEvent getNextEvent()
     {
-        synchronized(this.events) 
+        synchronized(this.events)
         {
             if (this.events.size()<=0)
-                return null; 
-            
-            ProxyNodeEvent event = this.events.get(0);
+                return null;
+
+            VRSEvent event = this.events.get(0);
             this.events.remove(0);
-            return event; 
+            return event;
         }
     }
-    
-    public void scheduleEvent(ProxyNodeEvent event)
+
+    public void scheduleEvent(VRSEvent event)
     {
         synchronized(this.events)
         {
             this.events.add(event);
         }
     }
-    
 
-    public void addListener(ProxyNodeEventListener listener)
+
+    public void addListener(VRSEventListener listener)
     {
         synchronized(this.listeners)
         {
-            this.listeners.add(listener); 
+            this.listeners.add(listener);
         }
     }
-    
-    public void removeListener(ProxyNodeEventListener listener)
+
+    public void removeListener(VRSEventListener listener)
     {
         synchronized(this.listeners)
         {
-            this.listeners.remove(listener); 
+            this.listeners.remove(listener);
         }
     }
 

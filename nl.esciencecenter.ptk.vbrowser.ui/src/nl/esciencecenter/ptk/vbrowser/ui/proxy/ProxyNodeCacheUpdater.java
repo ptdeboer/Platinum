@@ -1,12 +1,14 @@
 package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEvent.ProxyNodeEventType;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEvent.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
  * Listen to Proxy Events and update the ProxyNode cache. 
  */
-public class ProxyNodeCacheUpdater implements ProxyNodeEventListener
+public class ProxyNodeCacheUpdater implements VRSEventListener
 {
     protected ProxyFactory factory; 
     
@@ -16,9 +18,9 @@ public class ProxyNodeCacheUpdater implements ProxyNodeEventListener
     }
 
     @Override
-    public void notifyDataSourceEvent(ProxyNodeEvent e)
+    public void notifyVRSEvent(VRSEvent e)
     {
-        ProxyNodeEventType type = e.getType(); 
+        VRSEventType type = e.getType(); 
         VRL parentVrl=e.getParent();
         VRL vrls[]=e.getResources(); 
         

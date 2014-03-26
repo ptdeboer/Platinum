@@ -36,7 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
-import nl.esciencecenter.vbrowser.vrs.task.VRSTranferManager;
+import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
@@ -62,7 +62,7 @@ public class VRSProxyFactory extends ProxyFactory
 
     private VRSClient vrsClient;
 
-    private VRSTranferManager transferManager; 
+    private VRSCopyManager transferManager; 
     
     protected VRSProxyNodeDnDHandler proxyDnDHandler=null;
     
@@ -86,7 +86,7 @@ public class VRSProxyFactory extends ProxyFactory
         return this.vrsClient; 
     }
     
-    public VRSTranferManager getTransferManager()
+    public VRSCopyManager getTransferManager()
     {
         return transferManager;
     }

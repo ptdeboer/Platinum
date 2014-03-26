@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -159,11 +159,24 @@ public abstract class ActionTask implements Runnable
         return false;
     }
 
-    /** Start a single thread and run this task */
+    /**
+     * Start a single thread and run this task
+     */
     final public void startTask()
     {
         this.threads = new Thread[1];
         this.threads[0] = new Thread(this);
+        this.threads[0].start(); // goto run()
+    }
+
+    /**
+     * Start a daemon thread for this task which keep running.
+     */
+    final public void startDaemonTask()
+    {
+        this.threads = new Thread[1];
+        this.threads[0] = new Thread(this);
+        this.threads[0].setDaemon(true);
         this.threads[0].start(); // goto run()
     }
 
@@ -211,7 +224,7 @@ public abstract class ActionTask implements Runnable
     /**
      * Use the Thread.join() method to join with the running task thread. Will
      * immediately return if thread already finished.
-     * 
+     *
      */
     final public void joinAll(long timeOutMillis) throws InterruptedException
     {
@@ -235,10 +248,10 @@ public abstract class ActionTask implements Runnable
      * Invoke interrupt() to all threads. The default behavior for a thread is
      * that if the interrupted() state is set, the thread should stop executing
      * and perform a graceful shutdown.
-     * 
+     *
      * @See {@link Thread#isInterrupted()}
      * @See {@link Thread#interrupt()}
-     * 
+     *
      */
     final public void interruptAll()
     {
@@ -417,7 +430,7 @@ public abstract class ActionTask implements Runnable
 
     /**
      * Checks whether one of current running threads is in interrupted stated.
-     * 
+     *
      * @return true if the one of the current active thread is in interrupted
      *         state.
      */
@@ -440,6 +453,7 @@ public abstract class ActionTask implements Runnable
         return this.isCancelled;
     }
 
+    @Override
     public String toString()
     {
         String threadInfo = "";

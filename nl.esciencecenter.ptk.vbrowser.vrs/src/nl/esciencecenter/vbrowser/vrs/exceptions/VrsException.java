@@ -157,8 +157,8 @@ public class VrsException extends Exception
     }
     
     /**
-     * Returns Name of VlException. If not set, this the name of the Exception
-     * subclass.
+     * Returns human readable name of Vrs Exception. If not set, this the name of the Exception
+     * subclass. Set to to for example "Acces Denied" or "Authentication Error". 
      */
     public String getName()
     {

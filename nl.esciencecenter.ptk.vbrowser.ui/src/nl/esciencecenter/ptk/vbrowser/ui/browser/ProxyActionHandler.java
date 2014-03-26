@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -26,38 +26,35 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TaskMonitorDialog;
-import nl.esciencecenter.ptk.ui.panels.monitoring.TransferMonitorDialog;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEvent;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeEventNotifier;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Delegated Action Handler class for the Proxy Browser. 
- * Encapsulates Copy, Paste, Create, Delete, Rename, Link and  Drag & Drop. 
+/**
+ * Delegated Action Handler class for the Proxy Browser.
+ * Encapsulates Copy, Paste, Create, Delete, Rename, Link and  Drag & Drop.
  */
 public class ProxyActionHandler
 {
     final private static ClassLogger logger=ClassLogger.getLogger(ProxyActionHandler.class);
-    
+
     private ProxyBrowserController proxyBrowser;
 
     public ProxyActionHandler(ProxyBrowserController proxyBrowser)
     {
-        this.proxyBrowser=proxyBrowser; 
-        logger.setLevelToDebug(); 
+        this.proxyBrowser=proxyBrowser;
+        logger.setLevelToDebug();
     }
 
     public void handlePaste(Action action,ViewNode node)
     {
-        logger.debugPrintf("*** Paste On:%s\n",node); 
+        logger.debugPrintf("*** Paste On:%s\n",node);
     }
 
     public void handleCopy(Action action,ViewNode node)
@@ -77,22 +74,22 @@ public class ProxyActionHandler
 
     public void handleCreate(Action action, final ViewNode node, final String type, final String options)
     {
-        final String name=proxyBrowser.getUI().askInput("New name for:"+type, "Give new name for "+type); 
-        
+        final String name=proxyBrowser.getUI().askInput("New name for:"+type, "Give new name for "+type);
+
         if (name==null)
         {
-            logger.debugPrintf("Create action cancelled\n"); 
+            logger.debugPrintf("Create action cancelled\n");
             return;
         }
-        
-        final VRL locator=node.getVRL(); 
-        
+
+        final VRL locator=node.getVRL();
+
         ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "create new:"+type+" at " + locator)
         {
             @Override
             protected void doTask()
             {
-                 
+
                 try
                 {
                     doCreateNewNode(node.getVRL(),type,name,this.getTaskMonitor());
@@ -105,19 +102,19 @@ public class ProxyActionHandler
         };
 
         task.startTask();
-        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0); 
-        
+        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
+
     }
 
     public void handleDelete(Action action, ViewNode node)
     {
-        boolean result=proxyBrowser.getUI().askOkCancel("Delete resource"+node+"?", "Do you want to delete:"+node.getVRL(), false); 
-         
+        boolean result=proxyBrowser.getUI().askOkCancel("Delete resource"+node+"?", "Do you want to delete:"+node.getVRL(), false);
+
         if (result==false)
-            return; 
-        
-        final VRL locator=node.getVRL(); 
-        
+            return;
+
+        final VRL locator=node.getVRL();
+
         ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Delete resource:"+locator)
         {
             @Override
@@ -136,68 +133,68 @@ public class ProxyActionHandler
         };
 
         task.startTask();
-        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0); 
+        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
-    
+
     protected void doCreateNewNode(VRL parentLocation, String type, String name, ITaskMonitor taskMonitor)
     {
-        logger.debugPrintf("*** doCreate:<%s>:%s\n",type,name); 
+        logger.debugPrintf("*** doCreate:<%s>:%s\n",type,name);
 
         try
         {
-            taskMonitor.startSubTask("Creating new node:"+type,1); 
-            ProxyNode parentNode=proxyBrowser.openProxyNode(parentLocation); 
+            taskMonitor.startSubTask("Creating new node:"+type,1);
+            ProxyNode parentNode=proxyBrowser.openProxyNode(parentLocation);
             ProxyNode newNode=parentNode.createNew(type,name);
-            fireNewNodeEvent(parentNode,newNode); 
-            taskMonitor.endSubTask("Creating new node:"+type);  
+            fireNewNodeEvent(parentNode,newNode);
+            taskMonitor.endSubTask("Creating new node:"+type);
         }
-        catch (Throwable ex) 
+        catch (Throwable ex)
         {
-            this.proxyBrowser.handleException("Failed to create new Resource:"+type+":"+name, ex); 
+            this.proxyBrowser.handleException("Failed to create new Resource:"+type+":"+name, ex);
         }
     }
 
     protected void doDeleteNode(VRL locator, ITaskMonitor taskMonitor)
     {
-        
+
         try
         {
-            String taskStr="Deleting node:"+locator; 
+            String taskStr="Deleting node:"+locator;
             taskMonitor.startSubTask(taskStr,1);
             ProxyNode delNode=proxyBrowser.openProxyNode(locator);
             ProxyNode parentNode=delNode.getParent();
-            delNode.delete(false);  
-            // must notify parent as well ! 
-            fireDeletedNodeEvent(parentNode,delNode);  
-            taskMonitor.endSubTask(taskStr);   
+            delNode.delete(false);
+            // must notify parent as well !
+            fireDeletedNodeEvent(parentNode,delNode);
+            taskMonitor.endSubTask(taskStr);
         }
-        catch (Throwable ex) 
+        catch (Throwable ex)
         {
-            this.proxyBrowser.handleException("Failed to delete resource:"+locator,ex); 
+            this.proxyBrowser.handleException("Failed to delete resource:"+locator,ex);
         }
     }
-    
+
     // ===
-    // 
+    //
     // ===
-    
+
 
     public boolean handleDrop(Component uiComponent, Point optPoint, final ViewNode viewNode, final DropAction dropAction, final List<VRL> vrls)
     {
         //===================================
-        // Do interactive UI stuff here ... 
+        // Do interactive UI stuff here ...
         //===================================
-        
+
         // UIGlobal.assertGuiThread("Interface drop most be called during Swings Event thread!");
-        
-        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "doDrop "+dropAction+"on targetNode:"+viewNode) 
+
+        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "doDrop "+dropAction+"on targetNode:"+viewNode)
         {
             @Override
             protected void doTask()
             {
                 try
                 {
-                    doDrop(viewNode,dropAction,vrls,this.getTaskMonitor());  
+                    doDrop(viewNode,dropAction,vrls,this.getTaskMonitor());
                 }
                 catch (Throwable e)
                 {
@@ -207,48 +204,48 @@ public class ProxyActionHandler
         };
 
         task.startTask();
-        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0); 
-        return true; 
+        TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
+        return true;
     }
-    
+
     protected void doDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,ITaskMonitor taskMonitor)
     {
-        logger.debugPrintf("*** doDrop %s on:%s\n",viewNode.getVRL(),dropAction);  
-            
+        logger.debugPrintf("*** doDrop %s on:%s\n",viewNode.getVRL(),dropAction);
+
         try
         {
-            ProxyFactory factory = this.proxyBrowser.getProxyFactoryFor(viewNode.getVRL()); 
-            ProxyNodeDnDHandler dndHandler = factory.getProxyDnDHandler(viewNode); 
+            ProxyFactory factory = this.proxyBrowser.getProxyFactoryFor(viewNode.getVRL());
+            ProxyNodeDnDHandler dndHandler = factory.getProxyDnDHandler(viewNode);
             dndHandler.doDrop(viewNode, dropAction, vrls,taskMonitor);
         }
-        catch (Throwable ex) 
+        catch (Throwable ex)
         {
-            this.proxyBrowser.handleException("Failed doDrop() type '"+dropAction+" on :"+viewNode.getVRL(),ex); 
+            this.proxyBrowser.handleException("Failed doDrop() type '"+dropAction+" on :"+viewNode.getVRL(),ex);
         }
     }
-    
+
     public void fireNewNodeEvent(ProxyNode parent, ProxyNode childNode)
     {
-        ProxyNodeEventNotifier.getInstance().scheduleEvent(
-                ProxyNodeEvent.createChildAddedEvent(
+        parent.getProxyNodeEventNotifier().scheduleEvent(
+                VRSEvent.createChildAddedEvent(
                         parent.getVRL(),
                         childNode.getVRL()));
     }
 
     public void fireNewNodesEvent(ProxyNode parent, List<ProxyNode> childNodes)
     {
-        VRL vrls[] = ProxyNode.toVRLArray(childNodes); 
- 
+        VRL vrls[] = ProxyNode.toVRLArray(childNodes);
+
         parent.getProxyNodeEventNotifier().scheduleEvent(
-                ProxyNodeEvent.createChildsAddedEvent(
+                VRSEvent.createChildsAddedEvent(
                         parent.getVRL(),
                         vrls));
     }
-    
+
     public void fireDeletedNodeEvent(ProxyNode parent, ProxyNode actualNode)
     {
-        ProxyNodeEventNotifier.getInstance().scheduleEvent(
-                ProxyNodeEvent.createChildDeletedEvent(
+        parent.getProxyNodeEventNotifier().scheduleEvent(
+                VRSEvent.createChildDeletedEvent(
                         (parent!=null)?parent.getVRL():null,
                             actualNode.getVRL()));
     }
