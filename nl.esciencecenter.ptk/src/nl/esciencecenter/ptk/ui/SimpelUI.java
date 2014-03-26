@@ -130,7 +130,7 @@ public class SimpelUI implements UI
                 optionPaneOption);
     }
 
-    public String askInput(String title, String message)
+    public String askInput(String title, String message, String defaultValue)
     {
         if (enabled == false)
         {
@@ -140,8 +140,11 @@ public class SimpelUI implements UI
 
         // Thanks to Swing's serialization, we can send Swing Components !
         JTextField textField = new JTextField(20);
-        Object[] inputFields =
-        { message, textField };
+        if (defaultValue!=null)
+        {
+            textField.setText(defaultValue);
+        }
+        Object[] inputFields = { message, textField };
 
         int result = JOptionPane.showConfirmDialog(null,
                 inputFields,

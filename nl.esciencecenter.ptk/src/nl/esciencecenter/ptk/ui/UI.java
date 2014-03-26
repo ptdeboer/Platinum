@@ -76,9 +76,10 @@ public interface UI
      * Ask for a single String input message, like for example a name or other value. 
      * @param title - title to display
      * @param message - Input message 
+     * @param optDefaultValue - option default value 
      * @return String or null 
      */
-    public String askInput(String title, String message); 
+    public String askInput(String title, String message, String optDefaultValue); 
     
 //    /**
 //     * Simple formatted Input Dialog. Method is wrapper for JOptionPane ! 

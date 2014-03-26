@@ -64,7 +64,7 @@ public class DummyUI implements UI
     }
 
     @Override
-    public String askInput(String title, String message)
+    public String askInput(String title, String message, String defaultValue)
     {
         return null;
     }

@@ -150,9 +150,9 @@ public class ConsoleUI implements UI
     }
 
     @Override
-    public String askInput(String title, String message)
+    public String askInput(String title, String message,String defaultValue)
     {
-        console.printf("[%s]\n%s\n Y)es/N)o?",title,message);
+        console.printf("[%s]\n%s\n '%s'?",title,message,defaultValue);
         String value = getInput("");
         return value; 
     }
