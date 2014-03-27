@@ -30,12 +30,11 @@ import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * An ViewNode holds UI stuff like icons and presentation attributes. This is
- * the UI component which is actually 'viewed'. Multiple ViewNodes can be
- * "viewing" a single resource (ProxyNode). See ProxyNode for resource
- * attributes.
+ * An ViewNode holds the UI state of Viewed resource, like icons and presentation attributes.<br>
+ * This is the UI component which is actually 'viewed'. Multiple ViewNodes can be "viewing" a single resource
+ * (ProxyNode). See ProxyNode for resource attributes.
  */
-public class ViewNode
+public class ViewNode // candidate: implements Serializable 
 {
     public static final String DEFAULT_ICON = "defaultIcon";
 
@@ -47,12 +46,12 @@ public class ViewNode
 
     public static VRL[] toVRLs(ViewNode[] selections)
     {
-        VRL vrls[]=new VRL[selections.length]; 
-        for (int i=0;i<selections.length;i++)
+        VRL vrls[] = new VRL[selections.length];
+        for (int i = 0; i < selections.length; i++)
         {
-            vrls[i]=selections[i].getVRL(); 
+            vrls[i] = selections[i].getVRL();
         }
-        return vrls; 
+        return vrls;
     }
 
     // ==========
@@ -60,11 +59,11 @@ public class ViewNode
     // ==========
 
     /**
-     * Atomic Locator, never changes during the lifetime of this object.
+     * Atomic Locator which may never change during the lifetime of this object.
      */
     protected final VRL locator;
 
-    protected boolean isComposite;
+    protected final boolean isComposite;
 
     protected String name;
 
@@ -76,12 +75,7 @@ public class ViewNode
 
     protected String mimeType;
 
-    private StringList allowedChildTypes;
-
-    protected ViewNode(VRL locator)
-    {
-        this.locator = locator;
-    }
+    protected StringList allowedChildTypes;
 
     public ViewNode(VRL locator, Icon icon, String name, boolean isComposite)
     {
@@ -133,7 +127,7 @@ public class ViewNode
     }
 
     /**
-     * Pre rendered selected icon
+     * Pre-rendered selected icon
      */
     public Icon getSelectedIcon()
     {
@@ -207,8 +201,10 @@ public class ViewNode
     @Override
     public String toString()
     {
-        return "ViewNode [locator=" + locator + ", isComposite=" + isComposite + ", name=" + name + ", resourceType=" + resourceType
-                + ", resourceStatus=" + resourceStatus + ", mimeType=" + mimeType + ", allowedChildTypes=" + allowedChildTypes + "]";
+        return "ViewNode [locator=" + locator + ", isComposite=" + isComposite
+                + ", name=" + name + ", resourceType=" + resourceType
+                + ", resourceStatus=" + resourceStatus + ", mimeType=" + mimeType + ", allowedChildTypes=" 
+                + allowedChildTypes + "]";
     }
 
 }

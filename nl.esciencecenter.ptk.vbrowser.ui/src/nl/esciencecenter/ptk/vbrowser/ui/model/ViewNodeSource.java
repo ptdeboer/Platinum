@@ -35,9 +35,9 @@ public interface ViewNodeSource
 	 * Register listener to receive data source update events.
 	 * Listeners received events about created ViewNodes
 	 */ 
-	void addDataSourceListener(VRSEventListener listener); 
+	void addViewNodeSourceListener(VRSEventListener listener); 
 	
-	void removeDataSourceListener(VRSEventListener listener); 
+	void removeViewNodeSourceListener(VRSEventListener listener); 
 	
 	/** 
 	 * Toplevel resource or root node. 

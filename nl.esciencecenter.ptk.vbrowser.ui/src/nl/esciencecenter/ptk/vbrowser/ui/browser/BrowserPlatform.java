@@ -48,7 +48,6 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Browser Platform.
- *
  * Typically one Platform instance per application environment is created.
  */
 public class BrowserPlatform
@@ -58,8 +57,7 @@ public class BrowserPlatform
     private static Map<String, BrowserPlatform> platforms = new Hashtable<String, BrowserPlatform>();
 
     /**
-     * Get specific BrowserPlatform. Multiple browser platforms may be
-     * register/created in one single JVM.
+     * Get specific BrowserPlatform. Multiple browser platforms may be register/created in one single JVM.
      */
     public static BrowserPlatform getInstance(String ID)
     {
@@ -105,6 +103,8 @@ public class BrowserPlatform
 
     private VRSContext vrsContext;
 
+    private VRSClient vrsClient; 
+    
     private GuiSettings guiSettings;
 
     protected BrowserPlatform(String id) throws Exception
@@ -118,31 +118,51 @@ public class BrowserPlatform
         // init defaults:
         this.proxyRegistry = ProxyFactoryRegistry.getInstance();
 
-        // VRSContext for this platform and configuration properties:
+        // ==================
+        // Configuration 
+        // ==================
+        
+        // use custom configuration location for platform specific settings. 
         URI cfgDir = getPlatformConfigDir(null);
         initVRSContext(cfgDir);
+        guiSettings = new GuiSettings();
 
-        guiSettings=new GuiSettings();
+        // ===================================
+        // Init VRS Classes 
+        // ===================================
+        
+        initVRSContext(cfgDir); 
 
-        // Default viewer resource Loader/Resource Handler:
+        // ===================================
+        // Swing resources and producers 
+        // ===================================
 
-        VRSClient vrsClient=new VRSClient(getVRSContext());
-        this.resourceLoader = vrsClient.createResourceLoader();
+        // root Frame and Icon Renderer/provider:
+        this.rootFrame = new JFrame();
+        this.iconProvider = new IconProvider(rootFrame, getResourceLoader());
+        
+        // ===================================
+        // Init Viewers and ViewerPlugins.   
+        // ===================================
+        
+        initViewers();
+    }
 
-        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader,getPlatformConfigDir("viewers"));
+    private void initViewers() throws Exception
+    {
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader, getPlatformConfigDir("viewers"));
         // ~/.vbtk2/viewers
 
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
-        // root Frame and Icon Renderer/provider:
-        this.rootFrame = new JFrame();
-        this.iconProvider = new IconProvider(rootFrame, resourceLoader);
     }
 
-    private void initVRSContext(URI cfgDir)
+    private void initVRSContext(URI cfgDir) throws Exception
     {
         VRSProperties props = new VRSProperties("VRSBrowserProperties");
-        vrsContext = new VRSContext(props);
+        this.vrsContext = new VRSContext(props);
+        this.vrsClient = new VRSClient(getVRSContext());
+        this.resourceLoader = vrsClient.createResourceLoader();
     }
 
     public VRSContext getVRSContext()
@@ -157,9 +177,15 @@ public class BrowserPlatform
 
     public void setResourceLoader(ResourceLoader resourceLoader)
     {
+        this.resourceLoader=resourceLoader; 
         viewerRegistry.getResourceHandler().setResourceLoader(resourceLoader);
     }
 
+    public ResourceLoader getResourceLoader()
+    {
+        return resourceLoader; 
+    }
+    
     public String getPlatformID()
     {
         return platformID;
@@ -186,8 +212,7 @@ public class BrowserPlatform
     }
 
     /**
-     * Returns Internal Browser DnD TransferHandler for DnDs between browser
-     * frames and ViewNodeComponents.
+     * Returns Internal Browser DnD TransferHandler for DnDs between browser frames and ViewNodeComponents.
      */
     public TransferHandler getTransferHandler()
     {
@@ -222,7 +247,7 @@ public class BrowserPlatform
 
     public GuiSettings getGuiSettings()
     {
-       return guiSettings;
+        return guiSettings;
     }
 
     public VRSEventNotifier getVRSEventNotifier()

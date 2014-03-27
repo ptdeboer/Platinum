@@ -70,14 +70,14 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         // unregister previous
         if (viewNodeSource != null)
-            viewNodeSource.removeDataSourceListener(this);
+            viewNodeSource.removeViewNodeSourceListener(this);
 
         this.viewNodeSource = viewNodeSource;
 
         // register me as listener
         if (viewNodeSource != null)
         {
-            viewNodeSource.addDataSourceListener(this);
+            viewNodeSource.addViewNodeSourceListener(this);
         }
         if (update)
             updateRoot();

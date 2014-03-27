@@ -31,7 +31,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface BrowserInterface
@@ -41,9 +40,25 @@ public interface BrowserInterface
      */
     public BrowserPlatform getPlatform();
 
+    /**
+     * Forward Exception to Master Browser.
+     */
     public void handleException(String actionText, Throwable exception);
 
-    public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode, boolean canvasMenu);
+    /**
+     * Create custom pop-up menu for specified ViewCompnent and optional selected ViewNode. <br>
+     * If a user right click on a ViewNode this method is called.
+     * 
+     * @param viewComponent
+     *            - Actual ViewComponent the event is coming from
+     * @param viewNode
+     *            - option selected ViewNode on which the menu click occurs.
+     * @param canvasMenu
+     *            - whether this is a canvas click on a ViewContainer or an actual ViewNode. if true the viewComponent
+     *            is a ViewNodeContainer. Multi-selection click are always canvas clicks, since there not a single view node selected.  
+     * @return
+     */
+    public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode, boolean canvasMenu);
 
     public void handleNodeAction(ViewNodeComponent viewComponent, ViewNode node, Action action);
 

@@ -27,6 +27,13 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 
 public class Action 
 {
+    /** 
+     * Argument separator character used in argument lists. 
+     */
+    public static final String ARGUMENT_SEPERATOR_CHAR=";";
+    
+    public static final String COMMAND_SEPERATOR_CHAR=":"; 
+    
 	// ===
 	// default actions, no arguments.
 	// ===
@@ -48,28 +55,23 @@ public class Action
 
     private Object source; 
     
-    private ViewNode viewNode; 
-	
-	public Action(Object eventSource,ViewNode nodeSource,ActionMethod actionMethod)
+	public Action(Object eventSource,ActionMethod actionMethod)
 	{
 	    this.source=eventSource; 
-	    this.viewNode=nodeSource; 
 	    this.actionMethod=actionMethod; 
 	}
 
-	public Action(Object eventSource,ViewNode nodeSource,ActionMethod actionMethod,String argument)
+	public Action(Object eventSource,ActionMethod actionMethod,String argument)
     {
 	    this.source=eventSource; 
-	    this.viewNode=nodeSource; 
         this.actionMethod=actionMethod; 
         this.arguments=new StringList(); 
         arguments.add(argument); 
     }
 
-	public Action(Object eventSource,ViewNode nodeSource,ActionMethod actionMethod,String arguments[])
+	public Action(Object eventSource,ActionMethod actionMethod,String arguments[])
 	{
 	    this.source=eventSource; 
-	    this.viewNode=nodeSource; 
 	    this.actionMethod=actionMethod; 
 	    this.arguments=new StringList(arguments); 
     }
@@ -89,14 +91,14 @@ public class Action
 		String str=actionMethod.toString();
 		//optional arguments; 
 		if ((this.arguments!=null) && (this.arguments.size()>0))
-				str=str+":"+this.arguments.toString(","); 
+				str=str+COMMAND_SEPERATOR_CHAR+this.arguments.toString(ARGUMENT_SEPERATOR_CHAR); 
 		return str;
 	}
 	
-	public static Action createFrom(ViewNode viewNode, ActionEvent event) 
+	public static Action createFrom(ActionEvent event) 
 	{
 	    String cmdStr=event.getActionCommand(); 
-		String strs[]=cmdStr.split(":"); 
+		String strs[]=cmdStr.split(COMMAND_SEPERATOR_CHAR); 
 		
 		String methodStr=null;
 		String argsStr=null;
@@ -107,7 +109,7 @@ public class Action
 		if (strs.length>1)
 			argsStr=strs[1]; 
 		
-		Action action=new Action(event.getSource(),viewNode,ActionMethod.createFrom(methodStr)); 
+		Action action=new Action(event.getSource(),ActionMethod.createFrom(methodStr)); 
 		action.parseArgs(argsStr); 
 
 		return action; 
@@ -118,7 +120,7 @@ public class Action
 		if ((argsStr==null) || argsStr.equals(""))
 			return; 
 		
-		this.arguments=StringList.createFrom(argsStr,","); 
+		this.arguments=StringList.createFrom(argsStr,ARGUMENT_SEPERATOR_CHAR); 
 	}
 
 	public StringList getArgs()
@@ -142,11 +144,6 @@ public class Action
 	    return this.arguments.get(1);  
     }
 
-    public ViewNode getActionSource()
-    {
-        return viewNode;
-    }
-    
     public Object getEventSource()
     {
         return source; 
@@ -158,19 +155,29 @@ public class Action
     
     public static Action createSelectionAction(ViewNode node)
     {
-        Action action=new Action(null,node,ActionMethod.SELECTION_ACTION);
+        String arg=null;
+        if (node!=null)
+        {
+            arg=node.getVRL().toString();
+        }
+        Action action=new Action(null,ActionMethod.SELECTION_ACTION,arg);
         return action; 
     }
     
     public static Action createDefaultAction(ViewNode node)
     {
-        Action action=new Action(null,node,ActionMethod.DEFAULT_ACTION); 
+        String arg=null;
+        if (node!=null)
+        {
+            arg=node.getVRL().toString();
+        }
+        Action action=new Action(null,ActionMethod.DEFAULT_ACTION,arg); 
         return action; 
     }
 
     public static Action createGlobalAction(ActionMethod meth)
     {
-        Action action=new Action(null,null,meth);  
+        Action action=new Action(null,meth);  
         return action; 
     }
     

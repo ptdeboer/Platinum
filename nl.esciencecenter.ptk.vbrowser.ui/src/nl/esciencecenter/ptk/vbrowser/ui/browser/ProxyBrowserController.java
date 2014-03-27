@@ -64,7 +64,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Proxy Resource Browser.
- *
+ * 
  */
 public class ProxyBrowserController implements BrowserInterface, ActionMenuListener
 {
@@ -104,7 +104,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         public GlobalMenuActionHandler()
         {
         }
-        
+
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -177,12 +177,6 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         init(platform, show);
     }
 
-    public void handleTabEvent(ActionEvent e)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
     public String getBrowserId()
     {
         return "ProxyBrowser";
@@ -211,14 +205,14 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     public void handleException(String actionText, Throwable ex)
     {
         logger.logException(ClassLogger.ERROR, ex, "Exception:%s\n", ex);
-        // does ui syncrhonisation:
+        // does ui synchonisation:
         ExceptionDialog.show(this.browserFrame, ex);
     }
 
     @Override
-    public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode, boolean canvasMenu)
+    public JPopupMenu createActionMenuFor(ViewNodeComponent container, ViewNode viewNode, boolean canvasMenu)
     {
-        return ActionMenu.createSimpleMenu(this.getPlatform(), this, container, viewNode, canvasMenu);
+        return ActionMenu.createDefaultPopUpMenu(getPlatform(), this, container, viewNode, canvasMenu);
     }
 
     /**
@@ -231,7 +225,9 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         this.browserFrame.getResourceTree().setRoot(dataSource, update, showAsRoot);
         IconsPanel iconsPnl = browserFrame.getIconsPanel();
         if (iconsPnl != null)
+        {
             iconsPnl.setDataSource(dataSource, update);
+        }
     }
 
     /**
@@ -239,23 +235,21 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
      */
     public void handleGlobalMenuBarEvent(ActionEvent e)
     {
-        Action theAction = Action.createFrom(getCurrentViewNode(), e);
-        handleAction(null,theAction);
+        Action theAction = Action.createFrom(e);
+        doHandleNodeAction(null, null, theAction, true);
     }
 
     @Override
-    public void handleMenuAction(ViewNodeComponent viewComp,Action theAction)
+    public void handlePopUpMenuAction(ViewNodeComponent viewComp,ViewNode viewNode, Action theAction)
     {
-        handleAction(viewComp,theAction);
+        doHandleNodeAction(viewComp, viewNode, theAction, false);
     }
 
-    public void handleAction(ViewNodeComponent viewComp,Action theAction)
-    {
-        logger.debugPrintf(">>> ActionPerformed:%s\n", theAction);
-        ViewNode source = theAction.getActionSource();
-        handleNodeAction(viewComp,source, theAction);
-    }
-
+    /**
+     * Navigation bar event.
+     * 
+     * @param e
+     */
     public void handleNavBarEvent(ActionEvent e)
     {
         logger.debugPrintf(">>> NavBarAction: %s\n", e);
@@ -288,14 +282,34 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         if (meth != null)
         {
             Action action = Action.createGlobalAction(meth);
-            handleAction(null,action);
+            doHandleNodeAction(null, null, action, false);
         }
     }
 
     @Override
-    public void handleNodeAction(ViewNodeComponent viewComp,ViewNode node, Action action)
+    public void handleNodeAction(ViewNodeComponent viewComp, ViewNode node, Action action)
     {
-        logger.debugPrintf(">>> nodeAction: %s on:%s\n", action, node);
+        doHandleNodeAction(viewComp, node, action, false);
+    }
+
+    /**
+     * Actual action handler.
+     * 
+     * @param viewComp
+     *            - Either ViewNodeComponent of ViewNodeContainer from where the action originates. Is null for global menu
+     *            actions.
+     * @param node
+     *            - originating ViewNode for example when a click or pop-up menu action was triggered. 
+     * @param action
+     *            - Actual action method with optional argument. 
+     * @param globalMenuAction
+     *            - true for Global menu and Navigation Bar event, false for ViewNodeComponent events.
+     */
+    protected void doHandleNodeAction(ViewNodeComponent viewComp, ViewNode node, Action action, boolean globalMenuAction)
+    {
+        Object eventSource = action.getEventSource();
+        logger.debugPrintf(">>> nodeAction: %s on:%s (Object soruce=%s)\n", action, node, eventSource);
+        
         boolean global = false;
 
         if (node == null)
@@ -304,8 +318,6 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             node = this.getCurrentViewNode();
             global = true;
         }
-
-        Object eventSource = action.getEventSource();
 
         switch (action.getActionMethod())
         {
@@ -337,7 +349,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 doDefaultAction(node);
                 break;
             case DELETE_SELECTION:
-                this.proxyActionHandler.handleDeleteSelection(viewComp,action, node);
+                this.proxyActionHandler.handleDeleteSelection(viewComp, action, node);
                 break;
             case OPEN_LOCATION:
                 doDefaultAction(node);
@@ -369,8 +381,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case VIEW_AS_TABLE:
                 doViewAsTable();
                 break;
-            case RENAME: 
-                this.proxyActionHandler.handleRename(action, node); 
+            case RENAME:
+                this.proxyActionHandler.handleRename(action, node);
                 break;
             case SHOW_PROPERTIES:
                 doOpenViewer(node, ProxyObjectViewer.class.getCanonicalName(), null, true);
@@ -385,6 +397,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case SELECTION_ACTION:
                 doDefaultSelectedAction(node);
                 break;
+            case GLOBAL_ABOUT: 
+            case GLOBAL_HELP:
             default:
                 logger.errorPrintf("<<< FIXME: ACTION NOT IMPLEMENTED:%s >>>\n", action);
                 break;
@@ -526,7 +540,6 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             {
                 try
                 {
-
                     ProxyNode node = openProxyNode(loc);
                     VRL parentLoc = node.getParentLocation();
                     if (parentLoc == null)
@@ -602,6 +615,10 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         {
             TabContentPanel tab = ((TabTopLabelPanel.TabButton) source).getTabPanel();
             this.browserFrame.closeTab(tab, true);
+        }
+        else
+        {
+            logger.warnPrintf("Unrecognized Tab Source:%s\n", source);
         }
     }
 
@@ -698,8 +715,8 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     }
 
     /**
-     * Resolve locator and open Proxy Node. Must not use this method during
-     * swing's event thread, as this method might block the GUI.
+     * Resolve locator and open Proxy Node. Must not use this method during swing's event thread, as this method might
+     * block the GUI.
      */
     protected ProxyNode openProxyNode(VRL locator) throws ProxyException
     {
@@ -750,7 +767,9 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         navbar.setLocationText(locator.toString(), false);
 
         if (icon != null)
+        {
             navbar.setIcon(icon);
+        }
     }
 
     private ViewNode getCurrentViewNode()
@@ -809,6 +828,5 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         // delegate to action handler.
         return this.proxyActionHandler.handleDrop(uiComponent, optPoint, viewNode, dropAction, vris);
     }
-
 
 }

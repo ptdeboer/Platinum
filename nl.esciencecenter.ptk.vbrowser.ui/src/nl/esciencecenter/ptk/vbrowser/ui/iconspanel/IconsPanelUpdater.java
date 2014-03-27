@@ -58,13 +58,13 @@ public class IconsPanelUpdater implements VRSEventListener
 	{
 		// unregister
 		if (this.dataSource!=null)
-			this.dataSource.removeDataSourceListener(this); 
+			this.dataSource.removeViewNodeSourceListener(this); 
 		
 		this.dataSource=dataSource; 
 		
 		//register
 		if (this.dataSource!=null)
-			this.dataSource.addDataSourceListener(this); 
+			this.dataSource.addViewNodeSourceListener(this); 
 		
 		if ((update) && (dataSource!=null))
 			updateRoot(); 

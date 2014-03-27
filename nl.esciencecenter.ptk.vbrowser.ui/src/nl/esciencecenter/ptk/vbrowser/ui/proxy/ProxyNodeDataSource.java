@@ -95,13 +95,13 @@ public class ProxyNodeDataSource implements ExtendedDataSource
     }
 
     @Override
-    public void addDataSourceListener(VRSEventListener listener)
+    public void addViewNodeSourceListener(VRSEventListener listener)
     {
         eventNotifier.addListener(listener);
     }
 
     @Override
-    public void removeDataSourceListener(VRSEventListener listener)
+    public void removeViewNodeSourceListener(VRSEventListener listener)
     {
         eventNotifier.removeListener(listener);
     }

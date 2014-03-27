@@ -137,7 +137,7 @@ public class ProxyActionHandler
 
     public void handleDelete(Action action, ViewNode node)
     {
-        boolean result = proxyBrowser.getUI().askOkCancel("Delete resource" + node + "?", "Do you want to delete:" + node.getVRL(), false);
+        boolean result = proxyBrowser.getUI().askOkCancel("Delete resource" + node + "?", "Do you want to delete:'" + node.getName()+ "'(" + node.getVRL()+"')", false);
 
         if (result == false)
         {

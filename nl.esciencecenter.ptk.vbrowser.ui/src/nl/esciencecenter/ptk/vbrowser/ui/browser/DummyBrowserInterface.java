@@ -65,7 +65,7 @@ public class DummyBrowserInterface  implements BrowserInterface
     }
 
     @Override
-    public JPopupMenu createActionMenuFor(ViewNodeContainer container, ViewNode viewNode, boolean canvasMenu)
+    public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode, boolean canvasMenu)
     {
         return null;
     }

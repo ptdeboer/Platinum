@@ -62,7 +62,9 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         logger = ClassLogger.getLogger(IconsPanel.class);
     }
 
-    /** IconPanel owns UIModel */
+    /**
+     *  private UIModel for this icon panel.  
+     */
     private UIViewModel uiModel;
 
     private IconLayoutManager layoutManager;
@@ -77,7 +79,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     private ViewContainerEventAdapter viewComponentHandler;
 
-    private nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener dragListener;
+    private ViewNodeContainerDragListener dragListener;
 
     public IconsPanel(BrowserInterface browser, ViewNodeSource viewNodeSource)
     {
