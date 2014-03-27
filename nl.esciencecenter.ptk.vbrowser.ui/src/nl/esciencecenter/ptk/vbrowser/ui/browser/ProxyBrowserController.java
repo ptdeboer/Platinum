@@ -50,7 +50,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
@@ -63,8 +62,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Proxy Resource Browser.
- * 
+ * Proxy Resource Browser controller. 
  */
 public class ProxyBrowserController implements BrowserInterface, ActionMenuListener
 {
@@ -240,7 +238,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     }
 
     @Override
-    public void handlePopUpMenuAction(ViewNodeComponent viewComp,ViewNode viewNode, Action theAction)
+    public void handlePopUpMenuAction(ViewNodeComponent viewComp, ViewNode viewNode, Action theAction)
     {
         doHandleNodeAction(viewComp, viewNode, theAction, false);
     }
@@ -296,12 +294,12 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
      * Actual action handler.
      * 
      * @param viewComp
-     *            - Either ViewNodeComponent of ViewNodeContainer from where the action originates. Is null for global menu
-     *            actions.
+     *            - Either ViewNodeComponent of ViewNodeContainer from where the action originates. Is null for global
+     *            menu actions.
      * @param node
-     *            - originating ViewNode for example when a click or pop-up menu action was triggered. 
+     *            - originating ViewNode for example when a click or pop-up menu action was triggered.
      * @param action
-     *            - Actual action method with optional argument. 
+     *            - Actual action method with optional argument.
      * @param globalMenuAction
      *            - true for Global menu and Navigation Bar event, false for ViewNodeComponent events.
      */
@@ -309,7 +307,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     {
         Object eventSource = action.getEventSource();
         logger.debugPrintf(">>> nodeAction: %s on:%s (Object soruce=%s)\n", action, node, eventSource);
-        
+
         boolean global = false;
 
         if (node == null)
@@ -397,7 +395,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case SELECTION_ACTION:
                 doDefaultSelectedAction(node);
                 break;
-            case GLOBAL_ABOUT: 
+            case GLOBAL_ABOUT:
             case GLOBAL_HELP:
             default:
                 logger.errorPrintf("<<< FIXME: ACTION NOT IMPLEMENTED:%s >>>\n", action);

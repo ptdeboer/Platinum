@@ -23,8 +23,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -43,8 +41,11 @@ public class TabTopLabelPanel extends JPanel
 {
     private static final long serialVersionUID = 5566174001482465094L;
 
-    public static enum TabButtonType {Delete,Add}; 
-    
+    public static enum TabButtonType
+    {
+        Delete, Add
+    };
+
     private final static MouseListener buttonMouseListener = new MouseAdapter()
     {
         public void mouseEntered(MouseEvent e)
@@ -67,18 +68,18 @@ public class TabTopLabelPanel extends JPanel
             }
         }
     };
-    
+
     protected class TabButton extends JButton // implements ActionListener
     {
         private static final long serialVersionUID = -3932012699584733182L;
-    
-        TabButtonType type; 
-        
+
+        TabButtonType type;
+
         public TabButton(TabButtonType buttonType)
         {
             int size = 17;
-            this.type=buttonType; 
-            
+            this.type = buttonType;
+
             setPreferredSize(new Dimension(size, size));
             switch (type)
             {
@@ -86,16 +87,16 @@ public class TabTopLabelPanel extends JPanel
                     setToolTipText("Close this tab");
                     this.setIcon(new ImageIcon(MiniIcons.getTabDeleteImage()));
                     break;
-                case Add: 
+                case Add:
                     setToolTipText("Copy tab");
                     this.setIcon(new ImageIcon(MiniIcons.getTabAddImage()));
-                    break; 
-                default: 
+                    break;
+                default:
                     setToolTipText("?");
                     this.setIcon(new ImageIcon(MiniIcons.getMiniQuestionmark()));
-                    break; 
+                    break;
             }
-            
+
             // Make the button looks the same for all Laf's
             setUI(new BasicButtonUI());
             // Make it transparent
@@ -121,16 +122,16 @@ public class TabTopLabelPanel extends JPanel
             return TabTopLabelPanel.this.getTabPanel();
         }
     }
-        
+
     private TabButton addButton;
 
     private TabButton delButton;
-    
-    private TabContentPanel tabPane; 
-    
-    public TabTopLabelPanel(final TabContentPanel pane,final BrowserFrame.TabButtonHandler buttonHandler)
+
+    private TabContentPanel tabPane;
+
+    public TabTopLabelPanel(final TabContentPanel pane, final BrowserFrame.TabButtonHandler buttonHandler)
     {
-        
+
         // unset default FlowLayout' gaps
         super(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
@@ -138,8 +139,8 @@ public class TabTopLabelPanel extends JPanel
         {
             throw new NullPointerException("Tab pane or Parent TabbedPane is null");
         }
-        
-        tabPane=pane;
+
+        tabPane = pane;
 
         setOpaque(false);
 
@@ -161,29 +162,28 @@ public class TabTopLabelPanel extends JPanel
         {
             delButton = new TabButton(TabButtonType.Delete);
             add(delButton);
-            delButton.setActionCommand(""+ActionMethod.CLOSE_TAB);  
+            delButton.setActionCommand("" + ActionMethod.CLOSE_TAB);
             delButton.addActionListener(buttonHandler);
         }
         {
             addButton = new TabButton(TabButtonType.Add);
             add(addButton);
-            addButton.setActionCommand(""+ActionMethod.NEW_TAB); 
+            addButton.setActionCommand("" + ActionMethod.NEW_TAB);
             addButton.addActionListener(buttonHandler);
         }
-        
+
         // add more space to the top of the component
         setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
     }
-    
+
     TabContentPanel getTabPanel()
     {
-        return this.tabPane; 
+        return this.tabPane;
     }
-    
+
     public void setEnableAddButton(boolean value)
     {
         addButton.setVisible(value);
     }
-    
-   
+
 }

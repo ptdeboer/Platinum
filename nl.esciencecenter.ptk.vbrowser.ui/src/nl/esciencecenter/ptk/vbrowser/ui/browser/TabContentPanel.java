@@ -21,9 +21,6 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -39,10 +36,10 @@ public class TabContentPanel extends JPanel
 {
     private static final long serialVersionUID = -8240076131848615972L;
 
-    public static final String NEW_TAB_ACTION="newTab";
-    
-    public static final String CLOSE_TAB_ACTION="closeTab";
-    
+    public static final String NEW_TAB_ACTION = "newTab";
+
+    public static final String CLOSE_TAB_ACTION = "closeTab";
+
     public static TabContentPanel createTab(String name, JComponent comp)
     {
         TabContentPanel tabP = new TabContentPanel();

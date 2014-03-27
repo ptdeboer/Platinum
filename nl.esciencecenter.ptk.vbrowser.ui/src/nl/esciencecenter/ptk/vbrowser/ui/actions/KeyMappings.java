@@ -37,7 +37,9 @@ public class KeyMappings
 {
     public static class InputAction extends UIAction
     {
-        InputAction(String name) 
+        private static final long serialVersionUID = -8182833255378132661L;
+
+        InputAction(String name)
         {
             super(name);
         }
@@ -45,83 +47,79 @@ public class KeyMappings
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            DnDUtil.debugPrintf("ActionPerformed:%s\n",e); 
-            Object source = e.getSource();  
-            
+            DnDUtil.debugPrintf("ActionPerformed:%s\n", e);
+            Object source = e.getSource();
         }
-        
-//        public String getName()
-//        {
-//            return null;
-//        }
-
     }
-    
-    public static final InputAction SELECT_ALL=new InputAction("SelectAll"); 
-    public static final InputAction LEFT=new InputAction("Left");
-    public static final InputAction RIGHT=new InputAction("Right"); 
-    public static final InputAction UP=new InputAction("Up");
-    public static final InputAction DOWN=new InputAction("Down"); 
-    public static final InputAction ENTER=new InputAction("Enter"); 
-    public static final InputAction MAXIMIZE=new InputAction("Maximize"); 
-   
-    public static final InputAction ZOOM_IN=new InputAction("ZoomIn"); 
-    public static final InputAction ZOOM_OUT=new InputAction("ZoomOut"); 
-    public static final InputAction ZOOM_RESET=new InputAction("ZoomReset"); 
-  
-    
+
+    public static final InputAction SELECT_ALL = new InputAction("SelectAll");
+
+    public static final InputAction LEFT = new InputAction("Left");
+
+    public static final InputAction RIGHT = new InputAction("Right");
+
+    public static final InputAction UP = new InputAction("Up");
+
+    public static final InputAction DOWN = new InputAction("Down");
+
+    public static final InputAction ENTER = new InputAction("Enter");
+
+    public static final InputAction MAXIMIZE = new InputAction("Maximize");
+
+    public static final InputAction ZOOM_IN = new InputAction("ZoomIn");
+
+    public static final InputAction ZOOM_OUT = new InputAction("ZoomOut");
+
+    public static final InputAction ZOOM_RESET = new InputAction("ZoomReset");
+
     public static void addSelectionKeyMappings(JComponent comp)
     {
         InputMap inpMap = comp.getInputMap();
-        
-        inpMap.put(KeyStroke.getKeyStroke('A',InputEvent.CTRL_MASK),SELECT_ALL.getName()); 
-        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,0),LEFT.getName()); 
-        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,0),RIGHT.getName()); 
-        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,0),UP.getName()); 
-        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,0),DOWN.getName()); 
-        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),ENTER.getName()); 
-        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,InputEvent.CTRL_DOWN_MASK),MAXIMIZE.getName()); 
-           
+
+        inpMap.put(KeyStroke.getKeyStroke('A', InputEvent.CTRL_MASK), SELECT_ALL.getName());
+        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), LEFT.getName());
+        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), RIGHT.getName());
+        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), UP.getName());
+        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN.getName());
+        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), ENTER.getName());
+        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), MAXIMIZE.getName());
+
         ActionMap map = comp.getActionMap();
-        map.put(SELECT_ALL.getName(),SELECT_ALL); 
-        map.put(RIGHT.getName(),RIGHT); 
-        map.put(LEFT.getName(),LEFT); 
-        map.put(UP.getName(),UP); 
-        map.put(DOWN.getName(),DOWN); 
-        map.put(ENTER.getName(),ENTER); 
+        map.put(SELECT_ALL.getName(), SELECT_ALL);
+        map.put(RIGHT.getName(), RIGHT);
+        map.put(LEFT.getName(), LEFT);
+        map.put(UP.getName(), UP);
+        map.put(DOWN.getName(), DOWN);
+        map.put(ENTER.getName(), ENTER);
     }
-    
+
     public static void addCopyPasteKeymappings(JComponent comp)
     {
-
         // Copy Past Keyboard bindings:
-       {
-           InputMap imap = comp.getInputMap();
-           imap.put(KeyStroke.getKeyStroke("ctrl X"),
-               TransferHandler.getCutAction().getValue(Action.NAME));
-           imap.put(KeyStroke.getKeyStroke("ctrl C"),
-               TransferHandler.getCopyAction().getValue(Action.NAME));
-           imap.put(KeyStroke.getKeyStroke("ctrl V"),
-               TransferHandler.getPasteAction().getValue(Action.NAME));
-       }
+        {
+            InputMap imap = comp.getInputMap();
+            imap.put(KeyStroke.getKeyStroke("ctrl X"),
+                    TransferHandler.getCutAction().getValue(Action.NAME));
+            imap.put(KeyStroke.getKeyStroke("ctrl C"),
+                    TransferHandler.getCopyAction().getValue(Action.NAME));
+            imap.put(KeyStroke.getKeyStroke("ctrl V"),
+                    TransferHandler.getPasteAction().getValue(Action.NAME));
+        }
 
-       ActionMap map = comp.getActionMap();
-       // Use TransferHandler actions:
-       map.put(TransferHandler.getCutAction().getValue(Action.NAME),
-               TransferHandler.getCutAction());
-       map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
-               TransferHandler.getCopyAction());
-       map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
-               TransferHandler.getPasteAction());
-
-        
+        ActionMap map = comp.getActionMap();
+        // Use TransferHandler actions:
+        map.put(TransferHandler.getCutAction().getValue(Action.NAME),
+                TransferHandler.getCutAction());
+        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),
+                TransferHandler.getCopyAction());
+        map.put(TransferHandler.getPasteAction().getValue(Action.NAME),
+                TransferHandler.getPasteAction());
     }
-    
-    
+
     public static void addZoomMappings(JComponent comp)
     {
-        //InputMap inpMap = comp.getInputMap();
-        //ActionMap map = comp.getActionMap();
-      
+        // todo:
+        // InputMap inpMap = comp.getInputMap();
+        // ActionMap map = comp.getActionMap();
     }
 }

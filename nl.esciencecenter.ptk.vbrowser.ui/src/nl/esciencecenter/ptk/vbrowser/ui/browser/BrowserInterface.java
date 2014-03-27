@@ -33,40 +33,61 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/**
+ * Master Browser Interface.
+ * Interface methods for the ViewNodeContainer to invoke.   
+ * @author Piter T. de Boer 
+ */
 public interface BrowserInterface
 {
     /**
-     * Returns master platform this browser is associated with
+     * Returns master platform this browser is associated with.
      */
     public BrowserPlatform getPlatform();
 
     /**
-     * Forward Exception to Master Browser.
+     * Forward exception to master browser.
      */
     public void handleException(String actionText, Throwable exception);
 
     /**
-     * Create custom pop-up menu for specified ViewCompnent and optional selected ViewNode. <br>
-     * If a user right click on a ViewNode this method is called.
+     * Create custom pop-up menu for specified ViewComponent and optional selected ViewNode. <br>
+     * If a user right-clicks on a ViewNode or on the under laying canvas (ViewNodeContainer) this method is called.
      * 
      * @param viewComponent
-     *            - Actual ViewComponent the event is coming from
+     *            - actual ViewComponent the event is coming from. For example an IconPanel or ResourceTree.
      * @param viewNode
-     *            - option selected ViewNode on which the menu click occurs.
+     *            - effective selected ViewNode on which the menu click occurs.
      * @param canvasMenu
-     *            - whether this is a canvas click on a ViewContainer or an actual ViewNode. if true the viewComponent
-     *            is a ViewNodeContainer. Multi-selection click are always canvas clicks, since there not a single view node selected.  
+     *            - whether this is a canvas click on a ViewNodeContainer or an actual ViewNode. If true the
+     *            viewComponent must be a ViewNodeContainer. Multi-selection actions are currently canvas menus actions, since the menu
+     *            should apply to the selection and not the clicked-on ViewNode. 
      * @return
      */
     public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode, boolean canvasMenu);
 
+    /**
+     * Is invoked after an action from the pop-up menu has been called.   
+     * @param viewComponent - ViewNodeComponent or ViewNodeContainer.  
+     * @param node - effective ViewNode 
+     * @param action - actual action. 
+     */
     public void handleNodeAction(ViewNodeComponent viewComponent, ViewNode node, Action action);
 
     /**
-     * Return simple UI Interface
+     * Return simple UI Interface.
      */
     public UI getUI();
 
+    /**
+     * Perform Drop. 
+     * @param uiComponent - Swing component. 
+     * @param optPoint - cordinates inside uiComponent. 
+     * @param viewNode - effective ViewNode 
+     * @param dropAction - Actual drop action, Copy, Move, Paste or Link. 
+     * @param vris - list of resource locations. 
+     * @return true - if drop succeed and has finished. 
+     */
     public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris);
 
 }

@@ -24,19 +24,18 @@ import nl.esciencecenter.ptk.task.TaskWatcher;
 
 public class ProxyBrowserTaskWatcher extends TaskWatcher
 {
-	private ProxyBrowserController browserController; 
-     
-	public ProxyBrowserTaskWatcher(ProxyBrowserController browser)  
-	{
-	    super("ProxyBrowserTaskWatcher"+browser.getBrowserId());
-		browserController=browser;
-	}
+    private ProxyBrowserController browserController;
 
-	
+    public ProxyBrowserTaskWatcher(ProxyBrowserController browser)
+    {
+        super("ProxyBrowserTaskWatcher" + browser.getBrowserId());
+        browserController = browser;
+    }
+
     @Override
     public void setHasActiveTasks(boolean active)
     {
-        browserController.updateHasActiveTasks(active); 
+        browserController.updateHasActiveTasks(active);
     }
 
 }

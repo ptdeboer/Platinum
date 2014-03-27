@@ -21,29 +21,31 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.vbrowser.ui.tasks.UITask;
 
-public abstract class ProxyBrowserTask extends UITask 
+/**
+ * ActionTask origination from a ProxyBrowser  
+ */
+public abstract class ProxyBrowserTask extends UITask
 {
-	private ProxyBrowserController browserController=null;
+    private ProxyBrowserController browserController = null;
 
-    public ProxyBrowserTask(ProxyBrowserController browserController,String taskName) 
-	{
-		super(browserController.getTaskWatcher(),taskName);
-		this.browserController=browserController; 
-	}
-	
+    public ProxyBrowserTask(ProxyBrowserController browserController, String taskName)
+    {
+        super(browserController.getTaskWatcher(), taskName);
+        this.browserController = browserController;
+    }
+
     public ProxyBrowserTask(ProxyBrowserController browserController, String taskName, ITaskMonitor monitor)
     {
         super(browserController.getTaskWatcher(), taskName, monitor);
-        this.browserController=browserController; 
+        this.browserController = browserController;
     }
-    
-	@Override
-	protected void stopTask() throws Exception
-	{
-	    browserController.messagePrintf(this,"StopTask NOT implemented for:%s\n",this); 
-	}
+
+    @Override
+    protected void stopTask() throws Exception
+    {
+        browserController.messagePrintf(this, "StopTask NOT implemented for:%s\n", this);
+    }
 
 }

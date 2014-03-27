@@ -34,15 +34,14 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Delegated Action Handler class for the Proxy Browser. Encapsulates Copy,
- * Paste, Create, Delete, Rename, Link and Drag & Drop.
+ * Delegated Action Handler class for the Proxy Browser.<br>
+ * Encapsulates Copy, Paste, Create, Delete, Rename, Link and Drag  & Drop actions. 
  */
 public class ProxyActionHandler
 {
@@ -71,15 +70,13 @@ public class ProxyActionHandler
         logger.debugPrintf("*** Copy Selection:%s\n", node);
     }
 
-    public void handleDeleteSelection(ViewNodeComponent viewComp,Action action, ViewNode node)
+    public void handleDeleteSelection(ViewNodeComponent viewComp, Action action, ViewNode node)
     {
-        Object source = action.getEventSource();
-
         logger.debugPrintf("Delete Selection: %s\n", node);
-        ViewNode selections[] = ((ViewNodeContainer)viewComp).getNodeSelection();
+        ViewNode selections[] = ((ViewNodeContainer) viewComp).getNodeSelection();
 
-        final VRL vrls[]=ViewNode.toVRLs(selections); 
-        
+        final VRL vrls[] = ViewNode.toVRLs(selections);
+
         ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Deleting resources")
         {
             @Override
@@ -100,7 +97,6 @@ public class ProxyActionHandler
         task.startTask();
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
-        
 
     public void handleCreate(Action action, final ViewNode node, final String type, final String options)
     {
@@ -137,7 +133,8 @@ public class ProxyActionHandler
 
     public void handleDelete(Action action, ViewNode node)
     {
-        boolean result = proxyBrowser.getUI().askOkCancel("Delete resource" + node + "?", "Do you want to delete:'" + node.getName()+ "'(" + node.getVRL()+"')", false);
+        boolean result = proxyBrowser.getUI().askOkCancel("Delete resource" + node + "?",
+                "Do you want to delete:'" + node.getName() + "'(" + node.getVRL() + "')", false);
 
         if (result == false)
         {
@@ -152,7 +149,8 @@ public class ProxyActionHandler
             {
                 try
                 {
-                    doDeleteNodes(new VRL[] { locator }, this.getTaskMonitor());
+                    doDeleteNodes(new VRL[]
+                    { locator }, this.getTaskMonitor());
                 }
                 catch (Throwable e)
                 {
@@ -266,7 +264,7 @@ public class ProxyActionHandler
                 // must notify parent as well !
                 fireDeletedNodeEvent(parentNode, delNode);
                 taskMonitor.updateSubTaskDone(taskStr, 1);
-                taskMonitor.logPrintf(" - deleted:%s\n",vrl); 
+                taskMonitor.logPrintf(" - deleted:%s\n", vrl);
                 taskMonitor.endSubTask(taskStr);
             }
             catch (Throwable ex)
@@ -275,7 +273,6 @@ public class ProxyActionHandler
                 break;
             }
         }
-
     }
 
     protected void doRenameNode(VRL locator, String newName, ITaskMonitor taskMonitor)

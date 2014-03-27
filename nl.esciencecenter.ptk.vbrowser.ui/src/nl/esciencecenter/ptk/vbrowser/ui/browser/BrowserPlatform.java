@@ -47,8 +47,7 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Browser Platform.
- * Typically one Platform instance per application environment is created.
+ * Browser Platform. Typically one Platform instance per application environment is created.
  */
 public class BrowserPlatform
 {
@@ -103,8 +102,8 @@ public class BrowserPlatform
 
     private VRSContext vrsContext;
 
-    private VRSClient vrsClient; 
-    
+    private VRSClient vrsClient;
+
     private GuiSettings guiSettings;
 
     protected BrowserPlatform(String id) throws Exception
@@ -119,33 +118,41 @@ public class BrowserPlatform
         this.proxyRegistry = ProxyFactoryRegistry.getInstance();
 
         // ==================
-        // Configuration 
+        // Configuration
         // ==================
-        
-        // use custom configuration location for platform specific settings. 
+
+        // use custom configuration location for platform specific settings.
         URI cfgDir = getPlatformConfigDir(null);
         initVRSContext(cfgDir);
         guiSettings = new GuiSettings();
 
         // ===================================
-        // Init VRS Classes 
+        // Init VRS Classes
         // ===================================
-        
-        initVRSContext(cfgDir); 
+
+        initVRSContext(cfgDir);
 
         // ===================================
-        // Swing resources and producers 
+        // Swing resources and producers
         // ===================================
 
         // root Frame and Icon Renderer/provider:
         this.rootFrame = new JFrame();
         this.iconProvider = new IconProvider(rootFrame, getResourceLoader());
-        
+
         // ===================================
-        // Init Viewers and ViewerPlugins.   
+        // Init Viewers and ViewerPlugins.
         // ===================================
-        
+
         initViewers();
+    }
+
+    private void initVRSContext(URI cfgDir) throws Exception
+    {
+        VRSProperties props = new VRSProperties("VRSBrowserProperties");
+        this.vrsContext = new VRSContext(props);
+        this.vrsClient = new VRSClient(getVRSContext());
+        this.resourceLoader = vrsClient.createResourceLoader();
     }
 
     private void initViewers() throws Exception
@@ -155,14 +162,6 @@ public class BrowserPlatform
 
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
-    }
-
-    private void initVRSContext(URI cfgDir) throws Exception
-    {
-        VRSProperties props = new VRSProperties("VRSBrowserProperties");
-        this.vrsContext = new VRSContext(props);
-        this.vrsClient = new VRSClient(getVRSContext());
-        this.resourceLoader = vrsClient.createResourceLoader();
     }
 
     public VRSContext getVRSContext()
@@ -177,15 +176,15 @@ public class BrowserPlatform
 
     public void setResourceLoader(ResourceLoader resourceLoader)
     {
-        this.resourceLoader=resourceLoader; 
+        this.resourceLoader = resourceLoader;
         viewerRegistry.getResourceHandler().setResourceLoader(resourceLoader);
     }
 
     public ResourceLoader getResourceLoader()
     {
-        return resourceLoader; 
+        return resourceLoader;
     }
-    
+
     public String getPlatformID()
     {
         return platformID;
@@ -201,6 +200,11 @@ public class BrowserPlatform
         return createBrowser(true);
     }
 
+    /** 
+     * Create actual browser. 
+     * @param show - show browser frame.  
+     * @return Master browser controller interface. 
+     */
     public BrowserInterface createBrowser(boolean show)
     {
         return new ProxyBrowserController(this, show);
@@ -212,7 +216,7 @@ public class BrowserPlatform
     }
 
     /**
-     * Returns Internal Browser DnD TransferHandler for DnDs between browser frames and ViewNodeComponents.
+     * Returns Internal Browser DnD TransferHandler for DnDs between ViewNodeComponents.
      */
     public TransferHandler getTransferHandler()
     {
@@ -220,6 +224,9 @@ public class BrowserPlatform
         return DnDUtil.getDefaultTransferHandler();
     }
 
+    /**
+     * @return Viewer and other plug-in registry for this platform.
+     */
     public PluginRegistry getViewerRegistry()
     {
         return viewerRegistry;
@@ -240,6 +247,9 @@ public class BrowserPlatform
         return new URI("file", null, null, 0, cfgPath, null, null);
     }
 
+    /**
+     * @return Icon Factory for this platform.
+     */
     public IconProvider getIconProvider()
     {
         return iconProvider;
@@ -250,6 +260,12 @@ public class BrowserPlatform
         return guiSettings;
     }
 
+    /**
+     * Cross-platform event notifier. If all platform use URI (VRL) based events, these events can be shared across
+     * implementations.
+     * 
+     * @return The global cross-platform VRSEventNotifier.
+     */
     public VRSEventNotifier getVRSEventNotifier()
     {
         return VRSEventNotifier.getInstance();

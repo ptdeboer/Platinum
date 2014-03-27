@@ -34,12 +34,11 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
- * Default Browser Interface Adaptor
+ * Default Browser Interface Adaptor, currently used for testing. 
  */
 public class DummyBrowserInterface  implements BrowserInterface
 {
