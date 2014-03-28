@@ -20,47 +20,46 @@
 
 package nl.esciencecenter.ptk.data;
 
-import java.util.List; 
+import java.util.List;
 
-/** 
- * Common VAR Holder interface for lists. 
+/**
+ * Common VAR Holder interface for lists.
  */
 public interface VARListHolder<T>
 {
-    /** 
-     * Whether value is set.
-     */ 
-    public boolean isSet(); 
-    
-    /** 
-     * Set actual list value.
-     */ 
-    public void set(List<T> value);
-    
     /**
-     * Set value in list. 
+     * Whether value is set.
      */
-    public void set(int index,T newValue); 
+    public boolean isSet();
 
-    /** 
-     * Add value to list. 
+    /**
+     * Set actual list value.
      */
-    public void add(T newValue); 
+    public void set(List<T> value);
 
-    /** 
+    /**
+     * Set value in list.
+     */
+    public void set(int index, T newValue);
+
+    /**
+     * Add value to list.
+     */
+    public void add(T newValue);
+
+    /**
      * Get value.
-     */ 
-    public List<T> get(); 
-    
+     */
+    public List<T> get();
+
     /**
      * Get value form list.
-     */ 
-    public T get(int index); 
-    
-    /** 
-     * @return true if list is null or has 0 values. 
+     */
+    public T get(int index);
+
+    /**
+     * @return true if list is null or has 0 values.
      */
     public boolean isEmpty();
-    
-    
+
 }

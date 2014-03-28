@@ -46,7 +46,7 @@ public class BooleanHolder implements VARHolder<Boolean>
 
     }
 
-    /** 
+    /**
      * Returns Holder value or defValue if holder does not contain any value.
      */
     public boolean booleanValue(boolean defValue)
@@ -57,8 +57,8 @@ public class BooleanHolder implements VARHolder<Boolean>
         return defValue;
     }
 
-    /** 
-     * Whether value was specified. 
+    /**
+     * Whether value was specified.
      */
     public boolean isSet()
     {

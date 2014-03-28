@@ -23,9 +23,8 @@ package nl.esciencecenter.ptk.data;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-/** 
- * Combined Set and List. 
- * Added support for List and Array methods. 
+/**
+ * Combined Set and List. Added support for List and Array methods.
  */
 public class HashSetList<TK> extends LinkedHashSet<TK>
 {
@@ -33,11 +32,11 @@ public class HashSetList<TK> extends LinkedHashSet<TK>
 
     public List<TK> toList(List<TK> list)
     {
-        for (TK key:this)
+        for (TK key : this)
         {
             list.add(key);
         }
-        return list; 
+        return list;
     }
-    
+
 }

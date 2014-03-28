@@ -58,7 +58,7 @@ public class LongHolder implements VARHolder<Long>
     }
 
     /**
-     *  Whether value was specified. 
+     * Whether value was specified.
      */
     public boolean isNull()
     {

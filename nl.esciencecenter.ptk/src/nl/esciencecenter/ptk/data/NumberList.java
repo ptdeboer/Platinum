@@ -28,7 +28,7 @@ public class NumberList extends ExtendedList<Number>
 
     public NumberList(List<? extends Number> ints)
     {
-       super(ints); 
+        super(ints);
     }
 
 }

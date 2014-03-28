@@ -45,8 +45,8 @@ public class IntegerHolder implements VARHolder<Integer>
 
     }
 
-    /** 
-     * Returns Holder value or defValue if holder does not contain any value. 
+    /**
+     * Returns Holder value or defValue if holder does not contain any value.
      */
     public int intValue(int defValue)
     {

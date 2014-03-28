@@ -31,8 +31,7 @@ import nl.esciencecenter.ptk.util.Comparer;
 import nl.esciencecenter.ptk.util.SortUtil;
 
 /**
- * Helper class for Managed Lists like StringList. Implementation type is
- * ArrayList.
+ * Helper class for Managed Lists like StringList. Implementation type is ArrayList.
  */
 public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializable
 {
@@ -45,7 +44,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     protected boolean allowNull = true;
 
     /**
-     * Construct list from Array. Creates new backing array, does not copy/clone the elements. 
+     * Construct list from Array. Creates new backing array, does not copy/clone the elements.
      */
     public ExtendedList(T[] values)
     {
@@ -55,9 +54,9 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         }
         add(values);
     }
-    
-    /** 
-     * Create empty list. 
+
+    /**
+     * Create empty list.
      */
     public ExtendedList()
     {
@@ -65,7 +64,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Construct list around one value. 
+     * Construct list around one value.
+     * 
      * @param value
      */
     public ExtendedList(T value)
@@ -74,8 +74,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Creates a StringList with an capacity of num. Actual reported size() will
-     * be 0.
+     * Creates a StringList with an capacity of num. Actual reported size() will be 0.
      * 
      * @param capacity
      *            - initial capacity of List
@@ -85,8 +84,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
         super(capacity);
     }
 
-    /** 
-     * Clone list, values wil not be copied. 
+    /**
+     * Clone list, values wil not be copied.
      */
     public ExtendedList(Collection<? extends T> list)
     {
@@ -94,8 +93,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Concatenates Elements of this List to one String using '\n' as line
-     * separator. <br>
+     * Concatenates Elements of this List to one String using '\n' as line separator. <br>
      * Calls toString(",");
      */
     public String toString()
@@ -104,8 +102,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Concatenates Elements to String array using elementSeperator between
-     * elements.
+     * Concatenates Elements to String array using elementSeperator between elements.
      */
     public String toString(String elementSeperator)
     {
@@ -146,9 +143,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
 
     /**
      * Remove elements from this list. <br>
-     * <strong>Polymorphism note</strong>: This method overrides remove(Object
-     * o) *only* for the type "T", remove(Object o) is still possible because of
-     * Generics.
+     * <strong>Polymorphism note</strong>: This method overrides remove(Object o) *only* for the type "T", remove(Object
+     * o) is still possible because of Generics.
      */
     public void remove(T els[])
     {
@@ -160,8 +156,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Add all elements. Does not check for duplicates. NULL objects are
-     * omitted!
+     * Add all elements. Does not check for duplicates. NULL objects are omitted!
      */
     public void add(T[] els)
     {
@@ -205,8 +200,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Add Value, if (unique==true) the entry won't be added if it already
-     * exists.
+     * Add Value, if (unique==true) the entry won't be added if it already exists.
      */
     public boolean add(T str, boolean unique)
     {
@@ -227,11 +221,9 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Add Elements if NOT already in this list. Returns number of elements
-     * really added.
+     * Add Elements if NOT already in this list. Returns number of elements really added.
      * <p>
-     * This is an O(N*N) merge. For each element a linear search is used by
-     * calling contains().
+     * This is an O(N*N) merge. For each element a linear search is used by calling contains().
      * 
      * @return number of unique elements added
      */
@@ -258,9 +250,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Sort List according to newOrder array. Moves elements NOT in the newOrder
-     * array up to after the elements in specified newOrder array. (Does not
-     * remove entries not in order array).
+     * Sort List according to newOrder array. Moves elements NOT in the newOrder array up to after the elements in
+     * specified newOrder array. (Does not remove entries not in order array).
      */
     public void orden(T[] newOrder)
     {
@@ -298,8 +289,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Add elements from otherList if not already in this list. Returns number
-     * of elements really added.
+     * Add elements from otherList if not already in this list. Returns number of elements really added.
      */
     public int merge(ExtendedList<T> otherList)
     {
@@ -366,13 +356,11 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Create duplicate by converting the elements to an explicit typed array
-     * first. Use this method if the array contains mixed super- and sub-
-     * classes of type <T>.
+     * Create duplicate by converting the elements to an explicit typed array first. Use this method if the array
+     * contains mixed super- and sub- classes of type <T>.
      * 
      * @param nilArray
-     *            - empty array (T[0]) to specify the type of the backing array
-     *            to be used.
+     *            - empty array (T[0]) to specify the type of the backing array to be used.
      * 
      * @return non shallow copy of this ElementList.
      */
@@ -387,8 +375,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Insert new value at position. Note: For an ArrayList insert() and
-     * remove() methods are expensive.
+     * Insert new value at position. Note: For an ArrayList insert() and remove() methods are expensive.
      */
     public void insert(int insertPosition, T value)
     {
@@ -396,8 +383,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Insert new value at position. Note: For an ArrayList insert() and
-     * remove() methods are expensive.
+     * Insert new value at position. Note: For an ArrayList insert() and remove() methods are expensive.
      */
     public void insert(int insertPosition, T[] values)
     {
@@ -408,8 +394,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Insert newValue before 'beforeValue'. Note: For an ArrayList insert() and
-     * remove() methods are expensive.
+     * Insert newValue before 'beforeValue'. Note: For an ArrayList insert() and remove() methods are expensive.
      */
     public int insertBefore(T beforeValue, T newValue)
     {
@@ -423,8 +408,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Insert newValue after 'afterValue'. Note: For an ArrayList insert() and
-     * remove() methods are expensive.
+     * Insert newValue after 'afterValue'. Note: For an ArrayList insert() and remove() methods are expensive.
      */
     public int insertAfter(String afterValue, T newValue)
     {
@@ -463,12 +447,10 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Adds all values of this list to a linkedHashSet. The LinkedHashSet keeps
-     * the order of this list. Duplicate values are removed as the returned type
-     * is a Set
+     * Adds all values of this list to a linkedHashSet. The LinkedHashSet keeps the order of this list. Duplicate values
+     * are removed as the returned type is a Set
      * 
-     * @returns LinkedHashSet containing the String List keeping the values in
-     *          the same order.
+     * @returns LinkedHashSet containing the String List keeping the values in the same order.
      */
     public Set<T> toSet()
     {

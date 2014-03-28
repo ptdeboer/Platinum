@@ -27,8 +27,7 @@ import java.util.Collection;
 import nl.esciencecenter.ptk.util.SortUtil;
 
 /**
- * Helper class for StringLists. StringList extends the ArrayList class with
- * extra methods.
+ * Helper class for StringLists. StringList extends the ArrayList class with extra methods.
  * <p>
  * Note: ArrayList is an not synchronized generics class.
  */
@@ -58,7 +57,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     }
 
     /**
-     *  Helper method to find a entry in a String Array 
+     * Helper method to find a entry in a String Array
      */
     public static int find(String[] list, String value)
     {
@@ -104,7 +103,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
         return new StringList(strs);
     }
 
-    /** 
+    /**
      * Merge String array into one StringList. Uses merge().
      */
     public static StringList createFrom(String list1[], String list2[])
@@ -115,7 +114,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     }
 
     /**
-     *  Merge String arrays into one StringList. Uses merge()
+     * Merge String arrays into one StringList. Uses merge()
      */
     public static StringList createFrom(String list1[], String list2[], String list3[])
     {
@@ -133,16 +132,15 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     {
         super(strs);
     }
-    
+
     public StringList()
     {
         super();// =default;
     }
 
     /**
-     * Creates a StringList with an capacity of num. Actual reported size() will
-     * be 0! Only useful if the size is known in advance and the list size will
-     * not change.
+     * Creates a StringList with an capacity of num. Actual reported size() will be 0! Only useful if the size is known
+     * in advance and the list size will not change.
      * 
      * @param len
      */
@@ -153,7 +151,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
 
     public StringList(Collection<? extends String> list)
     {
-        super((list!=null)?list:new ArrayList<String>(0));
+        super((list != null) ? list : new ArrayList<String>(0));
     }
 
     public int[] sort()

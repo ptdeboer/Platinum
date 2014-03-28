@@ -32,11 +32,9 @@ import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
- * String Hasher Util class.
- * <p.
- * Salting:<br>
- * If a salt is specified the byte value of the salt string is added as extra
- * digest after processing the source text.
+ * Stateful String Hasher Util class.<br>
+ * <strong>Salting</strong>: If a salt is specified the byte value of the salt string is added as extra digest after
+ * processing the source text.
  */
 public class StringHasher implements Cloneable, Duplicatable<StringHasher>
 {
@@ -60,11 +58,10 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     }
 
     // ========================================================================
-    // Helper methods. 
+    // Helper methods.
     // ========================================================================
     /**
-     * Truncate the hash bytes (digest) and exor the remaining bytes with the
-     * beginning.
+     * Truncate the hash bytes (digest) and exor the remaining bytes with the beginning.
      */
     public static byte[] truncate(byte digest[], int maxLen)
     {
@@ -74,13 +71,13 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
         // truncate hash and exor the remainder:
         for (int i = 0; i < digest.length; i++)
             subDigest[i % maxLen] ^= digest[i];
- 
+
         logger.debugPrintf("Truncating digest: %s -> %s\n", StringUtil.toHexString(digest),
                 StringUtil.toHexString(subDigest));
 
         return subDigest;
     }
-    
+
     // ========================================================================
     //
     // ========================================================================
@@ -88,10 +85,10 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     private MessageDigest messageDigest;
 
     private Charset charSet = null;
-    
+
     protected StringHasher()
     {
-        
+
     }
 
     public StringHasher(String hashType) throws NoSuchAlgorithmException, UnsupportedEncodingException
@@ -121,7 +118,7 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     {
         return clone();
     }
-    
+
     public StringHasher clone()
     {
         StringHasher hasher = new StringHasher();
@@ -194,25 +191,31 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
         {
             messageDigest.update(dataBytes, 0, nread);
         }
-        
-        // ignore; 
-        try { fis.close(); } catch (Exception e) { ; } 
-        
+
+        // ignore;
+        try
+        {
+            fis.close();
+        }
+        catch (Exception e)
+        {
+            ;
+        }
+
         byte[] mdbytes = messageDigest.digest();
 
         return StringUtil.toHexString(mdbytes);
     }
 
     /**
-     * Create hash from provided text. The hash length (in bytes) will be
-     * limited to maxhashLen. The remainder of the hash will be exored with the
-     * actual truncated hash.
+     * Create hash from provided text. The hash length (in bytes) will be limited to maxhashLen. The remainder of the
+     * hash will be exored with the actual truncated hash.
      * 
      * @param text
      *            - String to hash
      * @param saltText
-     *            - Optional salt text. 
-     *            
+     *            - Optional salt text.
+     * 
      * @param maxHashLen
      *            - maximum hash length in bytes or -1.
      * @return hash - in hexidecimal String format, without "0x" prefixed.
@@ -230,9 +233,8 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     }
 
     /**
-     * Create hash from provided text. The hash length (in bytes) will be
-     * limited to maxhashLen. The remainder of the hash will be exored with the
-     * actual truncated hash.
+     * Create hash from provided text. The hash length (in bytes) will be limited to maxhashLen. The remainder of the
+     * hash will be exored with the actual truncated hash.
      * 
      * @param text
      *            - String to hash
@@ -242,8 +244,8 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
      */
     public String createHashToBase64String(String text, String saltText, int maxHashLen)
     {
-        byte digest[] = hash(text,true,saltText,false); 
-        
+        byte digest[] = hash(text, true, saltText, false);
+
         if (maxHashLen > 0)
         {
             digest = truncate(digest, maxHashLen);
@@ -251,7 +253,7 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
 
         return StringUtil.base64Encode(digest);
     }
-   
+
     public String createHashToHexString(String text)
     {
         byte digest[] = hash(text, true, null, false);
@@ -259,8 +261,8 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     }
 
     /**
-     * Create Hash from String and return hash value as Base64 encoded String.
-     * When using SHA-256 these 32 bytes will be encode to 48 characters.
+     * Create Hash from String and return hash value as Base64 encoded String. When using SHA-256 these 32 bytes will be
+     * encode to 48 characters.
      */
     public String createHashToBase64String(String text, String saltText)
     {
@@ -269,48 +271,48 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     }
 
     /**
-     * @param text 
-     *            - actual text to create hash from. Used  default char set to get the string bytes. 
+     * @param text
+     *            - actual text to create hash from. Used default char set to get the string bytes.
      * @param reset
      *            - reset state of hasher before applied hash.
      * @param saltText
      *            - optional salt text to add.
      * @param prefixSalt
-     *            - if true, saltBytes are applied before hashing the actual bytes 
-     *              if false, the source bytes are hashed first, then the saltBytes
-     *              are digested.
+     *            - if true, saltBytes are applied before hashing the actual bytes if false, the source bytes are hashed
+     *            first, then the saltBytes are digested.
      */
     public byte[] hash(String text, boolean reset, String saltText, boolean prefixSalt)
-    {   
-        if (text==null)
-            throw new NullPointerException("Source text can not be null!"); 
-        
-        byte saltBytes[]=null;
-        if (saltText!=null)
-            saltBytes=saltText.getBytes(charSet); 
-        return _hash(text.getBytes(charSet),reset,saltBytes,prefixSalt);
+    {
+        if (text == null)
+            throw new NullPointerException("Source text can not be null!");
+
+        byte saltBytes[] = null;
+        if (saltText != null)
+            saltBytes = saltText.getBytes(charSet);
+        return _hash(text.getBytes(charSet), reset, saltBytes, prefixSalt);
     }
-    
+
     /**
+     * Hash sourceBytes[] and optionally use saltBytes[] either as prefix (prefixSalt==true) or postFix
+     * (prefixSalt=false) and return he resulting bytes. This changed the state of the hasher.
      * 
-     * @param sourceBytes 
+     * @param sourceBytes
      *            - actual bytes to create hash from.
      * @param reset
      *            - reset state of hasher before applied hash.
      * @param saltBytes
      *            - optional salt bytes to add.
      * @param prefixSalt
-     *            - if true, saltBytes are applied before hashing the actual bytes 
-     *              if false, the source bytes are hashed first, then the saltBytes
-     *              are digested.
+     *            - if true, saltBytes are applied before hashing the actual bytes if false, the source bytes are hashed
+     *            first, then the saltBytes are digested.
      */
     public byte[] hash(byte sourceBytes[], boolean reset, byte saltBytes[], boolean prefixSalt)
-    {   
-        return _hash(sourceBytes,reset,saltBytes,prefixSalt);
+    {
+        return _hash(sourceBytes, reset, saltBytes, prefixSalt);
     }
-    
-    /** 
-     * Hash implementation. 
+
+    /**
+     * Hash implementation.
      */
     protected byte[] _hash(byte sourceBytes[], boolean reset, byte saltBytes[], boolean prefixSalt)
     {

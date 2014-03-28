@@ -52,6 +52,15 @@ public class Test_StringCrypter
 
     public final static String SHA256_HASH_12345 = "5994471ABB01112AFCC18159F6CC74B4F511B99806DA59B3CAF5A9C173CACFC5";
 
+
+    public static Secret getLegacyAppKey1()
+    {
+        // 'legacy app key 1'
+        return new Secret("123CSM34567890ENCRYPTION".toCharArray());
+        // return new Secret("123CSM34567890ENCRYPTIONC3PR4KEY5678901234567890".toCharArray());
+
+    }
+    
     @Test
     public void test_HashMD5_12345() throws Exception
     {
@@ -182,7 +191,7 @@ public class Test_StringCrypter
         // echo -n 'zJPWCwDeSgG8j2uyHEABIQ==' | base64 -d | openssl  enc -des-ede3 -K 31323343534D3334353637383930454E4352595054494F4E -d
         
         // Legacy App1 doesn't use hash digest!
-        StringCrypter crypter = new StringCrypter(StringCrypter.getAppKey1(), CryptScheme.DESEDE_ECB_PKCS5, null,
+        StringCrypter crypter = new StringCrypter(getLegacyAppKey1(), CryptScheme.DESEDE_ECB_PKCS5, null,
                 StringCrypter.CHARSET_UTF8);
         // not recommend, use (iterative) hashing instead.
         crypter.setUsePlainCharBytes(true);
@@ -194,7 +203,7 @@ public class Test_StringCrypter
     @Test
     public void test_CryptLegacyAppKey2() throws Exception
     {
-        StringCrypter crypter = new StringCrypter(StringCrypter.getAppKey1(), CryptScheme.DESEDE_ECB_PKCS5, null,
+        StringCrypter crypter = new StringCrypter(getLegacyAppKey1(), CryptScheme.DESEDE_ECB_PKCS5, null,
                 StringCrypter.CHARSET_UTF8);
         crypter.setUsePlainCharBytes(true);
         outPrintf("decrypt=%s\n", crypter.decryptString("zJPWCwDeSgG8j2uyHEABIQ=="));
