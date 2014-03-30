@@ -191,7 +191,7 @@ public class IconLayoutManager implements LayoutManager
                 if (prefSize.width>cellMaxWidth)
                 	prefSize.width=cellMaxWidth; 
                 comp.setSize(prefSize); 
-                comp.validate(); // now 
+                //comp.validate(); // now 
             }
             
             // II) Current Icon Flow Layout stats  

@@ -218,8 +218,10 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         int index = 0; // use default of 0!
 
         if ((enumVals == null) || (enumVals.length <= 0))
+        {
             throw new NullPointerException("Cannot not have empty enum value list !");
-
+        }
+        
         StringList enums = new StringList(enumVals);
 
         // robuustness! add defaultVal if not in enumVals!
@@ -291,16 +293,21 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         }
 
         // Assert here ?
-        // Null types are either ANY or String.
+        // Null types are either ANY or String (enums are also STRING)
         if (value == null)
         {
-            if (type != AttributeType.ANY && type != AttributeType.STRING)
+            if ((type != AttributeType.ANY) && (type != AttributeType.STRING)  && (type != AttributeType.ENUM))
             {
-                throw new Error("Null objects resolve to ANY type (or String)!");
+                throw new Error("Null objects must resolve to either ANY, String or Enum (type="+type+")");
             }
             else
             {
-                // null may match against ANY and STRING.
+                if (type == AttributeType.ENUM)
+                {
+                    // TBI, enum value must be one of allowed enums. 
+                    logger.errorPrintf("Warning: NULL Enum value\n"); 
+                }
+                // null may match against ANY,STRING or ENUM (which are strings).
                 return;
             }
         }
