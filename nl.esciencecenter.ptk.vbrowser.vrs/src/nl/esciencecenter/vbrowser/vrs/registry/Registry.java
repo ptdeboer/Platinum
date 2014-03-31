@@ -143,7 +143,7 @@ public class Registry
     {
         try
         {
-            registryFactory(vrsClass);
+            registerFactory(vrsClass);
         }
         catch (Throwable t)
         {
@@ -151,7 +151,7 @@ public class Registry
         }
     }
 
-    public void registryFactory(Class<? extends VResourceSystemFactory> vrsClass) throws InstantiationException, IllegalAccessException
+    public void registerFactory(Class<? extends VResourceSystemFactory> vrsClass) throws InstantiationException, IllegalAccessException
     {
         VResourceSystemFactory vrsInstance; 
         

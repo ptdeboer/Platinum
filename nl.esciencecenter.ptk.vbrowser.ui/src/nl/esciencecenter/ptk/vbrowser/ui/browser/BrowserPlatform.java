@@ -171,7 +171,7 @@ public class BrowserPlatform
 
     public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception
     {
-        vrsContext.getRegistry().registryFactory(clazz);
+        vrsContext.getRegistry().registerFactory(clazz);
     }
 
     public void setResourceLoader(ResourceLoader resourceLoader)
