@@ -30,7 +30,6 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 
@@ -39,8 +38,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
  */
 public class ViewContainerEventAdapter implements MouseListener, MouseMotionListener, FocusListener
 {
-    private static final ClassLogger logger=ClassLogger.getLogger(ViewContainerEventAdapter.class);
-    
+    private static final ClassLogger logger = ClassLogger.getLogger(ViewContainerEventAdapter.class);
+
     private ViewNodeContainer viewComp;
 
     private ViewNodeActionListener nodeActionListener;
@@ -49,29 +48,29 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
     private ViewNode lastNode;
 
-    private boolean notifySelectionEvents=true;
-    
-    private boolean notifyActionEvents=true; 
-    
-    public ViewContainerEventAdapter(ViewNodeContainer viewComp, 
-            ViewNodeActionListener componentController)  
+    private boolean notifySelectionEvents = true;
+
+    private boolean notifyActionEvents = true;
+
+    public ViewContainerEventAdapter(ViewNodeContainer viewComp,
+            ViewNodeActionListener componentController)
     {
         this.viewComp = viewComp;
         this.nodeActionListener = componentController;
-        //this.notifySelectionEvents=handleSelectionEvents;
-        //this.notifyActionEvents=handleActionEvents;
+        // this.notifySelectionEvents=handleSelectionEvents;
+        // this.notifyActionEvents=handleActionEvents;
     }
-    
+
     public BrowserInterface getBrowserInterface()
     {
-        return this.viewComp.getBrowserInterface(); 
+        return this.viewComp.getBrowserInterface();
     }
-    
+
     public void setNotifySelectionEvent(boolean val)
     {
-        this.notifySelectionEvents=val; 
+        this.notifySelectionEvents = val;
     }
-    
+
     @Override
     public void focusGained(FocusEvent event)
     {
@@ -81,7 +80,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     @Override
     public void focusLost(FocusEvent event)
     {
-        logger.debugPrintf("focusLost:%s\n",event);
+        logger.debugPrintf("focusLost:%s\n", event);
     }
 
     @Override
@@ -111,19 +110,130 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     @Override
     public void mouseExited(MouseEvent event)
     {
-       // logger.debugPrintf("mouseClicked:%s\n", event);
+        // logger.debugPrintf("mouseClicked:%s\n", event);
     }
 
     @Override
     public void mouseReleased(MouseEvent event)
     {
-       // logger.debugPrintf("mouseClicked:%s\n", event);
+        // logger.debugPrintf("mouseClicked:%s\n", event);
     }
 
     public void mousePressed(MouseEvent e)
     {
+        doMousePressed(e);
+    }
+
+    public void mouseClicked(MouseEvent e)
+    {
+        doMouseClicked(e);
+    }
+
+    // =================
+    // implementations
+    // =================
+
+    protected void doMouseClicked(MouseEvent e)
+    {
+        logger.debugPrintf("mouseClicked:%s\n", e);
+
+        ViewNode node = getViewNode(e);
+
+        boolean canvasClick = false;
+
+        if (node == null)
+        {
+            canvasClick = true;
+        }
+
+        boolean shift = ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0);
+        boolean combine = ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0);
+
+        // When pressed down, no selection is made
+        // When clicked, selection is made:
+        if (isSelection(e))
+        {
+            if (canvasClick)
+            {
+                if (combine == false)
+                {
+                    notifyClearSelection(viewComp);
+                    // clear range select
+                    this.firstNode = null;
+                    this.lastNode = null;
+                    // unselect !
+                    fireNodeSelectionAction(null); // nodeActionListener.handleNodeSelection(null);
+                }
+                else
+                {
+                    // Is combined selection click on canvas -> handled by tree
+                    // selection model
+                    notifySetSelection(viewComp, null, true);
+                    fireNodeSelectionAction(null); // nodeActionListener.handleNodeSelection(null);
+                }
+            }
+            else
+            {
+                // handled mouseClicked if NO multi combo click !
+                if ((combine == false) && (shift == false))
+                {
+                    // clear range select
+                    this.firstNode = null;
+                    this.lastNode = null;
+                    notifyClearSelection(viewComp);
+                    // single select:
+                    notifySetSelection(viewComp, node, true);
+                    // is selection action:
+                    fireNodeSelectionAction(node); // nodeActionListener.handleNodeSelection(node);
+                }
+                else if (shift == true)
+                {
+                    // range select:
+                    if (this.firstNode == null)
+                    {
+                        // first click:
+                        this.firstNode = node;
+                        notifySetSelection(viewComp, node, true);
+                    }
+                    else
+                    {
+                        // unselect previous range:
+                        if (this.lastNode != null)
+                        {
+                            notifySetSelectionRange(viewComp, firstNode, lastNode, false);
+                        }
+
+                        // second or third,etc click:
+                        this.lastNode = node;
+                        notifySetSelectionRange(viewComp, firstNode, lastNode, true);
+
+                        // controller.notifySelectionClick(node,true);
+                    }
+
+                }
+                else
+                // combine=true
+                {
+                    // add selection
+                    notifySetSelection(viewComp, node, true);
+                }
+            }
+
+        }
+
+        if ((combine == false) && (shift == false))
+        {
+            if (isAction(e))
+            {
+                fireNodeDefaultAction(node);// nodeActionListener.handleNodeAction(node);
+            }
+        }
+    }
+
+    protected void doMousePressed(MouseEvent e)
+    {
         logger.debugPrintf("mousePressed:%s\n", e);
-        
+
         ViewNode node = getViewNode(e);
         boolean canvasclick = false;
 
@@ -162,124 +272,44 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
         {
             if (canvasclick == false)
             {
-                // get (optional) ViewNode menu */
-                JPopupMenu menu = viewComp.createNodeActionMenuFor(node, false);
-                if (menu != null)
-                    menu.show((Component) e.getSource(), e.getX(), e.getY());
+                doShowPopupMenu(viewComp, node, false, e);
             }
             else
             {
-                JPopupMenu menu = viewComp.createNodeActionMenuFor(node, true);
-                if (menu != null)
-                    menu.show((Component) e.getSource(), e.getX(), e.getY());
+                doShowPopupMenu(viewComp, node, true, e);
             }
         }
     }
 
-    public void mouseClicked(MouseEvent e)
+    private boolean doShowPopupMenu(ViewNodeContainer viewComponent, ViewNode viewNode, boolean canvasMenu, MouseEvent e)
     {
-        logger.debugPrintf("mouseClicked:%s\n",e);
-
-        ViewNode node = getViewNode(e);
-
-        boolean canvasClick = false;
-
-        if (node == null)
+        // get (optional) ViewNode menu */
+        JPopupMenu menu = viewComponent.createNodeActionMenuFor(viewNode, canvasMenu);
+        if (menu != null)
         {
-            canvasClick = true;
+            menu.show((Component) e.getSource(), e.getX(), e.getY());
+            return true;
+        }
+        else
+        {
+            logger.warnPrintf("No pop-up menu created for (comp/ViewNode):%s/%s\n", viewComponent, viewNode);
+            return false;
         }
 
-        boolean shift = ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0);
-        boolean combine = ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0);
-
-        // When pressed down, no selection is made
-        // When clicked, selection is made:
-        if (isSelection(e))
-        {
-            if (canvasClick)
-            {
-                if (combine == false)
-                {
-                    notifyClearSelection(viewComp);
-                    // clear range select
-                    this.firstNode = null;
-                    this.lastNode = null;
-                    // unselect !
-                    fireNodeSelectionAction(null); // nodeActionListener.handleNodeSelection(null);
-                }
-                else
-                {
-                    // Is combined selection click on canvas -> handled by tree
-                    // selection model
-                    notifySetSelection(viewComp,null,true);     
-                    fireNodeSelectionAction(null); // nodeActionListener.handleNodeSelection(null);
-                }
-            }
-            else
-            {
-                // handled mouseClicked if NO multi combo click !
-                if ((combine == false) && (shift == false))
-                {
-                    // clear range select
-                    this.firstNode = null;
-                    this.lastNode = null;
-                    notifyClearSelection(viewComp); 
-                    // single select:
-                    notifySetSelection(viewComp,node,true); 
-                    // is selection action:
-                    fireNodeSelectionAction(node); // nodeActionListener.handleNodeSelection(node);
-                }
-                else if (shift == true)
-                {
-                    // range select:
-                    if (this.firstNode == null)
-                    {
-                        // first click:
-                        this.firstNode = node;
-                        notifySetSelection(viewComp,node,true);                        
-                    }
-                    else
-                    {
-                        // unselect previous range:
-                        if (this.lastNode != null)
-                        {
-                            notifySetSelectionRange(viewComp,firstNode,lastNode,false); 
-                        }
-
-                        // second or third,etc  click:
-                        this.lastNode = node;
-                        notifySetSelectionRange(viewComp,firstNode,lastNode,true);
-                        
-                        // controller.notifySelectionClick(node,true);
-                    }
-
-                }
-                else // combine=true
-                {
-                    // add selection
-                    notifySetSelection(viewComp,node,true); 
-                }
-            }
-
-        }
-
-        if ((combine == false) && (shift == false))
-        {
-            if (isAction(e))
-            {
-                fireNodeDefaultAction(node);// nodeActionListener.handleNodeAction(node);
-            }
-        }
     }
+
+    // =========
+    // Events
+    // =========
 
     private void fireNodeSelectionAction(ViewNode node)
     {
-        this.nodeActionListener.handleNodeActionEvent(node,Action.createSelectionAction(node));  
+        this.nodeActionListener.handleNodeActionEvent(node, Action.createSelectionAction(node));
     }
-    
+
     private void fireNodeDefaultAction(ViewNode node)
     {
-        this.nodeActionListener.handleNodeActionEvent(node,Action.createDefaultAction(node)); 
+        this.nodeActionListener.handleNodeActionEvent(node, Action.createDefaultAction(node));
     }
 
     protected void notifySetSelectionRange(ViewNodeContainer viewC, ViewNode node1, ViewNode node2, boolean value)
@@ -291,18 +321,18 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     protected void notifyClearSelection(ViewNodeContainer viewC)
     {
         if (this.notifySelectionEvents)
-            viewC.clearNodeSelection(); 
+            viewC.clearNodeSelection();
     }
 
-    protected void notifySetSelection(ViewNodeContainer viewC, ViewNode node,boolean isSelected)
+    protected void notifySetSelection(ViewNodeContainer viewC, ViewNode node, boolean isSelected)
     {
         if (this.notifySelectionEvents)
-            viewComp.setNodeSelection(node, isSelected); 
+            viewComp.setNodeSelection(node, isSelected);
     }
 
     /**
-     * Get active ViewNode. This might be a child node in ViewContainer or, in
-     * the case of a single node, the node itself.
+     * Get active ViewNode. This might be a child node in ViewContainer or, in the case of a single node, the node
+     * itself.
      */
     public ViewNode getViewNode(MouseEvent e)
     {
@@ -345,7 +375,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
     private void debugPrintf(String format, Object... args)
     {
-        // getBrowserInterface().messagePrintf("DEBUG:"+format,args); 
+        // getBrowserInterface().messagePrintf("DEBUG:"+format,args);
     }
 
 }

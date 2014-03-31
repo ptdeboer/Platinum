@@ -451,19 +451,28 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         this.fireTableDataChanged();
     }
 
+    public String getKeyOf(ViewNode viewNode)
+    {
+        if (viewNode==null)
+        {
+            return null;
+        }
+        return viewNode.getVRL().toString(); 
+    }
+    
     /** 
      * Add new Row and return index to row.
      */
-    public int addRow(ViewNode viewNode,String key, AttributeSet attrs)
+    public int addRow(ViewNode viewNode, AttributeSet attrs)
     {
-        int index = this._addRow(viewNode,key, attrs);
+        int index = this._addRow(viewNode,getKeyOf(viewNode), attrs);
         this.fireTableRowsInserted(index, index);
         return this.rows.size() - 1;
     }
 
     public int addEmptyRow(String key)
     {
-        return this.addRow(null,key, new AttributeSet());
+        return this._addRow(null,key, new AttributeSet());
     }
 
     public int delRow(String key)
@@ -488,7 +497,6 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         boolean result = this._delRow(index);
         this.fireTableRowsDeleted(index, index);
         return result;
-
     }
 
     /**
@@ -627,8 +635,10 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         synchronized (this.rows)
         {
             if ((index < 0) || (index >= this.rows.size()))
+            {
                 return null;
-
+            }
+            
             return this.rows.get(index).getKey();
         }
     }
@@ -905,6 +915,19 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
             return;
         }
         this.fireTableCellUpdated(rownr, colnr);
+    }
+
+    /** 
+     * Convert row numbers to row keys. 
+     */
+    public String[] getRowKeys(int[] rowNrs)
+    {
+        String keys[]=new String[rowNrs.length]; 
+        for (int i=0;i<rowNrs.length;i++)
+        {
+            keys[i]=this.getRowKey(rowNrs[i]); 
+        }
+        return keys; 
     }
 
     // ==========================================================================

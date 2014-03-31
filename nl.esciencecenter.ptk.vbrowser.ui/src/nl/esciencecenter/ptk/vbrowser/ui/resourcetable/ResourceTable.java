@@ -21,8 +21,8 @@
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
 import java.awt.Point;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -51,581 +51,651 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 
-/** 
- * Generic Resource Table. 
- * Rewrite of VBrowser Table.
- *  
- * @author Piter T. de Boer 
+/**
+ * Generic Resource Table.
+ * 
+ * @author Piter T. de Boer
  */
-public class ResourceTable extends JTable implements UIDisposable, ViewNodeContainer 
+public class ResourceTable extends JTable implements UIDisposable, ViewNodeContainer
 {
-	private static final long serialVersionUID = -8190587704685619938L;
-	private static final ClassLogger logger=ClassLogger.getLogger(ResourceTable.class);
-	
-    // default presentation
-	
-    private Presentation _presentation=null; 
-    
-    private TablePopupMenu popupMenu=new TablePopupMenu();
-    
-    private boolean isEditable=true;
-    
-    protected int defaultColumnWidth=80;
-    
-    protected TableDataProducer dataProducer; 
+    private static final long serialVersionUID = -8190587704685619938L;
 
-    private MouseListener mouseListener; 
-    
+    private static final ClassLogger logger = ClassLogger.getLogger(ResourceTable.class);
+
+    // default presentation
+
+    private Presentation _presentation = null;
+
+    private boolean isEditable = true;
+
+    protected int defaultColumnWidth = 80;
+
+    protected TableDataProducer dataProducer;
+
+    private TableMouseListener mouseHandler;
+
     protected ResourceTableControler controller;
 
-	private UIViewModel uiModel;
+    private UIViewModel uiModel;
 
     private String sortColumnName;
 
-    private boolean columnSortOrderIsReversed; 
-    
-	public ResourceTable()
-	{
-	    // defaults 
-	    super(new ResourceTableModel()); 
-	    init(); 
-	}
-	
-    public ResourceTable(BrowserInterface browserController,ResourceTableModel dataModel)
+    private boolean columnSortOrderIsReversed;
+
+    public ResourceTable()
     {
-    	// defaults 
-        super(dataModel);
-        this.controller=new ResourceTableControler(this,browserController); 
-        init(); 
+        // defaults
+        super(new ResourceTableModel());
+        init();
     }
-    
+
+    public ResourceTable(BrowserInterface browserController, ResourceTableModel dataModel)
+    {
+        // defaults
+        super(dataModel);
+        this.controller = new ResourceTableControler(this, browserController);
+        init();
+    }
+
     public ResourceTableModel getModel()
-	{
-	   return (ResourceTableModel)super.getModel(); 
-	}
-	
-	public void setDataModel(ResourceTableModel dataModel)
-	{
-	    this.setModel(dataModel); 
-	    initColumns(); 
-	}
-	
-	public void refreshAll()
-	{
-	    //init(); 
-	}
+    {
+        return (ResourceTableModel) super.getModel();
+    }
 
-	private void init()
-	{
-		if (this.uiModel==null)
-			this.uiModel=UIViewModel.createTableModel(); 
-		
-	    this.setAutoCreateColumnsFromModel(false);
-	    //this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-	    
-	    this.setColumnSelectionAllowed(true);
- 	    this.setRowSelectionAllowed(true);
+    public void setDataModel(ResourceTableModel dataModel)
+    {
+        this.setModel(dataModel);
+        initColumns();
+    }
 
- 	    initColumns();
- 	    
- 	    // Listeners ! 
+    public void refreshAll()
+    {
+        // init();
+    }
+
+    private void init()
+    {
+        if (this.uiModel == null)
+        {
+            this.uiModel = UIViewModel.createTableModel();
+        }
+
+        this.setAutoCreateColumnsFromModel(false);
+        // this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        this.setColumnSelectionAllowed(true);
+        this.setRowSelectionAllowed(true);
+
+        initColumns();
+
+        // Listeners !
         JTableHeader header = this.getTableHeader();
-        mouseListener = new TableMouseListener(this);
-        header.addMouseListener(mouseListener);
-        this.addMouseListener(mouseListener);
-	}
-	
-	/**
-	 *  (re)Created columns from headers taken from DataModel 
-	 */ 
+
+        mouseHandler = new TableMouseListener(this, controller);
+
+        header.addMouseListener(mouseHandler);
+        this.addMouseListener(mouseHandler);
+    }
+
+    public TableMouseListener getTableMouseHandler()
+    {
+        return mouseHandler;
+    }
+
+    /**
+     * (re)Created columns from headers taken from DataModel
+     */
     public void initColumns()
     {
-        // Use Header from DataModel 
+        // Use Header from DataModel
         List<String> headers = getModel().getHeaders();
-        
-        logger.infoPrintf("initColumns(): getHeaders() = %s\n",headers.toString());
-        
-        if ((headers==null) || (headers.size()<=0)) 
+
+        logger.infoPrintf("initColumns(): getHeaders() = %s\n", headers.toString());
+
+        if ((headers == null) || (headers.size() <= 0))
         {
-            // Use all attribute names.  
-            headers=getModel().getAllAttributeNames(); 
-            logger.infoPrintf("initColumns(): getAllHeaders() = %s\n",new StringList(headers).toString());
+            // Use all attribute names.
+            headers = getModel().getAllAttributeNames();
+            logger.infoPrintf("initColumns(): getAllHeaders() = %s\n", new StringList(headers).toString());
         }
-        
-        if ((headers==null) || (headers.size()<=0)) 
+
+        if ((headers == null) || (headers.size() <= 0))
         {
-            headers=new StringList(0); 
+            headers = new StringList(0);
         }
-        
-        initColumns(headers); 
+
+        initColumns(headers);
     }
-    
+
     public boolean isEditable()
     {
         return isEditable;
     }
-     
+
     public void setEditable(boolean val)
     {
-        this.isEditable=val; 
+        this.isEditable = val;
     }
-    
+
     private void updateCellEditors()
     {
         // set cell editors:
-        TableColumnModel cmodel = getColumnModel(); 
-        
-        int nrcs=cmodel.getColumnCount(); 
+        TableColumnModel cmodel = getColumnModel();
 
-        for (int i=0;i<nrcs;i++)
+        int nrcs = cmodel.getColumnCount();
+
+        for (int i = 0; i < nrcs; i++)
         {
-           TableColumn column = cmodel.getColumn(i);
-           Object obj=getModel().getValueAt(0,i); 
-           
-           if (obj instanceof Attribute)
-           {
-               Attribute attr=(Attribute)obj;
-               
-               if (attr.isEditable()==true)
-               {
-                   switch(attr.getType())
-                   {
-                       // both boolean and enum use same select box 
-                       case ENUM: 
-                       case BOOLEAN:
-                       {
-                          // debug("setting celleditor to EnumCellEditor of columnr:"+i);
-                          column.setCellEditor(new EnumCellEditor(attr.getEnumValues()));
-                          break;
-                       }
-                       case STRING: 
-                       {
-                           column.setCellEditor(new DefaultCellEditor(new JTextField())); 
-                       }
-                       default: 
-                           break; 
-                   }                
-               }
-           }
+            TableColumn column = cmodel.getColumn(i);
+            Object obj = getModel().getValueAt(0, i);
+
+            if (obj instanceof Attribute)
+            {
+                Attribute attr = (Attribute) obj;
+
+                if (attr.isEditable() == true)
+                {
+                    switch (attr.getType())
+                    {
+                    // both boolean and enum use same select box
+                        case ENUM:
+                        case BOOLEAN:
+                        {
+                            // debug("setting celleditor to EnumCellEditor of columnr:"+i);
+                            column.setCellEditor(new EnumCellEditor(attr.getEnumValues()));
+                            break;
+                        }
+                        case STRING:
+                        {
+                            column.setCellEditor(new DefaultCellEditor(new JTextField()));
+                        }
+                        default:
+                            break;
+                    }
+                }
+            }
         }
     }
-    	
-	public MouseListener getMouseListener()
-	{
-	    return this.mouseListener; 
-	}
-	public ResourceTableModel getResourceTableModel()
-	{
-	    TableModel model = super.getModel(); 
-	        
-	    if (model instanceof ResourceTableModel)
-	    {
-	        return (ResourceTableModel)model; 
-        }
-	        
-        throw new Error("Resource Table NOT initialized with compatible Table Model!:"+model.getClass()); 
-	}
 
-	   
+    public MouseListener getMouseListener()
+    {
+        return this.mouseHandler;
+    }
+
+    public ResourceTableModel getResourceTableModel()
+    {
+        TableModel model = super.getModel();
+
+        if (model instanceof ResourceTableModel)
+        {
+            return (ResourceTableModel) model;
+        }
+
+        throw new Error("Resource Table NOT initialized with compatible Table Model!:" + model.getClass());
+    }
+
     private void initColumns(List<String> headers)
     {
-        TableColumnModel columnModel=new DefaultTableColumnModel();
+        TableColumnModel columnModel = new DefaultTableColumnModel();
 
-        for (int i=0;i<headers.size();i++)
+        for (int i = 0; i < headers.size(); i++)
         {
-            String headerName=headers.get(i); 
+            String headerName = headers.get(i);
             // debug("Creating new column:"+headers[i]);
-            TableColumn column = createColumn(i,headerName);
+            TableColumn column = createColumn(i, headerName);
             //
             columnModel.addColumn(column);
-            // move update presentation out of create loop: 
+            // move update presentation out of create loop:
         }
-        
+
         this.setColumnModel(columnModel);
         if (this.isEditable)
-            this.updateCellEditors(); 
-        
-        updatePresentation(); 
+            this.updateCellEditors();
+
+        updatePresentation();
     }
-    
+
     protected void updatePresentation()
     {
-        Presentation pres=getPresentation(); 
-        if (pres==null)
+        Presentation pres = getPresentation();
+        if (pres == null)
         {
-            logger.warnPrintf("*** updatePresentation(): NO Presentation!\n"); 
+            logger.warnPrintf("*** updatePresentation(): NO Presentation!\n");
             return;
         }
-        
-        // auto resize mode of columns. 
+
+        // auto resize mode of columns.
         setAutoResizeMode(pres.getColumnsAutoResizeMode());
-        
+
         TableColumnModel model = this.getColumnModel();
-        
-        if (model!=null)
+
+        if (model != null)
         {
-            for (int i=0;i<model.getColumnCount();i++)
+            for (int i = 0; i < model.getColumnCount(); i++)
             {
-                TableColumn column = model.getColumn(i); 
-                Object colName=column.getIdentifier(); 
-                String headerName=colName.toString(); 
-                column.setResizable(pres.getAttributeFieldResizable(headerName)); 
+                TableColumn column = model.getColumn(i);
+                Object colName = column.getIdentifier();
+                String headerName = colName.toString();
+                column.setResizable(pres.getAttributeFieldResizable(headerName));
                 // update column width from presentation
-                Integer prefWidth=pres.getAttributePreferredWidth(headerName);
-                if (prefWidth==null)
-                    prefWidth=headerName.length()*10;// 10 points font ? 
-                
+                Integer prefWidth = pres.getAttributePreferredWidth(headerName);
+                if (prefWidth == null)
+                    prefWidth = headerName.length() * 10;// 10 points font ?
+
                 column.setPreferredWidth(prefWidth);
             }
         }
-        
+
     }
 
-    private TableColumn createColumn(int modelIndex,String headerName)
+    private TableColumn createColumn(int modelIndex, String headerName)
     {
-        // one renderer per column 
-        ResourceTableCellRenderer renderer= new ResourceTableCellRenderer();
-        
-        TableColumn column = new TableColumn(modelIndex,10,renderer, null);
-        // identifier object= unique headerName ! 
-        column.setIdentifier(headerName); 
+        // one renderer per column
+        ResourceTableCellRenderer renderer = new ResourceTableCellRenderer();
+
+        TableColumn column = new TableColumn(modelIndex, 10, renderer, null);
+        // identifier object= unique headerName !
+        column.setIdentifier(headerName);
         column.setHeaderValue(headerName);
-        column.setCellRenderer(renderer); 
+        column.setCellRenderer(renderer);
         // update presentation
-        Presentation pres=getPresentation(); 
-        Integer size=null;
-        if (pres!=null)
+        Presentation pres = getPresentation();
+        Integer size = null;
+        if (pres != null)
         {
-            size=pres.getAttributePreferredWidth(headerName);
+            size = pres.getAttributePreferredWidth(headerName);
         }
-        
-        if (size!=null)
-            column.setWidth(size); 
+
+        if (size != null)
+            column.setWidth(size);
         else
-            column.setWidth(defaultColumnWidth); 
-        
-        return column; 
+            column.setWidth(defaultColumnWidth);
+
+        return column;
     }
-    
-    
-    /** 
-     * Returns headers as defined in the DATA model 
-     */ 
+
+    /**
+     * Returns headers as defined in the DATA model
+     */
     public List<String> getDataModelHeaders()
     {
-        return getModel().getHeaders(); 
+        return getModel().getHeaders();
     }
 
     public int getDataModelHeaderIndex(String name)
     {
-        return getModel().getHeaderIndex(name); 
+        return getModel().getHeaderIndex(name);
     }
 
     /**
-     * Get the header names as shown, thus in the order 
-     * as used in the VIEW model  (Not dataModel).   
+     * Get the header names as shown, thus in the order as used in the VIEW model (Not dataModel).
      */
     public StringList getColumnHeaders()
     {
-        // get columns headers as currently shown in the VIEW model 
-        TableColumnModel colModel = this.getColumnModel(); 
-        int len=colModel.getColumnCount(); 
-        StringList names=new StringList(len); 
-        
-        for (int i=0;i<len;i++)
-            names.add(colModel.getColumn(i).getHeaderValue().toString()); 
-        
-        return names; 
+        // get columns headers as currently shown in the VIEW model
+        TableColumnModel colModel = this.getColumnModel();
+        int len = colModel.getColumnCount();
+        StringList names = new StringList(len);
+
+        for (int i = 0; i < len; i++)
+            names.add(colModel.getColumn(i).getHeaderValue().toString());
+
+        return names;
     }
-    
-    /** 
-     * Insert new column after specified 'headerName'. 
-     * This will insert a new headername but use the current header as viewed as new
-     * order so the new headers and column order is the same as currently viewed. 
-     * This because the user might have switched columns in the VIEW order of the table. 
-     */   
+
+    /**
+     * Insert new column after specified 'headerName'. This will insert a new headername but use the current header as
+     * viewed as new order so the new headers and column order is the same as currently viewed. This because the user
+     * might have switched columns in the VIEW order of the table.
+     */
     public void insertColumn(String headerName, String newName, boolean insertBefore)
     {
-        if (this.getHeaderModel().isEditable()==false)
-            return; 
-        
-        // remove column but use order of columns as currently viewed ! 
-        StringList viewHeaders=this.getColumnHeaders(); 
-        if (insertBefore)   
-            viewHeaders.insertBefore(headerName,newName); 
+        if (this.getHeaderModel().isEditable() == false)
+            return;
+
+        // remove column but use order of columns as currently viewed !
+        StringList viewHeaders = this.getColumnHeaders();
+        if (insertBefore)
+            viewHeaders.insertBefore(headerName, newName);
         else
-            viewHeaders.insertAfter(headerName,newName);
-        
-        // insert empty column and fire change event. This will update the table. 
-        this.getModel().setHeaders(viewHeaders); 
-        
-        try 
+            viewHeaders.insertAfter(headerName, newName);
+
+        // insert empty column and fire change event. This will update the table.
+        this.getModel().setHeaders(viewHeaders);
+
+        try
         {
-			this.dataProducer.updateColumn(newName);
-		}
+            this.dataProducer.updateColumn(newName);
+        }
         catch (ProxyException e)
         {
-			handle(e);
-		} 
+            handle("Failed to insertHeader:" + newName + (insertBefore ? "insertBefore " : "insertAfter ") + headerName, e);
+        }
     }
 
-	public void removeColumn(String headerName,boolean updatePresentation)
+    public void removeColumn(String headerName, boolean updatePresentation)
     {
-        if (this.getHeaderModel().isEditable()==false)
-            return; 
-        
-        // remove column but use order of columns as currently viewed ! 
-        StringList viewHeaders=this.getColumnHeaders(); 
-        viewHeaders.remove(headerName); 
-        
-        // Triggers restructure, and KEEP the current view order of Columns. 
+        if (this.getHeaderModel().isEditable() == false)
+            return;
+
+        // remove column but use order of columns as currently viewed !
+        StringList viewHeaders = this.getColumnHeaders();
+        viewHeaders.remove(headerName);
+
+        // Triggers restructure, and KEEP the current view order of Columns.
         this.getModel().setHeaders(viewHeaders);
-        if ( (updatePresentation) && (this.getPresentation()!=null))
+        if ((updatePresentation) && (this.getPresentation() != null))
         {
-            // Keep headers in persistant Presentation. 
+            // Keep headers in persistant Presentation.
             this.getPresentation().setChildAttributeNames(viewHeaders);
         }
-        this.getModel().fireTableStructureChanged(); 
-    }
-    
-    public HeaderModel getHeaderModel()
-    {
-        return this.getModel().getHeaderModel(); 
-    }
-    
-    public void tableChanged(TableModelEvent e)
-    {   
-        
-        if (e == null || e.getFirstRow() == TableModelEvent.HEADER_ROW)
-        {
-            initColumns(); 
-        }
-        super.tableChanged(e); 
+        this.getModel().fireTableStructureChanged();
     }
 
-    /** Has visible column (Must exist in columnmodel!) */  
+    public HeaderModel getHeaderModel()
+    {
+        return this.getModel().getHeaderModel();
+    }
+
+    public void tableChanged(TableModelEvent e)
+    {
+
+        if (e == null || e.getFirstRow() == TableModelEvent.HEADER_ROW)
+        {
+            initColumns();
+        }
+        super.tableChanged(e);
+    }
+
+    /**
+     * Has visible column (Must exist in columnmodel!)
+     */
     public boolean hasColumn(String headerName)
     {
         Enumeration enumeration = getColumnModel().getColumns();
         TableColumn aColumn;
         int index = 0;
 
-        while (enumeration.hasMoreElements()) 
+        while (enumeration.hasMoreElements())
         {
-            aColumn = (TableColumn)enumeration.nextElement();
+            aColumn = (TableColumn) enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
-            if (StringUtil.equals(headerName,aColumn.getHeaderValue().toString()))
+            if (StringUtil.equals(headerName, aColumn.getHeaderValue().toString()))
                 return true;
             index++;
         }
-        
-        return false; 
+
+        return false;
     }
-    
-    /** Has visible column (Must exist in columnmodel!) */  
+
+    /**
+     * Has visible column (Must exist in columnmodel!)
+     */
     public TableColumn getColumnByHeader(String headerName)
     {
         Enumeration enumeration = getColumnModel().getColumns();
-        
-        while (enumeration.hasMoreElements()) 
+
+        while (enumeration.hasMoreElements())
         {
-            TableColumn col = (TableColumn)enumeration.nextElement();
+            TableColumn col = (TableColumn) enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
-            if (StringUtil.equals(headerName,col.getHeaderValue().toString()))
-                return col; 
+            if (StringUtil.equals(headerName, col.getHeaderValue().toString()))
+                return col;
         }
-        
-        return null;  
+
+        return null;
     }
 
-    public TablePopupMenu getPopupMenu(MouseEvent e, boolean canvasMenu) 
-    {
-        if (popupMenu!=null)
-            popupMenu.updateFor(this,e,canvasMenu); 
-        return popupMenu; 
-    }
-
-    public void setPopupMenu(TablePopupMenu menu)
-    {
-       this.popupMenu=menu; 
-    }
-
-    /** 
-     * Return row Key under Point point. Might return NULL 
-     * */ 
+    /**
+     * Return row Key under Point point. Might return NULL
+     */
     public String getKeyUnder(Point point)
     {
-        if (point==null)
-            return null; 
-        int row=rowAtPoint(point); 
-        if (row<0)
-            return null; 
-        return getModel().getRowKey(row); 
+        if (point == null)
+            return null;
+        int row = rowAtPoint(point);
+        if (row < 0)
+            return null;
+        return getModel().getRowKey(row);
     }
 
     public Presentation getPresentation()
     {
-        return this._presentation; 
+        return this._presentation;
     }
 
     public void setPresentation(Presentation presentation, boolean updateUI)
     {
-        this._presentation=presentation;
+        this._presentation = presentation;
         if (updateUI)
         {
-            this.updatePresentation(); 
+            this.updatePresentation();
         }
     }
-    
+
     public void dispose()
     {
     }
-    
-    /** 
-     * Update Data Source. 
+
+    /**
+     * Update Data Source.
      */
     public void setDataSource(ProxyNode node, boolean update)
     {
-    	ResourceTableModel model = new ResourceTableModel(); 
-    	this.setModel(model); 
-        setDataProducer(new ProxyNodeTableDataProducer(node,model),true); 
+        ResourceTableModel model = new ResourceTableModel();
+        this.setModel(model);
+        setDataProducer(new ProxyNodeTableDataProducer(node, model), true);
 
-        // use presentation from ProxyNode ! 
-        Presentation pres=node.getPresentation(); 
-        if (pres!=null)
+        // use presentation from ProxyNode !
+        Presentation pres = node.getPresentation();
+        if (pres != null)
         {
-            setPresentation(pres.duplicate(true),true); 
+            setPresentation(pres.duplicate(true), true);
         }
     }
 
-	public void setDataProducer(TableDataProducer producer,boolean update)
-	{
-		this.dataProducer=producer; 
-		if (update==false)
-			return;
-		
-		if (dataProducer!=null)
-		{
-			//recreate table 
-			try 
-			{
-				this.dataProducer.createTable(true,true);
-			}
-			catch (ProxyException e) 
-			{
-				handle(e);
-			}
-		}
-		else
-		{
-			this.removeAll(); 
-		}
-	}
- 
-	/** Returns root ViewNode if Model supports this ! */ 
-	public ViewNode getRootViewNode()
-	{
-		return null;
-		// return this.getModel().getRootViewNode(); 
-	}
-	
-	/** Returns root ViewNode if Model supports this ! */ 
-	public ViewNode getViewNodeByKey(String key)
-	{
-		return this.getModel().getViewNode(key);  
-	}
-
-	@Override
-	public UIViewModel getUIViewModel() 
-	{
-		return this.uiModel; 
-	}
-
-	@Override
-	public ViewNode getViewNode()
-	{
-		return this.getModel().getRootViewNode(); 
-	}
-
-	@Override
-	public boolean requestFocus(boolean value)
-	{
-	    if (value==true)
-	        return this.requestFocusInWindow(); 
-	    
-	    return false; // unfocus not applicable ?
-	}
-
-	@Override
-	public ViewNodeContainer getViewContainer() 
-	{
-		return this;
-	}
-
-	@Override
-	public ViewNode getNodeUnderPoint(Point p)
-	{
-		return null;
-	}
-
-	@Override
-	public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu)
-	{
-		return null;
-	}
-
-	@Override
-	public void clearNodeSelection()
-	{
-		
-	}
-
-	@Override
-	public ViewNode[] getNodeSelection()
-	{
-		return null;
-	}
-
-	@Override
-	public void setNodeSelection(ViewNode node, boolean isSelected) 
-	{
-		
-	}
-
-	@Override
-	public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode,
-			boolean isSelected) 
-	{
-		
-	}
-
-	@Override
-	public boolean requestNodeFocus(ViewNode node, boolean value)
-	{
-		// set focus to table cell!
-	    return false; 
-	}
-
-	public TableDataProducer getDataProducer() 
-	{
-		return this.dataProducer; 
-	}
-	
-	private void handle(ProxyException e)
+    public void setDataProducer(TableDataProducer producer, boolean update)
     {
-		controller.handle(e); 
-	}
+        this.dataProducer = producer;
+        if (update == false)
+            return;
 
-    public void doSortColumn(String name,boolean reverse)
-    {
-        this.getResourceTableModel().doSortColumn(name, reverse); 
-        this.sortColumnName=name;
-        this.columnSortOrderIsReversed=reverse; 
+        if (dataProducer != null)
+        {
+            // recreate table
+            try
+            {
+                this.dataProducer.createTable(true, true);
+            }
+            catch (ProxyException e)
+            {
+                handle("DataProducer failed to create actual Table", e);
+            }
+        }
+        else
+        {
+            this.removeAll();
+        }
     }
-    
+
+    /**
+     * Returns root ViewNode if Model supports this.
+     */
+    public ViewNode getRootViewNode()
+    {
+        return this.getModel().getRootViewNode();
+    }
+
+    /**
+     * Returns root ViewNode of row key, if model supports this.
+     */
+    public ViewNode getViewNodeByKey(String key)
+    {
+        return this.getModel().getViewNode(key);
+    }
+
+    @Override
+    public UIViewModel getUIViewModel()
+    {
+        return this.uiModel;
+    }
+
+    @Override
+    public ViewNode getViewNode()
+    {
+        return this.getModel().getRootViewNode();
+    }
+
+    @Override
+    public boolean requestFocus(boolean value)
+    {
+        if (value == true)
+            return this.requestFocusInWindow();
+
+        return false; // unfocus not applicable ?
+    }
+
+    @Override
+    public ViewNodeContainer getViewContainer()
+    {
+        return this;
+    }
+
+    @Override
+    public ViewNode getNodeUnderPoint(Point p)
+    {
+        String key = this.getKeyUnder(p);
+        return getViewNodeByKey(key);
+    }
+
+    @Override
+    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu)
+    {
+        // allowed during testing
+        if (this.controller.getBrowserInterface() == null)
+        {
+            logger.warnPrintf("getActionMenuFor() no browser registered.");
+            return null;
+        }
+        // node menu
+        return this.controller.getBrowserInterface().createActionMenuFor(this, node, canvasMenu);
+    }
+
+    @Override
+    public void clearNodeSelection()
+    {
+        logger.errorPrintf("FIXME:clearNodeSelection()\n");
+    }
+
+    @Override
+    public ViewNode[] getNodeSelection()
+    {
+        logger.debugPrintf("getNodeSelection()\n");
+
+        int[] rowNrs = getSelectedRows();
+        if ((rowNrs == null) || (rowNrs.length <= 0))
+        {
+            logger.debugPrintf("getNodeSelection()=NULL\n");
+            return null; // nothing selected
+        }
+
+        ResourceTableModel model = getModel();
+
+        String keys[] = model.getRowKeys(rowNrs);
+
+        ArrayList<ViewNode> nodes = new ArrayList<ViewNode>();
+
+        for (String key : keys)
+        {
+            nodes.add(model.getViewNode(key));
+        }
+
+        logger.debugPrintf("getNodeSelection()=#%d\n",nodes.size());
+        return nodes.toArray(new ViewNode[0]);
+    }
+
+    @Override
+    public void setNodeSelection(ViewNode node, boolean isSelected)
+    {
+        logger.debugPrintf("getNodeSelection() %s:%s\n",isSelected,node); 
+        
+        int[] rowNrs = getSelectedRows();
+        if ((rowNrs == null) || (rowNrs.length <= 0))
+        {
+            logger.errorPrintf("getNodeSelection()=NULL\n");
+            if (isSelected)
+            {
+                logger.errorPrintf("FIXME: node should be selected, but selected rows is EMPTY for node:%s\n",node); 
+            }
+            else
+            {
+                logger.debugPrintf("No selection, node is already unselected:%s\n",node); 
+            }
+            return; 
+        }
+        
+        String nodeKey=this.getModel().getKeyOf(node); 
+        int rowIndex=this.getModel().getRowIndex(nodeKey); 
+
+        for (int i=0;i<rowNrs.length;i++)
+        {
+            if (rowNrs[i]==rowIndex)
+            {
+                if (isSelected)
+                {
+                    logger.debugPrintf("Selected node is in selection range (row#=%d):%s\n",rowNrs[i],node); 
+                    return;
+                }
+            }
+        }
+        
+        if (isSelected==false)
+        {
+            logger.debugPrintf("setNodeSelection():OK node is not in selected rows:%s\n", node);
+        }
+        else
+        {
+            logger.errorPrintf("FIXME:setNodeSelection(): Row must be selected:%s\n", node);
+        }
+        
+        // Rows AND columns -> SpreadSheet export
+        // int[] colsselected=getSelectedColumns();
+    }
+
+    @Override
+    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode,
+            boolean isSelected)
+    {
+        logger.errorPrintf("FIXME:setNodeSelectionRange(): [%s,%s]\n", firstNode, lastNode);
+    }
+
+    @Override
+    public boolean requestNodeFocus(ViewNode node, boolean value)
+    {
+        logger.errorPrintf("FIXME:requestNodeFocus()%s:%s\n", value, node);
+        return false;
+    }
+
+    public TableDataProducer getDataProducer()
+    {
+        return this.dataProducer;
+    }
+
+    private void handle(String action, ProxyException e)
+    {
+        controller.handle(action, e);
+    }
+
+    public void doSortColumn(String name, boolean reverse)
+    {
+        this.getResourceTableModel().doSortColumn(name, reverse);
+        this.sortColumnName = name;
+        this.columnSortOrderIsReversed = reverse;
+    }
+
     public boolean getColumnSortOrderIsReversed()
     {
-        return this.columnSortOrderIsReversed; 
+        return this.columnSortOrderIsReversed;
     }
 
     public String getSortColumnName()
@@ -635,13 +705,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     public GuiSettings getGuiSettings()
     {
-        return getBrowserInterface().getPlatform().getGuiSettings(); 
+        return getBrowserInterface().getPlatform().getGuiSettings();
     }
 
     @Override
     public BrowserInterface getBrowserInterface()
     {
-        return controller.getBrowserInterface(); 
+        return controller.getBrowserInterface();
     }
-   
+
 }

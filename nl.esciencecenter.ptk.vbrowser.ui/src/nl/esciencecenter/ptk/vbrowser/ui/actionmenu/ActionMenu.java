@@ -29,6 +29,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
@@ -41,6 +42,8 @@ public class ActionMenu extends JPopupMenu
 {
     private static final long serialVersionUID = 7948518745148426493L;
 
+    private static final ClassLogger logger=ClassLogger.getLogger(ActionMenu.class); 
+    
     /**
      * 
      * @param browserPlatform 

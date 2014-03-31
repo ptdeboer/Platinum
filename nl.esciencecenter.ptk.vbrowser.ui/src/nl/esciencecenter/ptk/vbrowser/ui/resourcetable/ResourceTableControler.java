@@ -20,31 +20,37 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
-public class ResourceTableControler
+public class ResourceTableControler implements ViewNodeActionListener
 {
+    private ResourceTable table;
 
-	private ResourceTable table;
-	
-	private BrowserInterface browserController;
+    private BrowserInterface browserController;
 
-	public ResourceTableControler(ResourceTable resourceTable,
-			BrowserInterface browserController) 
-	{
-		this.table=resourceTable;
-		this.browserController=browserController; 
-	}
+    public ResourceTableControler(ResourceTable resourceTable,
+            BrowserInterface browserController)
+    {
+        this.table = resourceTable;
+        this.browserController = browserController;
+    }
 
-	public void handle(Throwable e) 
-	{
-		browserController.handleException("Resource Table Error.",e);
-		
-	}
-	
-	public BrowserInterface getBrowserInterface()
-	{
-	    return browserController; 
-	}
+    public void handle(String action, Throwable e)
+    {
+        browserController.handleException(action, e);
+    }
 
+    public BrowserInterface getBrowserInterface()
+    {
+        return browserController; 
+    }
+
+    @Override
+    public void handleNodeActionEvent(ViewNode node, Action action)
+    {
+        System.err.printf("FIXME: ResourceTableControler:handleNodeActionEvent():%s on:%s\n", action, node);
+    }
 }

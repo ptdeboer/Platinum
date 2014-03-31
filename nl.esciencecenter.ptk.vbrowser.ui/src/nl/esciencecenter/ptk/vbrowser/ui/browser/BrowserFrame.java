@@ -103,14 +103,14 @@ public class BrowserFrame extends JFrame
         }
     }
 
-    private final static ClassLogger logger=ClassLogger.getLogger(BrowserFrame.class); 
-    
+    private final static ClassLogger logger = ClassLogger.getLogger(BrowserFrame.class);
+
     private static final long serialVersionUID = 3076698217838089389L;
 
-    // ========== 
-    // Instance 
     // ==========
-    
+    // Instance
+    // ==========
+
     private BrowserInterface browserController;
 
     private JPanel uiMainPanel;
@@ -472,7 +472,7 @@ public class BrowserFrame extends JFrame
         // ============
         // "Help" Menu
         // ============
-        
+
         {
             JMenu viewMenu = new JMenu();
             menu.add(viewMenu);
@@ -609,7 +609,7 @@ public class BrowserFrame extends JFrame
                 // this.getViewerPanel(true);
                 break;
             default:
-                logger.errorPrintf("***FIXME: setViewMode not supported:%s\n",mode); 
+                logger.errorPrintf("***FIXME: setViewMode not supported:%s\n", mode);
                 break;
         }
     }

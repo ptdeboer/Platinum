@@ -34,7 +34,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * This is the UI component which is actually 'viewed'. Multiple ViewNodes can be "viewing" a single resource
  * (ProxyNode). See ProxyNode for resource attributes.
  */
-public class ViewNode // candidate: implements Serializable 
+public class ViewNode // candidate: implements Serializable
 {
     public static final String DEFAULT_ICON = "defaultIcon";
 
@@ -203,7 +203,7 @@ public class ViewNode // candidate: implements Serializable
     {
         return "ViewNode [locator=" + locator + ", isComposite=" + isComposite
                 + ", name=" + name + ", resourceType=" + resourceType
-                + ", resourceStatus=" + resourceStatus + ", mimeType=" + mimeType + ", allowedChildTypes=" 
+                + ", resourceStatus=" + resourceStatus + ", mimeType=" + mimeType + ", allowedChildTypes="
                 + allowedChildTypes + "]";
     }
 

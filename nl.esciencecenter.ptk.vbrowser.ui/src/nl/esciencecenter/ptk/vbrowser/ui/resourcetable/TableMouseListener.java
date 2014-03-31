@@ -23,77 +23,84 @@ package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import nl.esciencecenter.ptk.util.StringUtil;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.GuiSettings;
-import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
 
-public class TableMouseListener implements MouseListener
+/** 
+ * Extends default ViewContianerEventAdapter with Header clicks and other Table specific events. 
+ */
+public class TableMouseListener extends ViewContainerEventAdapter
 {
+    private final static ClassLogger logger = ClassLogger.getLogger(TableMouseListener.class);
+
     private ResourceTable table;
 
-    public TableMouseListener(ResourceTable source)
+    public TableMouseListener(ResourceTable source, ResourceTableControler controller)
     {
-        table=source;
+        super(source, controller);
+        table = source;
     }
 
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        System.err.printf("Event:%s\n",e);
+        // ------------------
+        // Check Header click
+        // ------------------
+
+        logger.errorPrintf("Event:%s\n", e);
         if (isHeader(e) && (table.getGuiSettings().isSelection(e)))
         {
-            String  name=this.getColumnNameOf(e); 
-            if(name!=null)
+            // Header Click:
+            String name = this.getColumnNameOf(e);
+            if (name != null)
             {
-                String prevCol=this.table.getSortColumnName();
-                boolean reverse=false; 
-                        
-                // click on already sorted column name -> reverse sorting. 
-                if (StringUtil.compare(prevCol,name)==0)
+                String prevCol = this.table.getSortColumnName();
+                boolean reverse = false;
+
+                // click on already sorted column name -> reverse sorting.
+                if (StringUtil.compare(prevCol, name) == 0)
                 {
-                    reverse=(table.getColumnSortOrderIsReversed()==false);
+                    reverse = (table.getColumnSortOrderIsReversed() == false);
                 }
-                this.table.doSortColumn(name,reverse); 
+                this.table.doSortColumn(name, reverse);
             }
         }
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e)
-    {
-        
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e)
-    {
-        
+        else
+        {
+            super.doMouseClicked(e);
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e)
     {
-        Component comp=(Component)e.getSource();
-        Point clickPoint=e.getPoint(); 
-       
-        GuiSettings uiSettings=table.getGuiSettings();  
-                  
-        //boolean ctrl=((e.getModifiersEx() & e.CTRL_DOWN_MASK) !=0);
-        
-        // Show Header Popup! 
+        // ------------------
+        // Check Header click
+        // ------------------
+
+        Component comp = (Component) e.getSource();
+        Point clickPoint = e.getPoint();
+
+        GuiSettings uiSettings = table.getGuiSettings();
+
+        // boolean ctrl=((e.getModifiersEx() & e.CTRL_DOWN_MASK) !=0);
+
+        // Show Header Popup!
         if (isHeader(e) && (uiSettings.isPopupTrigger(e)))
         {
-            String  name=this.getColumnNameOf(e); 
-            if(name!=null)
+            String name = this.getColumnNameOf(e);
+            if (name != null)
             {
-                HeaderPopupMenu popupMenu=new HeaderPopupMenu(table,name); 
-                popupMenu.show(comp,e.getX(),e.getY());
+                HeaderPopupMenu popupMenu = new HeaderPopupMenu(table, name);
+                popupMenu.show(comp, e.getX(), e.getY());
             }
             else
             {
@@ -102,50 +109,56 @@ public class TableMouseListener implements MouseListener
         }
         else if (comp.equals(table))
         {
-            if (uiSettings.isPopupTrigger(e))
-            {
-                TablePopupMenu popupMenu=table.getPopupMenu(e,false); 
-                if (popupMenu!=null)
-                    popupMenu.show(comp,e.getX(),e.getY());
-            }
+            super.doMousePressed(e);
+            // ViewNode actionSourceNode=this.getViewNodeAt(e.getX(),e.getY());
+            //
+            // if (uiSettings.isPopupTrigger(e))
+            // {
+            // JPopupMenu popMenu = this.table.getBrowserInterface().createActionMenuFor(table, actionSourceNode,
+            // false);
+            // if (popMenu!=null)
+            // {
+            // popMenu.show(comp,e.getX(),e.getY());
+            // }
+            // }
         }
         else if (comp.equals(table.getParent()))
         {
-            if (uiSettings.isPopupTrigger(e))
-            {
-                TablePopupMenu popupMenu=table.getPopupMenu(e,true); 
-                if (popupMenu!=null)
-                    popupMenu.show(comp,e.getX(),e.getY());
-            }
+            // super.doMousePressed(e);
+            // ViewNode containerNode = table.getViewNode();
+            // if (uiSettings.isPopupTrigger(e))
+            // {
+            // JPopupMenu popMenu = this.table.getBrowserInterface().createActionMenuFor(table, containerNode, true);
+            // if (popMenu!=null)
+            // {
+            // popMenu.show(comp,e.getX(),e.getY());
+            // }
+            //
+            // }
         }
     }
 
-    @Override
-    public void mouseReleased(MouseEvent e)
-    {
-    }
-    
     private String getColumnNameOf(MouseEvent e)
     {
-        // Warning: Apply coordinates to VIEW model ! 
+        // Warning: Apply coordinates to VIEW model !
         TableColumnModel columnModel = table.getColumnModel();
-        
-        int colnr=columnModel.getColumnIndexAtX(e.getX());
-        
-        if (colnr<0) 
-            return null; 
-        
-        TableColumn column = columnModel.getColumn(colnr); 
-        String name=(String)column.getHeaderValue();
-        return name; 
+
+        int colnr = columnModel.getColumnIndexAtX(e.getX());
+
+        if (colnr < 0)
+            return null;
+
+        TableColumn column = columnModel.getColumn(colnr);
+        String name = (String) column.getHeaderValue();
+        return name;
     }
-    
+
     protected boolean isHeader(MouseEvent e)
-    {   
-        if (e.getSource() instanceof JTableHeader) 
-            return true; 
+    {
+        if (e.getSource() instanceof JTableHeader)
+            return true;
         else
-            return false; 
+            return false;
     }
 
 }

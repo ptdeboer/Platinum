@@ -36,364 +36,358 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ProxyNodeTableDataProducer implements TableDataProducer 
+public class ProxyNodeTableDataProducer implements TableDataProducer
 {
-	private static ClassLogger logger;
+    private static ClassLogger logger;
 
-	static
-	{
-		logger=ClassLogger.getLogger(ProxyNodeTableDataProducer.class); 
-	}
+    static
+    {
+        logger = ClassLogger.getLogger(ProxyNodeTableDataProducer.class);
+    }
 
-	// ========================================================================
-	// Instance 
-	// ========================================================================
+    // ========================================================================
+    // Instance
+    // ========================================================================
 
-	private ProxyNodeDataSource dataSource;
+    private ProxyNodeDataSource dataSource;
 
-	private ResourceTableModel tableModel;
+    private ResourceTableModel tableModel;
 
-	private UIViewModel uiModel;
+    private UIViewModel uiModel;
 
-	private ViewNode rootNode;
+    private ViewNode rootNode;
 
-	public ProxyNodeTableDataProducer(ProxyNode pnode,
-			ResourceTableModel resourceTableModel) 
-	{
-		this.dataSource=new ProxyNodeDataSource(pnode); 
-		this.tableModel=resourceTableModel; 
-		this.uiModel=UIViewModel.createTableModel();
-	}
+    public ProxyNodeTableDataProducer(ProxyNode pnode,
+            ResourceTableModel resourceTableModel)
+    {
+        this.dataSource = new ProxyNodeDataSource(pnode);
+        this.tableModel = resourceTableModel;
+        this.uiModel = UIViewModel.createTableModel();
+    }
 
-	public ProxyNodeTableDataProducer(ProxyNodeDataSource dataSource,
-			ResourceTableModel resourceTableModel) 
-	{
-		this.dataSource=dataSource; 
-		this.tableModel=resourceTableModel; 
-		this.uiModel=UIViewModel.createTableModel();
-	}
+    public ProxyNodeTableDataProducer(ProxyNodeDataSource dataSource,
+            ResourceTableModel resourceTableModel)
+    {
+        this.dataSource = dataSource;
+        this.tableModel = resourceTableModel;
+        this.uiModel = UIViewModel.createTableModel();
+    }
 
-	public void createTable(boolean headers,boolean data) throws ProxyException
-	{
-		this.tableModel.setRootViewNode(dataSource.getRoot(uiModel));
-		
-		if (headers)
-			initHeaders();
-		
-		if (data)
-			updateData(); 
-	}
+    public void createTable(boolean headers, boolean data) throws ProxyException
+    {
+        this.tableModel.setRootViewNode(dataSource.getRoot(uiModel));
 
-	public Presentation getPresentation() 
-	{
-	 // Custom Presentation: 
-        Presentation pres=null;
-        
-        try 
+        if (headers)
+            initHeaders();
+
+        if (data)
+            updateData();
+    }
+
+    public Presentation getPresentation()
+    {
+        // Custom Presentation:
+        Presentation pres = null;
+
+        try
         {
             pres = dataSource.getPresentation();
 
-            if (pres!=null)
+            if (pres != null)
             {
-                logger.debugPrintf("Using Presentation from DataSource:%s\n",dataSource); 
+                logger.debugPrintf("Using Presentation from DataSource:%s\n", dataSource);
             }
             else
             {
-                ViewNode rootNode=getRootViewNode(); 
+                ViewNode rootNode = getRootViewNode();
 
-                logger.debugPrintf("Using default Presentation for:%s\n",rootNode); 
-                // Check default Presenation form Scheme+Type; 
-                pres= Presentation.getPresentationForSchemeType(rootNode.getVRL().getScheme(),rootNode.getResourceType(),true);
+                logger.debugPrintf("Using default Presentation for:%s\n", rootNode);
+                // Check default Presenation form Scheme+Type;
+                pres = Presentation.getPresentationForSchemeType(rootNode.getVRL().getScheme(), rootNode.getResourceType(), true);
             }
 
         }
         catch (ProxyException e)
         {
-            logger.logException(ClassLogger.ERROR,e,"Failed to get Presenation from dataSource:%s\n",dataSource);
-            handle(e,"Couldn't get presentation\n"); 
+            logger.logException(ClassLogger.ERROR, e, "Failed to get Presenation from dataSource:%s\n", dataSource);
+            handle(e, "Couldn't get presentation\n");
         }
-        
-        return pres; 
-	}
-	
-	public void initHeaders() throws ProxyException
-	{
-		if (dataSource==null)
-		{
-		    // clear: 
-			tableModel.setHeaders(new StringList()); 
-			return; 
-		}
-				
-		String[] names=null;
-		String iconAttributeName=null; 
 
-		Presentation pres=getPresentation(); 
-		
-		// set default attributes
-		if (pres==null)
-		{
-            logger.debugPrintf("No Presentation(!) for ViewNode:%s\n",rootNode); 
-		}
-		else
-		{
-			names=pres.getPreferredChildAttributeNames();
-		     // update icon attribute name:
-			iconAttributeName=pres.getIconAttributeName(); 
-			logger.debugPrintf("Using headers from Presentation.getChildAttributeNames():%s\n",new StringList(names));
-		}
-		
-		if (names==null)
-		{
-		    logger.warnPrintf("No Headers for:%s\n",this);
-		    return; 
-		}
-		
-        StringList headers=new StringList();
-        
-		for (String name:names)
-		{
-		    headers.add(name);
-		}
+        return pres;
+    }
 
-		filterHeaders(headers); 
-		tableModel.setHeaders(headers);  
-		
-		// Specify icon column:
-		if (iconAttributeName!=null)
-		{
-		    tableModel.setIconHeaderName(iconAttributeName);
-		}
-	}
+    public void initHeaders() throws ProxyException
+    {
+        if (dataSource == null)
+        {
+            // clear:
+            tableModel.setHeaders(new StringList());
+            return;
+        }
 
-	protected ViewNode getRootViewNode() throws ProxyException 
-	{
-		if (rootNode==null)	
-			rootNode=this.dataSource.getRoot(uiModel); 
-		
-		return rootNode; 
-	}
-	
-	private VRL getRootVRI() throws ProxyException 
-	{
-		return getRootViewNode().getVRL(); 
-	}
+        String[] names = null;
+        String iconAttributeName = null;
 
-	private StringList filterHeaders(StringList headers) 
-	{
-		for (String name:headers.toArray())
-		{
-			// MetaAttribute seperators (legacy); 
-			if (name.startsWith("["))
-				headers.remove(name); 
-		}
-		
-		return headers;
-	}
+        Presentation pres = getPresentation();
 
-	public int insertHeader(String headerName, String newName, boolean insertBefore)
-	{
-		int index=tableModel.insertHeader(headerName, newName, insertBefore); 
-		// will update data model, Table View will follow AFTER TableStructureEvent 
-		// has been handled. 
-		fetchAttribute(newName);
-		return index; 
-	}
+        // set default attributes
+        if (pres == null)
+        {
+            logger.debugPrintf("No Presentation(!) for ViewNode:%s\n", rootNode);
+        }
+        else
+        {
+            names = pres.getPreferredChildAttributeNames();
+            // update icon attribute name:
+            iconAttributeName = pres.getIconAttributeName();
+            logger.debugPrintf("Using headers from Presentation.getChildAttributeNames():%s\n", new StringList(names));
+        }
 
-	protected void handle(Throwable t)
-	{
-		logger.logException(ClassLogger.ERROR,t,"Exception:%s\n",t);  
-		t.printStackTrace();
-	}
+        if (names == null)
+        {
+            logger.warnPrintf("No Headers for:%s\n", this);
+            return;
+        }
 
-	protected void handle(Throwable t,String format,Object... args)
-	{
-		logger.logException(ClassLogger.ERROR,t,format,args); 
-		t.printStackTrace();
-	}
+        StringList headers = new StringList();
 
-	@Override
-	public void updateColumn(String newName) 
-	{
-		this.fetchAttribute(newName);
-	}
+        for (String name : names)
+        {
+            headers.add(name);
+        }
 
-	// ========================================================================
-	// Background Data Fetchers 
-	// ========================================================================
+        filterHeaders(headers);
+        tableModel.setHeaders(headers);
 
-	private void updateData()
-	{
-		tableModel.clearData();
+        // Specify icon column:
+        if (iconAttributeName != null)
+        {
+            tableModel.setIconHeaderName(iconAttributeName);
+        }
+    }
 
-		// allowed at init time! 
-		if (dataSource==null)
-			return; 
-		
-		UITask task=new UITask(null,"Test get ProxyNode data")
-		{
-			boolean mustStop=false; 
+    protected ViewNode getRootViewNode() throws ProxyException
+    {
+        if (rootNode == null)
+            rootNode = this.dataSource.getRoot(uiModel);
 
-			public void doTask()
-			{
-				try
-				{
-					ViewNode nodes[];
+        return rootNode;
+    }
 
-					try
-					{
-						nodes = getChilds();  
-					}
-					catch (Exception e)
-					{
-						handle(e,"Couldn't fetch childs\n"); 
-						return; 
-					}
-					
-					// no data: 
-					if (nodes==null)
-					{
-					    logger.debugPrintf("No Nodes for:"+this); 
-					    return; 
-					}
-					
-					for (ViewNode node:nodes)
-					{
-					    if (mustStop==true)
-					        return; 
-    
-					    createRow(node); 
-					}
-					
-					StringList allAttributes=new StringList(); 
+    private VRL getRootVRI() throws ProxyException
+    {
+        return getRootViewNode().getVRL();
+    }
 
-					for (ViewNode node:nodes)
-					{
-						if (mustStop==true)
-							return; 
-						try 
-						{
-						    List<String> hdrs = tableModel.getHeaders();   
-							updateNodeAttributes(node,hdrs);
-							allAttributes.add(dataSource.getAttributeNames(node.getVRL()),true); 
-						}
-						catch (ProxyException e)
-						{
-							handle(e,"Couldn't update node attributes of:"+node); 
-						} 
-					}
+    private StringList filterHeaders(StringList headers)
+    {
+        for (String name : headers.toArray())
+        {
+            // MetaAttribute seperators (legacy);
+            if (name.startsWith("["))
+                headers.remove(name);
+        }
 
-					// Keep all attribute names which are actually availabl from the nodes. 
-					allAttributes=filterHeaders(allAttributes); 
-					tableModel.setAllAttributeNames(allAttributes);
+        return headers;
+    }
 
-				}
-				catch(Throwable t)
-				{
-					handle(t,"Failed to fetch table data\n");
-				}
-			}
+    public int insertHeader(String headerName, String newName, boolean insertBefore)
+    {
+        int index = tableModel.insertHeader(headerName, newName, insertBefore);
+        // will update data model, Table View will follow AFTER TableStructureEvent
+        // has been handled.
+        fetchAttribute(newName);
+        return index;
+    }
 
-			public void stopTask()
-			{
+    protected void handle(Throwable t)
+    {
+        logger.logException(ClassLogger.ERROR, t, "Exception:%s\n", t);
+        t.printStackTrace();
+    }
 
-			}
-		};
+    protected void handle(Throwable t, String format, Object... args)
+    {
+        logger.logException(ClassLogger.ERROR, t, format, args);
+        t.printStackTrace();
+    }
 
-		task.startTask();
-	}
+    @Override
+    public void updateColumn(String newName)
+    {
+        this.fetchAttribute(newName);
+    }
 
-	public ViewNode[] getChilds() 
-	{
-		try 
-		{
-			return dataSource.getChilds(uiModel,getRootVRI(),0,-1,null);
-		}
-		catch (ProxyException e)
-		{
-			handle(e,"Couldn't get childs\n"); 
-		}
-		return null;
-	}
+    // ========================================================================
+    // Background Data Fetchers
+    // ========================================================================
 
-	
-	protected void fetchAttribute(String attrName)
-	{
-		fetchAttributes(new StringList(attrName)); 
-	}
+    private void updateData()
+    {
+        tableModel.clearData();
 
-	private void fetchAttributes(final List<String> attrNames)
-	{
-		if (dataSource==null)
-			return; 
-		
-		final ResourceTableModel model=tableModel; 
-		
-		UITask task=new UITask(null,"Test get ProxyNode data")
-		{
-			boolean mustStop=false; 
+        // allowed at init time!
+        if (dataSource == null)
+            return;
 
-			public void doTask()
-			{
-				// 
-				// Iterate over current Rows
-				// 
-				final String[] keys = model.getRowKeys(); 
+        UITask task = new UITask(null, "Test get ProxyNode data")
+        {
+            boolean mustStop = false;
 
-				for (String rowKey:keys)
-				{
-					if (mustStop==true)
-						return; 
-					
-					ViewNode node=model.getViewNode(rowKey); 
-					
-					try 
-					{
-						if (node!=null)
-							updateNodeAttributes(node,attrNames);
-					}
-					catch (ProxyException e)
-					{
-						handle(e,"Couldn't update node attributes of:"+node); 
-					} 
-				}
-			}
+            public void doTask()
+            {
+                try
+                {
+                    ViewNode nodes[];
 
-			public void stopTask()
-			{
-				this.mustStop=true; 
-			}
-		};
+                    try
+                    {
+                        nodes = getChilds();
+                    }
+                    catch (Exception e)
+                    {
+                        handle(e, "Couldn't fetch childs\n");
+                        return;
+                    }
 
-		task.startTask();
-	}
+                    // no data:
+                    if (nodes == null)
+                    {
+                        logger.debugPrintf("No Nodes for:" + this);
+                        return;
+                    }
 
+                    for (ViewNode node : nodes)
+                    {
+                        if (mustStop == true)
+                            return;
 
-	private void updateNodeAttributes(ViewNode viewNode,List<String> attrNames) throws ProxyException 
-	{
-		List<Attribute> attrs = dataSource.getAttributes(viewNode.getVRL(),attrNames); 
-		
-		RowData row=tableModel.getRow(viewNode.getVRL().toString());
-		
-		if (row==null)
-			return; 
-		row.setViewNode(viewNode); 
-		row.setValues(attrs);
-	}
+                        createRow(node);
+                    }
 
-	private void createRow(ViewNode viewNode) throws ProxyException
-	{
-		AttributeSet set=new AttributeSet();
-		int index=tableModel.addRow(viewNode,viewNode.getVRL().toString(),set);
-		
-		//RowData row = tableModel.getRow(index); 
-		//row.setObjectValue(RESOURCE,node); 
-		
-	}
+                    StringList allAttributes = new StringList();
 
-	public ProxyNode getRootProxyNode() 
-	{
-		return this.dataSource.getRootNode(); 
-	}
+                    for (ViewNode node : nodes)
+                    {
+                        if (mustStop == true)
+                            return;
+                        try
+                        {
+                            List<String> hdrs = tableModel.getHeaders();
+                            updateNodeAttributes(node, hdrs);
+                            allAttributes.add(dataSource.getAttributeNames(node.getVRL()), true);
+                        }
+                        catch (ProxyException e)
+                        {
+                            handle(e, "Couldn't update node attributes of:" + node);
+                        }
+                    }
+
+                    // Keep all attribute names which are actually availabl from the nodes.
+                    allAttributes = filterHeaders(allAttributes);
+                    tableModel.setAllAttributeNames(allAttributes);
+
+                }
+                catch (Throwable t)
+                {
+                    handle(t, "Failed to fetch table data\n");
+                }
+            }
+
+            public void stopTask()
+            {
+
+            }
+        };
+
+        task.startTask();
+    }
+
+    public ViewNode[] getChilds()
+    {
+        try
+        {
+            return dataSource.getChilds(uiModel, getRootVRI(), 0, -1, null);
+        }
+        catch (ProxyException e)
+        {
+            handle(e, "Couldn't get childs\n");
+        }
+        return null;
+    }
+
+    protected void fetchAttribute(String attrName)
+    {
+        fetchAttributes(new StringList(attrName));
+    }
+
+    private void fetchAttributes(final List<String> attrNames)
+    {
+        if (dataSource == null)
+            return;
+
+        final ResourceTableModel model = tableModel;
+
+        UITask task = new UITask(null, "Test get ProxyNode data")
+        {
+            boolean mustStop = false;
+
+            public void doTask()
+            {
+                //
+                // Iterate over current Rows
+                //
+                final String[] keys = model.getRowKeys();
+
+                for (String rowKey : keys)
+                {
+                    if (mustStop == true)
+                        return;
+
+                    ViewNode node = model.getViewNode(rowKey);
+
+                    try
+                    {
+                        if (node != null)
+                            updateNodeAttributes(node, attrNames);
+                    }
+                    catch (ProxyException e)
+                    {
+                        handle(e, "Couldn't update node attributes of:" + node);
+                    }
+                }
+            }
+
+            public void stopTask()
+            {
+                this.mustStop = true;
+            }
+        };
+
+        task.startTask();
+    }
+
+    private void updateNodeAttributes(ViewNode viewNode, List<String> attrNames) throws ProxyException
+    {
+        List<Attribute> attrs = dataSource.getAttributes(viewNode.getVRL(), attrNames);
+
+        RowData row = tableModel.getRow(viewNode.getVRL().toString());
+
+        if (row == null)
+            return;
+        row.setViewNode(viewNode);
+        row.setValues(attrs);
+    }
+
+    private int createRow(ViewNode viewNode) throws ProxyException
+    {
+        AttributeSet set = new AttributeSet();
+        return tableModel.addRow(viewNode, set);
+    }
+
+    public ProxyNode getRootProxyNode()
+    {
+        return this.dataSource.getRootNode();
+    }
 
 }

@@ -199,7 +199,7 @@ public class InfoRootNode extends InfoResourceNode
         try
         {
             saveTo(saveVrl);
-            logger.errorPrintf("Saved to %s\n", saveVrl);
+            logger.infoPrintf("Saved to %s\n", saveVrl);
         }
         catch(VrsException e)
         {
@@ -261,7 +261,7 @@ public class InfoRootNode extends InfoResourceNode
             VFSPath path = vrsClient.openVFSPath(loadVrl); 
             if (path.exists()==false)
             {
-                logger.infoPrintf("Root xonfig XML file not found:%s", loadVrl);
+                logger.infoPrintf("Root config XML file not found:%s", loadVrl);
                 return;
             }
             
