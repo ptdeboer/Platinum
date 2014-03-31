@@ -169,7 +169,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
             }
             else
             {
-                JPopupMenu menu = viewComp.createNodeActionMenuFor(viewComp.getViewNode(), true);
+                JPopupMenu menu = viewComp.createNodeActionMenuFor(node, true);
                 if (menu != null)
                     menu.show((Component) e.getSource(), e.getX(), e.getY());
             }

@@ -41,33 +41,55 @@ public class ActionMenu extends JPopupMenu
 {
     private static final long serialVersionUID = 7948518745148426493L;
 
-    /** 
-     * Default Menu Factory. 
+    /**
+     * 
+     * @param browserPlatform 
+     * @param actionListener
+     * @param viewComp  ViewComponent from which the pop-up click occured. 
+     * @param actionSourceNode actual ViewNode under click
+     * @param canvasMenu whether this is a canvasClick 
+     * @return
      */
     public static ActionMenu createDefaultPopUpMenu(BrowserPlatform browserPlatform, ActionMenuListener actionListener,
-            ViewNodeComponent viewComp,
-            ViewNode viewNode, boolean canvasMenu)
+            ViewNodeComponent viewComp, 
+            ViewNode actionSourceNode, boolean canvasMenu)
     {
-
-        ActionMenu menu = new ActionMenu(browserPlatform, viewComp, viewNode, actionListener);
-
-        // Check container of viewComponent if present, for a canvasMenu this is mandatory.
-        ViewNodeContainer _container = viewComp.getViewContainer();
-        if ((_container == null) && (viewComp instanceof ViewNodeContainer))
+        ViewNodeContainer container=null;
+        
+        if (viewComp instanceof ViewNodeContainer)
         {
-            _container = (ViewNodeContainer) viewComp;
+            container=(ViewNodeContainer)viewComp; 
+        }
+        else
+        {       
+            container= viewComp.getViewContainer();
+        }
+        
+        ViewNode containerNode=null; 
+
+        if (container == null)
+        {
+            if (canvasMenu)
+            {
+                // assert here
+                throw new NullPointerException("For a canvasmenu the (parent) ViewNodeContainer can not be NULL!");
+            }
+            else
+            {
+                containerNode=null; 
+            }
+        }
+        else
+        {
+            containerNode=container.getViewNode();
         }
 
-        if ((canvasMenu) && (_container == null))
-        {
-            // assert here
-            throw new NullPointerException("For a canvasmenu the (parent) ViewNodeContainer can not be NULL!");
-        }
-
+        ActionMenu menu = new ActionMenu(browserPlatform, viewComp, actionSourceNode, actionListener);
+        
         ViewNode[] selections = null;
-        if ((canvasMenu) && (_container != null))
+        if ((canvasMenu) && (container != null))
         {
-            selections = _container.getNodeSelection();
+            selections = container.getNodeSelection();
         }
 
         boolean hasSelection = ((selections != null) && (selections.length > 0));
@@ -85,45 +107,53 @@ public class ActionMenu extends JPopupMenu
         }
         else
         {
-            JMenuItem menuItem = new JMenuItem("NodeMenu:" + viewNode.getName());
+            JMenuItem menuItem = new JMenuItem("NodeMenu:" + actionSourceNode.getName());
             menu.add(menuItem);
             menuItem.setEnabled(false);
 
             JSeparator sep = new JSeparator();
             menu.add(sep);
-            nodeMimeType = viewNode.getMimeType();
+            nodeMimeType = actionSourceNode.getMimeType();
         }
 
         JSeparator sep = new JSeparator();
         menu.add(sep);
-        menu.add(menu.createItem(viewComp, "Open ", ActionMethod.OPEN_LOCATION));
+        menu.add(menu.createItem(container, "Open ", ActionMethod.OPEN_LOCATION));
 
         {
             JMenu openMenu = new JMenu("Open in");
             menu.add(openMenu);
 
-            openMenu.add(menu.createItem(viewComp, "New Window", ActionMethod.OPEN_IN_NEW_WINDOW));
-            openMenu.add(menu.createItem(viewComp, "New Tab", ActionMethod.OPEN_IN_NEW_TAB));
+            openMenu.add(menu.createItem(container, "New Window", ActionMethod.OPEN_IN_NEW_WINDOW));
+            openMenu.add(menu.createItem(container, "New Tab", ActionMethod.OPEN_IN_NEW_TAB));
         }
 
-        // Mime Menu Options + "View With"
+        // Viewer specific menu action for this mimeType
         menu.add(new JSeparator());
         {
             if (nodeMimeType != null)
             {
-                menu.addMimeViewerMenuMethods(viewComp, nodeMimeType);
+                menu.addMimeViewerMenuMethods(container, nodeMimeType);
             }
         }
 
         // View With ->
+        if (!canvasMenu)
         {
-            menu.createViewersMenu(viewComp, viewNode);
+            menu.createViewersMenu(container, actionSourceNode);
         }
 
         // Default options:
         menu.add(new JSeparator());
         {
-            menu.add(createNewMenu(viewComp, menu, viewNode));
+            if (canvasMenu)
+            {
+                menu.add(createNewMenu(container, menu, actionSourceNode));
+            }
+            else
+            {
+                menu.add(createNewMenu(container, menu, containerNode));
+            }
         }
 
         // --------------
@@ -132,12 +162,12 @@ public class ActionMenu extends JPopupMenu
 
         if (multiSelection)
         {
-            menu.add(menu.createItem(viewComp, "Delete All", ActionMethod.DELETE_SELECTION));
+            menu.add(menu.createItem(container, "Delete All", ActionMethod.DELETE_SELECTION));
         }
         else
         {
-            menu.add(menu.createItem(viewComp, "Delete", ActionMethod.DELETE));
-            menu.add(menu.createItem(viewComp, "Rename", ActionMethod.RENAME));
+            menu.add(menu.createItem(container, "Delete", ActionMethod.DELETE));
+            menu.add(menu.createItem(container, "Rename", ActionMethod.RENAME));
         }
 
         // CopyPasta
@@ -150,7 +180,7 @@ public class ActionMenu extends JPopupMenu
                 name = "Copy All";
             }
             
-            menu.add(item = menu.createItem(viewComp, name, ActionMethod.COPY_SELECTION));
+            menu.add(item = menu.createItem(container, name, ActionMethod.COPY_SELECTION));
 
             // enable copy in canvas menu only when there is something selected
             if (canvasMenu)
@@ -165,10 +195,10 @@ public class ActionMenu extends JPopupMenu
                 }
             }
 
-            menu.add(menu.createItem(viewComp, "Paste", ActionMethod.PASTE));
+            menu.add(menu.createItem(container, "Paste", ActionMethod.PASTE));
             sep = new JSeparator();
             menu.add(sep);
-            menu.add(menu.createItem(viewComp, "Refresh", ActionMethod.REFRESH));
+            menu.add(menu.createItem(container, "Refresh", ActionMethod.REFRESH));
         }
 
         // Resource Sub Menu:
@@ -179,12 +209,25 @@ public class ActionMenu extends JPopupMenu
             JMenu selSubMenu = new JMenu("Selection");
             {
                 menu.add(selSubMenu);
-                JMenu locSubMenu = new JMenu("Location");
+                JMenu actionSourceSubMenu = new JMenu("ActionSource");
+                {
+                    selSubMenu.add(actionSourceSubMenu);
+                    if (actionSourceNode!=null)
+                    {
+                        JMenuItem menuItem = new JMenuItem("<" + actionSourceNode.getResourceType() + ">" + actionSourceNode.getVRL());
+                        actionSourceSubMenu.add(menuItem);
+                    }
+                }
+                JMenu locSubMenu = new JMenu("Container");
                 {
                     selSubMenu.add(locSubMenu);
-                    JMenuItem menuItem = new JMenuItem("<" + viewNode.getResourceType() + ">" + viewNode.getVRL());
-                    locSubMenu.add(menuItem);
+                    if (containerNode!=null)
+                    {
+                        JMenuItem menuItem = new JMenuItem("<" + containerNode.getResourceType() + ">" + containerNode.getVRL());
+                        locSubMenu.add(menuItem);
+                    }
                 }
+                
                 JMenu selsSubMenu = new JMenu("Selections");
                 {
                     selSubMenu.add(selsSubMenu);
@@ -204,7 +247,7 @@ public class ActionMenu extends JPopupMenu
             }
             // Properties
             {
-                menu.add(menu.createItem(viewComp, "Properties", ActionMethod.SHOW_PROPERTIES));
+                menu.add(menu.createItem(container, "Properties", ActionMethod.SHOW_PROPERTIES));
             }
         }
 

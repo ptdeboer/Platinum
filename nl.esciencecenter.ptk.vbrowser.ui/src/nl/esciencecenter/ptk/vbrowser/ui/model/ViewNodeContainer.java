@@ -34,8 +34,13 @@ public interface ViewNodeContainer  extends ViewNodeComponent
 {
     public ViewNode getNodeUnderPoint(Point p);
 
-	// === Menu === // 
-    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu);
+    /** 
+     * Create Pop-up menu when (right-)clicked the specified actionSourceNode. 
+     * @param actionSourceNode ViewNode the click occured. 
+     * @param canvasMenu - whether this is a click the canvas (white space between the icons).
+     * @return JPopupMenu 
+     */
+    public JPopupMenu createNodeActionMenuFor(ViewNode actionSourceNode, boolean canvasMenu);
     
 	// === Selection Model === 
     public void clearNodeSelection();
