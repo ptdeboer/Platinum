@@ -34,6 +34,9 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/**
+ * Fixed LocalSystem node.
+ */
 public class LocalSystem extends InfoRSNode
 {
     protected FSUtil fsUtil = null;
@@ -54,7 +57,7 @@ public class LocalSystem extends InfoRSNode
 
     protected void initChilds() throws VrsException
     {
-        initSubNodes(); 
+        initSubNodes();
         initHome();
         initDrives();
     }
@@ -110,7 +113,7 @@ public class LocalSystem extends InfoRSNode
         return node;
     }
 
-    public List<AttributeDescription> getAttributeDescriptions()
+    public List<AttributeDescription> getAttributeDescriptions() throws VrsException
     {
         List<AttributeDescription> descs = super.getAttributeDescriptions();
         List<AttributeDescription> resourceAttrs = getResourceAttrDescriptions();

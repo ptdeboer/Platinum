@@ -47,7 +47,7 @@ public class Test_XMLResourceNode_InfoRootNode
         String xml=data.toXML(rootNode);
         System.out.printf(XMLData.prettyFormat(xml, 3));
 
-        InfoResourceNode copyFolder = rootNode.createResourceFolder("XMLCopy",null); 
+        InfoResourceNode copyFolder = rootNode.createFolder("XMLCopy");
         data.addXMLResourceNodesTo(copyFolder, xml);
         
         

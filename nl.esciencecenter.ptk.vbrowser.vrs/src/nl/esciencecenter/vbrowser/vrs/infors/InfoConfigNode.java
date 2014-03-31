@@ -20,17 +20,26 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+
+/** 
+ * Fixed Config Node.
+ * Hold global VRS configuration and settings.  
+ */
 public class InfoConfigNode extends InfoRSNode
 {
-
-    public InfoConfigNode(InfoRootNode infoRootNode)
+    protected SystemInfosNode infosNode=null;
+    
+    public InfoConfigNode(InfoRootNode infoRootNode) throws VrsException
     {
         super(infoRootNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE));
+        init(); 
     }
 
-    public InfoConfigNode(InfoConfigNode parentNode, String subName)
+    public InfoConfigNode(InfoConfigNode parentNode, String subName) throws VrsException
     {
         super(parentNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE + "/" + subName));
+        init();
     }
 
     public String getIconURL(int size)
@@ -43,5 +52,15 @@ public class InfoConfigNode extends InfoRSNode
         return "Config";
     }
 
+    protected void init() throws VrsException
+    {
+        initChilds(); 
+    }
+    
+    protected void initChilds() throws VrsException
+    {
+        this.infosNode=new SystemInfosNode(this); 
+        this.addSubNode(infosNode);  
+    }
 
 }

@@ -29,11 +29,11 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Attribute parsing and factory methods. 
+ * Attribute parsing and factory methods.
  */
 public class AttributeUtil
 {
-    
+
     public static Attribute createFromAssignment(String stat)
     {
         String strs[] = stat.split("[ ]*=[ ]*");
@@ -47,54 +47,66 @@ public class AttributeUtil
 
     public static Attribute parseFromString(AttributeType attrType, String attrName, String valueStr) throws Exception
     {
-        Object value=Attribute.parseString(attrType,valueStr);
-        return new Attribute(attrType,attrName,value); 
+        Object value = Attribute.parseString(attrType, valueStr);
+        return new Attribute(attrType, attrName, value);
     }
-    
-    public static Attribute parseFromString(AttributeType attrType, String attrName, String valueStr,String optEnumValues[]) throws Exception
+
+    public static Attribute parseFromString(AttributeType attrType, String attrName, String valueStr, String optEnumValues[])
+            throws Exception
     {
-        if (attrType==AttributeType.ENUM)
+        if (attrType == AttributeType.ENUM)
         {
-            return createEnumerate(attrName,optEnumValues,valueStr);
+            return createEnumerate(attrName, optEnumValues, valueStr);
         }
         else
         {
-            Object value=Attribute.parseString(attrType,valueStr);
-            return new Attribute(attrType,attrName,value);
+            Object value = Attribute.parseString(attrType, valueStr);
+            return new Attribute(attrType, attrName, value);
         }
     }
 
     public static Attribute createFrom(AttributeType type, String name, Object value, String[] enumValues)
     {
-        if (type==AttributeType.ENUM)
+        if (type == AttributeType.ENUM)
         {
-            return createEnumerate(name,enumValues,value.toString());
+            return createEnumerate(name, enumValues, value.toString());
         }
         else
         {
-            return createFrom(type,name,value); 
+            return createFrom(type, name, value);
         }
     }
 
-    
+    /** Static factory method for Integer Attribute */
+    public static Attribute createIntegerAttribute(String name, int val)
+    {
+        return new Attribute(name, val);
+    }
+
+    /** Static factory method for String Attribute */
+    public static Attribute createStringAttribute(String name, String value)
+    {
+        return new Attribute(name, value);
+    }
+
     /**
      * Type safe factory method. Object must have specified type
      */
     public static Attribute createFrom(AttributeType type, String name, Object value)
     {
-        // null value is allowed: 
-        if (value==null)
+        // null value is allowed:
+        if (value == null)
         {
-            return new Attribute(type,name, null); 
+            return new Attribute(type, name, null);
         }
-        
-        if (type==AttributeType.ANY)
+
+        if (type == AttributeType.ANY)
         {
             return new Attribute(type, name, value);
         }
-        
+
         AttributeType objType = AttributeType.getObjectType(value, null);
-        
+
         if (objType != type)
         {
             throw new Error("Incompatible Object Type. Specified type=" + type + ", object type=" + objType);
@@ -114,30 +126,30 @@ public class AttributeUtil
     public static Attribute createDateFromMilliesSinceEpoch(String name, long millis)
     {
         // store as normalized time string:
-        //String timeStr = Presentation.createNormalizedDateTimeString(millis);
+        // String timeStr = Presentation.createNormalizedDateTimeString(millis);
         // return new Attribute(AttributeType.DATETIME, name, timeStr);
         return new Attribute(AttributeType.DATETIME, name, Presentation.createDate(millis));
     }
 
-    /** 
+    /**
      * Create Attribute and get type from object value.
      */
     public static Attribute createFrom(String name, Object obj)
     {
-        // avoid nesting of attributes as objects ! 
+        // avoid nesting of attributes as objects !
         if (obj instanceof Attribute)
         {
-            return ((Attribute)obj).duplicate();  
-        }   
-        
+            return ((Attribute) obj).duplicate();
+        }
+
         AttributeType newtype = AttributeType.getObjectType(obj, AttributeType.STRING);
         Attribute attr = new Attribute(newtype, name, obj);
         // check?
         return attr;
     }
-    
-    /** 
-     * Create a deep copy of an Attribute Array 
+
+    /**
+     * Create a deep copy of an Attribute Array
      */
     public static Attribute[] duplicateArray(Attribute[] attrs)
     {
@@ -157,8 +169,8 @@ public class AttributeUtil
         return newAttrs;
     }
 
-    /** 
-     * Create a deep copy of an Attribute Array 
+    /**
+     * Create a deep copy of an Attribute Array
      */
     public static List<Attribute> duplicate(List<Attribute> attrs)
     {
@@ -166,36 +178,38 @@ public class AttributeUtil
         {
             return null;
         }
-        
-        ExtendedList<Attribute> newList  = new ExtendedList<Attribute>(attrs); 
 
-        return newList;     
+        ExtendedList<Attribute> newList = new ExtendedList<Attribute>(attrs);
+
+        return newList;
     }
- 
-    /** 
-     * If object is a know object type, create a non-shallow duplicate (clone). 
-     * @param value - primitive object to be copiedl 
-     * @return copied object or NULL if object couldn't be copied !  
+
+    /**
+     * If object is a know object type, create a non-shallow duplicate (clone).
+     * 
+     * @param value
+     *            - primitive object to be copiedl
+     * @return copied object or NULL if object couldn't be copied !
      */
     public static Object duplicateObject(Object value)
     {
         AttributeType type = AttributeType.getObjectType(value, null);
-            
-        if ((type==null) || (type==AttributeType.ANY))
+
+        if ((type == null) || (type == AttributeType.ANY))
         {
-            return null; 
+            return null;
         }
-        // create specific copy of object: 
-        return duplicateValue(type,value); 
+        // create specific copy of object:
+        return duplicateValue(type, value);
     }
-    
+
     public static Object duplicateValue(AttributeType type, Object object)
     {
         if (object == null)
         {
             return null;
         }
-        
+
         switch (type)
         {
             case BOOLEAN:
@@ -223,10 +237,10 @@ public class AttributeUtil
                 return new String((String) object);
             }
             case DATETIME:
-            { 
+            {
                 if (object instanceof Date)
                 {
-                    return ((Date)object).clone(); 
+                    return ((Date) object).clone();
                 }
                 else if (object instanceof String)
                 {
@@ -234,7 +248,7 @@ public class AttributeUtil
                 }
                 else
                 {
-                   throw new Error("Invalid DATETIME Type:"+object.getClass());  
+                    throw new Error("Invalid DATETIME Type:" + object.getClass());
                 }
             }
             case STRING:
@@ -252,9 +266,10 @@ public class AttributeUtil
                 {
                     return ((Duplicatable<?>) object).duplicate(false);
                 }
-                
+
                 throw new Error("Cannot clone/duplicate value object:" + object);
             }
         }
     }
+
 }

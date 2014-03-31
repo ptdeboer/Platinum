@@ -97,6 +97,11 @@ public class VRSContext
         }
     }
     
+    public ResourceSystemInfoRegistry getResourceSystemInfoRegistry()
+    {
+        return this.resourceInfoRegistry; 
+    }
+    
     public ResourceSystemInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
     {
         VResourceSystemFactory fac = registry.getVResourceSystemFactoryFor(this, vrl.getScheme());

@@ -20,9 +20,12 @@
 
 package nl.esciencecenter.vbrowser.vrs.registry;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
+import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 
 public class ResourceSystemInfoRegistry
@@ -56,4 +59,12 @@ public class ResourceSystemInfoRegistry
         }
     }
 
+    /** 
+     * Returns a copy of the ResourceSystemInfos as list. 
+     */
+    public List<ResourceSystemInfo> list()
+    {
+        return new ExtendedList<ResourceSystemInfo>(resourceInfos.values());
+    }
+    
 }

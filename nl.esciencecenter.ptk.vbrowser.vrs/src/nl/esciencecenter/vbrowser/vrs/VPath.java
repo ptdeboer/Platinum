@@ -60,7 +60,7 @@ public interface VPath
     
     public String getResourceStatus() throws VrsException;
 
-    public List<AttributeDescription> getAttributeDescriptions(); 
+    public List<AttributeDescription> getAttributeDescriptions() throws VrsException; 
 
     public List<Attribute> getAttributes(List<String> names) throws VrsException;
 

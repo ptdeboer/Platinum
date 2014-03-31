@@ -26,7 +26,6 @@ import java.util.List;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
@@ -247,7 +246,7 @@ public class InfoRSNode extends VPathNode
      *            logical name or basename of node.
      * @return - InfoRSNode or null.
      */
-    protected InfoRSNode getSubNode(String name)
+    protected InfoRSNode getSubNodeByName(String name)
     {
         // unsynchronized access:
         for (InfoRSNode node : subNodes)
@@ -306,4 +305,6 @@ public class InfoRSNode extends VPathNode
     {
         return "<InfoRSNode:" + this.getResourceType() + ">:" + getVRL();
     }
+
+
 }

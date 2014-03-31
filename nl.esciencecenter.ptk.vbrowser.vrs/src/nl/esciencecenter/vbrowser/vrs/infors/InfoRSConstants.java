@@ -28,6 +28,8 @@ public class InfoRSConstants
 
     public static final String LOCALSYSTEM = "LocalSystem";
 
+    public static final String SYSTEMINFOS_NODE = "ResourceSystemInfosNode";
+
     public static final String INFOSYSTEMROOTNODE = "InfoSystemRoot";
 
     public static final String INFOCONFIGNODE = "InfoConfig";
@@ -36,6 +38,8 @@ public class InfoRSConstants
 
     public static final String RESOURCEFOLDER = "ResourceFolder";
 
+    public static final String RESOURCEINFO_CONFIG = "ResourceInfoConfig";
+    
     public static final String RESOURCE_ICONURL = "resourceIconURL";
 
     public static final String RESOURCE_SHOWLINKICON = "resourceShowLinkIcon";

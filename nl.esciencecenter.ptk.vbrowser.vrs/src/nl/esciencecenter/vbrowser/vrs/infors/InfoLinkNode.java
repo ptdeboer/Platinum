@@ -22,6 +22,9 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/** 
+ * Fixed Link Node. Not editable. 
+ */
 public class InfoLinkNode extends InfoResourceNode
 {
     protected InfoLinkNode(InfoRSNode parent, VRL logicalVRL, VRL targetVRL)

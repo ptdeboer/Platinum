@@ -42,7 +42,11 @@ import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VInfoResourcePath,VRenamable
+/** 
+ * Common parent for ResourcFolders, ResourceLinks and the RootInfoNode.<br>
+ * Implements the Folder management methods and target resolving of ResourceLinks.  
+ */
+public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, VInfoResourcePath, VRenamable
 {
     private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
 
@@ -51,7 +55,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
     {
         VRL logicalVRL = parent.createNewSubNodeVRL();
         InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
-        
+
         node.setTargetVRL(targetLink);
         node.setIconUrl(optIconURL);
         node.setShowLinkIcon(showLinkIcon);
@@ -76,19 +80,19 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
 
     public static InfoResourceNode createResourceNode(InfoRSNode parentNode, String type, AttributeSet infoAttrs) throws VrsException
     {
-        VRL logicalVRL = parentNode.createNewSubNodeVRL(); 
-        
-//        if (isPathNode)
-//        {
-//            String folderName = infoAttrs.getStringValue(InfoRSConstants.RESOURCE_NAME);
-//            if (StringUtil.notEmpty(folderName))
-//            {
-//                logicalVRL = parentNode.createSubPathVRL(folderName); 
-//            }
-//        }
-        
+        VRL logicalVRL = parentNode.createNewSubNodeVRL();
+
+        // if (isPathNode)
+        // {
+        // String folderName = infoAttrs.getStringValue(InfoRSConstants.RESOURCE_NAME);
+        // if (StringUtil.notEmpty(folderName))
+        // {
+        // logicalVRL = parentNode.createSubPathVRL(folderName);
+        // }
+        // }
+
         InfoResourceNode node = new InfoResourceNode(parentNode, type, logicalVRL);
-        node.updateAttributes(infoAttrs); 
+        node.updateAttributes(infoAttrs);
 
         return node;
     }
@@ -96,10 +100,16 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
     // ==========
     // Instance
     // ==========
-    
+
+    protected InfoResourceNode(InfoRS infoRS, String type, VRL logicalVRL)
+    {
+        super(infoRS, type, logicalVRL);
+    }
+
     protected InfoResourceNode(InfoRSNode parent, String type, VRL logicalVRL)
     {
         super(parent, type, logicalVRL);
+
         this.setLogicalName(logicalVRL.getBasename());
     }
 
@@ -182,25 +192,25 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
             attributes.set(InfoRSConstants.RESOURCE_TARGETVRL, vrl);
         }
     }
-    
+
     @Override
     public boolean isResourceLink()
     {
         return InfoRSConstants.RESOURCELINK.equals(getResourceType());
     }
-    
-    @Override 
+
+    @Override
     public boolean isResourceFolder()
     {
         return InfoRSConstants.RESOURCEFOLDER.equals(getResourceType());
     }
-    
+
     public VPath resolveTarget(VRL vrl) throws VrsException
     {
         return getInfoRS().getVRSClient().openPath(vrl);
     }
 
-    public List<AttributeDescription> getAttributeDescriptions()
+    public List<AttributeDescription> getAttributeDescriptions() throws VrsException
     {
         List<AttributeDescription> descs = super.getAttributeDescriptions();
         List<AttributeDescription> resourceAttrs = getResourceAttrDescriptions();
@@ -249,18 +259,18 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
 
         return attr;
     }
-    
+
     protected void updateAttributes(AttributeSet attrs)
     {
-        // update attributes: 
-        for (String key:attrs.keySet())
+        // update attributes:
+        for (String key : attrs.keySet())
         {
-            Attribute attr=attrs.get(key); 
-            logger.debugPrintf("updating attribute=%s\n", attr); 
-            // delegate to AttributeSet: 
-            this.attributes.update(attr,true); 
+            Attribute attr = attrs.get(key);
+            logger.debugPrintf("updating attribute=%s\n", attr);
+            // delegate to AttributeSet:
+            this.attributes.update(attr, true);
         }
-        // check//assert new attributes 
+        // check//assert new attributes
     }
 
     public String getMimeType()
@@ -292,7 +302,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
         }
         return null;
     }
-    
+
     // ======================================
     // Stream Read/Write Methods (load/save)
     // ======================================
@@ -305,7 +315,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
 
     public InputStream createInputStream() throws VrsException
     {
-        String xml =  new XMLData(this.getVRSContext()).toXML(this);  
+        String xml = new XMLData(this.getVRSContext()).toXML(this);
         ByteArrayInputStream binps;
         try
         {
@@ -313,36 +323,43 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new VrsException(e.getMessage(),e); 
+            throw new VrsException(e.getMessage(), e);
         }
-        return binps; 
+        return binps;
     }
-    
+
     // ======================================
     // Create/Delete Links/ResourceFolders
     // ======================================
 
-    public InfoResourceNode create(String type, String name) throws VrsException
+    public InfoResourceNode addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
     {
-        if (StringUtil.equals(type,InfoRSConstants.RESOURCEFOLDER))
+        logger.infoPrintf(">>>Adding new resourceLink:%s\n", targetLink);
+
+        InfoRSNode parentNode;
+
+        if (folderName != null)
         {
-            return this.createFolder(name); 
-        }
-        else if (StringUtil.equals(type,InfoRSConstants.RESOURCELINK))
-        {
-            // create link with dummy VRL; 
-            VRL vrl=this.resolvePathVRL("NewLink"); 
-            return this.createResourceLink(vrl, name); 
+            parentNode = this.getSubNodeByName(folderName);
+            if (parentNode == null)
+            {
+                parentNode = this.createResourceFolder(folderName, null);
+            }
         }
         else
         {
-            throw new VrsException("Resource type not supported:"+type); 
+            parentNode = this;
         }
+
+        InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, optIconURL, true);
+        parentNode.addSubNode(node);
+
+        return node;
     }
-    
+
     protected InfoResourceNode createResourceFolder(String folderName, String optIconURL) throws VrsException
     {
-        InfoRSNode node = this.getSubNode(folderName);
+        InfoRSNode node = this.getSubNodeByName(folderName);
 
         if (node instanceof InfoResourceNode)
         {
@@ -356,20 +373,64 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
         else
         {
             InfoResourceNode folder = InfoResourceNode.createFolderNode(this, folderName, optIconURL);
-            this.addPersistantNode(folder,true);
+            this.addPersistantNode(folder, true);
             return folder;
         }
     }
-    
+
+    public InfoResourceNode create(String type, String name) throws VrsException
+    {
+        if (StringUtil.equals(type, InfoRSConstants.RESOURCEFOLDER))
+        {
+            return this.createFolder(name);
+        }
+        else if (StringUtil.equals(type, InfoRSConstants.RESOURCELINK))
+        {
+            // create link with dummy VRL;
+            VRL vrl = this.resolvePathVRL("NewLink");
+            return this.createResourceLink(vrl, name);
+        }
+        else
+        {
+            throw new VrsException("Resource type not supported:" + type);
+        }
+    }
+
+    @Override
+    public InfoResourceNode createFolder(String name) throws VrsException
+    {
+        return createResourceFolder(name, null);
+    }
+
+    @Override
+    public InfoResourceNode createResourceLink(VRL targetVRL, String logicalName) throws VrsException
+    {
+        InfoResourceNode subNode = InfoResourceNode.createLinkNode(this, logicalName, targetVRL, null, true);
+        addPersistantNode(subNode, true);
+        return subNode;
+    }
+
+    // =================
+    // Rename/Delete
+    // ================
+
+    @Override
+    public InfoResourceNode renameTo(String newName) throws VrsException
+    {
+        this.setLogicalName(newName);
+        // name change doesn't change path
+        return this;
+    }
+
     @Override
     public void delete(boolean recursive) throws VrsException
     {
-        if (recursive==false)
+        if (recursive == false)
         {
-            // keep root node before delete.  
+            // keep root node before delete.
             InfoRootNode rootNode = this.getRootNode();
-            // delegate to parent 
-            this.getParent().delSubNode(this); 
+            // delegate to parent
+            this.getParent().delSubNode(this);
             rootNode.save();
         }
         else
@@ -377,58 +438,44 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
             throw new VrsException("Recursive delete not yet implemented");
         }
     }
-    
-    @Override
-    public InfoResourceNode createFolder(String name) throws VrsException
-    {
-        return createResourceFolder(name, null); 
-    }
-
-    @Override
-    public InfoResourceNode createResourceLink(VRL targetVRL, String logicalName) throws VrsException
-    {
-        InfoResourceNode subNode = InfoResourceNode.createLinkNode(this, logicalName, targetVRL, null, true); 
-        addPersistantNode(subNode,true);
-        return subNode;
-    }
 
     // ======================================
-    // SubNode persistant interface.  
+    // SubNode persistant interface.
     // ======================================
-    
+
     @Override
     public void addInfoNode(InfoRSNode subNode) throws VrsException
     {
-        addPersistantNode(subNode,true); 
+        addPersistantNode(subNode, true);
     }
-    
+
     protected void addPersistantNode(InfoRSNode subNode, boolean save) throws VrsException
     {
         addSubNode(subNode);
         if (save)
         {
-            save(); 
+            save();
         }
     }
 
     // ====================
-    // Persistant interface 
+    // Persistant interface
     // ====================
-    
-    /** 
-     * If context is persistent, save InfoNodes. 
+
+    /**
+     * If context is persistent, save InfoNodes.
      */
     protected void save()
     {
-        if (getVRSContext().hasPersistantConfig()==false)
+        if (getVRSContext().hasPersistantConfig() == false)
         {
-            logger.debugPrintf("Not saving InfoNodes. Non persistant context"); 
-            return; 
+            logger.debugPrintf("Not saving InfoNodes. Non persistant context");
+            return;
         }
-        
-        InfoRootNode rootNode = this.getRootNode(); 
-        
-        if (rootNode==null)
+
+        InfoRootNode rootNode = this.getRootNode();
+
+        if (rootNode == null)
         {
             logger.errorPrintf("save(): Cat not save InfoNodes: No RootNode!\n");
         }
@@ -438,11 +485,4 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable,VI
         }
     }
 
-    @Override
-    public InfoResourceNode renameTo(String newName) throws VrsException
-    {
-        this.setLogicalName(newName);
-        // name change doesn't change path
-        return this; 
-    }        
 }

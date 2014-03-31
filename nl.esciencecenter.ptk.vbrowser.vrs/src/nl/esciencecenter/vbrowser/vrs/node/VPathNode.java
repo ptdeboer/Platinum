@@ -39,55 +39,55 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VPathNode implements VPath
 {
-    private final static ClassLogger logger=ClassLogger.getLogger(VPathNode.class); 
-    
+    private final static ClassLogger logger = ClassLogger.getLogger(VPathNode.class);
+
     static protected String[] vpathImmutableAttributeNames =
-        {
+    {
             ATTR_LOCATION,
-            ATTR_RESOURCE_TYPE, 
-            ATTR_NAME, 
-            ATTR_SCHEME, 
-            ATTR_HOSTNAME, 
-            ATTR_PORT, 
-            ATTR_ICONURL, 
-            ATTR_PATH, 
+            ATTR_RESOURCE_TYPE,
+            ATTR_NAME,
+            ATTR_SCHEME,
+            ATTR_HOSTNAME,
+            ATTR_PORT,
+            ATTR_ICONURL,
+            ATTR_PATH,
             ATTR_MIMETYPE,
 
-        };
-    
+    };
+
     protected VRL vrl;
-    
-    protected VResourceSystem resourceSystem; 
-    
-    protected VPathNode(VResourceSystem resourceSystem,VRL vrl)
+
+    protected VResourceSystem resourceSystem;
+
+    protected VPathNode(VResourceSystem resourceSystem, VRL vrl)
     {
-        this.vrl=vrl;
-        this.resourceSystem=resourceSystem; 
+        this.vrl = vrl;
+        this.resourceSystem = resourceSystem;
     }
-    
+
     public VRL getVRL()
     {
-        return vrl; 
+        return vrl;
     }
-    
+
     public java.net.URI getURI()
     {
-        return vrl.toURINoException(); 
+        return vrl.toURINoException();
     }
-    
+
     public VResourceSystem getResourceSystem()
     {
-        return this.resourceSystem; 
+        return this.resourceSystem;
     }
-    
+
     public VRL resolvePathVRL(String relativeUri) throws VRLSyntaxException
     {
-        return vrl.resolvePath(relativeUri); 
+        return vrl.resolvePath(relativeUri);
     }
-    
+
     public String getName()
     {
-        return getVRL().getBasename(); 
+        return getVRL().getBasename();
     }
 
     public boolean isComposite() throws VrsException
@@ -95,101 +95,116 @@ public class VPathNode implements VPath
         return false;
     }
 
-    public String getIconURL(int size) throws VrsException 
+    public String getIconURL(int size) throws VrsException
     {
         return null;
     }
 
-    public String getMimeType() throws VrsException 
+    public String getMimeType() throws VrsException
     {
-        return MimeTypes.getDefault().getMimeType(getVRL().getPath()); 
+        return MimeTypes.getDefault().getMimeType(getVRL().getPath());
     }
 
-    public String getResourceStatus() throws VrsException 
+    public String getResourceStatus() throws VrsException
     {
         return null;
     }
 
-    public List<AttributeDescription> getAttributeDescriptions() 
+    public List<AttributeDescription> getAttributeDescriptions() throws VrsException
     {
-        List<AttributeDescription> list = getImmutableAttributeDescriptions(); 
-        List<AttributeDescription> list2 = getResourceAttributeDescriptions(); 
-        if (list2!=null)
+        List<AttributeDescription> list = getImmutableAttributeDescriptions();
+        List<AttributeDescription> list2 = getResourceAttributeDescriptions();
+        if (list2 != null)
         {
-            for (AttributeDescription attr:list2)
+            for (AttributeDescription attr : list2)
             {
-                list.add(attr); 
+                list.add(attr);
             }
         }
         return list;
-        
+
     }
-    
-    public List<AttributeDescription> getImmutableAttributeDescriptions() 
-    {
-        ArrayList<AttributeDescription> list=new ArrayList<AttributeDescription>(); 
-        
-        for (String name:vpathImmutableAttributeNames)
-        {
-            list.add(new AttributeDescription(name,AttributeType.STRING,false,null));
-        }
-        return list; 
-    }
-    
-    public List<AttributeDescription> getResourceAttributeDescriptions() 
-    {
-        return null; 
-    }
-    
-    /** 
-     * Final getAttributeNames, override getAttributeDiscriptions for actual Attribute Definitions. 
+
+    /**
+     * Default Immutable Attributes. Typically these are location derived attributes, like scheme,port,hostname,etc.
+     * ResourceType is also immutable, but mime-type isn't as the content of a file may change.
+     * 
+     * @return List containing the Immutable Attributes.
      */
-    final public List<String> getAttributeNames()
+    public List<AttributeDescription> getImmutableAttributeDescriptions()
+    {
+        ArrayList<AttributeDescription> list = new ArrayList<AttributeDescription>();
+
+        for (String name : vpathImmutableAttributeNames)
+        {
+            list.add(new AttributeDescription(name, AttributeType.STRING, false, null));
+        }
+        return list;
+    }
+
+    public List<AttributeDescription> getResourceAttributeDescriptions()
+    {
+        return null;
+    }
+
+    /**
+     * Final getAttributeNames, override getAttributeDiscriptions for actual Attribute Definitions.
+     * 
+     * @throws VrsException
+     */
+    final public List<String> getAttributeNames() throws VrsException
     {
         List<AttributeDescription> list = getAttributeDescriptions();
-        if (list==null)
+        if (list == null)
         {
             return null;
         }
-        
-        StringList names=new StringList();
-        for (AttributeDescription descr:list)
+
+        StringList names = new StringList();
+        for (AttributeDescription descr : list)
         {
-            names.add(descr.getName()); 
+            names.add(descr.getName());
         }
-        
+
         return names;
     }
 
     @Override
     public List<Attribute> getAttributes(List<String> names) throws VrsException
     {
-        ArrayList<Attribute> list=new ArrayList<Attribute>(); 
-        for (String name:names)
+        ArrayList<Attribute> list = new ArrayList<Attribute>();
+        for (String name : names)
         {
-            Attribute attr=getAttribute(name); 
-            if (attr!=null)
+            Attribute attr = getAttribute(name);
+            if (attr != null)
             {
                 list.add(attr);
             }
             else
             {
-                logger.warnPrintf("Attribute not defined:%s\n",name); 
+                logger.warnPrintf("Attribute not defined:%s\n", name);
             }
         }
-        return list; 
+        return list;
     }
-    
+
     public Attribute getAttribute(String name) throws VrsException
     {
-        return getImmutableAttribute(name); 
+        return getImmutableAttribute(name);
     }
-    
+
     public Attribute getResourceAttribute(String name) throws VrsException
     {
-        return null;  
+        return null;
     }
-    
+
+    /**
+     * Get Immutable attribute. Typically these are location derived attributes like Scheme,Host,Port,etc.
+     * 
+     * @param name
+     *            immutable attribute name
+     * @return Attribute or null if attribute isn't defined.
+     */
     public Attribute getImmutableAttribute(String name) throws VrsException
     {
         // by prefix values with "", a NULL value will be convert to "NULL".
@@ -200,11 +215,11 @@ public class VPathNode implements VPath
         else if (name.compareTo(ATTR_NAME) == 0)
             return new Attribute(name, getName());
         else if (name.compareTo(ATTR_SCHEME) == 0)
-            return new Attribute(name, vrl.getScheme()); 
+            return new Attribute(name, vrl.getScheme());
         else if (name.compareTo(ATTR_HOSTNAME) == 0)
             return new Attribute(name, vrl.getHostname());
         // only return port attribute if it has a meaningful value
-        else if ((name.compareTo(ATTR_PORT)==0) && (vrl.getPort() >= 0))
+        else if ((name.compareTo(ATTR_PORT) == 0) && (vrl.getPort() >= 0))
             return new Attribute(name, vrl.getPort());
         else if (name.compareTo(ATTR_ICONURL) == 0)
             return new Attribute(name, getIconURL(16));
@@ -223,30 +238,30 @@ public class VPathNode implements VPath
 
         return null;
     }
-    
+
     @Override
     public String getResourceType() throws VrsException
     {
-        return "<?>";
+        return "<VPath:?>";
     }
 
     @Override
     public VPath resolvePath(String path) throws VrsException
     {
-        // Since a filesystem extends PathNode itself, check for cycle. 
-        if (this.resourceSystem==this)
+        // Since a filesystem extends PathNode itself, check for cycle.
+        if (this.resourceSystem == this)
         {
-            throw new Error("Internal Error: resolvePath(): Cannot delegate resolvePath to resourceSystem as I *am* the ResourceSystem!"); 
+            throw new Error("Internal Error: resolvePath(): Cannot delegate resolvePath to resourceSystem as I *am* the ResourceSystem!");
         }
-        
-        return this.resourceSystem.resolvePath(path); 
+
+        return this.resourceSystem.resolvePath(path);
     }
 
     @Override
     public VPath getParent() throws VrsException
-    {   
-        String parentPath=this.vrl.getDirname();
-        return resourceSystem.resolvePath(parentPath); 
+    {
+        String parentPath = this.vrl.getDirname();
+        return resourceSystem.resolvePath(parentPath);
     }
 
     @Override
@@ -264,19 +279,19 @@ public class VPathNode implements VPath
     @Override
     public VPath create(String type, String name) throws VrsException
     {
-        throw new VrsException("Can not create new '"+type+"' node named:"+name); 
+        throw new VrsException("Can not create new '" + type + "' node named:" + name);
     }
 
     @Override
     public void delete(boolean recurse) throws VrsException
     {
-        throw new VrsException("Can not delete:"+this);  
+        throw new VrsException("Can not delete:" + this);
     }
 
     @Override
     public VPath renameTo(String nameOrPath) throws VrsException
     {
-        throw new VrsException("Can not rename:"+nameOrPath); 
+        throw new VrsException("Can not rename:" + nameOrPath);
     }
 
     @Override

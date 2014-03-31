@@ -274,12 +274,6 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
         return this.id; 
     }
     
-    public String toString()
-    {
-        return "ResourceSystemInfo:[id="+id
-                +",password="+((passwd!=null)?"<PASSWORD>":"<No Password>")
-                +",properties="+properties+"]"; 
-    }
 
     @Override
     public boolean shallowSupported()
@@ -308,4 +302,14 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     {
         return this.properties; 
     }
+    
+    public String toString()
+    {
+        return "ResourceSystemInfo:[id="+id
+                +",serverVrl=+"+getServerVRL()
+                +",password="+((passwd!=null)?"<PASSWORD>":"<No Password>")
+                +",properties="+properties+"]"; 
+    }
+
+
 }

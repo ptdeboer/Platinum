@@ -26,13 +26,16 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
-import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoRootNode extends InfoRSNode implements VInfoResourcePath
+/** 
+ * Root Resource to start browsing from.<br>
+ *   
+ */
+public class InfoRootNode extends InfoResourceNode
 {
     private static final ClassLogger logger=ClassLogger.getLogger(InfoRootNode.class);
     
@@ -68,14 +71,20 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourcePath
         this.addSubNode(getLocalSystem());
     }
 
-    public InfoRSNode getNode(VRL vrl) throws VrsException
+    /** 
+     * Root node has top level recursive find node method. 
+     */
+    public InfoRSNode findNode(VRL vrl) throws VrsException
     {
         String paths[] = vrl.getPathElements();
 
         if (paths == null)
+        {
             return this;
-
+        }
+        
         int n = paths.length;
+        
         if (n == 0)
         {
             return this;
@@ -104,7 +113,7 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourcePath
         return localSystem;
     }
 
-    protected InfoConfigNode getConfigNode()
+    protected InfoConfigNode getConfigNode() throws VrsException
     {
         if (configNode == null)
         {
@@ -119,76 +128,15 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourcePath
         localSystem = new LocalSystem(this);
     }
 
-    protected void initConfigNode()
+    protected void initConfigNode() throws VrsException
     {
         configNode = new InfoConfigNode(this);
-    }
-
-    public VInfoResourcePath addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
-    {
-        logger.infoPrintf(">>>Adding new resourceLink:%s\n",targetLink);
-        
-        InfoRSNode parentNode;
-
-        if (folderName != null)
-        {
-            parentNode = this.getSubNode(folderName);
-            if (parentNode == null)
-            {
-                parentNode = this.createResourceFolder(folderName, null);
-            }
-        }
-        else
-        {
-            parentNode = this;
-        }
-
-        InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, optIconURL, true);
-        parentNode.addSubNode(node); 
-         
-        return node; 
-    }
-
-    public InfoResourceNode createResourceFolder(String folderName, String optIconURL) throws VrsException
-    {
-        InfoRSNode node = this.getSubNode(folderName);
-        
-        InfoResourceNode folder; 
-        
-        if (node instanceof InfoResourceNode)
-        {
-            return (InfoResourceNode) node;
-        }
-        else if (node != null)
-        {
-            throw new VrsException("Type Mismatch: InfoRSNode name'" + folderName + "' already exists, but is not a InfoResourceNode:"
-                    + node);
-        }
-        else
-        {
-            folder = InfoResourceNode.createFolderNode(this, folderName, optIconURL);
-            this.addSubNode(folder);
-        }
-        
-        return folder;  
     }
 
     public List<String> getChildResourceTypes()
     {
         // Root Node support default InfoRS types:
         return defaultFolderChildTypes;
-    }
-
-    @Override
-    public void addInfoNode(InfoRSNode subNode) throws VrsException
-    {
-        this.addSubNode(subNode);
-    }
-
-    @Override
-    public InfoResourceNode createFolder(String name) throws VrsException
-    {
-        return this.createResourceFolder(name, null); 
     }
 
     @Override
@@ -209,12 +157,14 @@ public class InfoRootNode extends InfoRSNode implements VInfoResourcePath
         return true; 
     }
 
-    @Override
-    public VInfoResourcePath createResourceLink(VRL targetVRL,String logicalName) throws VrsException
-    {
-        return addResourceLink(null,logicalName,targetVRL,null); 
-    }
-
+    // ========================================================================
+    // Persistant 
+    // ========================================================================
+    
+    /** 
+     * Only root info node can be saved to XML. 
+     * @return persistant Info Nodes as XML String. 
+     */
     public String toXML() throws VrsException
     {
         XMLData xmlData=new XMLData(this.getVRSContext()); 
