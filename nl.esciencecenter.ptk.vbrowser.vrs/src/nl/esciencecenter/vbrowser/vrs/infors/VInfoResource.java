@@ -1,5 +1,6 @@
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -15,12 +16,14 @@ public interface VInfoResource
     public VRL getTargetVRL(); 
     
     /** 
-     * Add node to internal node list. 
-     * Either parent of subNode is null or should already be set to this ResourceFolder. 
+     * Create new InfoRS node of specified resourceType from persistent Attributes.  
      */
-    public void addInfoNode(InfoRSNode subNode)  throws VrsException; 
+    public VInfoResourcePath createSubNode(String resourceType, AttributeSet infoAttributes)  throws VrsException; 
     
     public VInfoResourcePath createFolder(String name) throws VrsException; 
     
     public VInfoResourcePath createResourceLink(VRL targetVRL,String logicalName) throws VrsException;
+    
+    public AttributeSet getInfoAttributes()  throws VrsException;
+    
 }

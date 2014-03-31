@@ -38,6 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
@@ -96,12 +97,28 @@ public class VRSCopyManager
 
             for (VRL vrl : vrls)
             {
+                VPath sourcePath=vrsClient.openPath(vrl); 
                 monitor.logPrintf(" - linkDrop %s\n", vrl);
-
-                if (destPath instanceof VInfoResource)
+                VInfoResourcePath newNode;
+                
+                if (destPath instanceof VInfoResourcePath)
                 {
-                    VInfoResourcePath newNode = ((VInfoResource) destPath).createResourceLink(vrl, "Link to:" + vrl.getBasename());
-                    monitor.logPrintf("Created new node:%s\n", newNode);
+                    VInfoResourcePath infoDest=((VInfoResourcePath) destPath); 
+                    
+                    if (sourcePath instanceof VInfoResourcePath)
+                    {
+                        logger.infoPrintf("Copying Actual ResourceNode attributes to create link to:%s\n",sourcePath);
+                        // copy/link the original ResourceNode and do not create a link-to-a-link(!) 
+                        
+                        VInfoResourcePath infoSource=(VInfoResourcePath)sourcePath; 
+                        AttributeSet infoAttrs=infoSource.getInfoAttributes(); 
+                        newNode=((VInfoResourcePath) destPath).createSubNode(sourcePath.getResourceType(), infoAttrs); 
+                    }
+                    else
+                    {
+                        newNode = infoDest.createResourceLink(vrl, "Link to:" + vrl.getBasename());
+                    }
+                    monitor.logPrintf("Created new ResourceNode:%s\n", newNode);
                     nodes.add(newNode);
                 }
                 else if (destPath instanceof VFSPath)

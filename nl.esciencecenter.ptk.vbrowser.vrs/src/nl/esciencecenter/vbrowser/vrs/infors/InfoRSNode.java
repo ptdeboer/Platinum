@@ -97,7 +97,7 @@ public class InfoRSNode extends VPathNode
         return (parent != null);
     }
 
-    public AttributeSet getAttributeSet()
+    public AttributeSet getInfoAttributes()
     {
         return this.attributes.duplicate(true);
     }

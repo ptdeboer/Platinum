@@ -145,7 +145,21 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
     @Override
     public String getIconURL(int size)
     {
-        return attributes.getStringValue(InfoRSConstants.RESOURCE_ICONURL);
+        String str=attributes.getStringValue(InfoRSConstants.RESOURCE_ICONURL);
+        if (str!=null)
+            return str; 
+        
+        if (isResourceFolder())
+        {
+            String iconUrl="info/vle-world-folder.png"; 
+            attributes.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
+            return iconUrl; 
+        }
+        else
+        {
+            return null; 
+        }
+        
     }
 
     public String getName()
@@ -444,9 +458,11 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
     // ======================================
 
     @Override
-    public void addInfoNode(InfoRSNode subNode) throws VrsException
+    public InfoResourceNode createSubNode(String type, AttributeSet infoAttributes) throws VrsException
     {
-        addPersistantNode(subNode, true);
+        InfoResourceNode subNode = InfoResourceNode.createResourceNode(this,type,infoAttributes); 
+        this.addPersistantNode(subNode, true);
+        return subNode; 
     }
 
     protected void addPersistantNode(InfoRSNode subNode, boolean save) throws VrsException

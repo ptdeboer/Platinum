@@ -176,10 +176,10 @@ public class XMLData
         }
     }
 
-    public XMLResourceNode createXMLResourceNode(InfoRSNode infoNode, boolean recursive) throws VrsException
+    public XMLResourceNode createXMLResourceNode(VInfoResourcePath infoNode, boolean recursive) throws VrsException
     {
         XMLResourceNode rootXmlNode = new XMLResourceNode(infoNode.getResourceType());
-        AttributeSet attrSet = infoNode.getAttributeSet();
+        AttributeSet attrSet = infoNode.getInfoAttributes();
         rootXmlNode.setXMLAttributes(new XMLAttributeSet(this.checkSerialization(attrSet)));
 
         if (recursive)
@@ -189,10 +189,16 @@ public class XMLData
         return rootXmlNode;
     }
 
-    protected XMLResourceNode addSubNodesTo(XMLResourceNode xmlNode, InfoRSNode infoNode, boolean recursive) throws VrsException,
+    protected XMLResourceNode addSubNodesTo(XMLResourceNode xmlNode, VInfoResourcePath infoNode, boolean recursive) throws VrsException,
             XMLDataException
     {
-        List<? extends InfoResourceNode> subNodes = infoNode.listResourceNodes();
+        InfoResourceNode folderNode=null; 
+        if (infoNode instanceof InfoResourceNode)
+        {
+            folderNode=(InfoResourceNode)infoNode; 
+        }
+        
+        List<? extends InfoResourceNode> subNodes = folderNode.listResourceNodes();
         List<XMLResourceNode> xmlSubNodes = null;
 
         if (subNodes != null)
@@ -210,7 +216,7 @@ public class XMLData
         return xmlNode;
     }
 
-    public String toXML(InfoRSNode infoNode) throws VrsException
+    public String toXML(VInfoResourcePath infoNode) throws VrsException
     {
         XMLResourceNode xmlNode = this.createXMLResourceNode(infoNode, true);
         String xml;
@@ -230,7 +236,7 @@ public class XMLData
      * Parse XML String which should be serialized ResourceNodes and add these
      * parsed nodes.
      */
-    public void addXMLResourceNodesTo(InfoRSNode parentNode, String xmlString) throws XMLDataException
+    public void addXMLResourceNodesTo(VInfoResourcePath parentNode, String xmlString) throws XMLDataException
     {
         try
         {
@@ -247,7 +253,7 @@ public class XMLData
      * Add sub-nodes of XMLResourceNode to actual InfoResourceNode. Parent node
      * 'xmlRootNode' is not added.
      */
-    protected void addXMLResourceNodesTo(InfoRSNode parentNode, XMLResourceNode xmlRootNode) throws XMLDataException
+    protected void addXMLResourceNodesTo(VInfoResourcePath parentNode, XMLResourceNode xmlRootNode) throws XMLDataException
     {
         List<XMLResourceNode> subNodes = xmlRootNode.getSubNodes();
 
@@ -256,27 +262,12 @@ public class XMLData
             return;
         }
 
-        VInfoResourcePath resourceFolder;
-
-        if (parentNode instanceof VInfoResourcePath)
-        {
-            resourceFolder = (VInfoResourcePath) parentNode;
-        }
-        else
-        {
-            throw new XMLDataException("Incompatible types, cannot add new ResourceNodes to non ResourceFolder type:" + parentNode);
-        }
-
         for (XMLResourceNode xmlNode : subNodes)
         {
             try
             {
-                // construct ResourceNode Structure:
-                InfoResourceNode subNode = InfoResourceNode.createResourceNode(parentNode,
-                        xmlNode.getResourceType(),
-                        xmlNode.getXMLAttributes().toAttributeSet());
-
-                resourceFolder.addInfoNode(subNode);
+                VInfoResourcePath subNode = parentNode.createSubNode(xmlNode.getResourceType(),xmlNode.getXMLAttributes().toAttributeSet()); 
+                
                 addXMLResourceNodesTo(subNode, xmlNode);
             }
             catch (Exception e)
