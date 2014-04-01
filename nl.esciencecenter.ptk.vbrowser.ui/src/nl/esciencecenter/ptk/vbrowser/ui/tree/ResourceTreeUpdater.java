@@ -70,14 +70,14 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         // unregister previous
         if (viewNodeSource != null)
-            viewNodeSource.removeViewNodeSourceListener(this);
+            viewNodeSource.removeViewNodeEventListener(this);
 
         this.viewNodeSource = viewNodeSource;
 
         // register me as listener
         if (viewNodeSource != null)
         {
-            viewNodeSource.addViewNodeSourceListener(this);
+            viewNodeSource.addViewNodeEventListener(this);
         }
         if (update)
             updateRoot();
@@ -334,7 +334,7 @@ public class ResourceTreeUpdater implements VRSEventListener
             try
             {
                 // Refresh Complete ViewNode:
-                ViewNode[] viewNodes = viewNodeSource.getNodes(getUIModel(), new VRL[]
+                ViewNode[] viewNodes = viewNodeSource.createViewNodes(getUIModel(), new VRL[]
                 { vrl });
 
                 if ((viewNodes == null) || (viewNodes.length <= 0))
@@ -366,7 +366,7 @@ public class ResourceTreeUpdater implements VRSEventListener
         {
             ViewNode childs[];
 
-            childs = viewNodeSource.getNodes(getUIModel(), sources);
+            childs = viewNodeSource.createViewNodes(getUIModel(), sources);
 
             List<ResourceTreeNode> nodes = getModel().findNodes(parent);
 

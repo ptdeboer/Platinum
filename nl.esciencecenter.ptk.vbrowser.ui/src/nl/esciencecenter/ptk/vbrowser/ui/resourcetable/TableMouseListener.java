@@ -33,8 +33,8 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.GuiSettings;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
 
-/** 
- * Extends default ViewContianerEventAdapter with Header clicks and other Table specific events. 
+/**
+ * Extends default ViewContainerEventAdapter with Header clicks and other Table specific events.
  */
 public class TableMouseListener extends ViewContainerEventAdapter
 {
@@ -110,31 +110,14 @@ public class TableMouseListener extends ViewContainerEventAdapter
         else if (comp.equals(table))
         {
             super.doMousePressed(e);
-            // ViewNode actionSourceNode=this.getViewNodeAt(e.getX(),e.getY());
-            //
-            // if (uiSettings.isPopupTrigger(e))
-            // {
-            // JPopupMenu popMenu = this.table.getBrowserInterface().createActionMenuFor(table, actionSourceNode,
-            // false);
-            // if (popMenu!=null)
-            // {
-            // popMenu.show(comp,e.getX(),e.getY());
-            // }
-            // }
         }
         else if (comp.equals(table.getParent()))
         {
-            // super.doMousePressed(e);
-            // ViewNode containerNode = table.getViewNode();
-            // if (uiSettings.isPopupTrigger(e))
-            // {
-            // JPopupMenu popMenu = this.table.getBrowserInterface().createActionMenuFor(table, containerNode, true);
-            // if (popMenu!=null)
-            // {
-            // popMenu.show(comp,e.getX(),e.getY());
-            // }
-            //
-            // }
+            super.doMousePressed(e);
+        }
+        else
+        {
+            logger.warnPrintf("Spurious Event:%s\n", e);
         }
     }
 
@@ -146,8 +129,10 @@ public class TableMouseListener extends ViewContainerEventAdapter
         int colnr = columnModel.getColumnIndexAtX(e.getX());
 
         if (colnr < 0)
+        {
             return null;
-
+        }
+        
         TableColumn column = columnModel.getColumn(colnr);
         String name = (String) column.getHeaderValue();
         return name;
@@ -156,9 +141,13 @@ public class TableMouseListener extends ViewContainerEventAdapter
     protected boolean isHeader(MouseEvent e)
     {
         if (e.getSource() instanceof JTableHeader)
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 
 }

@@ -85,7 +85,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public ResourceTable()
     {
         // defaults
-        super(new ResourceTableModel());
+        super(new ResourceTableModel(false));
         init();
     }
 
@@ -210,7 +210,9 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
                             column.setCellEditor(new DefaultCellEditor(new JTextField()));
                         }
                         default:
+                        {
                             break;
+                        }
                     }
                 }
             }
@@ -250,8 +252,10 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
         this.setColumnModel(columnModel);
         if (this.isEditable)
+        {
             this.updateCellEditors();
-
+        }
+        
         updatePresentation();
     }
 
@@ -266,7 +270,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
         // auto resize mode of columns.
         setAutoResizeMode(pres.getColumnsAutoResizeMode());
-
         TableColumnModel model = this.getColumnModel();
 
         if (model != null)
@@ -280,8 +283,10 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
                 // update column width from presentation
                 Integer prefWidth = pres.getAttributePreferredWidth(headerName);
                 if (prefWidth == null)
+                {
                     prefWidth = headerName.length() * 10;// 10 points font ?
-
+                }
+                
                 column.setPreferredWidth(prefWidth);
             }
         }
@@ -307,9 +312,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         }
 
         if (size != null)
+        {
             column.setWidth(size);
+        }
         else
+        {
             column.setWidth(defaultColumnWidth);
+        }
 
         return column;
     }
@@ -338,8 +347,10 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         StringList names = new StringList(len);
 
         for (int i = 0; i < len; i++)
+        {
             names.add(colModel.getColumn(i).getHeaderValue().toString());
-
+        }
+        
         return names;
     }
 
@@ -351,8 +362,10 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public void insertColumn(String headerName, String newName, boolean insertBefore)
     {
         if (this.getHeaderModel().isEditable() == false)
+        {
             return;
-
+        }
+        
         // remove column but use order of columns as currently viewed !
         StringList viewHeaders = this.getColumnHeaders();
         if (insertBefore)
@@ -412,17 +425,19 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
      */
     public boolean hasColumn(String headerName)
     {
-        Enumeration enumeration = getColumnModel().getColumns();
+        Enumeration<TableColumn> enumeration = getColumnModel().getColumns();
         TableColumn aColumn;
-        int index = 0;
+        //int index = 0;
 
         while (enumeration.hasMoreElements())
         {
             aColumn = (TableColumn) enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
             if (StringUtil.equals(headerName, aColumn.getHeaderValue().toString()))
+            {
                 return true;
-            index++;
+            }
+            //index++;
         }
 
         return false;
@@ -433,14 +448,16 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
      */
     public TableColumn getColumnByHeader(String headerName)
     {
-        Enumeration enumeration = getColumnModel().getColumns();
+        Enumeration<TableColumn> enumeration = getColumnModel().getColumns();
 
         while (enumeration.hasMoreElements())
         {
             TableColumn col = (TableColumn) enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
             if (StringUtil.equals(headerName, col.getHeaderValue().toString()))
+            {
                 return col;
+            }
         }
 
         return null;
@@ -482,9 +499,9 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
      */
     public void setDataSource(ProxyNode node, boolean update)
     {
-        ResourceTableModel model = new ResourceTableModel();
+        ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
-        setDataProducer(new ProxyNodeTableDataProducer(node, model), true);
+        setDataProducer(new ProxyNodeTableDataUpdater(node, model), true);
 
         // use presentation from ProxyNode !
         Presentation pres = node.getPresentation();
@@ -550,8 +567,10 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public boolean requestFocus(boolean value)
     {
         if (value == true)
+        {
             return this.requestFocusInWindow();
-
+        }
+        
         return false; // unfocus not applicable ?
     }
 
@@ -610,54 +629,54 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             nodes.add(model.getViewNode(key));
         }
 
-        logger.debugPrintf("getNodeSelection()=#%d\n",nodes.size());
+        logger.debugPrintf("getNodeSelection()=#%d\n", nodes.size());
         return nodes.toArray(new ViewNode[0]);
     }
 
     @Override
     public void setNodeSelection(ViewNode node, boolean isSelected)
     {
-        logger.debugPrintf("getNodeSelection() %s:%s\n",isSelected,node); 
-        
+        logger.debugPrintf("getNodeSelection() %s:%s\n", isSelected, node);
+
         int[] rowNrs = getSelectedRows();
         if ((rowNrs == null) || (rowNrs.length <= 0))
         {
             logger.errorPrintf("getNodeSelection()=NULL\n");
             if (isSelected)
             {
-                logger.errorPrintf("FIXME: node should be selected, but selected rows is EMPTY for node:%s\n",node); 
+                logger.errorPrintf("***FIXME: node should be selected, but selected rows is EMPTY for node:%s\n", node);
             }
             else
             {
-                logger.debugPrintf("No selection, node is already unselected:%s\n",node); 
+                logger.debugPrintf("No selection, node is already unselected:%s\n", node);
             }
-            return; 
+            return;
         }
-        
-        String nodeKey=this.getModel().getKeyOf(node); 
-        int rowIndex=this.getModel().getRowIndex(nodeKey); 
 
-        for (int i=0;i<rowNrs.length;i++)
+        String nodeKey = this.getModel().getKeyOf(node);
+        int rowIndex = this.getModel().getRowIndex(nodeKey);
+
+        for (int i = 0; i < rowNrs.length; i++)
         {
-            if (rowNrs[i]==rowIndex)
+            if (rowNrs[i] == rowIndex)
             {
                 if (isSelected)
                 {
-                    logger.debugPrintf("Selected node is in selection range (row#=%d):%s\n",rowNrs[i],node); 
+                    logger.debugPrintf("Selected node is in selection range (row#=%d):%s\n", rowNrs[i], node);
                     return;
                 }
             }
         }
-        
-        if (isSelected==false)
+
+        if (isSelected == false)
         {
             logger.debugPrintf("setNodeSelection():OK node is not in selected rows:%s\n", node);
         }
         else
         {
-            logger.errorPrintf("FIXME:setNodeSelection(): Row must be selected:%s\n", node);
+            logger.errorPrintf("***FIXME:setNodeSelection(): Row should already be selected but isn't:%s\n", node);
         }
-        
+
         // Rows AND columns -> SpreadSheet export
         // int[] colsselected=getSelectedColumns();
     }
@@ -666,13 +685,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode,
             boolean isSelected)
     {
-        logger.errorPrintf("FIXME:setNodeSelectionRange(): [%s,%s]\n", firstNode, lastNode);
+        logger.errorPrintf("FIXME:setNodeSelectionRange(): check range: [%s,%s]\n", firstNode, lastNode);
     }
 
     @Override
     public boolean requestNodeFocus(ViewNode node, boolean value)
     {
-        logger.errorPrintf("FIXME:requestNodeFocus()%s:%s\n", value, node);
+        logger.errorPrintf("FIXME:requestNodeFocus():focus=%s, for:%s\n", value, node);
         return false;
     }
 

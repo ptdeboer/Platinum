@@ -22,17 +22,16 @@ package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 
-public interface TableDataProducer 
+public interface TableDataProducer
 {
-	/** 
-	 * Initialize table 
-	 */ 
-	void createTable(boolean initHeaders,boolean createData) throws ProxyException;
+    /**
+     * Initialize table
+     */
+    void createTable(boolean initHeaders, boolean createData) throws ProxyException;
 
-	/** 
-	 * Update (optional new) Column by name 
-	 */ 
-	void updateColumn(String newName) throws ProxyException;
-
+    /**
+     * Update (optional new) Column by name
+     */
+    void updateColumn(String newName) throws ProxyException;
 
 }

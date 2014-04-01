@@ -45,7 +45,7 @@ public class DummyProxyFactory extends ProxyFactory
 
     public ProxyNode doOpenLocation(VRL locator)
     {
-        return new DummyProxyNode(this,locator); 
+        return new DummyProxyNode(this,locator,"(re)opened:"+locator.getBasename()); 
     }
 
 	@Override

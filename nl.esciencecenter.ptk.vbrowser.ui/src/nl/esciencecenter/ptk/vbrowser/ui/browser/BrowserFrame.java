@@ -52,7 +52,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeTableDataProducer;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeTableDataUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.TableDataProducer;
@@ -361,7 +361,7 @@ public class BrowserFrame extends JFrame
             if (autoCreate == false)
                 return;
 
-            tbl = new ResourceTable(this.browserController, new ResourceTableModel());
+            tbl = new ResourceTable(this.browserController, new ResourceTableModel(false));
             tab.setContent(tbl);
         }
 
@@ -637,9 +637,9 @@ public class BrowserFrame extends JFrame
         if (comp instanceof ResourceTable)
         {
             TableDataProducer dataProducer = ((ResourceTable) comp).getDataProducer();
-            if (dataProducer instanceof ProxyNodeTableDataProducer)
+            if (dataProducer instanceof ProxyNodeTableDataUpdater)
             {
-                return ((ProxyNodeTableDataProducer) dataProducer).getRootProxyNode();
+                return ((ProxyNodeTableDataUpdater) dataProducer).getRootProxyNode();
             }
         }
 

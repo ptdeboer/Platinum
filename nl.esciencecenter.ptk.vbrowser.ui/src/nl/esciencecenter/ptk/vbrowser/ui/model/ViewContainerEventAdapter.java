@@ -373,9 +373,4 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
         return getBrowserInterface().getPlatform().getGuiSettings().isPopupTrigger(e);
     }
 
-    private void debugPrintf(String format, Object... args)
-    {
-        // getBrowserInterface().messagePrintf("DEBUG:"+format,args);
-    }
-
 }

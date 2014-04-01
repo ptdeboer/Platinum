@@ -25,7 +25,9 @@ import java.util.NoSuchElementException;
 
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowData;
 
-/** RowIterator, for save row manipulations */ 
+/** 
+ * RowIterator, for safe row manipulations 
+ */ 
 public class RowIterator implements Iterator<RowData>
 {
     int rowIndex=-1;
@@ -37,6 +39,19 @@ public class RowIterator implements Iterator<RowData>
         this.resourceModel=model;  
     }
 
+    /** 
+     * @return current row. Returns null when iterator has past the end of the list.  
+     */
+    public RowData current()
+    {
+        // rowIndex points to next entry. 
+        if (rowIndex<-1)
+        {
+            return null;
+        }
+        return resourceModel.getRow(rowIndex+1); 
+    }
+    
     @Override
     public boolean hasNext()
     {
@@ -46,19 +61,25 @@ public class RowIterator implements Iterator<RowData>
     @Override
     public RowData next()
     {
-        rowIndex++; 
+        rowIndex++; // pre increment. 
         RowData row = resourceModel.getRow(rowIndex+1);
         if (row==null)
-            throw new NoSuchElementException("Couldn't get row:"+rowIndex); 
+        {
+            throw new NoSuchElementException("Couldn't get row:"+rowIndex);
+        }
         return row; 
     }
     
-    /** Like next, but returns Row Key */ 
+    /** 
+     * Like next, but returns Row Key.  
+     */ 
     public String nextKey()
     {
         RowData row = next(); 
         if (row==null)
-            throw new NoSuchElementException("Couldn't get row:"+rowIndex); 
+        {
+            throw new NoSuchElementException("Couldn't get row:"+rowIndex);
+        }
         return row.getKey(); 
     }
 
@@ -66,10 +87,12 @@ public class RowIterator implements Iterator<RowData>
     public void remove()
     {   
         if (rowIndex<0) 
+        {
             throw new NoSuchElementException("No more elements left or next() wasn't called first!");
+        }
         // Removes CURRENT element, reduces rowIndex;
         // this is the element returned by a previous 'next()' call.  
-        resourceModel.removeRow(rowIndex); 
+        resourceModel.delRow(rowIndex); 
         rowIndex--; // backpaddle!
     }
 

@@ -63,7 +63,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     /**
-     *  private UIModel for this icon panel.  
+     * private UIModel for this icon panel.
      */
     private UIViewModel uiModel;
 
@@ -230,23 +230,22 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     {
         logger.errorPrintf("intervalRemoved():[%d,%d]\n", e.getIndex0(), e.getIndex1());
 
-        int start=e.getIndex0(); 
-        int end=e.getIndex1(); // inclusive
+        int start = e.getIndex0();
+        int end = e.getIndex1(); // inclusive
 
-
-        for (int i=start;i<=end;i++)
+        for (int i = start; i <= end; i++)
         {
-            delete(i); 
+            delete(i);
         }
     }
-    
+
     protected void delete(int index)
     {
-        // remove and leave empty spot: 
-        Component comp=this.getComponent(index);
+        // remove and leave empty spot:
+        Component comp = this.getComponent(index);
         this.remove(comp);
         comp.setEnabled(false);
-        
+
     }
 
     private void uiUpdate(final boolean clear, final int start, final int _end)
@@ -527,6 +526,6 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     @Override
     public BrowserInterface getBrowserInterface()
     {
-        return this.masterBrowser; 
+        return this.masterBrowser;
     }
 }

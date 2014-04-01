@@ -31,7 +31,7 @@ import javax.swing.SwingUtilities;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeTableDataProducer;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeTableDataUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 
@@ -68,9 +68,9 @@ public class TestProxyNodeTable
                                 JScrollPane scrollPanel = new JScrollPane();
                                 panel.add(scrollPanel, BorderLayout.CENTER);
                                 {
-                                	ResourceTableModel model = new ResourceTableModel(); 
+                                	ResourceTableModel model = new ResourceTableModel(true); 
                                     ResourceTable table=new ResourceTable(null,model);
-                                    table.setDataProducer(new ProxyNodeTableDataProducer(node,model),true); 
+                                    table.setDataProducer(new ProxyNodeTableDataUpdater(node,model),true); 
                                     scrollPanel.setViewportView(table);
                                 }
                             }

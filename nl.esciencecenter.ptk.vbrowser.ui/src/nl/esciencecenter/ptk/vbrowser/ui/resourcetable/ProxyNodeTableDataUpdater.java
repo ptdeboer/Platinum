@@ -34,15 +34,19 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowDat
 import nl.esciencecenter.ptk.vbrowser.ui.tasks.UITask;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEvent.VRSEventType;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ProxyNodeTableDataProducer implements TableDataProducer
+public class ProxyNodeTableDataUpdater implements TableDataProducer, VRSEventListener
 {
     private static ClassLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(ProxyNodeTableDataProducer.class);
+        logger = ClassLogger.getLogger(ProxyNodeTableDataUpdater.class);
+        logger.setLevelToDebug();
     }
 
     // ========================================================================
@@ -57,20 +61,25 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 
     private ViewNode rootNode;
 
-    public ProxyNodeTableDataProducer(ProxyNode pnode,
+    public ProxyNodeTableDataUpdater(ProxyNode pnode,
             ResourceTableModel resourceTableModel)
     {
-        this.dataSource = new ProxyNodeDataSource(pnode);
-        this.tableModel = resourceTableModel;
-        this.uiModel = UIViewModel.createTableModel();
+        init(new ProxyNodeDataSource(pnode), resourceTableModel);
     }
 
-    public ProxyNodeTableDataProducer(ProxyNodeDataSource dataSource,
+    public ProxyNodeTableDataUpdater(ProxyNodeDataSource dataSource,
             ResourceTableModel resourceTableModel)
     {
-        this.dataSource = dataSource;
+        init(dataSource, resourceTableModel);
+    }
+
+    protected void init(ProxyNodeDataSource nodeDataSource, ResourceTableModel resourceTableModel)
+    {
+        this.dataSource = nodeDataSource;
         this.tableModel = resourceTableModel;
         this.uiModel = UIViewModel.createTableModel();
+        // receice events
+        this.dataSource.addViewNodeEventListener(this);
     }
 
     public void createTable(boolean headers, boolean data) throws ProxyException
@@ -78,10 +87,14 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
         this.tableModel.setRootViewNode(dataSource.getRoot(uiModel));
 
         if (headers)
+        {
             initHeaders();
+        }
 
         if (data)
+        {
             updateData();
+        }
     }
 
     public Presentation getPresentation()
@@ -102,7 +115,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
                 ViewNode rootNode = getRootViewNode();
 
                 logger.debugPrintf("Using default Presentation for:%s\n", rootNode);
-                // Check default Presenation form Scheme+Type;
+                // Check default Presentation form Scheme+Type;
                 pres = Presentation.getPresentationForSchemeType(rootNode.getVRL().getScheme(), rootNode.getResourceType(), true);
             }
 
@@ -169,7 +182,9 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
     protected ViewNode getRootViewNode() throws ProxyException
     {
         if (rootNode == null)
+        {
             rootNode = this.dataSource.getRoot(uiModel);
+        }
 
         return rootNode;
     }
@@ -185,7 +200,9 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
         {
             // MetaAttribute seperators (legacy);
             if (name.startsWith("["))
+            {
                 headers.remove(name);
+            }
         }
 
         return headers;
@@ -196,7 +213,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
         int index = tableModel.insertHeader(headerName, newName, insertBefore);
         // will update data model, Table View will follow AFTER TableStructureEvent
         // has been handled.
-        fetchAttribute(newName);
+        updateAttribute(newName);
         return index;
     }
 
@@ -215,7 +232,7 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
     @Override
     public void updateColumn(String newName)
     {
-        this.fetchAttribute(newName);
+        this.updateAttribute(newName);
     }
 
     // ========================================================================
@@ -228,7 +245,9 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 
         // allowed at init time!
         if (dataSource == null)
+        {
             return;
+        }
 
         UITask task = new UITask(null, "Test get ProxyNode data")
         {
@@ -270,7 +289,9 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
                     for (ViewNode node : nodes)
                     {
                         if (mustStop == true)
+                        {
                             return;
+                        }
                         try
                         {
                             List<String> hdrs = tableModel.getHeaders();
@@ -296,7 +317,6 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
 
             public void stopTask()
             {
-
             }
         };
 
@@ -316,40 +336,42 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
         return null;
     }
 
-    protected void fetchAttribute(String attrName)
+    protected void updateRow(String rowKey)
     {
-        fetchAttributes(new StringList(attrName));
+        List<String> hdrs = tableModel.getHeaders();
+        updateAttributes(new String[] { rowKey }, hdrs);
     }
 
-    private void fetchAttributes(final List<String> attrNames)
+    protected void updateAttribute(String attrName)
     {
-        if (dataSource == null)
-            return;
+        updateAttributes(tableModel.getRowKeys(), new StringList(attrName));
+    }
 
+    private void updateAttributes(final String rowKeys[], final List<String> attrNames)
+    {
         final ResourceTableModel model = tableModel;
 
-        UITask task = new UITask(null, "Test get ProxyNode data")
+        UITask task = new UITask(null, "updateAttributes() #rowKeys=" + rowKeys.length + ",#attrNames=" + attrNames.size())
         {
             boolean mustStop = false;
 
             public void doTask()
             {
-                //
-                // Iterate over current Rows
-                //
-                final String[] keys = model.getRowKeys();
-
-                for (String rowKey : keys)
+                for (String rowKey : rowKeys)
                 {
                     if (mustStop == true)
+                    {
                         return;
+                    }
 
                     ViewNode node = model.getViewNode(rowKey);
 
                     try
                     {
                         if (node != null)
+                        {
                             updateNodeAttributes(node, attrNames);
+                        }
                     }
                     catch (ProxyException e)
                     {
@@ -374,7 +396,10 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
         RowData row = tableModel.getRow(viewNode.getVRL().toString());
 
         if (row == null)
+        {
             return;
+        }
+
         row.setViewNode(viewNode);
         row.setValues(attrs);
     }
@@ -388,6 +413,138 @@ public class ProxyNodeTableDataProducer implements TableDataProducer
     public ProxyNode getRootProxyNode()
     {
         return this.dataSource.getRootNode();
+    }
+
+    @Override
+    public void notifyVRSEvent(VRSEvent e)
+    {
+        // handle event and update table:
+        logger.errorPrintf("VRSEVent:%s\n", e);
+
+        VRL targetVRL = e.getParent();
+
+        try
+        {
+            // Check parent if given.
+            if ((targetVRL != null) && (targetVRL.equals(this.getRootVRI()) == false))
+            {
+                logger.debugPrintf("VRSEvent not for me:%s\n", e);
+                return; // not for me.
+            }
+        }
+        catch (ProxyException ex)
+        {
+            this.handle(ex, "Failed to get root VRL\n");
+            return;
+        }
+
+        VRL vrls[] = e.getResources();
+        VRSEventType eventType = e.getType();
+
+        switch (eventType)
+        {
+            case RESOURCES_ADDED:
+            {
+                addRows(vrls);
+                break;
+            }
+            case RESOURCES_DELETED:
+            {
+                removeRows(vrls);
+                break;
+            }
+            case ATTRIBUTES_CHANGED:
+            case REFRESH_RESOURCES:
+            {
+                refreshRows(vrls);
+                break;
+            }
+            case RESOURCES_RENAMED:
+            {
+                VRL newVrls[] = e.getOtherResources();
+                renameRows(vrls, newVrls);
+                break;
+            }
+            default:
+            {
+                logger.errorPrintf("EventType not supported:%s\n", e);
+                break;
+            }
+        }
+    }
+
+    private void removeRows(VRL[] vrls)
+    {
+        for (VRL vrl : vrls)
+        {
+            this.tableModel.delRow(vrl);
+        }
+    }
+
+    private void renameRows(VRL[] oldVrls, VRL[] newVrls)
+    {
+        for (int i = 0; i < oldVrls.length; i++)
+        {
+            if (oldVrls[i].equals(newVrls[i]))
+            {
+                logger.debugPrintf("Refreshing row:%s\n", oldVrls[i]);
+                // update cell values.
+                refreshRows(new VRL[]
+                { oldVrls[i] });
+            }
+            else
+            {
+                logger.debugPrintf("Replacing row:%s=>%s\n", oldVrls[i], newVrls[i]);
+                removeRows(new VRL[]
+                { oldVrls[i] });
+                addRows(new VRL[]
+                { newVrls[i] });
+            }
+        }
+    }
+
+    private void refreshRows(final VRL[] vrls)
+    {
+        addRows(vrls);
+    }
+
+    private void addRows(final VRL[] vrls)
+    {
+        if (dataSource == null)
+        {
+            return;
+        }
+
+        UITask task = new UITask(null, "ProxyNodeTableUpdater:addChilds() #childs=" + vrls.length)
+        {
+            boolean mustStop = false;
+
+            public void doTask()
+            {
+                try
+                {
+                    ViewNode[] nodes = dataSource.createViewNodes(uiModel, vrls);
+
+                    for (ViewNode node : nodes)
+                    {
+                        tableModel.addRow(node, new AttributeSet());
+                    }
+                    // update row data.
+                }
+                catch (ProxyException e)
+                {
+                    handle(e, "Failed to get new Nodes\n");
+                }
+            }
+
+            public void stopTask()
+            {
+                this.mustStop = true;
+            }
+        };
+
+        task.startTask();
+
     }
 
 }

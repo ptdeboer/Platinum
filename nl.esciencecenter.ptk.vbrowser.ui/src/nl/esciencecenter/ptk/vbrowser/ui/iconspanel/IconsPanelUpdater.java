@@ -28,157 +28,160 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class IconsPanelUpdater implements VRSEventListener 
+public class IconsPanelUpdater implements VRSEventListener
 {
-	private ViewNodeSource dataSource;
-	
-	private IconsPanel iconsPanel;
+    private ViewNodeSource dataSource;
 
-	private ViewNode rootNode;
+    private IconsPanel iconsPanel;
 
-	public IconsPanelUpdater(IconsPanel panel,ViewNodeSource dataSource) 
-	{
-		this.iconsPanel=panel; 
-		this.dataSource=dataSource;
-	    setDataSource(dataSource,true); 
-	}
-	
+    private ViewNode rootNode;
 
-	public ViewNode getRootNode()
-	{
-		return rootNode; 
-	}
-	
-	public UIViewModel getUIModel()
-	{
-		return this.iconsPanel.getUIViewModel(); 		
-	}
-	
-	public void setDataSource(ViewNodeSource dataSource,boolean update)
-	{
-		// unregister
-		if (this.dataSource!=null)
-			this.dataSource.removeViewNodeSourceListener(this); 
-		
-		this.dataSource=dataSource; 
-		
-		//register
-		if (this.dataSource!=null)
-			this.dataSource.addViewNodeSourceListener(this); 
-		
-		if ((update) && (dataSource!=null))
-			updateRoot(); 
-	}
-
-	@Override
-	public void notifyVRSEvent(VRSEvent e) 
-	{
-	    VRL vrls[]=e.getResources(); 
-	    VRL parent=e.getParent(); 
-	    	    
-	    // check parent: 
-	    if ( (parent!=null) && (rootNode.getVRL().equals(parent)==false))
-	    {
-	        return; 
-	    }
-	    
-	    switch (e.getType())
-	    {
-	        case RESOURCES_ADDED: 
-	        {
-	            refresh(); 
-	            break; 
-	        }
-	        case RESOURCES_DELETED:
-	        {
-	            deleteChilds(vrls); 
-	            break; 
-	        }
-	        default: 
-	        {
-	            refresh(); 
-	            break; 
-	        }
-	    }
-	}
-
-
-	private void deleteChilds(VRL[] vrls)
+    public IconsPanelUpdater(IconsPanel panel, ViewNodeSource dataSource)
     {
-	    IconListModel model = iconsPanel.getModel(); 
-	    
-	    for (VRL vrl:vrls)
-	    {
-	        this.iconsPanel.getModel().deleteItem(vrl,true);
-	    }
-	    
-	    iconsPanel.revalidate(); 
+        this.iconsPanel = panel;
+        this.dataSource = dataSource;
+        setDataSource(dataSource, true);
     }
 
+    public ViewNode getRootNode()
+    {
+        return rootNode;
+    }
+
+    public UIViewModel getUIModel()
+    {
+        return this.iconsPanel.getUIViewModel();
+    }
+
+    public void setDataSource(ViewNodeSource dataSource, boolean update)
+    {
+        // unregister
+        if (this.dataSource != null)
+        {
+            this.dataSource.removeViewNodeEventListener(this);
+        }
+
+        this.dataSource = dataSource;
+
+        // register
+        if (this.dataSource != null)
+        {
+            this.dataSource.addViewNodeEventListener(this);
+        }
+                
+        if ((update) && (dataSource != null))
+        {
+            updateRoot();
+        }
+    }
+
+    @Override
+    public void notifyVRSEvent(VRSEvent e)
+    {
+        VRL vrls[] = e.getResources();
+        VRL parent = e.getParent();
+
+        // check parent:
+        if ((parent != null) && (rootNode.getVRL().equals(parent) == false))
+        {
+            return;
+        }
+
+        switch (e.getType())
+        {
+            case RESOURCES_ADDED:
+            {
+                refresh();
+                break;
+            }
+            case RESOURCES_DELETED:
+            {
+                deleteChilds(vrls);
+                break;
+            }
+            default:
+            {
+                refresh();
+                break;
+            }
+        }
+    }
+
+    private void deleteChilds(VRL[] vrls)
+    {
+        IconListModel model = iconsPanel.getModel();
+
+        for (VRL vrl : vrls)
+        {
+            this.iconsPanel.getModel().deleteItem(vrl, true);
+        }
+
+        iconsPanel.revalidate();
+    }
 
     public void refresh()
-	{
-	    updateRoot(); 
-	    iconsPanel.revalidate(); 
-	}
-	
-	protected void updateRoot()
-	{
-		try
-		{
-		    if (dataSource==null)
-		    {
-		        updateChilds(null);// clear/reset; 
-		        return;
-		    }
-		    
-			this.rootNode=this.dataSource.getRoot(getUIModel()); 
-			ViewNode[] childs = this.dataSource.getChilds(getUIModel(), rootNode.getVRL(),0,-1,null); 
-			updateChilds(childs); 
-		}
-		catch (ProxyException e)
-		{
-			handle("Updating root location.",e); 
-		}
-	}
-
-	private void updateChilds(ViewNode[] childs) 
-	{
-	    this.iconsPanel.getModel().setItems(createIconItems(childs));   
-	}
-
-	private IconItem[] createIconItems(ViewNode[] nodes)
-	{
-		if (nodes==null)
-			return null; 
-		
-		int len=nodes.length; 
-		
-		IconItem items[]=new IconItem[len];
-		
-		for (int i=0;i<len;i++)
-		{
-			items[i]=createIconItem(nodes[i]); 
-		}
-		
-		return items; 
-	}
-
-	protected IconItem createIconItem(ViewNode node)
     {
-	    IconItem item=new IconItem(iconsPanel,getUIModel(),node);
-	    item.initDND(iconsPanel.getPlatform().getTransferHandler(),iconsPanel.getDragGestureListener());
-	    return item;
+        updateRoot();
+        iconsPanel.revalidate();
+    }
+
+    protected void updateRoot()
+    {
+        try
+        {
+            if (dataSource == null)
+            {
+                updateChilds(null);// clear/reset;
+                return;
+            }
+
+            this.rootNode = this.dataSource.getRoot(getUIModel());
+            ViewNode[] childs = this.dataSource.getChilds(getUIModel(), rootNode.getVRL(), 0, -1, null);
+            updateChilds(childs);
+        }
+        catch (ProxyException e)
+        {
+            handle("Updating root location.", e);
+        }
+    }
+
+    private void updateChilds(ViewNode[] childs)
+    {
+        this.iconsPanel.getModel().setItems(createIconItems(childs));
+    }
+
+    private IconItem[] createIconItems(ViewNode[] nodes)
+    {
+        if (nodes == null)
+            return null;
+
+        int len = nodes.length;
+
+        IconItem items[] = new IconItem[len];
+
+        for (int i = 0; i < len; i++)
+        {
+            items[i] = createIconItem(nodes[i]);
+        }
+
+        return items;
+    }
+
+    protected IconItem createIconItem(ViewNode node)
+    {
+        IconItem item = new IconItem(iconsPanel, getUIModel(), node);
+        item.initDND(iconsPanel.getPlatform().getTransferHandler(), iconsPanel.getDragGestureListener());
+        return item;
     }
 
     private void handle(String actionText, ProxyException e)
-	{
-    	this.iconsPanel.getMasterBrowser().handleException(actionText,e);
-		
-	}
+    {
+        this.iconsPanel.getMasterBrowser().handleException(actionText, e);
 
-	public ViewNodeSource getDataSource() 
-	{
-		return this.dataSource; 
-	}
+    }
+
+    public ViewNodeSource getDataSource()
+    {
+        return this.dataSource;
+    }
 }

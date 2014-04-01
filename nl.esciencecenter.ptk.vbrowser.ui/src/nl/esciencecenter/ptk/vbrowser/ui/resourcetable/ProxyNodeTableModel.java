@@ -19,6 +19,7 @@
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
+
 ///*
 // * Copyrighted 2012-2013 Netherlands eScience Center.
 // *
@@ -271,4 +272,4 @@ package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 //    
 //    
 //    
-//}
+// }

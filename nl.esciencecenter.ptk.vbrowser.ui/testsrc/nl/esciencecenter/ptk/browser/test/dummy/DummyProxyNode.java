@@ -39,15 +39,16 @@ public class DummyProxyNode extends ProxyNode
 
     static
     {
-        attrNames = new StringList(new String[]
-        { "attr1", "attr2", "attr3", "attr4" });
+        attrNames = new StringList(new String[] { "attr1", "attr2", "attr3", "attr4" });
 
         dummyPresentation = Presentation.createDefault();
+        
         for (int i = 0; i < attrNames.size(); i++)
-            dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[]
-            { 42, 42 + i * 42, 42 + 4 * 42 });
+        {
+            dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[] { 42, 42 + i * 42, 42 + 4 * 42 });
+        }
+        
         dummyPresentation.setChildAttributeNames(attrNames);
-
     }
 
     // ---
@@ -62,21 +63,23 @@ public class DummyProxyNode extends ProxyNode
 
     private String logicalName="<None>"; 
     
-    protected DummyProxyNode createChild(String childname)
+    protected DummyProxyNode createChild(String childName)
     {
-        return new DummyProxyNode(this, getVRL().appendPath(childname));
+        return new DummyProxyNode(this, getVRL().appendPath(childName),childName);
     }
 
-    public DummyProxyNode(DummyProxyFactory dummyProxyFactory, VRL locator)
+    public DummyProxyNode(DummyProxyFactory dummyProxyFactory, VRL locator,String name)
     {
         super(dummyProxyFactory, locator);
         this.parent = null;
+        this.logicalName=name; 
     }
 
-    protected DummyProxyNode(DummyProxyNode parent, VRL locator)
+    protected DummyProxyNode(DummyProxyNode parent, VRL locator,String name)
     {
         super(parent.getProxyFactory(), locator);
         this.parent = parent;
+        this.logicalName=name; 
         init();
     }
 
@@ -225,17 +228,33 @@ public class DummyProxyNode extends ProxyNode
     }
 
     @Override
-    protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException
-    {
-        return null;
+    protected DummyProxyNode doCreateNew(String type, String optNewName) throws ProxyException
+    {   
+        DummyProxyNode node; 
+        node=createChild(optNewName); 
+        childs.add(node); 
+        return node;
     }
 
     @Override
     protected void doDelete(boolean recurse) throws ProxyException
     {
-        return;
+        if (recurse)
+        {
+            throw new ProxyException("Recursive delete not implemented"); 
+        }
+        
+        if (parent!=null)
+        {
+            parent.deleteChild(this);
+        }
     }
 
+    protected void deleteChild(DummyProxyNode node)
+    {
+        this.childs.remove(node); 
+    }
+    
     @Override
     protected ProxyNode doRenameTo(String name) throws ProxyException
     {

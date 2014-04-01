@@ -45,12 +45,13 @@ public class ResourceTableControler implements ViewNodeActionListener
 
     public BrowserInterface getBrowserInterface()
     {
-        return browserController; 
+        return browserController;
     }
 
     @Override
     public void handleNodeActionEvent(ViewNode node, Action action)
     {
-        System.err.printf("FIXME: ResourceTableControler:handleNodeActionEvent():%s on:%s\n", action, node);
+        // forward to Master Browser:
+        browserController.handleNodeAction(table, node, action); 
     }
 }

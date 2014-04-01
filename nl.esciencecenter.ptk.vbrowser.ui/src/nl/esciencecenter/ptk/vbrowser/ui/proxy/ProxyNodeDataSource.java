@@ -95,13 +95,13 @@ public class ProxyNodeDataSource implements ExtendedDataSource
     }
 
     @Override
-    public void addViewNodeSourceListener(VRSEventListener listener)
+    public void addViewNodeEventListener(VRSEventListener listener)
     {
         eventNotifier.addListener(listener);
     }
 
     @Override
-    public void removeViewNodeSourceListener(VRSEventListener listener)
+    public void removeViewNodeEventListener(VRSEventListener listener)
     {
         eventNotifier.removeListener(listener);
     }
@@ -119,7 +119,7 @@ public class ProxyNodeDataSource implements ExtendedDataSource
     }
 
     @Override
-    public ViewNode[] getNodes(UIViewModel uiModel, VRL[] locations) throws ProxyException
+    public ViewNode[] createViewNodes(UIViewModel uiModel, VRL[] locations) throws ProxyException
     {
         int len = locations.length;
 

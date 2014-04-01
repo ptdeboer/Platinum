@@ -35,6 +35,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Generic Resource Table Model.
@@ -53,8 +54,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         logger.setLevelToDebug();
     }
 
-    /** Resource Row Data */
-
+    /**
+     * Resource Row Data
+     */
     public class RowData
     {
         // OPTIONAL vrl (if resource row has VRL)
@@ -64,12 +66,14 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 
         private ViewNode viewNode;
 
-        public RowData(ViewNode viewNode,String rowKey, AttributeSet attrs)
+        public RowData(ViewNode viewNode, String rowKey, AttributeSet attrs)
         {
             this.rowKey = rowKey;
-            this.viewNode=viewNode; 
+            this.viewNode = viewNode;
             if (attrs != null)
+            {
                 this.rowAttributes = attrs.duplicate(); // empty set!
+            }
         }
 
         public String getKey()
@@ -168,12 +172,13 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     // ========================================================================
 
     /**
-     * Synchronized Vector which contains rows as shown, default empty NOT null.
-     * Also serves as data mutex!
+     * Synchronized Vector which contains rows as shown, default empty NOT null. Also serves as data mutex!
      */
-    protected Vector<RowData> rows = new Vector<RowData>();
+    private Vector<RowData> rows = new Vector<RowData>();
 
-    /** Mapping of Key String to row Index number */
+    /**
+     * Mapping of Key String to row Index number
+     */
     private Map<String, Integer> rowKeyIndex = new Hashtable<String, Integer>();
 
     // Current HeaderModel default empty, NOT null
@@ -181,11 +186,10 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 
     private ViewNode rootViewNode;
 
-    private String iconHeaderName="icon";
+    private String iconHeaderName = "icon";
 
-    private StringList allAttributeNames=null; 
-    
-    
+    private StringList allAttributeNames = null;
+
     // For Testing
     protected ResourceTableModel(String[] headers)
     {
@@ -198,27 +202,31 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         this.headers = new HeaderModel(headers);
     }
 
-    /** 
-     * Specify icon column header name.
-     * For this column the ViewNode will provide the Icon. 
-     */ 
+    /**
+     * Specify icon column header name. For this column the ViewNode will provide the Icon.
+     */
     public void setIconHeaderName(String iconName)
     {
-        this.iconHeaderName=iconName; 
+        this.iconHeaderName = iconName;
     }
-    
-    public ResourceTableModel()
+
+    public ResourceTableModel(boolean addNillRow)
     {
         super();
-        // Empty but not null model to check initialization. 
-        String names[] =  { "" };
+        // Empty but not null model to check initialization.
+        String names[] = new String[0];
         headers = new HeaderModel(names);
-        AttributeSet dummySet = new AttributeSet();
-        dummySet.set("", "");
 
-        this.rows.add(new RowData(null,"", dummySet));
+        // nill attribute set
+        if (addNillRow)
+        {
+            AttributeSet dummySet = new AttributeSet();
+            dummySet.set("", "");
+            // nill row.
+            this.addRow(null, "", dummySet, true);
+        }
     }
-    
+
     public void setHeaders(StringList headers)
     {
         this.headers.setValues(headers);
@@ -237,7 +245,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         return rows.size();
     }
 
-    /** Returns private array containing current row objects */
+    /**
+     * Returns duplicate array containing current row objects.
+     */
     public RowData[] getRows()
     {
         synchronized (this.rows)
@@ -255,10 +265,14 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         synchronized (rows)
         {
             if ((rowIndex < 0) || rowIndex >= this.rows.size())
+            {
                 return null;
+            }
 
             if ((columnIndex < 0) || columnIndex >= this.headers.getSize())
+            {
                 return null;
+            }
 
             RowData rowObj = rows.get(rowIndex);
 
@@ -277,13 +291,13 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
                 if (header.equals(this.iconHeaderName))
                 {
                     ViewNode viewNode = rowObj.getViewNode();
-                    if(viewNode!=null)
-                        return viewNode.getIcon(); 
+                    if (viewNode != null)
+                        return viewNode.getIcon();
                 }
-                
+
                 return null;
             }
-            
+
             return attr;
         }
     }
@@ -294,35 +308,42 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             Attribute attr = getAttribute(rowKey, attrName);
             if (attr == null)
+            {
                 return null;
+            }
             return attr.getValue();
         }
     }
 
     /**
-     * Returns Attribute Value ! use getAttrStringValue for actual string value
-     * of attribute
+     * Returns Attribute Value ! use getAttrStringValue for actual string value of attribute
      */
     public Object getValueAt(int rowIndex, String attrName)
     {
         synchronized (rows)
         {
             if ((rowIndex < 0) || rowIndex >= this.rows.size())
+            {
                 return null;
-
-            RowData row = rows.get(rowIndex); 
+            }
+            
+            RowData row = rows.get(rowIndex);
             Attribute attr = row.getAttribute(attrName);
-            // parsing checking ? 
+            // parsing checking ?
             return attr; // attr.getValue();
         }
     }
 
-    /** Return Attribute.getValue() of specified row,attributeName */
+    /**
+     * Return Attribute.getValue() of specified row,attributeName.
+     */
     public String getAttrStringValue(String rowKey, String attrName)
     {
         Attribute attr = getAttribute(rowKey, attrName);
         if (attr == null)
+        {
             return null;
+        }
         return attr.getStringValue();
     }
 
@@ -330,7 +351,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     {
         Attribute attr = getAttribute(row, attrName);
         if (attr == null)
+        {
             return null;
+        }
         return attr.getStringValue();
     }
 
@@ -340,11 +363,15 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             int rowIndex = this.getRowIndex(key);
             if (rowIndex < 0)
+            {
                 return false;
+            }
 
             RowData row = this.rows.get(rowIndex);
             if (row == null)
+            {
                 return false;
+            }
             row.setValue(attrName, value);
             this.fireTableRowsUpdated(rowIndex, rowIndex);
             return true;
@@ -354,7 +381,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     public boolean setValue(String key, Attribute attr)
     {
         ArrayList<Attribute> list = new ArrayList<Attribute>();
-        list.add(attr); 
+        list.add(attr);
         return setValues(key, list);
     }
 
@@ -364,11 +391,15 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             int rowIndex = this.getRowIndex(key);
             if (rowIndex < 0)
+            {
                 return false;
+            }
 
             RowData row = this.rows.get(rowIndex);
             if (row == null)
+            {
                 return false;
+            }
             row.setValues(attrs);
             this.fireTableRowsUpdated(rowIndex, rowIndex);
             return true;
@@ -400,7 +431,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             int rowIndex = this.getRowIndex(rowKey);
             if (rowIndex < 0)
+            {
                 return null;
+            }
             return getAttribute(rowIndex, attrName);
         }
     }
@@ -411,7 +444,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             RowData row = this.rows.get(rowIndex);
             if (row == null)
+            {
                 return null;
+            }
             return row.getAttribute(attrName);
         }
     }
@@ -422,7 +457,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             RowData rowdata = this.rows.get(row);
             if (rowdata == null)
+            {
                 return null;
+            }
             return rowdata.getAttribute(col);
         }
     }
@@ -432,77 +469,130 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         return headers.toArray();
     }
 
-    /** 
-     * Create new Rows with empty Row Data 
+    /**
+     * Create new Rows with empty Row Data
      */
-    public void setRows(List<String> rowKeys)
+    public void allocRows(List<String> rowKeys)
     {
         synchronized (rows)
         {
             this.rows.clear();
             this.rowKeyIndex.clear();
+
             for (String key : rowKeys)
             {
                 // add to internal data structure only
-                _addRow(null,key, new AttributeSet());
+                addRow(null, key, new AttributeSet(), false);
             }
         }
 
         this.fireTableDataChanged();
     }
 
+    /**
+     * Create new empty row with specified key and empty AttributeSet().
+     * 
+     * @param key
+     *            - rowKey
+     * @return index of new row.
+     */
+    public int createRow(String rowKey)
+    {
+        return addRow(null, rowKey, new AttributeSet(), false);
+    }
+
     public String getKeyOf(ViewNode viewNode)
     {
-        if (viewNode==null)
+        if (viewNode == null)
         {
             return null;
         }
-        return viewNode.getVRL().toString(); 
+        return viewNode.getVRL().toString();
     }
-    
-    /** 
+
+    private int addRow(RowData rowData, boolean fireEvent)
+    {
+        boolean rowExists = false;
+
+        if ((rowData == null) || (rowData.rowKey == null))
+        {
+            throw new NullPointerException("Cannot add NULL RowData or row with NULL key (use nill rowdata and nill key).");
+        }
+
+        Integer index;
+
+        synchronized (rows)
+        {
+            String key = rowData.rowKey;
+            index = rowKeyIndex.get(key);// Note: NULL for non-existing keys!
+            if ((index != null) && (index >= 0))
+            {
+                // row exist, replace!
+                rows.set(index, rowData);
+                rowExists = true;
+            }
+            else
+            {
+                index = rows.size();
+                this.rows.add(rowData);
+                this.rowKeyIndex.put(rowData.rowKey, new Integer(index));
+            }
+        }
+
+        logger.debugPrintf("addRow(): %s new row at index %d\n", (rowExists ? "replaced" : "created"), index);
+
+        if (fireEvent)
+        {
+            this.fireTableRowsInserted(index, index);
+        }
+
+        return index;
+    }
+
+    // add row to internal data structure
+    public int addRow(ViewNode viewNode, String key, AttributeSet attrs, boolean fireEvent)
+    {
+        return addRow(new RowData(viewNode, key, attrs), fireEvent);
+    }
+
+    /**
      * Add new Row and return index to row.
      */
     public int addRow(ViewNode viewNode, AttributeSet attrs)
     {
-        int index = this._addRow(viewNode,getKeyOf(viewNode), attrs);
-        this.fireTableRowsInserted(index, index);
-        return this.rows.size() - 1;
+        return addRow(viewNode, getKeyOf(viewNode), attrs, true);
     }
 
     public int addEmptyRow(String key)
     {
-        return this._addRow(null,key, new AttributeSet());
+        return addRow(null, key, new AttributeSet(), true);
     }
 
     public int delRow(String key)
     {
-        int index = this._delRow(key);
+        int index = this._delRow(key, true);
         if (index < 0)
+        {
             return -1;
-
-        this.fireTableRowsDeleted(index, index);
+        }
         return index;
     }
 
     /**
-     * Deletes Row. Performance note: Since a delete triggers an update for the
-     * used Key->Index mapping. This method takes O(N) time.
+     * Deletes Row. Performance note: Since a delete triggers an update for the used Key->Index mapping. This method
+     * takes O(N) time.
      * 
      * @param index
      * @return
      */
     public boolean delRow(int index)
     {
-        boolean result = this._delRow(index);
-        this.fireTableRowsDeleted(index, index);
-        return result;
+        return this._delRow(index, true);
     }
 
     /**
-     * Deletes Row. Performance note: Since a delete triggers an update for the
-     * used Key->Index mapping. This method takes O(N) time. (Where N= nr of
-     * rows in table)
+     * Deletes Row. Performance note: Since a delete triggers an update for the used Key->Index mapping. This method
+     * takes O(N) time. (Where N= nr of rows in table)
      * 
      * @param index
      * @return
@@ -510,7 +600,8 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     public boolean delRows(int indices[])
     {
         // multi delete to avoid O(N*N) rekeying of key mapping !
-        boolean result = this._delRows(indices);
+        boolean result = this._delRows(indices, false);
+
         for (int i = 0; i < indices.length; i++)
         {
             this.fireTableRowsDeleted(indices[i], indices[i]);
@@ -519,117 +610,131 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         return result;
     }
 
-    // add row to internal data structure
-    private int _addRow(ViewNode node,String key, AttributeSet attrs)
-    {
-        synchronized (rows)
-        {
-            int index = rows.size();
-            this.rows.add(new RowData(node,key, attrs));
-            this.rowKeyIndex.put(key, new Integer(index));
-            return index;
-        }
-    }
-
     // delete row from internal data structure
-    private int _delRow(String key)
+    private int _delRow(String key, boolean fireEvent)
     {
+        Integer index;
+
         // synchronized for ROWS and rowKeyIndex as well !
         synchronized (rows)
         {
-            Integer index = this.rowKeyIndex.get(key);
+            index = this.rowKeyIndex.get(key);
             if (index == null)
             {
-                // Global.warnPrintln(this,"_delRow: Invalid Row Key:"+key);
                 return -1;
             }
 
-            this._delRow(index);
-            return index;
+            this._delRow(index, fireEvent);
         }
+
+        return index;
     }
 
     /**
-     * Delete row from internal data structure. Performance note: here the
-     * internal key mapping is regenerated. This take O(N) time.
+     * Delete row from internal data structure. Performance note: here the internal key mapping is regenerated. This
+     * take O(N) time.
      * 
-     * @param index
+     * @param rowIndex
+     *            -
+     * @param fireEvent
+     *            - whether to fire an event.
      * @return
      */
-    private boolean _delRow(int index)
+    private boolean _delRow(int rowIndex, boolean fireEvent)
     {
+        RowData rowObj;
+
         synchronized (rows)// sync for both rows and rowKeyIndex!
         {
-            if ((index < 0) || (index >= rows.size()))
+            if ((rowIndex < 0) || (rowIndex >= rows.size()))
             {
                 return false;
             }
 
-            RowData rowObj = rows.get(index);
+            rowObj = rows.get(rowIndex);
             String key = rowObj.getKey();
-            rows.remove(index);
-            this.rowKeyIndex.remove(key);
+            rows.remove(rowIndex);
+            rowKeyIndex.remove(key);
 
             // update indices: start from 'index'
             // index=0;
             // rowKeyIndex.clear();
-            for (int i = index; i < rows.size(); i++)
+            for (int i = rowIndex; i < rows.size(); i++)
             {
                 this.rowKeyIndex.put(rows.get(i).getKey(), new Integer(i));
             }
-
-            return true;
         }
+
+        if (fireEvent)
+        {
+            this.fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+        return true;
     }
 
     /**
-     * Multi delete rows from internal data structure. Performance note: here
-     * the internal key mapping is regenerated. This take O(N) time.
+     * Multi delete rows from internal data structure. Performance note: here the internal key mapping is regenerated.
+     * This take O(N) time.
      * 
      * @param index
      * @return
      */
-    private boolean _delRows(int indices[])
+    private boolean _delRows(int indices[], boolean fireEvent)
     {
+        boolean allDeleted = true;
         synchronized (rows)// sync for both rows and rowKeyIndex!
         {
             for (int index : indices)
             {
                 if ((index < 0) || (index >= rows.size()))
-                    continue;
+                {
+                    allDeleted = false;
+                }
 
                 RowData rowObj = rows.get(index);
                 String key = rowObj.getKey();
                 rows.remove(index);
                 this.rowKeyIndex.remove(key);
-            }
 
-            // regenerate key mapping
-            rowKeyIndex.clear();
-            for (int i = 0; i < rows.size(); i++)
-            {
-                this.rowKeyIndex.put(rows.get(i).getKey(), new Integer(i));
+                if (fireEvent)
+                {
+                    // Concurrency note: Within Synchronized(!): Fire event per row
+                    this.fireTableRowsDeleted(index, index);
+                }
             }
-
-            return true;
+            // within sync(rows)
+            this.reindexKeyVector();
         }
+
+        return allDeleted;
     }
 
-    /** Search key and return row index */
+    /**
+     * Search key and return row index.
+     */
     public int getRowIndex(String key)
     {
         if (key == null)
+        {
             return -1;
+        }
 
-        Integer index = this.rowKeyIndex.get(key);
+        synchronized (rows)
+        {
+            Integer index = this.rowKeyIndex.get(key);
 
-        if (index == null)
-            return -1;
+            if (index == null)
+            {
+                return -1;
+            }
 
-        return index;
+            return index;
+        }
     }
 
-    /** Return Key String of (Model) Row index. */
+    /**
+     * Return Key of Row index.
+     */
     public String getRowKey(int index)
     {
         synchronized (this.rows)
@@ -638,19 +743,23 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
             {
                 return null;
             }
-            
+
             return this.rows.get(index).getKey();
         }
     }
 
-    /** Return copy of current keys as array */
+    /**
+     * Return copy of current keys as array.
+     */
     public String[] getRowKeys()
     {
         synchronized (this.rows)
         {
             String keys[] = new String[this.rows.size()];
             for (int i = 0; i < this.rows.size(); i++)
+            {
                 keys[i] = rows.elementAt(i).getKey();
+            }
             return keys;
         }
     }
@@ -660,7 +769,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         return this.headers.indexOf(name);
     }
 
-    /** Clear Data information. Keeps header information */
+    /**
+     * Clear Data information. Keeps header information
+     */
     public void clearData()
     {
         synchronized (rows) // for rows and keys
@@ -678,7 +789,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         synchronized (rows)
         {
             if ((index < 0) || (index >= rows.size()))
+            {
                 return null;
+            }
             return this.rows.get(index);
         }
     }
@@ -689,7 +802,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             int index = this.getRowIndex(key);
             if ((index < 0) || (index >= rows.size()))
+            {
                 return null;
+            }
             return this.rows.get(index);
         }
     }
@@ -713,12 +828,16 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         {
             int nrRows = this.rows.size();
             if (nrRows <= 0)
+            {
                 return null;
-
+            }
+            
             // assume symmetrical:
             int nrCols = rows.get(0).getNrAttributes();
             if (nrCols <= 0)
+            {
                 return null;
+            }
 
             Attribute attrs[][] = new Attribute[nrRows][];
             for (int row = 0; row < nrRows; row++)
@@ -734,19 +853,18 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         }
     }
 
-    /** 
-     * All attribute names available from DataModel. 
-     * Each attribute name can be used as column.  
+    /**
+     * All attribute names available from DataModel. Each attribute name can be used as column.
      * 
-     * @return all available attribute names as List. 
+     * @return all available attribute names as List.
      */
     public List<String> getAllAttributeNames()
     {
-        return allAttributeNames; 
+        return allAttributeNames;
     }
 
-    /** 
-     * Allow editable columns by specifying all possible headers 
+    /**
+     * Allow editable columns by specifying all possible headers
      */
     public void setAllAttributeNames(StringList list)
     {
@@ -759,11 +877,11 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     }
 
     /**
-     * Removes header and fires TableStructureChanged event. Actual column data
-     * is kept in the model to avoid null pointer bugs.
+     * Removes header and fires TableStructureChanged event. Actual column data is kept in the model to avoid null
+     * pointer bugs.
      * 
-     * Method fires TableStructureChanged event which update the actual table.
-     * Only after the TableStructureChanged event has been handled.
+     * Method fires TableStructureChanged event which update the actual table. Only after the TableStructureChanged
+     * event has been handled.
      */
     public void removeHeader(String headerName)
     {
@@ -772,11 +890,10 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     }
 
     /**
-     * Inserts new header into the headermodel after or before 'headerName'.
-     * Method fires TableStructureChanged event which updates the Table. Only
-     * after the TableStructureChanged event has been handled, the table column
-     * model has added the new Column ! This Table Data Model can already be
-     * updated asynchronously after the new header has been added.
+     * Inserts new header into the headermodel after or before 'headerName'. Method fires TableStructureChanged event
+     * which updates the Table. Only after the TableStructureChanged event has been handled, the table column model has
+     * added the new Column ! This Table Data Model can already be updated asynchronously after the new header has been
+     * added.
      */
     public int insertHeader(String headerName, String newName, boolean insertBefore)
     {
@@ -787,10 +904,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     }
 
     /**
-     * Add listener to header list model, which controls the column headers. Not
-     * that due to the asynchronous nature of Swing Events, the Header Model
-     * might already have changed, but the Viewed column model use by Swing
-     * might not have.
+     * Add listener to header list model, which controls the column headers. Not that due to the asynchronous nature of
+     * Swing Events, the Header Model might already have changed, but the Viewed column model use by Swing might not
+     * have.
      */
     public void addHeaderModelListener(ListDataListener listener)
     {
@@ -808,10 +924,18 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         return new RowIterator(this);
     }
 
-    public void removeRow(int index)
+    protected RowData _removeRow(int index, boolean fireEvent)
     {
-        this.rows.remove(index);
-        this.fireTableRowsDeleted(index, index);
+        RowData data;
+        synchronized (rows)
+        {
+            data = rows.remove(index);
+        }
+        if (fireEvent)
+        {
+            this.fireTableRowsDeleted(index, index);
+        }
+        return data;
     }
 
     public boolean hasHeader(String name)
@@ -827,7 +951,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 
         return row.getViewNode();
     }
-    
+
     public ViewNode getRootViewNode()
     {
         return rootViewNode;
@@ -850,7 +974,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 
         if (colnr < 0)
             return null;
-        
+
         ClassLogger.getLogger(ResourceTableModel.class).debugPrintf("sortBy column number=%d\n", colnr);
 
         TableRowComparer comparer = new TableRowComparer(name, reverse);
@@ -876,22 +1000,22 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
      */
     protected void reindexKeyVector()
     {
+        // lock both rows AND rowKeyIndex !
         synchronized (rows)
         {
             synchronized (rowKeyIndex)
             {
                 this.rowKeyIndex.clear();
-            }
 
-            int n = rows.size();
+                int n = rows.size();
 
-            for (int i = 0; i < n; i++)
-            {
-                RowData row = this.rows.get(i);
-                this.rowKeyIndex.put(row.getKey(), new Integer(i));
+                for (int i = 0; i < n; i++)
+                {
+                    RowData row = this.rows.get(i);
+                    this.rowKeyIndex.put(row.getKey(), new Integer(i));
+                }
             }
         }
-
     }
 
     // ==========================================================================
@@ -917,17 +1041,27 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         this.fireTableCellUpdated(rownr, colnr);
     }
 
-    /** 
-     * Convert row numbers to row keys. 
+    // ==========================================================================
+    // Misc.
+    // ==========================================================================
+
+    /**
+     * Convert row numbers to row keys.
      */
     public String[] getRowKeys(int[] rowNrs)
     {
-        String keys[]=new String[rowNrs.length]; 
-        for (int i=0;i<rowNrs.length;i++)
+        String keys[] = new String[rowNrs.length];
+        for (int i = 0; i < rowNrs.length; i++)
         {
-            keys[i]=this.getRowKey(rowNrs[i]); 
+            keys[i] = this.getRowKey(rowNrs[i]);
         }
-        return keys; 
+        return keys;
+    }
+
+    public void delRow(VRL vrl)
+    {
+        // currently the VRL is the key.
+        delRow(vrl.toString());
     }
 
     // ==========================================================================

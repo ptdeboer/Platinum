@@ -130,7 +130,7 @@ public class IconListModel // implements ListModel
                 if (item.getViewNode().matches(vrl))
                 {
                     delItem = item;
-                    break; 
+                    break;
                 }
             }
         }
@@ -140,7 +140,7 @@ public class IconListModel // implements ListModel
 
     public void deleteItem(IconItem item, boolean fireEvent)
     {
-        synchronized(icons)
+        synchronized (icons)
         {
             int pos = this.icons.indexOf(item);
             this.icons.remove(item);

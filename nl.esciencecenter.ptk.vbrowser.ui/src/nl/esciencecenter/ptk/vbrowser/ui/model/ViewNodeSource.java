@@ -35,15 +35,15 @@ public interface ViewNodeSource
 	 * Register listener to receive data source update events.
 	 * Listeners received events about created ViewNodes
 	 */ 
-	void addViewNodeSourceListener(VRSEventListener listener); 
+	public void addViewNodeEventListener(VRSEventListener listener); 
 	
-	void removeViewNodeSourceListener(VRSEventListener listener); 
+	public void removeViewNodeEventListener(VRSEventListener listener); 
 	
 	/** 
 	 * Toplevel resource or root node. 
 	 * @throws ProxyException 
 	 */ 
-	ViewNode getRoot(UIViewModel uiModel) throws ProxyException;  // throws ProxyException;
+	public ViewNode getRoot(UIViewModel uiModel) throws ProxyException;  // throws ProxyException;
 
 	/** 
 	 * Get childs of specified resource. 
@@ -52,7 +52,7 @@ public interface ViewNodeSource
 	 * @param offset - get childs starting from this offset 
 	 * @param range - maximum number of childs wanted. Use -1 for all. 
 	 */ 
-	ViewNode[] getChilds(UIViewModel uiModel,VRL locator,int offset, int range,LongHolder numChildsLeft) throws ProxyException;
+	public ViewNode[] getChilds(UIViewModel uiModel,VRL locator,int offset, int range,LongHolder numChildsLeft) throws ProxyException;
 	
 	/** 
 	 * Open locations and create ViewNodes.
@@ -61,7 +61,7 @@ public interface ViewNodeSource
 	 * @param locations - resource locations 
 	 * @return created ViewNodes
 	 */
-	ViewNode[] getNodes(UIViewModel uiModel,VRL locations[]) throws ProxyException; 
+	public ViewNode[] createViewNodes(UIViewModel uiModel,VRL locations[]) throws ProxyException; 
  
 	
 }
