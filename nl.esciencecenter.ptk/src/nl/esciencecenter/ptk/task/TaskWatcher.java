@@ -51,7 +51,9 @@ public class TaskWatcher implements ITaskSource
     public static ITaskSource getTaskWatcher()
     {
         if (instance == null)
+        {
             instance = new TaskWatcher("Global Taskwatcher");
+        }
 
         return instance;
     }
@@ -123,12 +125,12 @@ public class TaskWatcher implements ITaskSource
         {
             this.terminatedTasks.add(actionTask);
         }
-        
+
         synchronized (this.terminatedTasks)
         {
             if (this.terminatedTasks.size() > maxTerminatedTasks)
             {
-                for (int i = 0; (i < maxTerminatedTasks) && (terminatedTasks.size()>0) ; i++)
+                for (int i = 0; (i < maxTerminatedTasks) && (terminatedTasks.size() > 0); i++)
                 {
                     terminatedTasks.remove(0); // not efficient array remove.
                 }
@@ -178,8 +180,7 @@ public class TaskWatcher implements ITaskSource
     }
 
     /**
-     * This method checks whether the current execution Thread belongs to a
-     * Registered Action Task.
+     * This method checks whether the current execution Thread belongs to a Registered Action Task.
      * 
      * @return - actual ActionTask linked to the current execution thread.
      */
@@ -189,14 +190,12 @@ public class TaskWatcher implements ITaskSource
     }
 
     /**
-     * Find ActionTask with specified thread id. Since all ActionTasks are
-     * currently started in their own thread, this method will find the
-     * actionTask currently executed in the specified thread.
+     * Find ActionTask with specified thread id. Since all ActionTasks are currently started in their own thread, this
+     * method will find the actionTask currently executed in the specified thread.
      * 
      * @param thread
      *            Thread which started an ActionTask
-     * @return ActionTaks or null which is started within to the specified
-     *         Thread.
+     * @return ActionTaks or null which is started within to the specified Thread.
      */
     public ActionTask findActionTaskForThread(Thread thread)
     {

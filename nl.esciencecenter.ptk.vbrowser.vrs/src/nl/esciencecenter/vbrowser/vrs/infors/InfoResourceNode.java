@@ -42,9 +42,9 @@ import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
+/**
  * Common parent for ResourcFolders, ResourceLinks and the RootInfoNode.<br>
- * Implements the Folder management methods and target resolving of ResourceLinks.  
+ * Implements the Folder management methods and target resolving of ResourceLinks.
  */
 public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, VInfoResourcePath, VRenamable
 {
@@ -145,21 +145,21 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
     @Override
     public String getIconURL(int size)
     {
-        String str=attributes.getStringValue(InfoRSConstants.RESOURCE_ICONURL);
-        if (str!=null)
-            return str; 
-        
+        String str = attributes.getStringValue(InfoRSConstants.RESOURCE_ICONURL);
+        if (str != null)
+            return str;
+
         if (isResourceFolder())
         {
-            String iconUrl="info/vle-world-folder.png"; 
+            String iconUrl = "info/vle-world-folder.png";
             attributes.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
-            return iconUrl; 
+            return iconUrl;
         }
         else
         {
-            return null; 
+            return null;
         }
-        
+
     }
 
     public String getName()
@@ -439,18 +439,28 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
     @Override
     public void delete(boolean recursive) throws VrsException
     {
-        if (recursive == false)
-        {
-            // keep root node before delete.
-            InfoRootNode rootNode = this.getRootNode();
-            // delegate to parent
-            this.getParent().delSubNode(this);
-            rootNode.save();
-        }
-        else
+        if (recursive)
         {
             throw new VrsException("Recursive delete not yet implemented");
         }
+        // keep root node before delete, after delete parent is gone; 
+        InfoRootNode rootNode = this.getRootNode();
+        // delegate to parent
+        parent = getParent();
+        if (parent != null)
+        {
+            parent.delSubNode(this);
+        }
+        else
+        {
+            logger.errorPrintf("Received delete for parentless node:%s\n", this);
+        }
+
+        if (rootNode!=null)
+        {   
+            rootNode.save();
+        }
+
     }
 
     // ======================================
@@ -460,9 +470,9 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
     @Override
     public InfoResourceNode createSubNode(String type, AttributeSet infoAttributes) throws VrsException
     {
-        InfoResourceNode subNode = InfoResourceNode.createResourceNode(this,type,infoAttributes); 
+        InfoResourceNode subNode = InfoResourceNode.createResourceNode(this, type, infoAttributes);
         this.addPersistantNode(subNode, true);
-        return subNode; 
+        return subNode;
     }
 
     protected void addPersistantNode(InfoRSNode subNode, boolean save) throws VrsException

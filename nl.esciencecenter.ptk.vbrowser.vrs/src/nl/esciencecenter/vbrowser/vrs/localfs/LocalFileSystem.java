@@ -23,10 +23,12 @@ package nl.esciencecenter.vbrowser.vrs.localfs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileSystemException;
 
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.node.VFileSystemNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -44,14 +46,13 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
     @Override
     protected LocalFSPathNode createVFSNode(VRL vrl) throws VrsException
     {
-        
         try
         {
             return new LocalFSPathNode(this,fsUtil.newLocalFSNode(vrl.getPath()));
         }
         catch (IOException e)
-        {
-            throw new VrsException(e.getMessage(),e);
+        {   
+            throw convertException("Failed to resolve path:"+vrl,e);
         }
     }
 
@@ -65,6 +66,52 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
     public OutputStream createOutputStream(VRL vrl) throws VrsException
     {
         return createVFSNode(vrl).createOutputStream(false);  
+    }
+
+    public static VrsException convertException(String actionText,Throwable ex)
+    {
+        // new nio.file exceptions have reason in the Exception name. 
+        if (ex instanceof java.nio.file.AccessDeniedException)
+        {
+            return new VrsIOException(actionText+"\n"+"Access Denied.\n"+ex.getMessage(),ex); 
+        }
+        else if (ex instanceof java.nio.file.DirectoryNotEmptyException)
+        {
+            return new VrsIOException(actionText+"\n"+"Directory not empty.\n"+ex.getMessage(),ex); 
+        }
+        else if (ex instanceof java.nio.file.FileAlreadyExistsException)
+        {
+            return new VrsIOException(actionText+"\n"+"File already exists.\n"+ex.getMessage(),ex); 
+        }
+        else if (ex instanceof java.nio.file.NoSuchFileException)
+        {
+            return new VrsIOException(actionText+"\n"+"No such file.\n"+ex.getMessage(),ex); 
+        }
+        else if (ex instanceof java.nio.file.NotDirectoryException)
+        {
+            return new VrsIOException(actionText+"\n"+"Not a directory.\n"+ex.getMessage(),ex); 
+        }
+        else if (ex instanceof java.nio.file.NotLinkException)
+        {
+            return new VrsIOException(actionText+"\n"+"Not a link.\n"+ex.getMessage(),ex); 
+        }
+        else if (ex instanceof FileSystemException)
+        {
+            // Exception name provide reason 
+            String exName=ex.getClass().getName();
+            return new VrsIOException(actionText+"\n"+exName+".\n"+ex.getMessage(),(IOException)ex);
+        }
+        else if (ex instanceof IOException)
+        {
+            // Exception name provide reason 
+            String exName=ex.getClass().getName();
+            return new VrsIOException(actionText+"\n"+exName+".\n"+ex.getMessage(),(IOException)ex);
+        }
+        else
+        {
+            return new VrsException(actionText+"\n"+ex.getMessage(),ex);
+        }
+            
     }
     
 

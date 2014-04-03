@@ -83,11 +83,6 @@ public abstract class ActionTask implements Runnable
         this.taskSource = newSource;
     }
 
-    // public void setTaskMonitor(ITaskMonitor monitor)
-    // {
-    // this.taskMonitor=monitor;
-    // }
-
     final public ITaskMonitor getMonitor()
     {
         return this.taskMonitor;
@@ -125,7 +120,9 @@ public abstract class ActionTask implements Runnable
         }
     }
 
-    /** Returns number of threads associated with this task */
+    /**
+     * Returns number of threads associated with this task.
+     */
     final int getNumThreads()
     {
         if (this.threads == null)
@@ -141,7 +138,9 @@ public abstract class ActionTask implements Runnable
         return this.threads[index];
     }
 
-    /** Returns true if at least one thread is alive */
+    /**
+     * Returns true if at least one thread is alive.
+     */
     final public boolean isAlive()
     {
         if (threads == null)
@@ -160,7 +159,7 @@ public abstract class ActionTask implements Runnable
     }
 
     /**
-     * Start a single thread and run this task
+     * Start a single thread and run this task.
      */
     final public void startTask()
     {
@@ -180,7 +179,9 @@ public abstract class ActionTask implements Runnable
         this.threads[0].start(); // goto run()
     }
 
-    /** Tries to join with all active threads */
+    /**
+     * Tries to join with all active threads.
+     */
     final public boolean join() throws InterruptedException
     {
         if ((threads == null) || (threads.length <= 0))
@@ -199,7 +200,9 @@ public abstract class ActionTask implements Runnable
         return joined;
     }
 
-    /** Tries to join with active thread */
+    /**
+     * Tries to join with active thread.
+     */
     final public boolean join(int index) throws InterruptedException
     {
         if ((threads == null) || (threads[index] == null) || threads[index].isAlive() == false)
@@ -210,28 +213,35 @@ public abstract class ActionTask implements Runnable
         return true;
     }
 
+    /**
+     * Tries to wait untill all threads have finished.
+     */
     final public void waitForAll() throws InterruptedException
     {
         // will return when thread finishes or already has finished.
         waitForAll(0);
     }
 
-    final public void waitForAll(long timeOut) throws InterruptedException
+    /**
+     * Tries to wait untill all threads have finished or timeout (in milli seconds) has been reached.
+     */
+    final public void waitForAll(long timeOutInMillis) throws InterruptedException
     {
-        joinAll(timeOut);
+        joinAll(timeOutInMillis);
     }
 
     /**
-     * Use the Thread.join() method to join with the running task thread. Will
-     * immediately return if thread already finished.
-     *
+     * Use the Thread.join() method to join with the running task thread. Will immediately return if thread already
+     * finished.
      */
     final public void joinAll(long timeOutMillis) throws InterruptedException
     {
         Thread _threadz[];
 
         if ((threads == null) || (threads.length <= 0))
+        {
             return;
+        }
 
         synchronized (threads)
         {
@@ -239,26 +249,31 @@ public abstract class ActionTask implements Runnable
         }
 
         for (Thread thread : _threadz)
+        {
             if (thread != null)
+            {
                 thread.join(timeOutMillis);
+            }
+        }
 
     }
 
     /**
-     * Invoke interrupt() to all threads. The default behavior for a thread is
-     * that if the interrupted() state is set, the thread should stop executing
-     * and perform a graceful shutdown.
-     *
+     * Invoke interrupt() to all threads. The default behavior for a thread is that if the interrupted() state is set,
+     * the thread should stop executing and perform a graceful shutdown.
+     * 
      * @See {@link Thread#isInterrupted()}
      * @See {@link Thread#interrupt()}
-     *
+     * 
      */
     final public void interruptAll()
     {
         Thread _threadz[];
 
         if ((threads == null) || (threads.length <= 0))
+        {
             return;
+        }
 
         synchronized (threads)
         {
@@ -272,7 +287,6 @@ public abstract class ActionTask implements Runnable
                 thread.interrupt();
             }
         }
-
     }
 
     final public boolean hasException()
@@ -371,8 +385,10 @@ public abstract class ActionTask implements Runnable
     private void clearThreads()
     {
         if (threads == null)
+        {
             return;
-
+        }
+        
         synchronized (threadMutex)
         {
             // trigger release resources held by threads:
@@ -383,7 +399,7 @@ public abstract class ActionTask implements Runnable
         }
     }
 
-    public ITaskMonitor getTaskMonitor()
+    final public ITaskMonitor getTaskMonitor()
     {
         return this.taskMonitor;
     }
@@ -396,7 +412,7 @@ public abstract class ActionTask implements Runnable
     /**
      * Set isCancelled() flag to true and interrupts all (waiting) threads.
      */
-    public void signalTerminate()
+    final public void signalTerminate()
     {
         try
         {
@@ -410,7 +426,7 @@ public abstract class ActionTask implements Runnable
 
             try
             {
-                // II) Update state to cancelled
+                // II) Call stop task for asynchronous callback.
                 this.stopTask();
             }
             catch (Throwable t)
@@ -429,28 +445,41 @@ public abstract class ActionTask implements Runnable
     }
 
     /**
-     * Checks whether one of current running threads is in interrupted stated.
-     *
-     * @return true if the one of the current active thread is in interrupted
-     *         state.
+     * Checks whether one of current running threads is in interrupted stated. <br
+     * To check whether this task needs to stop, use isCancelled() since an isInterrupted() flag might be erased after
+     * an actual interrupt() call. Also an task may continue after an interrupt(), but must stop after isCancelled().
+     * 
+     * @return true if the one of the current active thread is in interrupted state.
      */
-    public boolean isInterrupted()
+    final public boolean isInterrupted()
     {
         if ((this.threads == null) || (threads.length <= 0))
+        {
             return false;
+        }
 
         for (Thread thread : threads)
         {
             if (thread.isInterrupted())
+            {
                 return true;
+            }
         }
 
         return false;
     }
 
-    public boolean isCancelled()
+    final public boolean isCancelled()
     {
         return this.isCancelled;
+    }
+
+    /**
+     * Sub class may signal this task should stop.
+     */
+    final protected void setIsCancelled()
+    {
+        this.isCancelled = true;
     }
 
     @Override
@@ -478,10 +507,11 @@ public abstract class ActionTask implements Runnable
     abstract protected void doTask() throws Exception;
 
     /**
-     * If possible, try to stop the running task when this method is called.
-     * This to encourage pre empty task scheduling. To trigger the stopTask()
-     * call signalTerminate(). It is also recommend to check the isCancelled()
-     * method and check the state of the running
+     * If possible, try to stop the running task when this method is called. This to encourage preemptive task
+     * scheduling.<br>
+     * To trigger the stopTask() call signalTerminate(). It is also recommended to check the isCancelled() method and
+     * check the state of the running thread. This method provides an asynchronous callback method as an alternative to
+     * isCancelled() which must be called explicitly by the implementing task. 
      */
     abstract protected void stopTask() throws Exception;
 

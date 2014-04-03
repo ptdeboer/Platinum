@@ -33,10 +33,15 @@ public class VrsIOException extends VrsException
     {
         super(e.getMessage(),e); 
     }
-    
-    public VrsIOException(String message, IOException e)
+
+    public VrsIOException(String message, IOException ex)
     {
-        super(e.getMessage(),e); 
+        super(message,ex); 
+    }
+
+    public VrsIOException(String message, Throwable ex)
+    {
+        super(message,ex); 
     }
     
 }

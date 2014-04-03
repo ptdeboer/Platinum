@@ -286,7 +286,7 @@ public class InfoRSNode extends VPathNode
         {
             if (node == node.parent)
             {
-                throw new Error("Hierachy error: parent equal to current node:" + node);
+                throw new Error("InfoRS hierachy error: parent of this node equals current node:" + node);
             }
             node = node.parent;
         }
@@ -297,6 +297,7 @@ public class InfoRSNode extends VPathNode
         }
         else
         {
+            logger.warnPrintf("Couldn't find rootNode for:%s\n",this);
             return null;
         }
     }
