@@ -18,30 +18,39 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.ui.tasks;
+package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import nl.esciencecenter.ptk.task.ActionTask;
-import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.ITaskSource;
 
-public abstract class UITask extends ActionTask
+/**
+ * ActionTask origination from a (Proxy)Browser  
+ */
+public abstract class BrowserTask extends ActionTask
 {
-
-    public UITask(ITaskSource taskWatcher, String taskName)
+    /**
+     * Create new task origination from the provided ProxyBrowser. 
+     * Created task will be linked to this ProxyBrowserController. 
+     */
+    public BrowserTask(ProxyBrowserController browserController, String taskName)
     {
-        super(taskWatcher, taskName);
+        super(browserController.getTaskSource(), taskName);
     }
     
-    public UITask(String taskName)
+    /**
+     * Create new task origination from the provided Browser task source. 
+     * @param taskSource - optional Browser TaskSource. Can be null. 
+     * @param taskName - Descriptive task name. 
+     */
+    public BrowserTask(ITaskSource taskSource, String taskName)
     {
-        // Global UI Task Source ? 
-        super(null, taskName);
+        super(taskSource, taskName);
     }
 
-    public UITask(ITaskSource taskWatcher, String taskName, ITaskMonitor monitor)
+    @Override
+    protected void stopTask()
     {
-        super(taskWatcher, taskName,monitor);
+        this.getTaskMonitor().logPrintf("*STOP* received for:%s\n", this); 
     }
-	
 
 }
