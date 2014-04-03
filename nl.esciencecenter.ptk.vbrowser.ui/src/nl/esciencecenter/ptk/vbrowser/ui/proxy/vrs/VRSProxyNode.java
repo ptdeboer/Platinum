@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
+import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -58,6 +60,27 @@ public class VRSProxyNode extends ProxyNode
         return (VRSProxyFactory)this.getProxyFactory(); 
     }
 
+    @Override
+    protected boolean doExists() throws ProxyException
+    {
+        if (vnode instanceof VFSPath)
+        {
+            try
+            {
+                return ((VFSPath)vnode).exists(LinkOption.NOFOLLOW_LINKS);
+            }
+            catch (VrsException e)
+            {
+                throw createProxyException("Couldn't determine whether path exists:"+locator,e); 
+            }  
+        }
+        else
+        {
+            //vpath.exists() ? 
+            return true;
+        }
+    }
+    
     protected void doPrefetchAttributes() throws ProxyException
     {
         super.doPrefetchAttributes();         

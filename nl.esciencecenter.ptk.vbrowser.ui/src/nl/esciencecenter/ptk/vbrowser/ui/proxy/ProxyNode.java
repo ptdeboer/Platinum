@@ -261,6 +261,16 @@ public abstract class ProxyNode
         return locator;
     }
 
+    /** 
+     * Uncached method. Check wheter resource really exists. 
+     * @return
+     * @throws ProxyException
+     */
+    public boolean exists() throws ProxyException
+    {
+        return doExists(); 
+    }
+    
     /**
      * Called by ProxyNode factory to prefill core attributes. Subclass can
      * extend this method to prefetch attributes during the initialization of
@@ -721,9 +731,11 @@ public abstract class ProxyNode
         return node; 
     }
 
-    public void delete(boolean recursive) throws ProxyException
+    final public void delete(boolean recursive) throws ProxyException
     {
-        doDelete(recursive); 
+        doDelete(recursive);
+        
+        this.proxyFactory.cacheRemove(this);  
     }
 
 
@@ -737,10 +749,17 @@ public abstract class ProxyNode
         return proxyFactory.getProxyNodeEventNotifier(); 
     }
     
+    public void dispose()
+    {
+        logger.errorPrintf("DISPOSE:%s\n", this);
+    }
+    
     // ========================================================================
     // Protected implementation interface !
     // ========================================================================
 
+    abstract protected boolean doExists() throws ProxyException;
+    
     abstract protected String doGetName() throws ProxyException;
 
     abstract protected String doGetResourceType() throws ProxyException;
@@ -793,6 +812,8 @@ public abstract class ProxyNode
     abstract protected void doDelete(boolean recurse) throws ProxyException;
 
     abstract protected ProxyNode doRenameTo(String nameOrNewPath) throws ProxyException;
+
+
 
     
 

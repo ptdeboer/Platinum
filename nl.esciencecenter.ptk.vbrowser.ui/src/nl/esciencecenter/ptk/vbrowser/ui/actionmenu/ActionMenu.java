@@ -151,11 +151,11 @@ public class ActionMenu extends JPopupMenu
         {
             if (canvasMenu)
             {
-                menu.add(createNewMenu(container, menu, actionSourceNode));
+                menu.add(createNewMenu(container, menu, containerNode));
             }
             else
             {
-                menu.add(createNewMenu(container, menu, containerNode));
+                menu.add(createNewMenu(container, menu, actionSourceNode));
             }
         }
 

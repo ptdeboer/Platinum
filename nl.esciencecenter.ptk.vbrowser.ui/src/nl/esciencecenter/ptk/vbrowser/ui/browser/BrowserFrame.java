@@ -266,17 +266,16 @@ public class BrowserFrame extends JFrame
         // default sizes:
         this.setSize(1000, 600);
     }
-
-    public void addTab()
-    {
-    }
-
+    
     protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus)
     {
         TabContentPanel tabPanel = TabContentPanel.createTab(name, comp);
+ 
         int newIndex = uiRightTabPane.getTabCount();
         uiRightTabPane.add(tabPanel, newIndex);
-
+        // use size from ui model: 
+        tabPanel.setScrollBarUnitIncrement(48/2);
+        
         TabButtonHandler handler = new TabButtonHandler(tabPanel);
         TabTopLabelPanel topTapPnl = new TabTopLabelPanel(tabPanel, handler);
         uiRightTabPane.setTabComponentAt(newIndex, topTapPnl);
@@ -303,28 +302,33 @@ public class BrowserFrame extends JFrame
 
     protected IconsPanel getIconsPanel(boolean autoCreate)
     {
-        TabContentPanel tab = this.getCurrentTab();
-        if (tab == null)
+        TabContentPanel currentTab = this.getCurrentTab();
+        if (currentTab == null)
         {
             if (autoCreate == false)
+            {
                 return null;
-
-            tab = this.addTab("Icons", null, false);
+            }
+            
+            currentTab = this.addTab("Icons", null, false);
         }
 
-        JComponent comp = tab.getContent();
+        JComponent comp = currentTab.getContent();
         if (comp instanceof IconsPanel)
+        {
             return (IconsPanel) comp;
+        }
 
         if (autoCreate == false)
+        {
             return null;
-
+        }
+        
         ProxyNode node = this.getViewedProxyNode();
-
         IconsPanel pnl = new IconsPanel(this.browserController, null);
         pnl.setDataSource(node, true);
-
-        tab.setContent(pnl);
+        currentTab.setContent(pnl);
+        
         return pnl;
     }
 

@@ -22,12 +22,10 @@ package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
 import java.util.Vector;
 
-import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class IconListModel // implements ListModel
@@ -94,10 +92,12 @@ public class IconListModel // implements ListModel
             // add item and fire event per item if this is an incremental
             // update;
             if (items != null)
+            {
                 for (IconItem item : items)
                 {
                     addItem(item, false);
                 }
+            }
         }
 
         this.uiFireContentsChanged();
@@ -119,33 +119,75 @@ public class IconListModel // implements ListModel
         }
     }
 
-    public void deleteItem(VRL vrl, boolean fireEvent)
+    public void setItem(int index,IconItem item, boolean fireEvent)
     {
-        IconItem delItem = null;
 
         synchronized (icons)
         {
-            for (IconItem item : icons)
+            icons.set(index, item); 
+        }
+
+        if (fireEvent)
+        {
+            uiFireContentsChanged(index,index); 
+        }
+    }
+
+    
+    public int itemIndex(VRL vrl)
+    {
+        synchronized (icons)
+        {
+            for (int i=0;i<icons.size();i++)
             {
+                IconItem item=icons.get(i);  
+                
                 if (item.getViewNode().matches(vrl))
                 {
-                    delItem = item;
-                    break;
+                    return i; 
                 }
             }
         }
-
-        deleteItem(delItem, fireEvent);
+        return -1;
     }
 
-    public void deleteItem(IconItem item, boolean fireEvent)
+    public IconItem findItem(VRL vrl)
     {
+        int index=this.itemIndex(vrl);
+        
+        if (index<0)
+        {
+            return null;
+        }
+        else
+        {
+            return icons.get(index); 
+        }
+    }
+
+    
+    public IconItem deleteItem(VRL vrl, boolean fireEvent)
+    {
+        IconItem delItem = null;
+        int index=-1; 
+        
         synchronized (icons)
         {
-            int pos = this.icons.indexOf(item);
-            this.icons.remove(item);
-            this.uiFireRangeRemoved(pos, pos);
+            index=this.itemIndex(vrl);
+            if (index<0)
+            {
+                return null;
+            }
+            
+            delItem=icons.remove(index);  
         }
+        
+        if (fireEvent)
+        {   
+            this.uiFireRangeRemoved(index, index);
+        }
+        
+        return delItem; 
     }
 
     public void uiFireRangeRemoved(final int pos)
@@ -206,6 +248,11 @@ public class IconListModel // implements ListModel
 
     public void uiFireContentsChanged()
     {
+        uiFireContentsChanged(0,icons.size()-1);
+    }
+    
+    public void uiFireContentsChanged(int starPos,int inclusiveEndPos)
+    {
         if (UIGlobal.isGuiThread() == false)
         {
             Runnable updater = new Runnable()
@@ -222,10 +269,12 @@ public class IconListModel // implements ListModel
         }
 
         // range is inclusive: [pos,pos]
-        ListDataEvent event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, icons.size() - 1);
+        ListDataEvent event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, starPos, inclusiveEndPos);
 
         for (ListDataListener l : getListeners())
+        {
             l.contentsChanged(event);
+        }
     }
 
 }

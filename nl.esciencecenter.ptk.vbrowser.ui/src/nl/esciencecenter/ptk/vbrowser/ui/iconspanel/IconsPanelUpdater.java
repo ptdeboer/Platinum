@@ -20,6 +20,11 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
+import nl.esciencecenter.ptk.task.ITaskSource;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -30,6 +35,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class IconsPanelUpdater implements VRSEventListener
 {
+    private final static ClassLogger logger=ClassLogger.getLogger(IconsPanelUpdater.class);
+    
     private ViewNodeSource dataSource;
 
     private IconsPanel iconsPanel;
@@ -53,6 +60,23 @@ public class IconsPanelUpdater implements VRSEventListener
         return this.iconsPanel.getUIViewModel();
     }
 
+    protected BrowserInterface getMasterBrowser()
+    {
+        return this.iconsPanel.getMasterBrowser();
+    }
+
+    protected ITaskSource getTaskSource()
+    {
+        BrowserInterface masterB = getMasterBrowser();
+
+        if (masterB instanceof ProxyBrowserController)
+        {
+            return masterB.getTaskSource();
+        }
+
+        return null;
+    }
+
     public void setDataSource(ViewNodeSource dataSource, boolean update)
     {
         // unregister
@@ -68,7 +92,7 @@ public class IconsPanelUpdater implements VRSEventListener
         {
             this.dataSource.addViewNodeEventListener(this);
         }
-                
+
         if ((update) && (dataSource != null))
         {
             updateRoot();
@@ -81,6 +105,8 @@ public class IconsPanelUpdater implements VRSEventListener
         VRL vrls[] = e.getResources();
         VRL parent = e.getParent();
 
+        VRL otherVrls[]=e.getOtherResources(); 
+        
         // check parent:
         if ((parent != null) && (rootNode.getVRL().equals(parent) == false))
         {
@@ -91,6 +117,12 @@ public class IconsPanelUpdater implements VRSEventListener
         {
             case RESOURCES_ADDED:
             {
+                if (parent==null)
+                {
+                    logger.errorPrintf("Cannot check if new resource are for me. parent==null!\n"); 
+                    return; 
+                }
+                
                 refresh();
                 break;
             }
@@ -109,11 +141,12 @@ public class IconsPanelUpdater implements VRSEventListener
 
     private void deleteChilds(VRL[] vrls)
     {
+        // perform delete during Event thread.
         IconListModel model = iconsPanel.getModel();
 
         for (VRL vrl : vrls)
         {
-            this.iconsPanel.getModel().deleteItem(vrl, true);
+            model.deleteItem(vrl, true);
         }
 
         iconsPanel.revalidate();
@@ -125,36 +158,13 @@ public class IconsPanelUpdater implements VRSEventListener
         iconsPanel.revalidate();
     }
 
-    protected void updateRoot()
-    {
-        try
-        {
-            if (dataSource == null)
-            {
-                updateChilds(null);// clear/reset;
-                return;
-            }
-
-            this.rootNode = this.dataSource.getRoot(getUIModel());
-            ViewNode[] childs = this.dataSource.getChilds(getUIModel(), rootNode.getVRL(), 0, -1, null);
-            updateChilds(childs);
-        }
-        catch (ProxyException e)
-        {
-            handle("Updating root location.", e);
-        }
-    }
-
-    private void updateChilds(ViewNode[] childs)
-    {
-        this.iconsPanel.getModel().setItems(createIconItems(childs));
-    }
-
     private IconItem[] createIconItems(ViewNode[] nodes)
     {
         if (nodes == null)
+        {
             return null;
-
+        }
+        
         int len = nodes.length;
 
         IconItem items[] = new IconItem[len];
@@ -184,4 +194,57 @@ public class IconsPanelUpdater implements VRSEventListener
     {
         return this.dataSource;
     }
+
+    protected void updateRoot()
+    {
+        if (dataSource == null)
+        {
+            updateChilds(null);// clear/reset;
+            return;
+        }
+
+        doPopulate(true,true);
+    }
+
+    // ======================
+    // Backgrounded tasks.
+    // ======================
+
+    private void doPopulate(final boolean fetchRoot,final boolean fetchChilds)
+    {
+        BrowserTask task = new BrowserTask(this.getTaskSource(), "Populating IconsPanel.")
+        {
+
+            @Override
+            protected void doTask() throws Exception
+            {
+                try
+                {
+                    if (fetchRoot)
+                    {
+                        rootNode = dataSource.getRoot(getUIModel());
+                    }
+                    
+                    if (fetchChilds)
+                    {
+                        ViewNode[] childs = dataSource.getChilds(getUIModel(), rootNode.getVRL(), 0, -1, null);
+                        updateChilds(childs);
+                    }
+                }
+                catch (ProxyException e)
+                {
+                    handle("Couldn't populate  root location.", e);
+                }
+            }
+        };
+
+        task.startTask();
+
+    }
+
+    private void updateChilds(ViewNode[] childs)
+    {
+        this.iconsPanel.getModel().setItems(createIconItems(childs));
+    }
+
 }

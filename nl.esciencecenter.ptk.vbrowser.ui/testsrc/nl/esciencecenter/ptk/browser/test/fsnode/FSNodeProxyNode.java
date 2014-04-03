@@ -21,6 +21,7 @@
 package nl.esciencecenter.ptk.browser.test.fsnode;
 
 import java.io.IOException;
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -240,6 +241,13 @@ public class FSNodeProxyNode extends ProxyNode
     protected ProxyNode doRenameTo(String nameOrNewPath) throws ProxyException
     {
         throw new ProxyException("Not Implemented.");
+    }
+
+    @Override
+    protected boolean doExists() throws ProxyException
+    {
+        this.file.exists(LinkOption.NOFOLLOW_LINKS);
+        return false;
     }
 
 }

@@ -182,4 +182,10 @@ public class VirtualRootNode extends ProxyNode
         return this; 
     }
 
+    @Override
+    protected boolean doExists() throws ProxyException
+    {
+        return true; 
+    }
+
 }

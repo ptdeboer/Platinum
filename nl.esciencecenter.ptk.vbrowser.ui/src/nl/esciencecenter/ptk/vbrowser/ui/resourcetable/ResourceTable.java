@@ -496,12 +496,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     /**
      * Update Data Source.
+     * @throws ProxyException 
      */
-    public void setDataSource(ProxyNode node, boolean update)
+    public void setDataSource(ProxyNode node, boolean update) 
     {
         ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
-        setDataProducer(new ProxyNodeTableDataUpdater(node, model), true);
+        setDataProducer(new ProxyNodeTableDataUpdater(this,node, model), true);
 
         // use presentation from ProxyNode !
         Presentation pres = node.getPresentation();
@@ -653,7 +654,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             return;
         }
 
-        String nodeKey = this.getModel().getKeyOf(node);
+        String nodeKey = this.getModel().createRowKey(node);
         int rowIndex = this.getModel().getRowIndex(nodeKey);
 
         for (int i = 0; i < rowNrs.length; i++)

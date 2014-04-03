@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.swing.JPopupMenu;
 
+import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
@@ -34,9 +35,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Master Browser Interface.
- * Interface methods for the ViewNodeContainer to invoke.   
- * @author Piter T. de Boer 
+ * Master Browser Interface. Interface methods for the ViewNodeContainer to invoke.
+ * 
+ * @author Piter T. de Boer
  */
 public interface BrowserInterface
 {
@@ -60,17 +61,21 @@ public interface BrowserInterface
      *            - effective selected ViewNode on which the menu click occurs.
      * @param canvasMenu
      *            - whether this is a canvas click on a ViewNodeContainer or an actual ViewNode. If true the
-     *            viewComponent must be a ViewNodeContainer. Multi-selection actions are currently canvas menus actions, since the menu
-     *            should apply to the selection and not the clicked-on ViewNode. 
+     *            viewComponent must be a ViewNodeContainer. Multi-selection actions are currently canvas menus actions,
+     *            since the menu should apply to the selection and not the clicked-on ViewNode.
      * @return
      */
     public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode, boolean canvasMenu);
 
     /**
-     * Is invoked after an action from the pop-up menu has been called.   
-     * @param viewComponent - ViewNodeComponent or ViewNodeContainer.  
-     * @param node - effective ViewNode 
-     * @param action - actual action. 
+     * Is invoked after an action from the pop-up menu has been called.
+     * 
+     * @param viewComponent
+     *            - ViewNodeComponent or ViewNodeContainer.
+     * @param node
+     *            - effective ViewNode
+     * @param action
+     *            - actual action.
      */
     public void handleNodeAction(ViewNodeComponent viewComponent, ViewNode node, Action action);
 
@@ -80,14 +85,28 @@ public interface BrowserInterface
     public UI getUI();
 
     /**
-     * Perform Drop. 
-     * @param uiComponent - Swing component. 
-     * @param optPoint - cordinates inside uiComponent. 
-     * @param viewNode - effective ViewNode 
-     * @param dropAction - Actual drop action, Copy, Move, Paste or Link. 
-     * @param vris - list of resource locations. 
-     * @return true - if drop succeed and has finished. 
+     * Perform Drop.
+     * 
+     * @param uiComponent
+     *            - Swing component.
+     * @param optPoint
+     *            - cordinates inside uiComponent.
+     * @param viewNode
+     *            - effective ViewNode
+     * @param dropAction
+     *            - Actual drop action, Copy, Move, Paste or Link.
+     * @param vris
+     *            - list of resource locations.
+     * @return true - if drop succeed and has finished.
      */
     public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris);
+
+    /**
+     * Return task source/task watcher for backgrounded tasks originating from this browser.<br>
+     * . Can be null if no task source or watcher initialized.
+     * 
+     * @return
+     */
+    public ITaskSource getTaskSource();
 
 }

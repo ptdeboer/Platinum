@@ -56,8 +56,6 @@ public class ResourceTableCellRenderer extends DefaultTableCellRenderer
             value = "";
         }
 
-        String columnName = null;
-
         //
         // Some predefined render options.
         // Check for icon types here.

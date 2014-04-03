@@ -70,7 +70,7 @@ public class TestProxyNodeTable
                                 {
                                 	ResourceTableModel model = new ResourceTableModel(true); 
                                     ResourceTable table=new ResourceTable(null,model);
-                                    table.setDataProducer(new ProxyNodeTableDataUpdater(node,model),true); 
+                                    table.setDataProducer(new ProxyNodeTableDataUpdater(null,node,model),true); 
                                     scrollPanel.setViewportView(table);
                                 }
                             }

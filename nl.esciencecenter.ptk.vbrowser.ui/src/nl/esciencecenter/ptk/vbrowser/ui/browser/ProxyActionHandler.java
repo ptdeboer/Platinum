@@ -77,7 +77,7 @@ public class ProxyActionHandler
 
         final VRL vrls[] = ViewNode.toVRLs(selections);
 
-        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Deleting resources")
+        BrowserTask task = new BrowserTask(proxyBrowser, "Deleting resources")
         {
             @Override
             protected void doTask()
@@ -110,7 +110,7 @@ public class ProxyActionHandler
 
         final VRL locator = node.getVRL();
 
-        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Creating new resource:" + type + ":'" + name + "' at:" + locator)
+        BrowserTask task = new BrowserTask(proxyBrowser, "Creating new resource:" + type + ":'" + name + "' at:" + locator)
         {
             @Override
             protected void doTask()
@@ -142,7 +142,7 @@ public class ProxyActionHandler
         }
         final VRL locator = node.getVRL();
 
-        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Deleting resource:" + locator)
+        BrowserTask task = new BrowserTask(proxyBrowser, "Deleting resource:" + locator)
         {
             @Override
             protected void doTask()
@@ -175,7 +175,7 @@ public class ProxyActionHandler
 
         final VRL locator = node.getVRL();
 
-        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Renaming '" + oldName + "' to:'" + name + "' for resource:" + locator)
+        BrowserTask task = new BrowserTask(proxyBrowser, "Renaming '" + oldName + "' to:'" + name + "' for resource:" + locator)
         {
             @Override
             protected void doTask()
@@ -205,7 +205,7 @@ public class ProxyActionHandler
 
         // UIGlobal.assertGuiThread("Interface drop most be called during Swings Event thread!");
 
-        ProxyBrowserTask task = new ProxyBrowserTask(proxyBrowser, "Performing drop '" + dropAction + "' on resource:" + viewNode)
+        BrowserTask task = new BrowserTask(proxyBrowser, "Performing drop '" + dropAction + "' on resource:" + viewNode)
         {
             @Override
             protected void doTask()

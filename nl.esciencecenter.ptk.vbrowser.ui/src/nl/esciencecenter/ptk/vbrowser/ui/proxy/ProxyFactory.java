@@ -94,6 +94,16 @@ public abstract class ProxyFactory
 	    {
 	        return time;
 	    }
+	    
+	    public void dispose()
+	    {
+	        if (node!=null)
+	        {
+	            // clear field, but keep VRL for reference!
+	            node.dispose();
+	            node=null;
+	        }
+	    }
     }
 
 	protected class ProxyCache
@@ -135,6 +145,25 @@ public abstract class ProxyFactory
             return cacheEl;
         }
 
+	    protected ProxyCacheElement remove(ProxyNode node)
+        {
+	        return remove(node.getVRL()); 
+        }
+	    
+        protected ProxyCacheElement remove(VRL locator)
+        {
+            synchronized(_nodes)
+            {
+                ProxyCacheElement el=_nodes.remove(locator);
+                if (el!=null)
+                {
+                    el.dispose();
+                    return el;
+                }
+            }
+            return null; 
+        }
+        
 	}
 
     // ========================================================================
@@ -144,6 +173,8 @@ public abstract class ProxyFactory
 	protected boolean enableCache=true;
 
     protected ProxyCache proxyCache=new ProxyCache();
+
+    protected ProxyCache cacheRemoved=new ProxyCache();
 
 	protected BrowserPlatform platform;
 
@@ -250,7 +281,7 @@ public abstract class ProxyFactory
 	    }
 	}
 
-	public void clearCache()
+	public void cacheClear()
 	{
 	    synchronized(proxyCache)
 	    {
@@ -281,7 +312,7 @@ public abstract class ProxyFactory
         logger.logException(ClassLogger.ERROR, e, " %s\n",message);
     }
 
-    protected boolean existsInCache(VRL vrl)
+    protected boolean cacheExists(VRL vrl)
     {
         synchronized(proxyCache)
         {
@@ -289,7 +320,7 @@ public abstract class ProxyFactory
         }
     }
 
-    protected ProxyNode fetchFromCache(VRL locator)
+    protected ProxyNode cacheFetch(VRL locator)
     {
         synchronized(proxyCache)
         {
@@ -302,11 +333,34 @@ public abstract class ProxyFactory
         }
     }
 
-    protected void updateCache(ProxyNode node)
+    protected void cacheUpdate(ProxyNode node)
     {
         synchronized(proxyCache)
         {
             proxyCache.put(node);
+        }
+    }
+
+
+    protected void cacheRemove(ProxyNode proxyNode)
+    {
+        ProxyNode cacheNode=cacheFetch(proxyNode.getVRL());
+        this.proxyCache.remove(proxyNode);
+        
+        if (cacheNode.equals(proxyNode))
+        {
+            logger.errorPrintf("cacheRemove(): Warning: given ProxyNode does not match cached node: %s != %s\n", proxyNode,cacheNode); 
+            this.proxyCache.remove(cacheNode);
+        }
+        
+        if (cacheNode!=null)
+        {
+            ProxyNode parent=cacheNode.cache.parent;
+            if (parent!=null)
+            {
+                // clear parent; 
+                parent.cache.childs=null;
+            }
         }
     }
 
@@ -336,8 +390,6 @@ public abstract class ProxyFactory
 	abstract public ProxyNode doOpenLocation(VRL locator) throws ProxyException;
 
 	abstract public boolean canOpen(VRL locator,StringHolder reason);
-
-
 
 
 }

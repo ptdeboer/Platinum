@@ -29,7 +29,7 @@ public class EnumCellEditor extends DefaultCellEditor
 
     public EnumCellEditor(String[] items)
     {
-        super(new JComboBox(items));
+        super(new JComboBox<String>(items));
     }
 
 }

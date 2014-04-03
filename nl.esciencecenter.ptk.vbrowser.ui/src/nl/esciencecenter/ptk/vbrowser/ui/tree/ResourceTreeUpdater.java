@@ -22,12 +22,14 @@ package nl.esciencecenter.ptk.vbrowser.ui.tree;
 
 import java.util.List;
 
+import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
-import nl.esciencecenter.ptk.vbrowser.ui.tasks.UITask;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -66,6 +68,21 @@ public class ResourceTreeUpdater implements VRSEventListener
         return tree.getUIViewModel();
     }
 
+    protected BrowserInterface getBrowserInterface()
+    {
+        return this.tree.getBrowserInterface();  
+    }
+    
+    protected ITaskSource getTaskSource()
+    {
+        BrowserInterface browser=this.getBrowserInterface();
+        if (browser!=null)
+        {
+            return browser.getTaskSource(); 
+        }
+        return null; 
+    }
+    
     public void setDataSource(ViewNodeSource viewNodeSource, boolean update)
     {
         // unregister previous
@@ -87,7 +104,7 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("updateRoot():\n");
 
-        UITask task = new UITask("update resource tree model for node" + rootItem)
+        BrowserTask task = new BrowserTask(this.getTaskSource(),"update resource tree model for node" + rootItem)
         {
             @Override
             public void doTask()
@@ -111,17 +128,12 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("updateChilds():%s\n", node.getVRI());
 
-        UITask task = new UITask("update resource tree model for node" + rootItem)
+        BrowserTask task = new BrowserTask(this.getTaskSource(),"update resource tree model for node" + rootItem)
         {
             @Override
             public void doTask()
             {
                 _updateChilds(node);
-            }
-
-            @Override
-            public void stopTask()
-            {
             }
         };
 
@@ -169,7 +181,7 @@ public class ResourceTreeUpdater implements VRSEventListener
     protected void updateAttributes(VRL parent, VRL vrl, String[] attrNames)
     {
         // just refresh all:
-        this.refreshNodes(new VRL[]{ vrl }, null);
+        this.refreshNodes(new VRL[]{ vrl }, attrNames);
     }
 
     protected void renameNodes(VRL optParent, VRL[] sources, VRL[] targets)
@@ -233,17 +245,12 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("addNodes():%s\n", parent);
 
-        UITask task = new UITask("update resource tree model for node" + rootItem)
+        BrowserTask task = new BrowserTask(this.getTaskSource(),"update resource tree model for node" + rootItem)
         {
             @Override
             public void doTask()
             {
                 _addNodes(parent, sources);
-            }
-
-            @Override
-            public void stopTask()
-            {
             }
         };
 
@@ -254,7 +261,7 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("refreshNodes():%s\n", sources.length);
 
-        UITask task = new UITask("refreshNodes" + sources.length)
+        BrowserTask task = new BrowserTask(this.getTaskSource(),"refreshNodes" + sources.length)
         {
             @Override
             public void doTask()
@@ -334,8 +341,7 @@ public class ResourceTreeUpdater implements VRSEventListener
             try
             {
                 // Refresh Complete ViewNode:
-                ViewNode[] viewNodes = viewNodeSource.createViewNodes(getUIModel(), new VRL[]
-                { vrl });
+                ViewNode[] viewNodes = viewNodeSource.createViewNodes(getUIModel(), new VRL[] { vrl });
 
                 if ((viewNodes == null) || (viewNodes.length <= 0))
                 {

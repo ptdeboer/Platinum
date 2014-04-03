@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.swing.JPopupMenu;
 
+import nl.esciencecenter.ptk.task.ITaskSource;
+import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
@@ -93,6 +95,12 @@ public class DummyBrowserInterface  implements BrowserInterface
             handleException("Drop Failed",e);
             return false;
         }
+    }
+
+    @Override
+    public ITaskSource getTaskSource()
+    {
+        return TaskWatcher.getTaskWatcher(); 
     }
 
 }

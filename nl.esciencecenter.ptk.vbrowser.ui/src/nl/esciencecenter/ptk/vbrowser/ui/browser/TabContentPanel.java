@@ -86,6 +86,7 @@ public class TabContentPanel extends JPanel
             {
                 this.scrollPane = new JScrollPane();
                 this.add(scrollPane);
+                scrollPane.getVerticalScrollBar().setUnitIncrement(48 / 2);
             }
         }
     }
@@ -120,6 +121,17 @@ public class TabContentPanel extends JPanel
     public JComponent getContent()
     {
         return this.content;
+    }
+
+    public JScrollPane getScrollPane()
+    {
+        return this.scrollPane;
+    }
+
+    public void setScrollBarUnitIncrement(int size)
+    {
+        scrollPane.getVerticalScrollBar().setUnitIncrement(size);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(size);
     }
 
 }

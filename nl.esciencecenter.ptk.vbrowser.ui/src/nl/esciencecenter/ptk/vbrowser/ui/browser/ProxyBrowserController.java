@@ -200,14 +200,6 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     }
 
     @Override
-    public void handleException(String actionText, Throwable ex)
-    {
-        logger.logException(ClassLogger.ERROR, ex, "Exception:%s\n", ex);
-        // does ui synchonisation:
-        ExceptionDialog.show(this.browserFrame, ex);
-    }
-
-    @Override
     public JPopupMenu createActionMenuFor(ViewNodeComponent container, ViewNode viewNode, boolean canvasMenu)
     {
         return ActionMenu.createDefaultPopUpMenu(getPlatform(), this, container, viewNode, canvasMenu);
@@ -479,7 +471,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
         final ViewerPanel finalViewer = viewer;
 
-        ProxyBrowserTask task = new ProxyBrowserTask(this, "startViewerFor" + vrl)
+        BrowserTask task = new BrowserTask(this, "startViewerFor" + vrl)
         {
             @Override
             protected void doTask()
@@ -531,7 +523,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
         final VRL loc = this.getCurrentViewNode().getVRL();
 
-        ProxyBrowserTask task = new ProxyBrowserTask(this, "doBrowseUp():" + loc)
+        BrowserTask task = new BrowserTask(this, "doBrowseUp():" + loc)
         {
             @Override
             protected void doTask()
@@ -739,7 +731,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         // pre: update nav bar:
         this.updateNavBar(locator, null);
 
-        ProxyBrowserTask task = new ProxyBrowserTask(this, "openLocation" + locator)
+        BrowserTask task = new BrowserTask(this, "openLocation" + locator)
         {
             @Override
             protected void doTask()
@@ -747,7 +739,14 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 try
                 {
                     ProxyNode node = openProxyNode(locator);
-                    setViewedNode(node, addToHistory, newTab);
+                    if (node.exists()==false)
+                    {
+                        showError("Invalid location","Couldn't open location, resource doesn't exist:"+locator); 
+                    }
+                    else
+                    {
+                        setViewedNode(node, addToHistory, newTab);
+                    }
                 }
                 catch (Throwable e)
                 {
@@ -798,26 +797,9 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         this.openLocation(node.getVRL(), true, false);
     }
 
-    public ProxyBrowserTaskWatcher getTaskWatcher()
+    public ProxyBrowserTaskWatcher getTaskSource()
     {
         return taskWatcher;
-    }
-
-    /** Message package */
-    void messagePrintf(Object source, String format, Object... args)
-    {
-        logger.infoPrintf("MESG:" + format, args);
-    }
-
-    public void updateHasActiveTasks(boolean active)
-    {
-        logger.infoPrintf("HasActiveTasks=%s\n", active);
-    }
-
-    @Override
-    public UI getUI()
-    {
-        return proxyUI;
     }
 
     @Override
@@ -825,6 +807,43 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     {
         // delegate to action handler.
         return this.proxyActionHandler.handleDrop(uiComponent, optPoint, viewNode, dropAction, vris);
+    }
+    
+    public void updateHasActiveTasks(boolean active)
+    {
+        logger.infoPrintf("HasActiveTasks=%s\n", active);
+    }
+    
+    // ========================== 
+    // Message/Exception,etc 
+    // ==========================
+    
+
+    @Override
+    public void handleException(String actionText, Throwable ex)
+    {
+        logger.logException(ClassLogger.ERROR, ex, "Exception:%s\n", ex);
+        // does ui synchonisation:
+        ExceptionDialog.show(this.browserFrame, ex);
+    }
+    
+    /** 
+     * Message  
+     */
+    void messagePrintf(Object source, String format, Object... args)
+    {
+        logger.infoPrintf("MESG:" + format, args);
+    }
+
+    @Override
+    public UI getUI()
+    {
+        return proxyUI;
+    }
+    
+    public void showError(String title,String message)
+    {
+        proxyUI.showMessage(title, message, false);
     }
 
 }

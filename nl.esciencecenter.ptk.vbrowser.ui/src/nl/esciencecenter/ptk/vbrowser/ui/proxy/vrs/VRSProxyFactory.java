@@ -162,7 +162,7 @@ public class VRSProxyFactory extends ProxyFactory
     public ProxyNode updateProxyNode(VPath vpath, boolean refreshCache) throws ProxyException
     {
         VRSProxyNode newNode= createVRSProxyNode(vpath,vpath.getVRL());
-        super.updateCache(newNode); 
+        super.cacheUpdate(newNode); 
         return newNode;
     }
 

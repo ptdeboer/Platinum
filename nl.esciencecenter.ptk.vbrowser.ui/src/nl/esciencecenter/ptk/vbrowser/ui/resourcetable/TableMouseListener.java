@@ -21,7 +21,6 @@
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
 import java.awt.Component;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import javax.swing.table.JTableHeader;
@@ -87,7 +86,6 @@ public class TableMouseListener extends ViewContainerEventAdapter
         // ------------------
 
         Component comp = (Component) e.getSource();
-        Point clickPoint = e.getPoint();
 
         GuiSettings uiSettings = table.getGuiSettings();
 
@@ -132,7 +130,7 @@ public class TableMouseListener extends ViewContainerEventAdapter
         {
             return null;
         }
-        
+
         TableColumn column = columnModel.getColumn(colnr);
         String name = (String) column.getHeaderValue();
         return name;
