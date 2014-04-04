@@ -20,112 +20,23 @@
 
 package nl.esciencecenter.ptk.ui.widgets;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 
-/** 
- * String Selection ComboBox which doesn't use Generic. 
+/**
+ * String Selection ComboBox which doesn't use Generic.
  */
-public class StringSelectionComboBox extends JComboBox
+public class StringSelectionComboBox<T> extends SelectionComboBox<String> 
 {
-    private static final long serialVersionUID = -8233146785771708020L;
-
-    //private StringList values;
-    
-    boolean optionsEditable = false; // whether options are editable
+    private static final long serialVersionUID = -4341388515805762631L;
 
     public StringSelectionComboBox()
     {
-        super();
-        init();
+        super(new String[0]); 
     }
 
-    public StringSelectionComboBox(String[] vals)
+    public StringSelectionComboBox(String[] values)
     {
-        super();
-        setValues(vals);
+        super(values); 
     }
 
-    private void init()
-    {
-        DefaultComboBoxModel model = new DefaultComboBoxModel();
-        setModel(model);
-    }
-
-    public void setValues(String[] values)
-    {
-        //this.values = new StringList(values);
-
-        if (values == null)
-            values = new String[0];
-
-        this.setModel(new DefaultComboBoxModel(values));
-    }
-
-    public boolean hasValue(String val)
-    {
-        return ( ((DefaultComboBoxModel) this.getModel()).getIndexOf(val)>=0);
-    }
     
-    public void addValue(String enumVal)
-    {
-        ((DefaultComboBoxModel) this.getModel()).addElement(enumVal);
-    }
-
-    public void removeValue(String enumVal)
-    {
-        ((DefaultComboBoxModel) this.getModel()).removeElement(enumVal);
-    }
-
-    public void setValue(String txt)
-    {
-        this.getModel().setSelectedItem(txt);
-    }
-
-    public String getName()
-    {
-        return super.getName();
-    }
-
-    public void updateFrom(String value)
-    {
-        this.setValue(value);
-    }
-
-    public void setEditable(boolean flag)
-    {
-        super.setEditable(flag);
-    }
-
-    /**
-     * Selectable => drop down option is 'selectable'. optionsEditable = drop
-     * down selection entries are editable as well !
-     */
-    public void setEditable(boolean selectable, boolean optionsEditable)
-    {
-        this.setEnabled(selectable);
-        this.setEditable(optionsEditable);
-    }
-    
-    public String getSelectedItem()
-    {
-        Object obj=super.getSelectedItem();
-        if (obj==null)
-            return null; 
-        
-        return obj.toString(); 
-    }
-    
-    public void setSelectedItem(Object value)
-    {   
-        if (value==null)
-        {
-            this.setEnabled(false); 
-            return;
-        }
-        
-        // explicit convert to String. 
-        String strValue=value.toString();
-        super.setSelectedItem(strValue); 
-    }
 }
