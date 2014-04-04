@@ -35,6 +35,7 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -257,7 +258,8 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
 
         if (name.equals(InfoRSConstants.RESOURCE_TARGETVRL))
         {
-            attr = new Attribute(name, getTargetVRL());
+            // VRL attribute or nill attribute. 
+            attr = AttributeUtil.createVRLAttribute(name,getTargetVRL(),true);
         }
         else if (name.equals(InfoRSConstants.RESOURCE_MIMETYPE))
         {

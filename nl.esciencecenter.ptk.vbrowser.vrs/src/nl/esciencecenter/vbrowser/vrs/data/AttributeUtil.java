@@ -272,4 +272,23 @@ public class AttributeUtil
         }
     }
 
+    /** 
+     * Create VRL Attribute or ANY type NULL attribute (= nill attribute). 
+     */
+    public static Attribute createVRLAttribute(String name, VRL vrl, boolean isNullAllowed)
+    {
+        if (vrl==null)
+        {
+            if (isNullAllowed)
+            {
+                return new Attribute(name,(String)null); 
+            }
+            else
+            {
+                throw new NullPointerException("Cannot create NULL VRL Attribute if null value is not allowed"); 
+            }
+        }
+        return new Attribute(name,vrl); 
+    }
+
 }
