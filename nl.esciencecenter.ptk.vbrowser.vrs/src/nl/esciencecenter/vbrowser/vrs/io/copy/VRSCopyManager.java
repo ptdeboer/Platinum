@@ -78,11 +78,11 @@ public class VRSCopyManager
     public boolean doLinkDrop(List<VRL> vrls, VRL destVrl, VARHolder<VPath> destPathH, VARListHolder<VPath> resultNodesH,
             ITaskMonitor monitor) throws VrsException
     {
-        String taskName = "LinkDrop to:" + destVrl;
+        String taskName = "LinkDrop on:" + destVrl;
         logger.debugPrintf("doLinkDrop():%s, vrls=%s\n", destVrl, new ExtendedList<VRL>(vrls));
         monitor.startTask(taskName, vrls.size());
-        monitor.logPrintf(">>> doLinkDrop on:%s,  vrls=%s\n", destVrl, new ExtendedList<VRL>(vrls));
-
+        monitor.logPrintf("LinkDrop on:%s, vrls=\n", destVrl);
+        
         try
         {
             VPath destPath = this.vrsClient.openPath(destVrl);
@@ -98,7 +98,7 @@ public class VRSCopyManager
             for (VRL vrl : vrls)
             {
                 VPath sourcePath=vrsClient.openPath(vrl); 
-                monitor.logPrintf(" - linkDrop %s\n", vrl);
+                monitor.logPrintf(" - linkDrop: %s\n", vrl);
                 VInfoResourcePath newNode;
                 
                 if (destPath instanceof VInfoResourcePath)
@@ -118,7 +118,7 @@ public class VRSCopyManager
                     {
                         newNode = infoDest.createResourceLink(vrl, "Link to:" + vrl.getBasename());
                     }
-                    monitor.logPrintf("Created new ResourceNode:%s\n", newNode);
+                    monitor.logPrintf(" -created new ResourceNode:%s\n", newNode);
                     nodes.add(newNode);
                 }
                 else if (destPath instanceof VFSPath)
@@ -139,7 +139,7 @@ public class VRSCopyManager
                 }
                 else
                 {
-                    throw new VrsException("LinkDrop not support on resource:" + destVrl);
+                    throw new VrsException("LinkDrop not supported on resource:" + destVrl);
                 }
 
                 monitor.updateTaskDone(++index);
@@ -169,9 +169,10 @@ public class VRSCopyManager
             throw new VrsException("No resource to copy/move");
         }
 
-        String taskName = isMove ? "Move" : "Copy";
-        monitor.startTask(taskName, vrls.size());
-        monitor.logPrintf(">>> doCopyMove(isMove=%s) on:%s, vrls=%s\n", isMove, destVrl, new ExtendedList<VRL>(vrls));
+        String actionStr=((isMove==true)?"Moving":"Copying")+" to:"+destVrl; 
+        monitor.startTask(actionStr, vrls.size());
+        
+        monitor.logPrintf("%s.\n", actionStr); 
         int index = 0;
 
         VPath destPath = vrsClient.openPath(destVrl);
@@ -191,8 +192,8 @@ public class VRSCopyManager
             {
                 if (vrls.size() > 1)
                 {
-                    // could be arguments for a script/binary here
-                    throw new VrsException("Cannot drop multiple resources onto a single file");
+                    // could be arguments to start a script/binary here
+                    throw new VrsException("Cannot drop multiple resources onto a single file!");
                 }
 
                 status = doCopyMoveResourceToFile(firstPath, vfsDestPath, isMove, monitor);
@@ -201,7 +202,6 @@ public class VRSCopyManager
                     ArrayList<VPath> deletedPaths = new ArrayList<VPath>();
                     deletedPaths.add(firstPath);
                     deletedNodesH.set(deletedPaths);
-                    
                 }
             }
             else
@@ -209,13 +209,13 @@ public class VRSCopyManager
                 throw new VrsException("Don't know how to copy to VFS Path:" + destPath);
             }
 
-            monitor.endTask(taskName);
+            monitor.endTask(actionStr);
             return status;
         }
 
-        monitor.endTask(taskName);
+        monitor.endTask(actionStr);
 
-        throw new VrsException("Don't know how to copy to:" + destPath);
+        throw new VrsException("Don't know how to copy/move to:" + destPath);
     }
 
     private boolean doCopyMoveResourceToFile(VPath sourcePath, VFSPath targetPath, boolean isMove, ITaskMonitor monitor)
@@ -283,7 +283,9 @@ public class VRSCopyManager
             VARListHolder<VPath> deletedNodesH, ITaskMonitor monitor) throws VrsException
     {
 
-        monitor.logPrintf("CopyMove to Directory:%s\n", targetDirPath);
+        String actionStr=((isMove==true)?"Moving":"Copying"); 
+        
+        monitor.logPrintf("%s to directory:%s.\n", actionStr,targetDirPath.getVRL());
 
         List<VPath> resultPaths = new ArrayList<VPath>();
         resultPathsH.set(resultPaths);
@@ -293,15 +295,17 @@ public class VRSCopyManager
 
         for (VRL vrl : vrls)
         {
-            monitor.logPrintf(" - CopyMove source:%s\n", vrl);
             VPath sourcePath = vrsClient.openPath(vrl);
 
             if (sourcePath instanceof VFSPath)
             {
                 VFSPath actualTargetFile = targetDirPath.resolvePath(sourcePath.getVRL().getBasename());
-                logger.errorPrintf("Resolve: '%s' + '%s' => '%s'\n", targetDirPath.getVRL(), sourcePath.getVRL().getBasename(),
+                
+                logger.debugPrintf("Resolved targetFile: '%s' + '%s' => '%s'\n", targetDirPath.getVRL(), sourcePath.getVRL().getBasename(),
                         actualTargetFile.getVRL());
 
+                monitor.logPrintf(" - %s resource:%s => %s\n",actionStr, vrl,actualTargetFile.getVRL());
+                
                 VFSPath vfsPath = (VFSPath) sourcePath;
 
                 if (vfsPath.isFile())
