@@ -33,8 +33,8 @@ import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.GuiSettings;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
+import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
@@ -104,7 +104,7 @@ public class BrowserPlatform
 
     private VRSClient vrsClient;
 
-    private GuiSettings guiSettings;
+    private UIProperties guiSettings;
 
     protected BrowserPlatform(String id) throws Exception
     {
@@ -124,7 +124,7 @@ public class BrowserPlatform
         // use custom configuration location for platform specific settings.
         URI cfgDir = getPlatformConfigDir(null);
         initVRSContext(cfgDir);
-        guiSettings = new GuiSettings();
+        guiSettings = new UIProperties();
 
         // ===================================
         // Init VRS Classes
@@ -255,7 +255,7 @@ public class BrowserPlatform
         return iconProvider;
     }
 
-    public GuiSettings getGuiSettings()
+    public UIProperties getGuiSettings()
     {
         return guiSettings;
     }

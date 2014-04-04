@@ -29,8 +29,8 @@ import javax.swing.table.TableColumnModel;
 
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.GuiSettings;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
+import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 
 /**
  * Extends default ViewContainerEventAdapter with Header clicks and other Table specific events.
@@ -87,7 +87,7 @@ public class TableMouseListener extends ViewContainerEventAdapter
 
         Component comp = (Component) e.getSource();
 
-        GuiSettings uiSettings = table.getGuiSettings();
+        UIProperties uiSettings = table.getGuiSettings();
 
         // boolean ctrl=((e.getModifiersEx() & e.CTRL_DOWN_MASK) !=0);
 
