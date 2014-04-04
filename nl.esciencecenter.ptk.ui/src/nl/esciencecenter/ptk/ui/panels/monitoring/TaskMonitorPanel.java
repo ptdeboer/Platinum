@@ -223,7 +223,8 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
             if (showTransfersSpeeds)
                 finalStr += " (" + speedStr + ")";
 
-            finalStr += " in " + Presentation.createRelativeTimeString(monitorStats.getTotalDoneTime(), false);
+            long done=monitorStats.getTotalDoneTime();
+            finalStr += " in " + Presentation.createRelativeTimeString(done, false);
 
             return finalStr;
         }

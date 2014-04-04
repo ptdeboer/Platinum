@@ -1,4 +1,4 @@
-package nl.esciencecenter.presentation;
+package nl.esciencecenter.ptk.presentation;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -202,7 +202,9 @@ public class TransferMonitorPanel extends JPanel
         }
     }
     
-    /** return progress information */ 
+    /** 
+     * Return progress information 
+     */ 
     public String getTotalProgressText()
     {
         TransferMonitor info=vfsTransferInfo;

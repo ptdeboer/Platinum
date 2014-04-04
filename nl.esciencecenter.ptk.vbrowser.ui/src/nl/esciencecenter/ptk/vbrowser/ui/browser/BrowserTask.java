@@ -21,7 +21,9 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import nl.esciencecenter.ptk.task.ActionTask;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.ITaskSource;
+import nl.esciencecenter.ptk.task.TaskMonitorAdaptor;
 
 /**
  * ActionTask origination from a (Proxy)Browser  
@@ -34,7 +36,7 @@ public abstract class BrowserTask extends ActionTask
      */
     public BrowserTask(ProxyBrowserController browserController, String taskName)
     {
-        super(browserController.getTaskSource(), taskName);
+        super(browserController.getTaskSource(), taskName, new TaskMonitorAdaptor(taskName,1));
     }
     
     /**
@@ -44,13 +46,19 @@ public abstract class BrowserTask extends ActionTask
      */
     public BrowserTask(ITaskSource taskSource, String taskName)
     {
-        super(taskSource, taskName);
+        super(taskSource, taskName, new TaskMonitorAdaptor(taskName,1));
+    }
+    
+    public BrowserTask(ITaskSource taskSource, String taskName, ITaskMonitor monitor)
+    {
+        super(taskSource, taskName, monitor);
     }
 
+    
     @Override
     protected void stopTask()
     {
-        this.getTaskMonitor().logPrintf("*STOP* received for:%s\n", this); 
+        this.getTaskMonitor().logPrintf("*STOP* Received for:%s\n", this); 
     }
 
 }

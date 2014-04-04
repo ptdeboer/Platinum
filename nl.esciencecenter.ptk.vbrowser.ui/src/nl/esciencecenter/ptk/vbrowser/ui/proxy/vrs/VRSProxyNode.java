@@ -35,6 +35,8 @@ import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
+import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
+import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
@@ -448,7 +450,18 @@ public class VRSProxyNode extends ProxyNode
     {
         try
         {
-            this.vnode.delete(recurse);
+            if (vnode instanceof VPathDeletable)
+            {
+                ((VPathDeletable)vnode).delete(recurse);
+            }
+            else if (vnode instanceof VDeletable)
+            {
+                ((VDeletable)vnode).delete();
+            }
+            else
+            {
+                throw new ProxyException("Resource can't be deleted:"+this); 
+            }
         }
         catch (VrsException e)
         {

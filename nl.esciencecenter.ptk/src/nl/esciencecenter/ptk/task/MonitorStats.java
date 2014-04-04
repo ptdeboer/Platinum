@@ -25,8 +25,8 @@ import nl.esciencecenter.ptk.task.ITaskMonitor.TaskStats;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 /**
- * Class which calculates statistics from an ITaskMonitor object. Also provides
- * some extra status to String methods like estimated time of arrival (ETA).
+ * Class which calculates statistics from an ITaskMonitor object. Also provides some extra status to String methods like
+ * estimated time of arrival (ETA).
  */
 public class MonitorStats
 {
@@ -45,16 +45,30 @@ public class MonitorStats
     }
 
     /**
-     * Returns current task time time in millis or total time when task is done
+     * Returns total current running time in millis or total time when task is done. 
      */
     public long getTotalDoneTime()
     {
-        TaskStats stats = monitor.getTaskStats();
-
+        TaskStats stats = monitor.getTaskStats(); // may never be null
+        
+        if (stats.startTimeMillies<=0)
+        {
+            // Start not recorded! 
+            return -1; 
+        }
+        
         if (monitor.isDone())
         {
-            return (stats.stopTimeMillies - stats.startTimeMillies);
-
+            if ( (stats.stopTimeMillies<=0) || (stats.startTimeMillies<=0) )
+            {
+                // start or stop not recorded. 
+                return -1; 
+            }
+            else
+            {             
+                long done= (stats.stopTimeMillies - stats.startTimeMillies);
+                return done; 
+            }
         }
         else
         {
@@ -76,7 +90,9 @@ public class MonitorStats
     public long getETA()
     {
         if (monitor.isDone())
+        {
             return 0; // done
+        }
         return calcETA(monitor.getTaskStats().done, monitor.getTaskStats().todo, getTotalSpeed());
     }
 
@@ -87,13 +103,19 @@ public class MonitorStats
             String subStr = monitor.getCurrentSubTaskName();
 
             if (StringUtil.isEmpty(subStr))
+            {
                 return "Busy ...";
+            }
             else
+            {
                 return subStr;
+            }
         }
 
         if (monitor.hasError())
+        {
             return "Error!";
+        }
 
         return "Finished!";
     }
@@ -101,27 +123,29 @@ public class MonitorStats
     /**
      * Return ETA in milli sconds.
      * 
-     * @return the return value is -1 for unknown, 0 for done or 0> for actual
-     *         estimated time in milli seconds.
+     * @return the return value is -1 for unknown, 0 for done or 0> for actual estimated time in milli seconds.
      */
     public long calcETA(long done, long todo, double speed)
     {
         // no statistics !
         if (done < 0)
+        {
             return -1; // unknown
-
+        }
         // nr of bytes/ nr of total work todo
         long delta = todo - done;
 
         if (speed <= 0)
+        {
             return -1; // unknown, prevent divide by zero;
+        }
         // return ETA in millis !
         return (long) ((1000 * delta) / speed);
     }
 
     /**
-     * Return speed total transfer amount of workdone/seconds for transfer this
-     * is bytes/second. If nr of bytes equals amount of work done.
+     * Return speed total transfer amount of workdone/seconds for transfer this is bytes/second. If nr of bytes equals
+     * amount of work done.
      */
     public double getTotalSpeed()
     {
@@ -145,13 +169,23 @@ public class MonitorStats
     }
 
     /**
-     * Calculate total time busy in milli secondss but use Last Update Time to
-     * prevent 'degrading' performance time between updates ! This happens when
-     * the transfer is stalled but the time continues.
+     * Return delta time between last update time and the start time.<br>
+     * The actual last update time must be used and not current time to prevent 'degrading' of performance time
+     * between updates! This happens when the transfer is stalled but the time continues.
      */
     public long getTotalDoneDeltaTime()
     {
         TaskStats stats = monitor.getTaskStats();
+        if (stats==null)
+        {
+            return -1; 
+        }
+        // no stats yet. 
+        if ((stats.doneLastUpdateTimeMillies<=0) || (stats.startTimeMillies<=0)) 
+        {
+            return -1; 
+        }
+        
         return stats.doneLastUpdateTimeMillies - stats.startTimeMillies;
     }
 
@@ -210,8 +244,8 @@ public class MonitorStats
     }
 
     /**
-     * Return speed total transfer amount of &lt;task steps&gt;/seconds For
-     * example for file transfers this is bytes/second.
+     * Return speed total transfer amount of &lt;task steps&gt;/seconds For example for file transfers this is
+     * bytes/second.
      */
     public double getSubTaskSpeed(String subTaskName)
     {
@@ -258,13 +292,12 @@ public class MonitorStats
     }
 
     /**
-     * Return milli seconds between sub task updates. Method returns -1 if not
-     * known ! Return value of 0 is possible if delta time < 1ms.
+     * Return milli seconds between sub task updates. Method returns -1 if not known ! Return value of 0 is possible if
+     * delta time < 1ms.
      * 
      * @param subTaskName
      *            - logical task name to check.
-     * @return time in milliseconds between updates of subTasks, or -1 if value
-     *         or subTaskName not known.
+     * @return time in milliseconds between updates of subTasks, or -1 if value or subTaskName not known.
      * @see #getSubTaskDoneDeltaTime(String)
      */
     public long getSubTaskDoneDeltaTime(String subTaskName)
@@ -273,8 +306,7 @@ public class MonitorStats
     }
 
     /**
-     * Return milli seconds between sub task updates. Beware of 0 values. Method
-     * return -1 if not known !
+     * Return milli seconds between sub task updates. Beware of 0 values. Method return -1 if not known !
      * 
      * @param stats
      *            - TaskStats to check.
@@ -321,8 +353,7 @@ public class MonitorStats
     }
 
     /**
-     * Produce Time String of current Subtask. Returns time running plus
-     * estimated time of arrival.
+     * Produce Time String of current Subtask. Returns time running plus estimated time of arrival.
      * 
      * @return
      */

@@ -40,11 +40,6 @@ public class TaskMonitorAdaptor implements ITaskMonitor
 
     protected Map<String, TaskStats> subTaskStats = new Hashtable<String, TaskStats>();
 
-    // === Listeners ===
-
-    // protected Vector<ITaskMonitorListener> listeners = new
-    // Vector<ITaskMonitorListener>();
-
     // === status ===
     protected boolean isCancelled = false;
 
@@ -68,7 +63,7 @@ public class TaskMonitorAdaptor implements ITaskMonitor
     public TaskMonitorAdaptor(String taskName, long todo)
     {
         init();
-
+        startTask(taskName,todo); 
     }
 
     private void init()
@@ -173,9 +168,8 @@ public class TaskMonitorAdaptor implements ITaskMonitor
     }
 
     /**
-     * This method will block until the setDone() method is called or the
-     * specified time has passed. This method is simalar to:
-     * {@link java.lang.Object#wait(long)}
+     * This method will block until the setDone() method is called or the specified time has passed. This method is
+     * simalar to: {@link java.lang.Object#wait(long)}
      */
     public void waitForCompletion(int timeout) throws InterruptedException
     {

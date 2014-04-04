@@ -27,8 +27,7 @@ import nl.esciencecenter.ptk.util.logging.FormattingLogger;
 import nl.esciencecenter.ptk.util.logging.RecordingLogHandler;
 
 /**
- * Custom logger class for the TaskMonitor. Use java.logging compatible
- * (sub)class.
+ * Custom logger class for the TaskMonitor. Use java.logging compatible (sub)class.
  */
 public class TaskLogger extends FormattingLogger
 {

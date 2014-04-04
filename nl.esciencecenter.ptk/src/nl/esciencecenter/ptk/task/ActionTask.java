@@ -21,7 +21,8 @@
 package nl.esciencecenter.ptk.task;
 
 /**
- * Abstract Action Task.
+ * Abstract Action Task.<br>
+ * Manages a runnable task.
  */
 public abstract class ActionTask implements Runnable
 {
@@ -51,7 +52,7 @@ public abstract class ActionTask implements Runnable
 
     public ActionTask(ITaskSource taskWatcher, String taskName)
     {
-        init(taskWatcher, taskName, null);
+        init(taskWatcher, taskName, new TaskMonitorAdaptor(taskName,1));
     }
 
     public ActionTask(ITaskSource taskWatcher, String taskName, ITaskMonitor monitor)
@@ -65,12 +66,18 @@ public abstract class ActionTask implements Runnable
         this.taskName = taskName;
         // default monitor:
         if (monitor != null)
+        {
             this.taskMonitor = monitor;
+        }
         else
-            this.taskMonitor = new TaskMonitorAdaptor();
+        {
+            this.taskMonitor = new TaskMonitorAdaptor(taskName,1);
+        }
 
         if (taskWatcher != null)
+        {
             taskWatcher.registerTask(this);
+        }
     }
 
     final public ITaskSource getTaskSource()
@@ -107,33 +114,49 @@ public abstract class ActionTask implements Runnable
     public boolean hasThread(Thread thread)
     {
         if (this.threads == null)
+        {
             return false;
+        }
 
         synchronized (threadMutex)
         {
             for (Thread thr : threads)
             {
                 if (thr == thread)
+                {
                     return true;
+                }
             }
             return false;
         }
     }
 
     /**
-     * Returns number of threads associated with this task.
+     * Returns number of threads associated with this task.<br>
+     * Number of threads equals the number of parallel invocations of this task.
      */
     final int getNumThreads()
     {
         if (this.threads == null)
+        {
             return 0;
+        }
         return this.threads.length;
     }
 
+    /**
+     * Returns thread of parallel task.
+     * 
+     * @param index
+     *            number of task.
+     * @return actual thread.
+     */
     final public Thread getThread(int index)
     {
         if (threads == null)
+        {
             return null;
+        }
 
         return this.threads[index];
     }
@@ -151,7 +174,9 @@ public abstract class ActionTask implements Runnable
             for (Thread thread : threads)
             {
                 if ((thread != null) && (thread.isAlive()))
+                {
                     return true;
+                }
             }
         }
 
@@ -169,7 +194,7 @@ public abstract class ActionTask implements Runnable
     }
 
     /**
-     * Start a daemon thread for this task which keep running.
+     * Start a daemon thread for this task which keeps running.
      */
     final public void startDaemonTask()
     {
@@ -185,7 +210,9 @@ public abstract class ActionTask implements Runnable
     final public boolean join() throws InterruptedException
     {
         if ((threads == null) || (threads.length <= 0))
+        {
             return false;
+        }
 
         boolean joined = false;
         for (Thread thread : threads)
@@ -206,7 +233,9 @@ public abstract class ActionTask implements Runnable
     final public boolean join(int index) throws InterruptedException
     {
         if ((threads == null) || (threads[index] == null) || threads[index].isAlive() == false)
+        {
             return false;
+        }
 
         this.threads[index].join();
 
@@ -297,7 +326,9 @@ public abstract class ActionTask implements Runnable
     final public Throwable getException()
     {
         if (exceptions == null)
+        {
             return null;
+        }
         return exceptions[0];
     }
 
@@ -314,7 +345,9 @@ public abstract class ActionTask implements Runnable
     final protected void setException(int index, Throwable t)
     {
         if (this.exceptions == null)
+        {
             this.exceptions = new Throwable[getNumThreads()];
+        }
 
         exceptions[index] = t;
     }
@@ -388,7 +421,7 @@ public abstract class ActionTask implements Runnable
         {
             return;
         }
-        
+
         synchronized (threadMutex)
         {
             // trigger release resources held by threads:
@@ -511,7 +544,7 @@ public abstract class ActionTask implements Runnable
      * scheduling.<br>
      * To trigger the stopTask() call signalTerminate(). It is also recommended to check the isCancelled() method and
      * check the state of the running thread. This method provides an asynchronous callback method as an alternative to
-     * isCancelled() which must be called explicitly by the implementing task. 
+     * isCancelled() which must be called explicitly by the implementing task.
      */
     abstract protected void stopTask() throws Exception;
 

@@ -24,8 +24,7 @@ import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.events.IEventSource;
 
 /**
- * Interface for Action Tasks, or other objects, which can be monitored and
- * provide statistics about the progress.
+ * Interface for Action Tasks, or other objects, which can be monitored and provide statistics about the progress.
  * 
  */
 public interface ITaskMonitor extends IEventSource
@@ -110,9 +109,8 @@ public interface ITaskMonitor extends IEventSource
     // ======================
 
     /**
-     * Start new Task. Use logical taskName to distinguish between multiple
-     * tasks using the same monitor. For nested tasks use startSubTask and
-     * endSubTask as main tasks may not be nested.
+     * Start new Task. Use logical taskName to distinguish between multiple tasks using the same monitor. For nested
+     * tasks use startSubTask and endSubTask as main tasks may not be nested.
      * 
      * @param taskName
      *            - New logical task name. Main tasks may not be nested.
@@ -131,8 +129,7 @@ public interface ITaskMonitor extends IEventSource
     public TaskStats getTaskStats();
 
     /**
-     * End current main taks. logical taskName must match name given at
-     * <code> startTask() </code>.
+     * End current main taks. logical taskName must match name given at <code> startTask() </code>.
      * 
      * @param taskName
      *            - logical taskName which has ended.
@@ -171,10 +168,8 @@ public interface ITaskMonitor extends IEventSource
     public void logPrintf(String format, Object... args);
 
     /**
-     * Returns logging events into one text String. Set resetLogBuffer to true
-     * to reset the log buffer so that each getLogTexT() will return the events
-     * since the last getLogText() call. Specify log event offset in
-     * logEventOffset.
+     * Returns logging events into one text String. Set resetLogBuffer to true to reset the log buffer so that each
+     * getLogTexT() will return the events since the last getLogText() call. Specify log event offset in logEventOffset.
      * 
      * @return returns current log event number.
      */

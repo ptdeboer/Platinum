@@ -23,8 +23,7 @@ package nl.esciencecenter.ptk.task;
 import java.net.URI;
 
 /**
- * Transfer Specific Monitor. Adds more meta fields specific for (VRS) File
- * Transfers.
+ * Transfer Specific Monitor. Adds more meta fields specific for (VRS) File Transfers.
  * 
  * @author Piter T. de Boer.
  */
@@ -136,8 +135,7 @@ public class TransferMonitor extends TaskMonitorAdaptor
     // ===
 
     /**
-     * During a transfer, more source might be added by the ongoing transfer
-     * process.
+     * During a transfer, more source might be added by the ongoing transfer process.
      * 
      * @param sources
      *            - new full list of sources.
