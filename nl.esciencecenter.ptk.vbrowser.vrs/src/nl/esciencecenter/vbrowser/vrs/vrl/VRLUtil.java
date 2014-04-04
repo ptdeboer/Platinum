@@ -62,4 +62,9 @@ public class VRLUtil
         return uris; 
     }
 
+    public static VRL getServerVRL(VRL vrl)
+    {
+        return new VRL(vrl.getScheme(),vrl.getUserinfo(),vrl.getHostname(),vrl.getPort(),"/",null,null); 
+    }
+
 }

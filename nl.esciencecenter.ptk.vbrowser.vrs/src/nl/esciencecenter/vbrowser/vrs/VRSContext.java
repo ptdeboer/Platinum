@@ -28,16 +28,26 @@ import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.Registry;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfoRegistry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/** 
+ * Main Context of the Virtual Resource Systems. 
+ * Hold Registry, ResourceSystemInfoRegistry and instanciated ResourceSystems. 
+ */
 public class VRSContext
 {
     private static final ClassLogger logger=ClassLogger.getLogger(VRSContext.class); 
+    
+    private static long instanceCounter=0; 
+    
+    // ---
+    // Instance 
+    // --- 
+    private long id=instanceCounter++; 
     
     protected Registry registry;
     
@@ -56,6 +66,11 @@ public class VRSContext
         init(new VRSProperties("VRSContext")); 
     }
 
+    public long getID()
+    {
+        return id; 
+    }
+    
     public VRSContext(Properties props)
     {
         init(new VRSProperties("VRSContext",props,true));
@@ -68,6 +83,7 @@ public class VRSContext
 
     private void init(VRSProperties privateProperties)
     {
+        logger.infoPrintf("***New VRSContext(), id="+id+"***");
         // default Static Registry ! 
         this.registry=Registry.getInstance(); 
         this.vrsProperties=privateProperties;
@@ -80,6 +96,9 @@ public class VRSContext
         return registry;  
     }
     
+    /** 
+     * @return Configure properties for this VRSContext. 
+     */
     public VRSProperties getProperties()
     {
         return this.vrsProperties; 
@@ -118,6 +137,7 @@ public class VRSContext
         {
             info=new ResourceSystemInfo(resourceInfoRegistry,vrl,id);
         }
+        info=fac.updateResourceInfo(this, info, vrl); 
         return info; 
     }
 

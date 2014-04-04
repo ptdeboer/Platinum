@@ -34,14 +34,6 @@ public class UIViewModel
         public boolean reverseSort=false;
         public boolean ignoreCase=true; 
     }
-    // ======
-    // Class
-    // ======
-//    public static class UIAttributes
-//    {   
-//        Color foreground=null;
-//        Color background=null;
-//    }
     
     // ======
     // Class
@@ -50,27 +42,17 @@ public class UIViewModel
     public static enum UIDirection{HORIZONTAL,VERTICAL}; 
     
     public static enum UIAlignment{LEFT,CENTER,RIGHT,FILL}; 
-	
-	//private static UIModel defaultModel=null; 
 
-    private static UIViewModel iconsListModel=null;
-
-    private static UIViewModel iconsModel=null;
-
-    private static UIViewModel tableModel=null;
-
-
-    public static synchronized UIViewModel createTreeViewModel()
+    public static UIViewModel createTreeViewModel()
     {
         UIViewModel model=new UIViewModel(); 
         model.iconSize=16; 
         return model; 
     }
 
-    public static synchronized UIViewModel createIconsModel(int size)
+    public static UIViewModel createIconsModel(int size)
     {
-        if (iconsModel==null)
-            iconsModel=new UIViewModel(); 
+        UIViewModel iconsModel=new UIViewModel(); 
         
         iconsModel.iconSize=size; 
         iconsModel.iconLayoutDirection=UIDirection.HORIZONTAL;
@@ -80,11 +62,9 @@ public class UIViewModel
         return iconsModel; 
     }
 
-    // class sync'd: method does't take much time. 
-    public static synchronized  UIViewModel createIconsListModel(int size)
+    public static   UIViewModel createIconsListModel(int size)
     {
-        if (iconsListModel==null)
-            iconsListModel=new UIViewModel(); 
+        UIViewModel iconsListModel=new UIViewModel(); 
         
         iconsListModel.iconSize=size; 
         iconsListModel.iconLayoutDirection=UIDirection.VERTICAL;
@@ -96,13 +76,12 @@ public class UIViewModel
 
     public static UIViewModel createTableModel()
     {
-        if (tableModel==null)
-            tableModel=new UIViewModel(); 
+        UIViewModel defaultTableModel=new UIViewModel(); 
         
-        tableModel.iconSize=16; 
-        tableModel.maximumIconLabelWidth=120; 
+        defaultTableModel.iconSize=16; 
+        defaultTableModel.maximumIconLabelWidth=120; 
         
-        return tableModel; 
+        return defaultTableModel; 
     }
     
 	// ========================================================================

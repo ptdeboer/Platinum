@@ -129,14 +129,17 @@ public class Registry
             
             if (resourceSystem==null)
             {
-                ResourceSystemInfo info=vrsContext.getResourceSystemInfoFor(vrl,true); 
-                info=factory.updateResourceInfo(vrsContext,info,vrl);
-                vrsContext.putResourceSystemInfo(info); 
+                ResourceSystemInfo info=getResourceSystemInfo(vrsContext, vrl, true);
                 resourceSystem=factory.createResourceSystemFor(vrsContext,info,vrl);
                 instances.put(id, resourceSystem); 
             }
             return resourceSystem;
         }
+    }
+    
+    protected ResourceSystemInfo getResourceSystemInfo(VRSContext vrsContext, VRL vrl,boolean autoCreate) throws VrsException
+    {
+        return vrsContext.getResourceSystemInfoFor(vrl,true); 
     }
     
     public void registryFactoryNoException(Class<? extends VResourceSystemFactory> vrsClass,Level loggerLevel)
@@ -177,8 +180,7 @@ public class Registry
                 
                 list.add(new SchemeInfo(scheme,vrsInstance));
             }
-        }
-        
+        }       
     }
 
 }

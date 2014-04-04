@@ -29,14 +29,9 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class TaskWatcher implements ITaskSource
 {
-    private static ClassLogger logger;
+    private static ClassLogger logger = ClassLogger.getLogger(TaskWatcher.class);
 
     private static TaskWatcher instance = null;
-
-    static
-    {
-        logger = ClassLogger.getLogger(TaskWatcher.class);
-    }
 
     // === //
 

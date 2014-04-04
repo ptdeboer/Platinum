@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.data.Holder;
 import nl.esciencecenter.ptk.data.VARHolder;
 import nl.esciencecenter.ptk.data.VARListHolder;
 import nl.esciencecenter.ptk.io.IOUtil;
@@ -40,7 +39,6 @@ import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
 import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;

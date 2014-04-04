@@ -39,7 +39,6 @@ public class VRSTaskWatcher extends TaskWatcher
         if (instance==null)
         {
             instance=new VRSTaskWatcher("VRSTaskWatcher");
-            logger.setLevelToDebug(); 
         }
         
         return instance; 

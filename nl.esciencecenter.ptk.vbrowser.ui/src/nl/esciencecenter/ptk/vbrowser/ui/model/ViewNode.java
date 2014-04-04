@@ -201,7 +201,7 @@ public class ViewNode // candidate: implements Serializable
     @Override
     public String toString()
     {
-        return "ViewNode [locator=" + locator + ", isComposite=" + isComposite
+        return "ViewNode:[locator=" + locator + ", isComposite=" + isComposite
                 + ", name=" + name + ", resourceType=" + resourceType
                 + ", resourceStatus=" + resourceStatus + ", mimeType=" + mimeType + ", allowedChildTypes="
                 + allowedChildTypes + "]";

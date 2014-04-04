@@ -30,12 +30,14 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.data.History;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
+import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
@@ -59,6 +61,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
+import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -180,6 +183,11 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         return "ProxyBrowser";
     }
 
+    public JFrame getJFrame()
+    {
+        return browserFrame;
+    }
+    
     private void init(BrowserPlatform platform, boolean show)
     {
         this.platform = platform;
@@ -413,14 +421,29 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     private void doOpenViewer(final ViewNode node, String optViewerClass, final String optMenuMethod, boolean standaloneWindow)
     {
+        boolean filterOctetStreamMimeType=true; 
+        
         logger.infoPrintf("doOpenViewer:%s\n", node);
         try
         {
-            ViewerPanel viewer = viewerManager.createViewerFor(node, optViewerClass);
-            // viewer=null;
+            ViewerPanel viewer; 
+            
+            if ((filterOctetStreamMimeType) && (StringUtil.equals(node.getMimeType(),MimeTypes.MIME_BINARY))) 
+            {
+                viewer= null; 
+            }
+            else
+            {
+                viewer= viewerManager.createViewerFor(node, optViewerClass);
+            }
+            
+            // -------------------------------------------------
+            // interactive ask what to do: ViewWith menu dialog 
+            // -------------------------------------------------
+            
             if (viewer == null)
             {
-                viewer = new ProxyObjectViewer(node);
+                viewer = new ProxyObjectViewer(this,node);
             }
 
             doStartViewer(node.getVRL(), viewer, optMenuMethod, standaloneWindow);
@@ -461,6 +484,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         if (standaloneWindow || viewer.isStandaloneViewer())
         {
             ViewerFrame frame = viewerManager.createViewerFrame(viewer, true);
+            frame.setLocationRelativeTo(this.getJFrame());
             frame.setVisible(true);
         }
         else
@@ -563,14 +587,14 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     {
         // Container listeners should update selections.
         // Perform here optional Menu updates...
-        logger.errorPrintf("***>>>> New Selection Node:%s\n", actionNode);
+        logger.errorPrintf("*** FIXME: New (global) Selection Node:\n - viewNode=%s\n",actionNode); 
     }
 
     public void doDefaultAction(ViewNode actionNode)
     {
         if (actionNode == null)
         {
-            logger.errorPrintf("FIXME: Null ActionNode\n");
+            logger.errorPrintf("*** FIXME: Null ActionNode\n");
             new Exception().printStackTrace();
             return;
         }
@@ -845,5 +869,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     {
         proxyUI.showMessage(title, message, false);
     }
+
+
 
 }

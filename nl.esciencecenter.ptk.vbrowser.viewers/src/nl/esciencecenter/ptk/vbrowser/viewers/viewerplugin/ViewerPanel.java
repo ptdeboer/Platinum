@@ -35,10 +35,10 @@ import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 
-/** 
- * Embedded Viewer Panel for VBrowser (viewers) plugins. 
+/**
+ * Embedded Viewer Panel for VBrowser (viewers) plugins. Note that the actual Viewers implement Viewer Interfaces.
  * 
- * @author Piter T. de Boer 
+ * @author Piter T. de Boer
  */
 public abstract class ViewerPanel extends JPanel implements Disposable
 {
@@ -48,128 +48,134 @@ public abstract class ViewerPanel extends JPanel implements Disposable
 
     private URI viewedUri;
 
-    private boolean isBusy; 
-    
-    private List<ViewerListener> listeners=new ArrayList<ViewerListener>(); 
-    
-    private PluginRegistry viewerRegistry=null;
-    
+    private boolean isBusy;
+
+    private List<ViewerListener> listeners = new ArrayList<ViewerListener>();
+
+    private PluginRegistry viewerRegistry = null;
+
     protected ViewerPanel()
     {
         this.setLayout(new BorderLayout());
     }
-    
+
     protected void setViewerRegistry(PluginRegistry viewerRegistry)
     {
-        if (this.viewerRegistry!=null)
+        if (this.viewerRegistry != null)
         {
             throw new Error("Cannot set ViewerRegistry Twice!");
         }
-        
-        this.viewerRegistry=viewerRegistry;
+
+        this.viewerRegistry = viewerRegistry;
     }
-    
+
     protected PluginRegistry getViewerRegistry()
     {
         return viewerRegistry;
     }
-    
-    /** 
+
+    /**
      * Add custom content to this panel.
+     * 
      * @return
      */
     public JPanel getContentPanel()
     {
-        return this; 
+        return this;
     }
 
     public JPanel initInnerPanel()
     {
-        this.innerPanel=new JPanel();
-        this.add(innerPanel,BorderLayout.CENTER); 
+        this.innerPanel = new JPanel();
+        this.add(innerPanel, BorderLayout.CENTER);
         this.innerPanel.setLayout(new FlowLayout());
         return innerPanel;
     }
-    
+
     final public URI getURI()
     {
-        return viewedUri; 
+        return viewedUri;
     }
-    
+
     final protected void setURI(URI uri)
     {
-        this.viewedUri=uri; 
+        this.viewedUri = uri;
     }
-    
-    
-    final public void startViewerFor(URI newUri,String optMenuMethod)
+
+    final public void startViewerFor(URI newUri, String optMenuMethod)
     {
-        this.setURI(newUri); 
+        this.setURI(newUri);
         startViewer(optMenuMethod);
-        // doUpdateURI(newUri); 
+        // doUpdateURI(newUri);
     }
-    
-    /** 
-     * Update the Viewed Location. 
+
+    /**
+     * Update the Viewed Location.
+     * 
      * @param newUri
      */
     final public void updateURI(URI newURI)
     {
-        setURI(newURI); 
-        doUpdateURI(newURI); 
+        setURI(newURI);
+        doUpdateURI(newURI);
     }
-    
-    /** 
-     * Whether Viewer has it own ScrollPane. 
-     * If not the parent Component might embedd the viewer into a ScrollPanel. 
+
+    /**
+     * Whether Viewer has it own ScrollPane. If not the parent Component might embedd the viewer into a ScrollPanel.
+     * 
      * @return
      */
     public boolean haveOwnScrollPane()
     {
-        return false; 
+        return false;
     }
 
-    /** 
-     * Whether to start this viewer in a StandAlone Dialog/Frame. 
-     * Some Viewers are not embedded viewers and must be started in a seperate Window.  
-     * @return
+    /**
+     * Whether to start this viewer always in a StandAlone Dialog/Frame. Some Viewers are not embedded viewers and must be
+     * started in a seperate Window.
+     * 
+     * @return whether viewer is a stand-alone viewer which must be started in its own window (frame).
      */
     public boolean isStandaloneViewer()
     {
         return false;
     }
 
-    /** 
-     * Set title of master frame or Viewer tab 
+    /**
+     * Set title of master frame or Viewer tab
      */
     public void setViewerTitle(final String name)
     {
         this.setName(name);
 
-        // also update JFrame 
+        // also update JFrame
         if (isStandaloneViewer())
         {
             JFrame frame = getJFrame();
             if (frame != null)
+            {
                 getJFrame().setTitle(name);
+            }
         }
-        
+
     }
-    
+
     /**
-     * Returns parent JFrame if contained in one. Might return NULL if parent is
-     * not a JFrame! use getTopLevelAncestor() to get the (AWT) toplevel
-     * component.
+     * Returns parent ViewerFrame (JFrame) if contained in one. Might return NULL if parent is not a JFrame. 
+     * Uses getTopLevelAncestor() to get the (AWT) toplevel component.
      * 
      * @see javax.swing.JComponent#getTopLevelAncestor()
      * @return the containing JFrame or null.
      */
-    final public JFrame getJFrame()
+    final public ViewerFrame getJFrame()
     {
-
         Container topcomp = this.getTopLevelAncestor();
-        if (topcomp instanceof Frame)
-            return ((JFrame) topcomp);
+
+        // stand-alone viewer must be embedded in a ViewerFrame. 
+        if (topcomp instanceof ViewerFrame)
+        {
+            return ((ViewerFrame) topcomp);
+        }
 
         return null;
     }
@@ -178,124 +184,143 @@ public abstract class ViewerPanel extends JPanel implements Disposable
     {
         return (this.getJFrame() != null);
     }
-    
+
+    /**
+     * If this panel is embedded in a (J)Frame, request that the parent JFrame performs a pack() and resizes the Frame to
+     * the preferred size. If this viewer is embedded in another panel, the method will not perform a resize and return
+     * false.
+     * 
+     * @return true if frame could perform pack, athough the actual pack() might be delayed.
+     */
+    final public boolean requestFramePack()
+    {
+        JFrame frame = getJFrame();
+
+        // only pack stand alone viewers embeeded in ViewerFrames. 
+        if ((frame == null) || ((frame instanceof ViewerFrame)==false))
+        {
+            return false;
+        }
+
+        frame.pack();
+        return true;
+    }
+
     final protected boolean closeViewer()
     {
-        stopViewer(); 
-        disposeViewer(); 
-        
-        if (isStandaloneViewer()==false)
-            return false;
-        
-        JFrame frame = this.getJFrame(); 
-  
-        if (frame!=null)
+        stopViewer();
+        disposeViewer();
+
+        if (isStandaloneViewer() == false)
         {
-            frame.setVisible(false); 
+            return false;
+        }
+        
+        JFrame frame = this.getJFrame();
+
+        if (frame != null)
+        {
+            frame.setVisible(false);
         }
         return true;
     }
-    
+
     @Override
     final public void dispose()
     {
-        stopViewer(); 
-        disposeViewer(); 
+        stopViewer();
+        disposeViewer();
     }
 
     final public void initViewer()
     {
-        doInitViewer(); 
+        doInitViewer();
     }
-    
+
     final public void startViewer(String optMenuMethod)
     {
-        doStartViewer(optMenuMethod); 
-        
-        // fireStarted(); 
+        doStartViewer(optMenuMethod);
+
+        // fireStarted();
     }
-    
+
     final public void stopViewer()
     {
-        doStopViewer(); 
-        // fireStopped(); 
+        doStopViewer();
+        // fireStopped();
     }
-    
+
     final public void disposeViewer()
     {
-        doDisposeViewer(); 
-        //fireDisposed(); 
+        doDisposeViewer();
+        // fireDisposed();
     }
-    
+
     // =========================================================================
     // Events
     // =========================================================================
-    
+
     public void addViewerListener(ViewerListener listener)
     {
-        this.listeners.add(listener); 
+        this.listeners.add(listener);
     }
 
     public void removeViewerListener(ViewerListener listener)
     {
-        this.listeners.remove(listener); 
+        this.listeners.remove(listener);
     }
 
     public void notifyBusy(boolean isBusy)
     {
-        this.isBusy=isBusy; 
+        this.isBusy = isBusy;
     }
-    
+
     public boolean isBusy()
     {
         return this.isBusy;
     }
-    
-    /** 
-     * Notify Viewer Manager or other Listeners that an Exception has occured. 
+
+    /**
+     * Notify Viewer Manager or other Listeners that an Exception has occured.
+     * 
      * @param message
      * @param e
      */
     protected void notifyException(String message, Throwable ex)
     {
-        ExceptionDialog.show(this, message, ex,false);
+        ExceptionDialog.show(this, message, ex, false);
     }
-    
+
     // =========================================================================
-    // Abstract Interface 
+    // Abstract Interface
     // =========================================================================
-    
+
     /**
-     * Initialize GUI Component of viewer. Do not start loading resource. 
-     * Typically this method is called during The Swing Event Thread. 
+     * Initialize GUI Component of viewer. Do not start loading resource. Typically this method is called during The
+     * Swing Event Thread.
      */
     abstract protected void doInitViewer();
 
-    /** 
+    /**
      * Start the viewer, load resources if necessary.
      */
     abstract protected void doStartViewer(String optionalMethod);
 
-    /** 
-     * Update content. 
+    /**
+     * Update content.
      */
     abstract protected void doUpdateURI(URI uri);
 
     /**
-     * Stop/suspend viewer. 
-     * All background activity must stop. 
-     * After a stopViewer() a startViewer() may occur to notify the viewer can be activateed again. 
+     * Stop/suspend viewer. All background activity must stop. After a stopViewer() a startViewer() may occur to notify
+     * the viewer can be activateed again.
      */
     abstract protected void doStopViewer();
 
     /**
-     * Stop viewer and dispose resources. 
-     * After a disposeViewer() a viewer will never be started but multiple disposeViewers() might ocure. 
-     */ 
+     * Stop viewer and dispose resources. After a disposeViewer() a viewer will never be started but multiple
+     * disposeViewers() might ocure.
+     */
     abstract protected void doDisposeViewer();
-
-
-
-  
 
 }

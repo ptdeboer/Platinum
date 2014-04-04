@@ -24,6 +24,7 @@ import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
+import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -309,6 +310,19 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
                 +",serverVrl=+"+getServerVRL()
                 +",password="+((passwd!=null)?"<PASSWORD>":"<No Password>")
                 +",properties="+properties+"]"; 
+    }
+
+    public boolean setIfNotSet(Attribute attr)
+    {
+        System.err.printf("attr=%s",attr); 
+        
+        if (properties.containsKey(attr.getName()))
+        {
+            return false;
+        }
+       
+        properties.set(attr); 
+        return true; 
     }
 
 

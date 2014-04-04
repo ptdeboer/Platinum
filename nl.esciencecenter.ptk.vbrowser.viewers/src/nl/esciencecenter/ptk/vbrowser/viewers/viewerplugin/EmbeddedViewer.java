@@ -54,7 +54,7 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
     {
         super();
     }
-    
+
     public Cursor getBusyCursor()
     {
         return busyCursor;
@@ -216,5 +216,6 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
         //redirect to master browser: 
         logger.errorPrintf("MESSAGE:"+format,args); 
     }
+
 
 }

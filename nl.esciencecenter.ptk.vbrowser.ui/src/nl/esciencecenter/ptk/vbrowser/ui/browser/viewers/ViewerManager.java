@@ -32,6 +32,8 @@ public class ViewerManager
 {
     private ProxyBrowserController browser;
 
+    protected boolean filterOctetStreamMimeType=true; 
+    
     public ViewerManager(ProxyBrowserController proxyBrowser)
     {
         browser=proxyBrowser;
@@ -42,6 +44,7 @@ public class ViewerManager
         String resourceType = node.getResourceType();
         // String resourceStatus = node.getResourceStatus();
         String mimeType = node.getMimeType();
+
         
         return createViewerFor(resourceType,mimeType,optViewerClass); 
     }
@@ -72,6 +75,13 @@ public class ViewerManager
         {
             throw new ProxyException("Viewer Class is not a ViewerPlugin class:"+clazz); 
         }
+        
+        if (ProxyViewer.class.isAssignableFrom(clazz))
+        {
+            // skip internal viewers for now, need different constructor. 
+            return null; 
+        }
+
         
         ViewerPanel viewer = registry.createViewer((Class<? extends ViewerPlugin>) clazz);
         return viewer;

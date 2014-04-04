@@ -21,6 +21,7 @@
 package nl.esciencecenter.vbrowser.vrs.data;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,18 @@ public class AttributeSet extends HashMapList<String, Attribute>
         init(map);
     }
 
+    /**
+     * Constructs an VAttributeSet from the Map. Note that VAttributeSet is a
+     * map as well, so this contructor can be used as an Copy Constructor.
+     * 
+     * @param map
+     *            source map.
+     */
+    public AttributeSet(Collection<Attribute> attrs) 
+    {
+        init(attrs.toArray(new Attribute[0]));
+    }
+    
     /**
      * Create attribute set from generic <Key,Value> Map. As key value, the
      * STRING representation of the Key object is used. As value the VAttribute
@@ -481,12 +494,26 @@ public class AttributeSet extends HashMapList<String, Attribute>
      */
     public void put(String name, String value)
     {
-        put(new Attribute(name, value));
+        if (value==null)
+        {
+            this.remove(name); // clear, do not store nill value. 
+        }
+        else
+        {
+            put(new Attribute(name, value));
+        }
     }
 
     public void put(String name, VRL vrl)
     {
-        put(new Attribute(name, vrl));
+        if (vrl==null)
+        {
+            this.remove(name); // clear, do not store nill value. 
+        }
+        else
+        {
+            put(new Attribute(name, vrl));
+        }
     }
 
     /**
