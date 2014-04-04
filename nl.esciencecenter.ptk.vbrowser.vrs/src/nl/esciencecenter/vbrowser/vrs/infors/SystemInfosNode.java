@@ -20,17 +20,11 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.vbrowser.vrs.VPath;
-import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
@@ -47,15 +41,14 @@ public class SystemInfosNode extends InfoRSNode
     public SystemInfosNode(InfoConfigNode parent) throws VrsException
     {
         super(parent, InfoRSConstants.SYSTEMINFOS_NODE, parent.createSubPathVRL(InfoRSConstants.SYSTEMINFOS_NODE));
-      
         initChilds();
     }
 
     public String getName()
     {
-        return "Server Configurations"; 
+        return "Server Configurations";
     }
-    
+
     public String getIconURL(int size)
     {
         // need better icon.
@@ -66,16 +59,19 @@ public class SystemInfosNode extends InfoRSNode
     {
         initSubNodes();
         initConfigs();
- 
     }
-    
-    public  List<? extends InfoRSNode> list() throws VrsException
+
+    public List<? extends InfoRSNode> list() throws VrsException
     {
         sync();
-        return super.list(); 
+        return super.list();
     }
-    
-    protected List<ResourceSystemInfo> listInfos()
+
+    /** 
+     * list current registered ResourceSystemInfo descriptions. 
+     * @return
+     */
+    protected List<ResourceSystemInfo> listResourceSystemInfos()
     {
         ResourceSystemInfoRegistry reg = this.getVRSContext().getResourceSystemInfoRegistry();
         List<ResourceSystemInfo> infos = reg.list();
@@ -87,15 +83,14 @@ public class SystemInfosNode extends InfoRSNode
     {
         int index = 0;
 
-        List<ResourceSystemInfo> infos = listInfos();
+        List<ResourceSystemInfo> infos = listResourceSystemInfos();
 
-        logger.errorPrintf("Adding %d ResourceSystemInfos\n", infos.size());
+        logger.debugPrintf("Adding %d ResourceSystemInfos\n", infos.size());
 
         for (ResourceSystemInfo info : infos)
         {
-            logger.errorPrintf(" - adding ResourceSystemInfo:%s\n", info);
+            logger.debugPrintf(" - adding ResourceSystemInfo:%s\n", info);
 
-            
             VRL serverVrl = info.getServerVRL();
             int port = info.getServerPort();
             if (port < 0)
@@ -118,14 +113,15 @@ public class SystemInfosNode extends InfoRSNode
                 hostname = "Localhost";
             }
 
-            String name = "Server "+serverVrl.getScheme()+":" + hostname + ":" + port;
+            String name = "Server " + serverVrl.getScheme() + ":" + hostname + ":" + port;
             String subPath = "ServerConfig-" + index++;
 
             this.addSubNode(createSystemInfoNode(subPath, info, name, "info/server-fs-network-48.png"));
         }
     }
 
-    protected InfoResourceNode createSystemInfoNode(String subPath, ResourceSystemInfo info, String name, String iconUrl) throws VRLSyntaxException
+    protected InfoResourceNode createSystemInfoNode(String subPath, ResourceSystemInfo info, String name, String iconUrl)
+            throws VRLSyntaxException
     {
         VRL logicalVrl = this.createSubPathVRL(subPath);
 
@@ -135,17 +131,20 @@ public class SystemInfosNode extends InfoRSNode
         return node;
     }
 
-   
-
     public Attribute getAttribute(String name) throws VrsException
     {
         if (name == null)
+        {
             return null;
-
+        }
+        
         Attribute attr = super.getAttribute(name);
+        
         if (attr != null)
+        {
             return attr;
-
+        }
+        
         return attr;
     }
 
