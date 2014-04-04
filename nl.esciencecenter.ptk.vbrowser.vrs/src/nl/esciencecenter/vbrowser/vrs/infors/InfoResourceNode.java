@@ -38,6 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -46,7 +47,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Common parent for ResourcFolders, ResourceLinks and the RootInfoNode.<br>
  * Implements the Folder management methods and target resolving of ResourceLinks.
  */
-public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, VInfoResourcePath, VRenamable
+public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, VInfoResourcePath, VRenamable,VDeletable
 {
     private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
 
@@ -437,12 +438,12 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
     }
 
     @Override
-    public void delete(boolean recursive) throws VrsException
+    public boolean delete() throws VrsException
     {
-        if (recursive)
-        {
-            throw new VrsException("Recursive delete not yet implemented");
-        }
+//        if (recursive)
+//        {
+//            throw new VrsException("Recursive delete not yet implemented");
+//        }
         // keep root node before delete, after delete parent is gone; 
         InfoRootNode rootNode = this.getRootNode();
         // delegate to parent
@@ -460,7 +461,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
         {   
             rootNode.save();
         }
-
+        return true; 
     }
 
     // ======================================

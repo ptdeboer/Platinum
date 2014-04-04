@@ -24,7 +24,13 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
 public interface VPathDeletable
 {
-    
-    public boolean delete() throws VrsException; 
-    
+    /**
+     * Delete this resource, throws Exception if deletion failed.
+     * 
+     * @param recursive
+     *            - set to true for composite resources (directories).
+     * @reeturns false if not applicable.
+     */
+    public boolean delete(boolean recursive) throws VrsException;
+
 }

@@ -229,7 +229,8 @@ public class VRSCopyManager
 
         if ((isMove) && (targetVFS.equals(sourceRs)))
         {
-            return fileSystemRename(sourcePath,targetPath,monitor); 
+            // sourcePath must be VFSPath:
+            return fileSystemRename((VFSPath)sourcePath,targetPath,monitor); 
         }
 
         VPathDeletable deletable = null;
@@ -258,13 +259,13 @@ public class VRSCopyManager
 
         if (isMove)
         {
-            deletable.delete();
+            deletable.delete(false);
         }
 
         return true;
     }
 
-    private boolean fileSystemRename(VPath sourcePath, VFSPath targetPath,ITaskMonitor monitor) throws VrsException
+    private boolean fileSystemRename(VFSPath sourcePath, VFSPath targetPath,ITaskMonitor monitor) throws VrsException
     {
         // rename/move on same filesystem
         String renameTask = "Renaming:" + sourcePath.getVRL().getPath() + " to:" + targetPath.getVRL().getPath();

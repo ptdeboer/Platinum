@@ -27,6 +27,10 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/** 
+ * Resource Abstraction.<br>
+ * A VPath points to a URL, File of other resource which can be access by an URI. 
+ */
 public interface VPath
 {
     public VRL getVRL();
@@ -38,22 +42,39 @@ public interface VPath
      */
     public String getName(); 
         
+    /** 
+     * @return Type of this resource, for example "File" or "Dir". 
+     */
     public String getResourceType() throws VrsException; 
 
+    /** 
+     * @return ResourceSystem of this VPath. This is the resource factory interface. For a File this a (V)FileSystem. 
+     */
     public VResourceSystem getResourceSystem() throws VrsException; 
 
+    /** 
+     * Resolve relative string against this VPath and return normalize absolute VRL. 
+     */
     public VRL resolvePathVRL(String path) throws VrsException; 
 
+    /** 
+     * Resolve relative string agaisnt this VPath and return absolute and normalizes VPath. 
+     */
     public VPath resolvePath(String path) throws VrsException; 
  
     /**
      * Return parent VPath of this VPath. 
-     * Default implementation returns directory name.  
+     * Default implementation returns directory name. Logical nodes might return alterative VPaths.  
      * @return Logical Parent (V)Path of this VPath. 
      * @throws VrsException
      */
     public VPath getParent() throws VrsException;
     
+    /**
+     * @param size - indication of the size of the Icon. Actual width and height of icon should be equal or bigger to 'size'. 
+     * @return actual iconURL of icon to show.  
+     * @throws VrsException
+     */
     public String getIconURL(int size) throws VrsException; 
 
     public String getMimeType() throws VrsException;
@@ -72,14 +93,7 @@ public interface VPath
      * @throws VrsException 
      */
     public boolean sync() throws VrsException;  
-    
-    // =====================
-    // Delete/Rename 
-    // =====================
-    
-    public void delete(boolean recurse) throws VrsException; 
-    
-    public VPath renameTo(String nameOrPath) throws VrsException; 
+
 
     // =====================
     // VComposite Interface

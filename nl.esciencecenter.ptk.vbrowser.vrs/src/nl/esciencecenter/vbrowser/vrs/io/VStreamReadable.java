@@ -26,7 +26,9 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
 public interface VStreamReadable
 {
-    
+    /**
+     * Create InputStream from this resources.
+     */
     public InputStream createInputStream() throws VrsException; 
     
 }

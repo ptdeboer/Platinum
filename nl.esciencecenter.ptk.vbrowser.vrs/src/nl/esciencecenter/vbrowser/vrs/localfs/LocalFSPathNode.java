@@ -148,7 +148,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
     }
 
     @Override
-    public void createFile(boolean ignoreExisting) throws VrsException
+    public boolean createFile(boolean ignoreExisting) throws VrsException
     {
         try
         {
@@ -162,10 +162,11 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
             throw LocalFileSystem.convertException("Failed to create file:"+getVRL(),e);  
         } 
         
+        return true; 
     }
 
     @Override
-    public void mkdir(boolean ignoreExisting) throws VrsException
+    public boolean mkdir(boolean ignoreExisting) throws VrsException
     {
         try
         {
@@ -176,10 +177,11 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
             throw LocalFileSystem.convertException("Failed to create directory:"+getVRL(),e);  
         } 
         
+        return true; 
     }
 
     @Override
-    public void delete(boolean recurse,LinkOption... linkOptions) throws VrsException
+    public boolean delete(boolean recurse,LinkOption... linkOptions) throws VrsException
     {
         try
         {
@@ -200,7 +202,9 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
         catch (IOException e)
         {
             throw LocalFileSystem.convertException("Couldn't delete:"+getVRL(),e); 
-        } 
+        }
+        
+        return true; 
     }
 
     @Override

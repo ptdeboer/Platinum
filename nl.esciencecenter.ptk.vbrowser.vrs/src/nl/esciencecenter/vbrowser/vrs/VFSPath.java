@@ -24,6 +24,10 @@ import java.nio.file.LinkOption;
 import java.util.List;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
+import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
+import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
+import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
@@ -32,7 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * @author Piter T. de Boer
  *
  */
-public interface VFSPath extends VPath
+public interface VFSPath extends VPath, VRenamable,VPathDeletable, VDeletable, VPathRenamable
 {
     // downcast to VFileSystem. 
     public VFileSystem getFileSystem() throws VrsException; 
@@ -68,15 +72,21 @@ public interface VFSPath extends VPath
      * @param ignoreExisting
      * @throws VrsException
      */
-    public abstract void mkdir(boolean ignoreExisting) throws VrsException;
+    public abstract boolean mkdir(boolean ignoreExisting) throws VrsException;
 
     /** 
      * Create complete path as directory. 
      * @param ignoreExisting
      * @throws VrsException
      */
-    public abstract void mkdirs(boolean ignoreExisting) throws VrsException;
+    public abstract boolean mkdirs(boolean ignoreExisting) throws VrsException;
 
-    public abstract void createFile(boolean ignoreExisting) throws VrsException;
+    public abstract boolean createFile(boolean ignoreExisting) throws VrsException;
+    
+    // explicit inheritance and downcast return type from VRenamable 
+    public VFSPath renameTo(String newNameOrPath) throws VrsException;
+
+    // downcast return type from VPathRenamble 
+    public VFSPath renameTo(VPath other) throws VrsException; 
     
 }

@@ -44,7 +44,7 @@ import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRenamable, VRenamable, VPathDeletable
+public abstract class VFSPathNode extends VPathNode implements VFSPath
 {
     public static final String[] vfsAttributeNames =
     {
@@ -279,7 +279,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
         return path;
         
     }
-    public VPath renameTo(VPath other) throws VrsException
+    public VFSPath renameTo(VPath other) throws VrsException
     {
         if ((other instanceof VFSPath) == false)
         {
@@ -291,7 +291,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
 
 
     @Override
-    public void mkdirs(boolean ignoreExisting) throws VrsException
+    public boolean mkdirs(boolean ignoreExisting) throws VrsException
     {
         List<VFSPath> paths=new ArrayList<VFSPath>(); 
 
@@ -318,14 +318,14 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
             }
         }
         
-        mkdir(ignoreExisting); 
+        return mkdir(ignoreExisting); 
     }
     
     @Override
-    public void delete(boolean recurse) throws VrsException
+    public boolean delete(boolean recurse) throws VrsException
     {
         // todo make option: default link behaviour 
-        delete(recurse,LinkOption.NOFOLLOW_LINKS); 
+        return delete(recurse,LinkOption.NOFOLLOW_LINKS); 
     }
 
     @Override
@@ -365,7 +365,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
      * 
      * @throws VrsException
      */
-    public abstract void createFile(boolean ignoreExisting) throws VrsException;
+    public abstract boolean createFile(boolean ignoreExisting) throws VrsException;
 
     /**
      * Create this (virtual) path as an actual directory on this FileSystem.
@@ -374,9 +374,9 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath, VPathRen
      *            - if directory already exists, return without exception.
      * @throws VrsException
      */
-    public abstract void mkdir(boolean ignoreExisting) throws VrsException;
+    public abstract boolean mkdir(boolean ignoreExisting) throws VrsException;
     
-    public abstract void delete(boolean recurse, LinkOption... linkOptions) throws VrsException;
+    public abstract boolean delete(boolean recurse, LinkOption... linkOptions) throws VrsException;
 
     /** 
      * Path must be an same FileSystem. 

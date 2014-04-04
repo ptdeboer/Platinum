@@ -20,24 +20,18 @@
 
 package nl.esciencecenter.vbrowser.vrs.io;
 
-import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
-/** 
- * Virtual Paths which can renamed to actual VPaths implement this interface.
- * @see VRenamable 
- * @author Piter T. de Boer
+/**
+ * Interface for Deletable resources.
  */
-public interface VPathRenamable extends VRenamable 
+public interface VDeletable
 {
-    // explicit inheritance from VRenamable 
-    public VPath renameTo(String newNameOrPath) throws VrsException;
-
-    /**
-     * Rename this (virtual) path to another (virtual path. 
-     * @param other - Other VPath to rename this path to.
-     * @return other path if rename was succesfull.  
+ 
+    /** 
+     * Delete this resource, throws Exception if deletion failed. 
+     * @reeturns false if not applicable. 
      */ 
-    public VPath renameTo(VPath other) throws VrsException; 
+    public boolean delete() throws VrsException; 
     
 }
