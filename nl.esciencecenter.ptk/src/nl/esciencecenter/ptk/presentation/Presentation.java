@@ -109,7 +109,7 @@ public class Presentation implements Duplicatable<Presentation>
     // Static Fields
     // =======================================================================
     
-    protected static PresentationStore presentationStore; 
+    protected static PresentationStore presentationStore=new PresentationStore();
     
     /**
      * Format number to 00-99 format.
