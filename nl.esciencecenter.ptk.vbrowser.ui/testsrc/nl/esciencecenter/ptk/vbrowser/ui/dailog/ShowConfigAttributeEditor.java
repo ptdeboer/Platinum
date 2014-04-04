@@ -1,7 +1,7 @@
 package nl.esciencecenter.ptk.vbrowser.ui.dailog;
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ui.proto.panels.attribute.AttributeEditorForm;
+import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeEditorForm;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;

@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
 
 import nl.esciencecenter.ptk.task.ITaskSource;
+import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributePanel;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
@@ -41,7 +42,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
-import nl.esciencecenter.ui.proto.panels.attribute.AttributePanel;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;

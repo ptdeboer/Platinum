@@ -19,7 +19,7 @@
  */
 // source:
 
-package nl.esciencecenter.ui.proto.panels.fields;
+package nl.esciencecenter.ptk.vbrowser.ui.attribute.fields;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;

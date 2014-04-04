@@ -33,7 +33,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.tree.ResourceTree;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
 
 public class DummyResourceTree 
 {

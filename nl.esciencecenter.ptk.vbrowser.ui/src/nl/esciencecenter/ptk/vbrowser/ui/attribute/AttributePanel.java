@@ -19,7 +19,7 @@
  */
 // source:
 
-package nl.esciencecenter.ui.proto.panels.attribute;
+package nl.esciencecenter.ptk.vbrowser.ui.attribute;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -42,12 +42,12 @@ import javax.swing.SwingUtilities;
 import nl.esciencecenter.ptk.ui.fonts.FontUtil;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrEnumField;
+import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrIntField;
+import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrParameterField;
+import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrPortField;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIPropertyNames;
-import nl.esciencecenter.ui.proto.panels.fields.AttrEnumField;
-import nl.esciencecenter.ui.proto.panels.fields.AttrIntField;
-import nl.esciencecenter.ui.proto.panels.fields.AttrParameterField;
-import nl.esciencecenter.ui.proto.panels.fields.AttrPortField;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;

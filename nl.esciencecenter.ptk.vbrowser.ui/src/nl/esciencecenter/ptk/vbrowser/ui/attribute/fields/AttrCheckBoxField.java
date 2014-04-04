@@ -19,41 +19,30 @@
  */
 // source:
 
-package nl.esciencecenter.ui.proto.panels.fields;
+package nl.esciencecenter.ptk.vbrowser.ui.attribute.fields;
 
-import javax.swing.JTextField;
+import javax.swing.JCheckBox;
 
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-/**
- * An Attribute Parameter Field is an managed Field for a (VRS) Attribute.
+/** 
+ * Maps Boolean Attribute to checkbox field. 
  */
-public class AttrParameterField extends JTextField implements IAttributeField
+public class AttrCheckBoxField extends JCheckBox implements IAttributeField
 {
-    public static enum AttrFieldType
-    {
-        INT,STRING,STRINGENUM,VRL,BOOLEAN,CHECKBOX;
-    }
-    
-    private static final long serialVersionUID = 8089690166449438100L;
+    private static final long serialVersionUID = 3100398728004063981L;
 
-    public AttrParameterField()
+    public AttrCheckBoxField()
     {
-        // names indicates abtract class, should be subclassed. 
-        super("<AttrParameterField>");
+        super();
     }
 
-    /** Default is String Parameter */
-    public AttrParameterField(String value)
+    public AttrCheckBoxField(String name, boolean value)
     {
-        super(value);
-    }
-
-    public AttrParameterField(String name, String value)
-    {
-        super(value);
+        super();
         this.setName(name);
+        this.setSelected(value);
     }
 
     public String getViewerName()
@@ -63,22 +52,27 @@ public class AttrParameterField extends JTextField implements IAttributeField
 
     public String getValue()
     {
-        return super.getText();
+        return "" + this.isSelected();
     }
 
-    public AttributeType getVAttributeType()
+    public boolean getBooleanValue()
     {
-        return AttributeType.STRING;
+        return this.isSelected();
     }
 
     public void updateFrom(Attribute attr)
     {
-        setText(attr.getStringValue());
+        this.setSelected(attr.getBooleanValue());
     }
 
-    public void setEditable(boolean editable)
+    public AttributeType getVAttributeType()
     {
-        super.setEditable(editable);
+        return AttributeType.BOOLEAN;
+    }
+
+    public void setEditable(boolean flag)
+    {
+        this.setEnabled(flag);
     }
 
 }

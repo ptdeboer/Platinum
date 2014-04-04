@@ -19,30 +19,27 @@
  */
 // source:
 
-package nl.esciencecenter.ui.proto.panels.fields;
+package nl.esciencecenter.ptk.vbrowser.ui.attribute.fields;
 
-import javax.swing.JCheckBox;
-
+import nl.esciencecenter.ptk.ui.widgets.SelectionComboBox;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-/** 
- * Maps Boolean Attribute to checkbox field. 
- */
-public class AttrCheckBoxField extends JCheckBox implements IAttributeField
+public class AttrEnumField extends SelectionComboBox<String> implements IAttributeField
 {
-    private static final long serialVersionUID = 3100398728004063981L;
+    private static final long serialVersionUID = -2524144091178443352L;
 
-    public AttrCheckBoxField()
+    boolean enumEditable = false; // whether enum types are editable
+
+    public AttrEnumField()
     {
-        super();
+        super(new String[0]);
     }
 
-    public AttrCheckBoxField(String name, boolean value)
+    public AttrEnumField(String name, String[] vals)
     {
-        super();
-        this.setName(name);
-        this.setSelected(value);
+        super(vals);
+        setName(name);
     }
 
     public String getViewerName()
@@ -52,27 +49,27 @@ public class AttrCheckBoxField extends JCheckBox implements IAttributeField
 
     public String getValue()
     {
-        return "" + this.isSelected();
-    }
-
-    public boolean getBooleanValue()
-    {
-        return this.isSelected();
+        return super.getSelectedItemString(); 
     }
 
     public void updateFrom(Attribute attr)
     {
-        this.setSelected(attr.getBooleanValue());
+        this.setValue(attr.getStringValue());
     }
 
     public AttributeType getVAttributeType()
     {
-        return AttributeType.BOOLEAN;
+        return AttributeType.ENUM;
     }
 
-    public void setEditable(boolean flag)
+    /**
+     * Selectable => drop down option is 'selectable'. optionsEditable = drop down selection entries are editable as
+     * well !
+     */
+    public void setEditable(boolean selectable, boolean optionsEditable)
     {
-        this.setEnabled(flag);
+        this.setEnabled(selectable);
+        this.setEditable(optionsEditable);
     }
 
 }

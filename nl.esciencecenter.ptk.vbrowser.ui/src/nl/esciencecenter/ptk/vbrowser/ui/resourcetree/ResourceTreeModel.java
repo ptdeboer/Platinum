@@ -18,7 +18,7 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.ui.tree;
+package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
 import java.util.List;
 import java.util.Vector;

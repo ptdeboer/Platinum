@@ -19,27 +19,41 @@
  */
 // source:
 
-package nl.esciencecenter.ui.proto.panels.fields;
+package nl.esciencecenter.ptk.vbrowser.ui.attribute.fields;
 
-import nl.esciencecenter.ptk.ui.widgets.SelectionComboBox;
+import javax.swing.JTextField;
+
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-public class AttrEnumField extends SelectionComboBox<String> implements IAttributeField
+/**
+ * An Attribute Parameter Field is an managed Field for a (VRS) Attribute.
+ */
+public class AttrParameterField extends JTextField implements IAttributeField
 {
-    private static final long serialVersionUID = -2524144091178443352L;
-
-    boolean enumEditable = false; // whether enum types are editable
-
-    public AttrEnumField()
+    public static enum AttrFieldType
     {
-        super(new String[0]);
+        INT,STRING,STRINGENUM,VRL,BOOLEAN,CHECKBOX;
+    }
+    
+    private static final long serialVersionUID = 8089690166449438100L;
+
+    public AttrParameterField()
+    {
+        // names indicates abtract class, should be subclassed. 
+        super("<AttrParameterField>");
     }
 
-    public AttrEnumField(String name, String[] vals)
+    /** Default is String Parameter */
+    public AttrParameterField(String value)
     {
-        super(vals);
-        setName(name);
+        super(value);
+    }
+
+    public AttrParameterField(String name, String value)
+    {
+        super(value);
+        this.setName(name);
     }
 
     public String getViewerName()
@@ -49,27 +63,22 @@ public class AttrEnumField extends SelectionComboBox<String> implements IAttribu
 
     public String getValue()
     {
-        return super.getSelectedItemString(); 
-    }
-
-    public void updateFrom(Attribute attr)
-    {
-        this.setValue(attr.getStringValue());
+        return super.getText();
     }
 
     public AttributeType getVAttributeType()
     {
-        return AttributeType.ENUM;
+        return AttributeType.STRING;
     }
 
-    /**
-     * Selectable => drop down option is 'selectable'. optionsEditable = drop down selection entries are editable as
-     * well !
-     */
-    public void setEditable(boolean selectable, boolean optionsEditable)
+    public void updateFrom(Attribute attr)
     {
-        this.setEnabled(selectable);
-        this.setEditable(optionsEditable);
+        setText(attr.getStringValue());
+    }
+
+    public void setEditable(boolean editable)
+    {
+        super.setEditable(editable);
     }
 
 }

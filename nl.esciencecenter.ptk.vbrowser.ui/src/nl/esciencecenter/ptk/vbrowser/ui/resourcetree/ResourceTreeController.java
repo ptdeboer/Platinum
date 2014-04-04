@@ -18,7 +18,7 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.ui.tree;
+package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;

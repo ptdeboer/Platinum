@@ -19,7 +19,7 @@
  */
 // source:
 
-package nl.esciencecenter.ui.proto.panels.attribute;
+package nl.esciencecenter.ptk.vbrowser.ui.attribute;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -56,7 +56,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeTableDataUpdater
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.TableDataProducer;
-import nl.esciencecenter.ptk.vbrowser.ui.tree.ResourceTree;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
 
 /**

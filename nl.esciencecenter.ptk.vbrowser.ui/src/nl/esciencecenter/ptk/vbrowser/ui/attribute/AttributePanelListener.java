@@ -19,20 +19,11 @@
  */
 // source:
 
-package nl.esciencecenter.ui.proto.panels.fields;
+package nl.esciencecenter.ptk.vbrowser.ui.attribute;
 
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-public interface IAttributeField
+public interface AttributePanelListener
 {
-    public String getViewerName();
-
-    public String getValue();
-
-    public void updateFrom(Attribute attr);
-
-    public AttributeType getVAttributeType();
-
-    public void setEditable(boolean flag);
+    public abstract void notifyAttributeChanged(Attribute attr);
 }

@@ -1,6 +1,6 @@
 package nl.esciencecenter.ptk.vbrowser.ui.dailog;
 
-import nl.esciencecenter.ui.proto.panels.attribute.AttributeViewer;
+import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeViewer;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 
 public class ShowAttributeViewer
