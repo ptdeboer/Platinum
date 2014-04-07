@@ -172,9 +172,10 @@ public class LocalFSNode extends FSNode
         
     }
 
-    public void delete(LinkOption... linkOptions) throws IOException
+    public boolean delete(LinkOption... linkOptions) throws IOException
     {
         Files.delete(_path);
+        return true; 
     }
 
     @Override
@@ -184,15 +185,17 @@ public class LocalFSNode extends FSNode
     }
 
     @Override
-    public void mkdir() throws IOException
+    public boolean mkdir() throws IOException
     {
         Files.createDirectory(_path);
+        return true; 
     }
 
     @Override
-    public void mkdirs() throws IOException
+    public boolean mkdirs() throws IOException
     {
         Files.createDirectories(_path);
+        return true; 
     }
 
     @Override
