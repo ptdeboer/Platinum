@@ -124,6 +124,11 @@ public class WebConfig
 
     protected void init(java.net.URI serviceUri)
     {
+        if (serviceUri==null)
+        {
+            throw new NullPointerException("NULL serviceUri!"); 
+        }
+        
         this.protocol = serviceUri.getScheme().toLowerCase();
         this.serverHostname = serviceUri.getHost();
         this.serverPort = serviceUri.getPort();
