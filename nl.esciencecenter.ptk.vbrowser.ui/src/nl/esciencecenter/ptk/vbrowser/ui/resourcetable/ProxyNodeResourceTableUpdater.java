@@ -30,6 +30,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSourceUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
@@ -44,7 +45,7 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ProxyNodeResourceTableUpdater implements VRSEventListener
+public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDataSourceUpdater
 {
     private static ClassLogger logger;
 
@@ -686,6 +687,11 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener
 
         task.startTask();
 
+    }
+
+    public ProxyDataSource getDataSource()
+    {
+       return this.dataSource; 
     }
 
 }

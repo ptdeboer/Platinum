@@ -42,6 +42,7 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
@@ -725,6 +726,14 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public BrowserInterface getBrowserInterface()
     {
         return controller.getBrowserInterface();
+    }
+
+    public ProxyDataSource getDataSource()
+    {
+        if (this.dataProducer==null)
+            return null; 
+        
+        return this.dataProducer.getDataSource(); 
     }
 
 }

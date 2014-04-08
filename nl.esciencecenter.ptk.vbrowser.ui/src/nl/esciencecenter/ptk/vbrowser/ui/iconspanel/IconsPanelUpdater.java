@@ -25,7 +25,8 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSourceUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
@@ -33,17 +34,17 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class IconsPanelUpdater implements VRSEventListener
+public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdater
 {
-    private final static ClassLogger logger=ClassLogger.getLogger(IconsPanelUpdater.class);
-    
-    private ViewNodeDataSource dataSource;
+    private final static ClassLogger logger = ClassLogger.getLogger(IconsPanelUpdater.class);
+
+    private ProxyDataSource dataSource;
 
     private IconsPanel iconsPanel;
 
     private ViewNode rootNode;
 
-    public IconsPanelUpdater(IconsPanel panel, ViewNodeDataSource dataSource)
+    public IconsPanelUpdater(IconsPanel panel, ProxyDataSource dataSource)
     {
         this.iconsPanel = panel;
         this.dataSource = dataSource;
@@ -77,7 +78,7 @@ public class IconsPanelUpdater implements VRSEventListener
         return null;
     }
 
-    public void setDataSource(ViewNodeDataSource dataSource, boolean update)
+    public void setDataSource(ProxyDataSource dataSource, boolean update)
     {
         // unregister
         if (this.dataSource != null)
@@ -105,8 +106,8 @@ public class IconsPanelUpdater implements VRSEventListener
         VRL vrls[] = e.getResources();
         VRL parent = e.getParent();
 
-        VRL otherVrls[]=e.getOtherResources(); 
-        
+        VRL otherVrls[] = e.getOtherResources();
+
         // check parent:
         if ((parent != null) && (rootNode.getVRL().equals(parent) == false))
         {
@@ -117,12 +118,12 @@ public class IconsPanelUpdater implements VRSEventListener
         {
             case RESOURCES_ADDED:
             {
-                if (parent==null)
+                if (parent == null)
                 {
-                    logger.errorPrintf("Cannot check if new resource are for me. parent==null!\n"); 
-                    return; 
+                    logger.errorPrintf("Cannot check if new resource are for me. parent==null!\n");
+                    return;
                 }
-                
+
                 refresh();
                 break;
             }
@@ -164,7 +165,7 @@ public class IconsPanelUpdater implements VRSEventListener
         {
             return null;
         }
-        
+
         int len = nodes.length;
 
         IconItem items[] = new IconItem[len];
@@ -187,10 +188,9 @@ public class IconsPanelUpdater implements VRSEventListener
     private void handle(String actionText, ProxyException e)
     {
         this.iconsPanel.getMasterBrowser().handleException(actionText, e);
-
     }
 
-    public ViewNodeDataSource getDataSource()
+    public ProxyDataSource getDataSource()
     {
         return this.dataSource;
     }
@@ -203,14 +203,14 @@ public class IconsPanelUpdater implements VRSEventListener
             return;
         }
 
-        doPopulate(true,true);
+        doPopulate(true, true);
     }
 
     // ======================
     // Backgrounded tasks.
     // ======================
 
-    private void doPopulate(final boolean fetchRoot,final boolean fetchChilds)
+    private void doPopulate(final boolean fetchRoot, final boolean fetchChilds)
     {
         BrowserTask task = new BrowserTask(this.getTaskSource(), "Populating IconsPanel.")
         {
@@ -224,7 +224,7 @@ public class IconsPanelUpdater implements VRSEventListener
                     {
                         rootNode = dataSource.getRoot(getUIModel());
                     }
-                    
+
                     if (fetchChilds)
                     {
                         ViewNode[] childs = dataSource.getChilds(getUIModel(), rootNode.getVRL(), 0, -1, null);

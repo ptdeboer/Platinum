@@ -42,6 +42,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
@@ -81,12 +82,12 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     private ViewNodeContainerDragListener dragListener;
 
-    public IconsPanel(BrowserInterface browser, ViewNodeDataSource viewNodeSource)
+    public IconsPanel(BrowserInterface browser, ProxyDataSource viewNodeSource)
     {
         init(browser, viewNodeSource);
     }
 
-    private void init(BrowserInterface browser, ViewNodeDataSource dataSource)
+    private void init(BrowserInterface browser, ProxyDataSource dataSource)
     {
         this.masterBrowser = browser;
         this.uiModel = UIViewModel.createIconsModel(48);
@@ -508,7 +509,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         return this.masterBrowser;
     }
 
-    public ViewNodeDataSource getDataSource()
+    public ProxyDataSource getDataSource()
     {
         return this.iconsPanelUpdater.getDataSource();
     }

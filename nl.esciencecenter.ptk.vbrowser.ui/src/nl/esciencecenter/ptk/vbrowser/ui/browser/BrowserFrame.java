@@ -47,6 +47,7 @@ import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMethod;
 import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
@@ -626,28 +627,28 @@ public class BrowserFrame extends JFrame
 
         JComponent comp = tab.getContent();
 
-        // Todo: Combine DataSource/DataProducer interfaces
-
+        ProxyDataSource dataSource=null;
+        
         if (comp instanceof IconsPanel)
         {
-            ViewNodeDataSource dataSource = ((IconsPanel) comp).getDataSource();
-            if (dataSource instanceof ProxyNodeDataSourceProvider)
-            {
-                return ((ProxyNodeDataSourceProvider) dataSource).getRootNode();
-            }
+            dataSource = ((IconsPanel) comp).getDataSource();
         }
-
-        if (comp instanceof ResourceTable)
+        else if (comp instanceof ResourceTable)
         {
-            ProxyNodeResourceTableUpdater dataProducer = ((ResourceTable) comp).getDataProducer();
-            if (dataProducer==null)
-            {
-                return null;
-            }
-            return dataProducer.getRootProxyNode(); 
+            dataSource = ((ResourceTable) comp).getDataSource();
         }
-
-        return null;
+        else if (comp instanceof ResourceTree)
+        {
+            dataSource = ((ResourceTree) comp).getDataSource();
+        }
+        if (dataSource==null)
+        {
+            return null; 
+        }
+        else
+        {
+            return dataSource.getRootNode();
+        }
     }
 
     public void setTabTitle(TabContentPanel tab, String name)

@@ -26,9 +26,10 @@ import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSourceUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
@@ -37,7 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Gets relevant data from the (Proxy)DataSource and updates the ResourceTreeModel.
  */
-public class ResourceTreeUpdater implements VRSEventListener
+public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpdater 
 {
     private static ClassLogger logger;
 
@@ -48,11 +49,11 @@ public class ResourceTreeUpdater implements VRSEventListener
 
     private ResourceTree tree;
 
-    private ViewNodeDataSource viewNodeSource;
+    private ProxyDataSource viewNodeSource;
 
     private ViewNode rootItem;
 
-    public ResourceTreeUpdater(ResourceTree tree, ViewNodeDataSource viewNodeSource)
+    public ResourceTreeUpdater(ResourceTree tree, ProxyDataSource viewNodeSource)
     {
         this.tree = tree;
         setDataSource(viewNodeSource, false);
@@ -83,7 +84,7 @@ public class ResourceTreeUpdater implements VRSEventListener
         return null;
     }
 
-    public void setDataSource(ViewNodeDataSource viewNodeSource, boolean update)
+    public void setDataSource(ProxyDataSource viewNodeSource, boolean update)
     {
         // unregister previous
         if (viewNodeSource != null)
@@ -333,12 +334,10 @@ public class ResourceTreeUpdater implements VRSEventListener
         {
             bgHandle("Failed to update child nodes.", e);
         }
-
     }
 
     private void _refreshNodes(VRL sources[], String attrNames[])
     {
-
         // Warning: potential N x M => O(N^2) if resources and nodes arrays are
         // large.
 
@@ -370,7 +369,6 @@ public class ResourceTreeUpdater implements VRSEventListener
                 bgHandle("Failed to update resource:" + vrl, e);
             }
         }
-
     }
 
     private void _addNodes(final VRL parent, final VRL[] sources)
@@ -401,6 +399,12 @@ public class ResourceTreeUpdater implements VRSEventListener
     private void bgHandle(String actionText, Throwable e)
     {
         this.tree.getBrowserInterface().handleException(actionText, e);
+    }
+
+    @Override 
+    public ProxyDataSource getDataSource()
+    {
+        return this.viewNodeSource; 
     }
 
 }

@@ -41,6 +41,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -106,7 +107,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
      * @param uiModel
      *            ViewModel which holds UI properties
      */
-    public ResourceTree(BrowserInterface browser, ViewNodeDataSource viewNodeSource)
+    public ResourceTree(BrowserInterface browser, ProxyDataSource viewNodeSource)
     {
         init(browser, viewNodeSource);
     }
@@ -123,7 +124,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         this.dataUpdater.updateChilds(node);
     }
 
-    private void init(BrowserInterface browser, ViewNodeDataSource viewNodeSource)
+    private void init(BrowserInterface browser, ProxyDataSource viewNodeSource)
     {
         // default model
         this.uiModel = UIViewModel.createTreeViewModel();
@@ -305,14 +306,14 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return nodes.toArray(_nodes);
     }
 
-    public void setRoot(ViewNodeDataSource viewNodeSource, boolean update, boolean showAsRoot)
+    public void setRoot(ProxyDataSource viewNodeSource, boolean update, boolean showAsRoot)
     {
         this.setRootVisible(showAsRoot);
         this.setShowsRootHandles(showAsRoot == false);
         this.setDataSource(viewNodeSource, update);
     }
 
-    protected void setDataSource(ViewNodeDataSource viewNodeSource, boolean update)
+    protected void setDataSource(ProxyDataSource viewNodeSource, boolean update)
     {
         this.getUpdater().setDataSource(viewNodeSource, update);
     }
@@ -457,5 +458,10 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     public BrowserInterface getBrowserInterface()
     {
         return controller.getBrowserInterface();
+    }
+
+    public ProxyDataSource getDataSource()
+    {
+        return dataUpdater.getDataSource(); 
     }
 }
