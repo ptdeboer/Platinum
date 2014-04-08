@@ -24,16 +24,23 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface AttributeDataSource
 {
-
+    /** 
+     * Register listener to receive attribute update events.
+     */ 
+    public void addDataSourceEventListener(VRSEventListener listener); 
+    
+    public void removeDataSourceEventListener(VRSEventListener listener); 
+    
     // =====================
     // Attribute Interface
     // =====================
     
-    List<String> getAttributeNames(VRL locator) throws ProxyException; 
+    public List<String> getAttributeNames(VRL locator) throws ProxyException; 
     
-    List<Attribute> getAttributes(VRL locator,List<String> attrNames) throws ProxyException; 
+    public List<Attribute> getAttributes(VRL locator,List<String> attrNames) throws ProxyException; 
 }

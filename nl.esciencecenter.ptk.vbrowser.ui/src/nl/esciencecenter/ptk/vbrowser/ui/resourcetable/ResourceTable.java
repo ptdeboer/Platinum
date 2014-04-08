@@ -70,7 +70,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     protected int defaultColumnWidth = 80;
 
-    protected TableDataProducer dataProducer;
+    protected ProxyNodeResourceTableUpdater dataProducer;
 
     private TableMouseListener mouseHandler;
 
@@ -376,14 +376,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         // insert empty column and fire change event. This will update the table.
         this.getModel().setHeaders(viewHeaders);
 
-        try
-        {
-            this.dataProducer.updateColumn(newName);
-        }
-        catch (ProxyException e)
-        {
-            handle("Failed to insertHeader:" + newName + (insertBefore ? "insertBefore " : "insertAfter ") + headerName, e);
-        }
+        this.dataProducer.updateColumn(newName);
     }
 
     public void removeColumn(String headerName, boolean updatePresentation)
@@ -502,7 +495,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     {
         ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
-        setDataProducer(new ProxyNodeTableDataUpdater(this,node, model), true);
+        setDataProducer(new ProxyNodeResourceTableUpdater(this,node, model), true);
 
         // use presentation from ProxyNode !
         Presentation pres = node.getPresentation();
@@ -512,7 +505,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         }
     }
 
-    public void setDataProducer(TableDataProducer producer, boolean update)
+    public void setDataProducer(ProxyNodeResourceTableUpdater producer, boolean update)
     {
         this.dataProducer = producer;
         if (update == false)
@@ -696,7 +689,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         return false;
     }
 
-    public TableDataProducer getDataProducer()
+    public ProxyNodeResourceTableUpdater getDataProducer()
     {
         return this.dataProducer;
     }

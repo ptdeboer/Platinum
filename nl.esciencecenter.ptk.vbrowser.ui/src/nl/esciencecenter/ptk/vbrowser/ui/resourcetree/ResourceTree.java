@@ -40,15 +40,16 @@ import javax.swing.tree.TreeSelectionModel;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
-import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
-import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 
+/** 
+ * Actual Swing JTree 'View' Component.  
+ */
 public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 {
     private static final long serialVersionUID = -3310437371919331098L;
@@ -100,13 +101,12 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     private ViewNodeContainerDragListener dgListener;
 
     /**
-     * Create a new ResourceTree using the UI properties from UIModel and the
-     * data from DataSource.
+     * Create a new ResourceTree using the UI properties from UIModel and the data from DataSource.
      * 
      * @param uiModel
      *            ViewModel which holds UI properties
      */
-    public ResourceTree(BrowserInterface browser, ViewNodeSource viewNodeSource)
+    public ResourceTree(BrowserInterface browser, ViewNodeDataSource viewNodeSource)
     {
         init(browser, viewNodeSource);
     }
@@ -123,7 +123,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         this.dataUpdater.updateChilds(node);
     }
 
-    private void init(BrowserInterface browser, ViewNodeSource viewNodeSource)
+    private void init(BrowserInterface browser, ViewNodeDataSource viewNodeSource)
     {
         // default model
         this.uiModel = UIViewModel.createTreeViewModel();
@@ -305,14 +305,14 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return nodes.toArray(_nodes);
     }
 
-    public void setRoot(ViewNodeSource viewNodeSource, boolean update, boolean showAsRoot)
+    public void setRoot(ViewNodeDataSource viewNodeSource, boolean update, boolean showAsRoot)
     {
         this.setRootVisible(showAsRoot);
         this.setShowsRootHandles(showAsRoot == false);
         this.setDataSource(viewNodeSource, update);
     }
 
-    protected void setDataSource(ViewNodeSource viewNodeSource, boolean update)
+    protected void setDataSource(ViewNodeDataSource viewNodeSource, boolean update)
     {
         this.getUpdater().setDataSource(viewNodeSource, update);
     }

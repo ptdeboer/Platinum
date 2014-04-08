@@ -49,13 +49,12 @@ import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMethod;
 import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeTableDataUpdater;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ProxyNodeResourceTableUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
-import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.TableDataProducer;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
 
@@ -631,20 +630,21 @@ public class BrowserFrame extends JFrame
 
         if (comp instanceof IconsPanel)
         {
-            ViewNodeSource dataSource = ((IconsPanel) comp).getDataSource();
-            if (dataSource instanceof ProxyNodeDataSource)
+            ViewNodeDataSource dataSource = ((IconsPanel) comp).getDataSource();
+            if (dataSource instanceof ProxyNodeDataSourceProvider)
             {
-                return ((ProxyNodeDataSource) dataSource).getRootNode();
+                return ((ProxyNodeDataSourceProvider) dataSource).getRootNode();
             }
         }
 
         if (comp instanceof ResourceTable)
         {
-            TableDataProducer dataProducer = ((ResourceTable) comp).getDataProducer();
-            if (dataProducer instanceof ProxyNodeTableDataUpdater)
+            ProxyNodeResourceTableUpdater dataProducer = ((ResourceTable) comp).getDataProducer();
+            if (dataProducer==null)
             {
-                return ((ProxyNodeTableDataUpdater) dataProducer).getRootProxyNode();
+                return null;
             }
+            return dataProducer.getRootProxyNode(); 
         }
 
         return null;

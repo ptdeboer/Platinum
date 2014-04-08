@@ -24,7 +24,7 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ExtendedDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
@@ -33,10 +33,10 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * DataSource which produces ViewItems from ProxyItems.
- * Bridging class connects ProxyNode (Resource) with ViewItem (UI Object).
+ * DataSource which produces ViewItems from ProxyItems. Is DataSource Adaptor. 
+ * Bridging class connects ProxyNode (Resource) with ViewNodes (UI Object) and Attributes. 
  */
-public class ProxyNodeDataSource implements ExtendedDataSource
+public class ProxyNodeDataSourceProvider implements ProxyDataSource 
 {
     private ProxyNode rootNode;
 
@@ -44,7 +44,7 @@ public class ProxyNodeDataSource implements ExtendedDataSource
 
     private VRSEventNotifier eventNotifier;
 
-    public ProxyNodeDataSource(ProxyNode sourceNode)
+    public ProxyNodeDataSourceProvider(ProxyNode sourceNode)
     {
         this.rootNode = sourceNode;
         this.proxyFactory = sourceNode.getProxyFactory();
@@ -95,13 +95,13 @@ public class ProxyNodeDataSource implements ExtendedDataSource
     }
 
     @Override
-    public void addViewNodeEventListener(VRSEventListener listener)
+    public void addDataSourceEventListener(VRSEventListener listener)
     {
         eventNotifier.addListener(listener);
     }
 
     @Override
-    public void removeViewNodeEventListener(VRSEventListener listener)
+    public void removeDataSourceEventListener(VRSEventListener listener)
     {
         eventNotifier.removeListener(listener);
     }
@@ -161,6 +161,7 @@ public class ProxyNodeDataSource implements ExtendedDataSource
         return rootNode.getPresentation();
     }
 
+    @Override
     public ProxyNode getRootNode()
     {
         return this.rootNode;

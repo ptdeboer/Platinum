@@ -38,7 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Generic Resource Table Model.
+ * Generic Resource Table Model containing ViewNodes and Attributes only.
  * <p>
  * An ViewNode can both be the "row" object or an Attribute Object. Current row "key" is the VRL.
  */

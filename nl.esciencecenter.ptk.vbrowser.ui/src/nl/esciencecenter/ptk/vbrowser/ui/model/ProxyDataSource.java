@@ -23,17 +23,19 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Combined DataSource and AttributeDataSource and adds Presentation.  
- * 
- * @author Piter T. de Boer. 
+ * Complete Proxy(Node) DataSource interface combines all the sub interfaces. 
  */
-public interface ExtendedDataSource extends ViewNodeSource, AttributeDataSource
+public interface ProxyDataSource extends ViewNodeDataSource, AttributeDataSource
 {
-    Presentation getPresentation() throws ProxyException;
+    
+    public ProxyNode getRootNode();
+    
+    public Presentation getPresentation() throws ProxyException;
 
-    Presentation getChildPresentation(VRL locator) throws ProxyException;
+    public Presentation getChildPresentation(VRL locator) throws ProxyException;
 
 }

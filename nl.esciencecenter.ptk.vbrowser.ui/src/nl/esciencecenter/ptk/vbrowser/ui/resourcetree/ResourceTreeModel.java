@@ -31,6 +31,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/**
+ * Generic ResourceTreeModel containing only ViewNodes and Attributes.
+ */
 public class ResourceTreeModel extends DefaultTreeModel
 {
     private static final long serialVersionUID = -1155738043667059217L;
@@ -162,8 +165,8 @@ public class ResourceTreeModel extends DefaultTreeModel
     }
 
     /**
-     * Set childs or append new ones. If a tree node with similar VRL already
-     * exist, the new ViewNode will be updated (merge).
+     * Set childs or append new ones. If a tree node with similar VRL already exist, the new ViewNode will be updated
+     * (merge).
      */
     protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode childs[], boolean mergeAppend)
     {
@@ -375,8 +378,7 @@ public class ResourceTreeModel extends DefaultTreeModel
     // =========================================================================
 
     /**
-     * Find nodes which have the specified ProxyLocator. Method peforms a tree
-     * walk.
+     * Find nodes which have the specified ProxyLocator. Method peforms a tree walk.
      */
     public List<ResourceTreeNode> findNodes(VRL locator)
     {

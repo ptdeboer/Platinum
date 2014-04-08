@@ -25,12 +25,13 @@ import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.esciencecenter.ptk.browser.test.dummy.DummyProxyFactory;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.FSUtil;
+import nl.esciencecenter.ptk.io.FileURISyntaxException;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
@@ -106,11 +107,14 @@ public class FSNodeProxyNode extends ProxyNode
     public boolean hasChildren()
     {   
        if (file.isFile())
+       {
     	   return false; 
+       }
        
        try 
        {
-    	   return (file.list()!=null);
+           String[] list = file.list(); 
+           return ((list!=null) && (list.length>0));  
        }
        catch (IOException e) 
        {
@@ -139,16 +143,25 @@ public class FSNodeProxyNode extends ProxyNode
 		}
 		
     	if (files==null)
+    	{
     		return null; 
+    	}
     	
     	ArrayList<FSNodeProxyNode> nodes=new ArrayList<FSNodeProxyNode>(files.length); 
     	
     	for (int i=0;i<files.length;i++)
-    		nodes.add(new FSNodeProxyNode(getProxyFactory(),new VRL(files[i].getURI()),files[i])); 
-        
+    	{
+    		nodes.add(createNewNode(files[i])); 
+    	}
+    	
     	return subrange(nodes,offset,range);  
     }
 
+    protected FSNodeProxyNode createNewNode(FSNode fsNode) throws ProxyException
+    {
+        return new FSNodeProxyNode(getProxyFactory(),new VRL(fsNode.getURI()),fsNode); 
+    }
+    
 	@Override
 	protected String doGetMimeType() throws ProxyException 
 	{
@@ -171,9 +184,13 @@ public class FSNodeProxyNode extends ProxyNode
     protected String doGetResourceType() 
     {
     	if (file.isFile())
+    	{
     		return FSNode.FILE_TYPE;
+    	}
     	else
-    		return FSNode.DIR_TYPE; 
+    	{
+    		return FSNode.DIR_TYPE;
+    	}
     }
 
     @Override
@@ -228,13 +245,38 @@ public class FSNodeProxyNode extends ProxyNode
     @Override
     protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException
     {
-        throw new ProxyException("Not Implemented.");
+        try
+        {
+            FSNode newPath=file.newFile(optNewName); 
+            if (StringUtil.equals(type,FSNode.FILE_TYPE))
+            {
+                newPath.create();
+                return createNewNode(newPath); 
+            }
+            else if (StringUtil.equals(type,FSNode.FILE_TYPE))
+            {
+                newPath.mkdir(); 
+                return createNewNode(newPath); 
+            }
+            else
+            {
+                throw new ProxyException("Create: unrecognized type:"+type); 
+            }
+        }
+        catch (FileURISyntaxException e)
+        { 
+            throw new ProxyException("Invalid location:"+optNewName+"\n"+e.getMessage(),e);
+        }
+        catch (IOException e)
+        {
+            throw new ProxyException("Couldn't create new "+type+" "+optNewName+"\n"+e.getMessage(),e);
+        } 
     }
 
     @Override
     protected void doDelete(boolean recurse) throws ProxyException
     {
-        throw new ProxyException("Not Implemented.");
+        throw new ProxyException("Won't delete stuff.");
     }
 
     @Override
@@ -246,8 +288,7 @@ public class FSNodeProxyNode extends ProxyNode
     @Override
     protected boolean doExists() throws ProxyException
     {
-        this.file.exists(LinkOption.NOFOLLOW_LINKS);
-        return false;
+        return this.file.exists(LinkOption.NOFOLLOW_LINKS);
     }
 
 }

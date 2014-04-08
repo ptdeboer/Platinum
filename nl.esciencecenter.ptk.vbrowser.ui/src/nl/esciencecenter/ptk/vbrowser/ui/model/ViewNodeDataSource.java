@@ -29,15 +29,15 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Data Source for ViewNodes. 
  */ 
-public interface ViewNodeSource
+public interface ViewNodeDataSource
 {
 	/** 
 	 * Register listener to receive data source update events.
 	 * Listeners received events about created ViewNodes
 	 */ 
-	public void addViewNodeEventListener(VRSEventListener listener); 
+	public void addDataSourceEventListener(VRSEventListener listener); 
 	
-	public void removeViewNodeEventListener(VRSEventListener listener); 
+	public void removeDataSourceEventListener(VRSEventListener listener); 
 	
 	/** 
 	 * Toplevel resource or root node. 

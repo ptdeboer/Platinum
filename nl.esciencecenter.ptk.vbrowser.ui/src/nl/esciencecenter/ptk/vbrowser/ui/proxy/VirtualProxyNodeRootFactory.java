@@ -27,17 +27,17 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VirtualRootProxyFactory extends ProxyFactory
+public class VirtualProxyNodeRootFactory extends ProxyFactory
 {
     public static final String VROOT_VRL="virtual:0"; 
     
-    private static VirtualRootNode rootNode;
+    private static VirtualProxyNodeRoot rootNode;
     
     // ========
     // instance
     // ========
 
-    public VirtualRootProxyFactory(BrowserPlatform platform)
+    public VirtualProxyNodeRootFactory(BrowserPlatform platform)
     {
         super(platform);
     }
@@ -102,13 +102,13 @@ public class VirtualRootProxyFactory extends ProxyFactory
         return false; 
     }
 
-    public VirtualRootNode getRoot() throws ProxyException
+    public VirtualProxyNodeRoot getRoot() throws ProxyException
     {
         try
         {
             if (rootNode == null)
             {
-                rootNode = new VirtualRootNode(this, new VRL(VROOT_VRL));
+                rootNode = new VirtualProxyNodeRoot(this, new VRL(VROOT_VRL));
             }
     
             return rootNode;

@@ -25,7 +25,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
@@ -37,13 +37,13 @@ public class IconsPanelUpdater implements VRSEventListener
 {
     private final static ClassLogger logger=ClassLogger.getLogger(IconsPanelUpdater.class);
     
-    private ViewNodeSource dataSource;
+    private ViewNodeDataSource dataSource;
 
     private IconsPanel iconsPanel;
 
     private ViewNode rootNode;
 
-    public IconsPanelUpdater(IconsPanel panel, ViewNodeSource dataSource)
+    public IconsPanelUpdater(IconsPanel panel, ViewNodeDataSource dataSource)
     {
         this.iconsPanel = panel;
         this.dataSource = dataSource;
@@ -77,12 +77,12 @@ public class IconsPanelUpdater implements VRSEventListener
         return null;
     }
 
-    public void setDataSource(ViewNodeSource dataSource, boolean update)
+    public void setDataSource(ViewNodeDataSource dataSource, boolean update)
     {
         // unregister
         if (this.dataSource != null)
         {
-            this.dataSource.removeViewNodeEventListener(this);
+            this.dataSource.removeDataSourceEventListener(this);
         }
 
         this.dataSource = dataSource;
@@ -90,7 +90,7 @@ public class IconsPanelUpdater implements VRSEventListener
         // register
         if (this.dataSource != null)
         {
-            this.dataSource.addViewNodeEventListener(this);
+            this.dataSource.addDataSourceEventListener(this);
         }
 
         if ((update) && (dataSource != null))
@@ -190,7 +190,7 @@ public class IconsPanelUpdater implements VRSEventListener
 
     }
 
-    public ViewNodeSource getDataSource()
+    public ViewNodeDataSource getDataSource()
     {
         return this.dataSource;
     }

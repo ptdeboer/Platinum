@@ -29,7 +29,11 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VirtualRootNode extends ProxyNode
+/** 
+ * Virtual Root in tje info resource system to start browsing. 
+ * Multiple ProxyNode can be add to this rootNode. 
+ */
+public class VirtualProxyNodeRoot extends ProxyNode
 {
     protected String name="Root"; 
     
@@ -37,7 +41,7 @@ public class VirtualRootNode extends ProxyNode
     
     protected String iconUrl=null; 
         
-    protected VirtualRootNode(ProxyFactory factory, VRL proxyLocation)
+    protected VirtualProxyNodeRoot(ProxyFactory factory, VRL proxyLocation)
     {
         super(factory, proxyLocation);
     }

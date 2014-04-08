@@ -42,13 +42,13 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable
@@ -81,12 +81,12 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     private ViewNodeContainerDragListener dragListener;
 
-    public IconsPanel(BrowserInterface browser, ViewNodeSource viewNodeSource)
+    public IconsPanel(BrowserInterface browser, ViewNodeDataSource viewNodeSource)
     {
         init(browser, viewNodeSource);
     }
 
-    private void init(BrowserInterface browser, ViewNodeSource dataSource)
+    private void init(BrowserInterface browser, ViewNodeDataSource dataSource)
     {
         this.masterBrowser = browser;
         this.uiModel = UIViewModel.createIconsModel(48);
@@ -190,15 +190,15 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     {
         if (node == null)
         {
-            setDataSource((ProxyNodeDataSource) null, true); // reset/clear
+            setDataSource((ProxyNodeDataSourceProvider) null, true); // reset/clear
             return;
         }
 
-        ProxyNodeDataSource dataSource = new ProxyNodeDataSource(node);
+        ProxyNodeDataSourceProvider dataSource = new ProxyNodeDataSourceProvider(node);
         this.setDataSource(dataSource, update);
     }
 
-    public void setDataSource(ProxyNodeDataSource dataSource, boolean update)
+    public void setDataSource(ProxyNodeDataSourceProvider dataSource, boolean update)
     {
         this.iconsPanelUpdater.setDataSource(dataSource, update);
     }
@@ -508,7 +508,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         return this.masterBrowser;
     }
 
-    public ViewNodeSource getDataSource()
+    public ViewNodeDataSource getDataSource()
     {
         return this.iconsPanelUpdater.getDataSource();
     }

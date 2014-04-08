@@ -55,7 +55,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
@@ -219,7 +219,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     public void setRoot(ProxyNode root, boolean update, boolean showAsRoot)
     {
         this.rootNode = root;
-        ProxyNodeDataSource dataSource = new ProxyNodeDataSource(root);
+        ProxyNodeDataSourceProvider dataSource = new ProxyNodeDataSourceProvider(root);
         this.browserFrame.getResourceTree().setRoot(dataSource, update, showAsRoot);
         IconsPanel iconsPnl = browserFrame.getIconsPanel();
         if (iconsPnl != null)

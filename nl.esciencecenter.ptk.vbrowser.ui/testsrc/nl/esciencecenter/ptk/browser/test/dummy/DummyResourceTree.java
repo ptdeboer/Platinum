@@ -32,7 +32,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.DummyBrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
 
 public class DummyResourceTree 
@@ -58,7 +58,7 @@ public class DummyResourceTree
     		ResourceTree tree;
  
     		ProxyNode root = dummyFac.openLocation("proxy:///"); 
-    		ProxyNodeDataSource dataSource = new ProxyNodeDataSource (root); 
+    		ProxyNodeDataSourceProvider dataSource = new ProxyNodeDataSourceProvider (root); 
     		tree=new ResourceTree(new DummyBrowserInterface(platform),dataSource);
     		//tree=new ResourceTree(null,dataSource);
     	        		

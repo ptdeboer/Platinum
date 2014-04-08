@@ -30,8 +30,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 
 /**
- * A node in a JTree can't have DropTargets. So the Parent component (JTree)
- * handle the drops.
+ * A node in a JTree can't have DropTargets, so the Parent component (JTree) handles the drops.
  * 
  * @author P.T. de Boer.
  */

@@ -29,12 +29,13 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSource;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowData;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
@@ -43,13 +44,13 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ProxyNodeTableDataUpdater implements TableDataProducer, VRSEventListener
+public class ProxyNodeResourceTableUpdater implements VRSEventListener
 {
     private static ClassLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(ProxyNodeTableDataUpdater.class);
+        logger = ClassLogger.getLogger(ProxyNodeResourceTableUpdater.class);
         logger.setLevelToDebug();
     }
 
@@ -57,7 +58,7 @@ public class ProxyNodeTableDataUpdater implements TableDataProducer, VRSEventLis
     // Instance
     // ========================================================================
 
-    private ProxyNodeDataSource dataSource;
+    private ProxyDataSource dataSource;
 
     private ResourceTableModel tableModel;
 
@@ -67,13 +68,26 @@ public class ProxyNodeTableDataUpdater implements TableDataProducer, VRSEventLis
 
     private ViewNodeContainer tableContainer;
 
-    public ProxyNodeTableDataUpdater(ViewNodeContainer tableContainer, ProxyNode pnode,
+    /** 
+     * Create ProxyNode data Updater from ProxyNode 
+     */
+    public ProxyNodeResourceTableUpdater(ViewNodeContainer tableContainer, ProxyNode pnode,
             ResourceTableModel resourceTableModel)
     {
         this.tableContainer = tableContainer;
-        init(new ProxyNodeDataSource(pnode), resourceTableModel);
+        init(new ProxyNodeDataSourceProvider(pnode), resourceTableModel);
     }
 
+    /** 
+     * Create Table from default ProxyDataSource. 
+     */
+    public ProxyNodeResourceTableUpdater(ViewNodeContainer tableContainer, ProxyDataSource dataSource,
+            ResourceTableModel resourceTableModel)
+    {
+        this.tableContainer = tableContainer;
+        init(dataSource, resourceTableModel);
+    }
+    
     public BrowserInterface getMasterBrowser()
     {
         if (tableContainer == null)
@@ -96,24 +110,24 @@ public class ProxyNodeTableDataUpdater implements TableDataProducer, VRSEventLis
         return null;
     }
 
-    protected void init(ProxyNodeDataSource nodeDataSource, ResourceTableModel resourceTableModel)
+    protected void init(ProxyDataSource nodeDataSource, ResourceTableModel resourceTableModel)
     {
         this.tableModel = resourceTableModel;
         this.uiModel = UIViewModel.createTableModel();
         setDataSource(nodeDataSource);
     }
 
-    protected void setDataSource(ProxyNodeDataSource nodeDataSource)
+    protected void setDataSource(ProxyDataSource nodeDataSource)
     {
         if (dataSource != null)
         {
-            dataSource.removeViewNodeEventListener(this);
+            dataSource.removeDataSourceEventListener(this);
         }
         this.dataSource = nodeDataSource;
         // receive events
         if (dataSource != null)
         {
-            this.dataSource.addViewNodeEventListener(this);
+            this.dataSource.addDataSourceEventListener(this);
             this.rootNode = null;
         }
         else
@@ -278,7 +292,7 @@ public class ProxyNodeTableDataUpdater implements TableDataProducer, VRSEventLis
         }
     }
 
-    @Override
+    //@Override
     public void updateColumn(String newName)
     {
         this.updateAttribute(newName);

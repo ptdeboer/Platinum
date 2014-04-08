@@ -31,8 +31,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * ResourceTreeNode holds the childs in the ResourceTree. All updates and node
- * manipulations should go through the ResourceTreeModel.
+ * ResourceTreeNode holds the childs in the ResourceTree. All updates and node manipulations should go through the
+ * ResourceTreeModel.
  */
 public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
 {

@@ -28,14 +28,14 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeSource;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Gets relevant data from DataSource and updates the ResourceTreeModel.
+ * Gets relevant data from the (Proxy)DataSource and updates the ResourceTreeModel.
  */
 public class ResourceTreeUpdater implements VRSEventListener
 {
@@ -48,11 +48,11 @@ public class ResourceTreeUpdater implements VRSEventListener
 
     private ResourceTree tree;
 
-    private ViewNodeSource viewNodeSource;
+    private ViewNodeDataSource viewNodeSource;
 
     private ViewNode rootItem;
 
-    public ResourceTreeUpdater(ResourceTree tree, ViewNodeSource viewNodeSource)
+    public ResourceTreeUpdater(ResourceTree tree, ViewNodeDataSource viewNodeSource)
     {
         this.tree = tree;
         setDataSource(viewNodeSource, false);
@@ -70,31 +70,31 @@ public class ResourceTreeUpdater implements VRSEventListener
 
     protected BrowserInterface getBrowserInterface()
     {
-        return this.tree.getBrowserInterface();  
+        return this.tree.getBrowserInterface();
     }
-    
+
     protected ITaskSource getTaskSource()
     {
-        BrowserInterface browser=this.getBrowserInterface();
-        if (browser!=null)
+        BrowserInterface browser = this.getBrowserInterface();
+        if (browser != null)
         {
-            return browser.getTaskSource(); 
+            return browser.getTaskSource();
         }
-        return null; 
+        return null;
     }
-    
-    public void setDataSource(ViewNodeSource viewNodeSource, boolean update)
+
+    public void setDataSource(ViewNodeDataSource viewNodeSource, boolean update)
     {
         // unregister previous
         if (viewNodeSource != null)
-            viewNodeSource.removeViewNodeEventListener(this);
+            viewNodeSource.removeDataSourceEventListener(this);
 
         this.viewNodeSource = viewNodeSource;
 
         // register me as listener
         if (viewNodeSource != null)
         {
-            viewNodeSource.addViewNodeEventListener(this);
+            viewNodeSource.addDataSourceEventListener(this);
         }
         if (update)
             updateRoot();
@@ -104,7 +104,7 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("updateRoot():\n");
 
-        BrowserTask task = new BrowserTask(this.getTaskSource(),"update resource tree model for node" + rootItem)
+        BrowserTask task = new BrowserTask(this.getTaskSource(), "update resource tree model for node" + rootItem)
         {
             @Override
             public void doTask()
@@ -128,7 +128,7 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("updateChilds():%s\n", node.getVRI());
 
-        BrowserTask task = new BrowserTask(this.getTaskSource(),"update resource tree model for node" + rootItem)
+        BrowserTask task = new BrowserTask(this.getTaskSource(), "update resource tree model for node" + rootItem)
         {
             @Override
             public void doTask()
@@ -181,7 +181,8 @@ public class ResourceTreeUpdater implements VRSEventListener
     protected void updateAttributes(VRL parent, VRL vrl, String[] attrNames)
     {
         // just refresh all:
-        this.refreshNodes(new VRL[]{ vrl }, attrNames);
+        this.refreshNodes(new VRL[]
+        { vrl }, attrNames);
     }
 
     protected void renameNodes(VRL optParent, VRL[] sources, VRL[] targets)
@@ -198,30 +199,35 @@ public class ResourceTreeUpdater implements VRSEventListener
         if (orgSource.equals(newSource))
         {
             // logical rename: just fresh attributes
-            this.refreshNodes(new VRL[]{ orgSource }, null);
+            this.refreshNodes(new VRL[]
+            { orgSource }, null);
         }
-        else if ( (optParent!=null) && optParent.isParentOf(orgSource) && (optParent.isParentOf(newSource)) )
+        else if ((optParent != null) && optParent.isParentOf(orgSource) && (optParent.isParentOf(newSource)))
         {
-            // sibling rename  in similar tree branch: remove old and add new: 
-            logger.debugPrintf("sibling rename of %s=> %s\n",orgSource.getBasename(),newSource.getBasename()); 
-            this.deleteNodes(new VRL[]{orgSource});  
-            this.addNodes(optParent, new VRL[]{newSource});
+            // sibling rename in similar tree branch: remove old and add new:
+            logger.debugPrintf("sibling rename of %s=> %s\n", orgSource.getBasename(), newSource.getBasename());
+            this.deleteNodes(new VRL[]
+            { orgSource });
+            this.addNodes(optParent, new VRL[]
+            { newSource });
         }
         else
         {
             // delete old nodes, add new nodes from different tree branch.
-            this.deleteNodes(new VRL[]{orgSource});  
+            this.deleteNodes(new VRL[]
+            { orgSource });
 
-            logger.errorPrintf("FIXME: Guessing new PArent VRL of new (renamed) resource:%s\n",newSource); 
-            VRL newParentVrl=newSource.getParent(); 
+            logger.errorPrintf("FIXME: Guessing new PArent VRL of new (renamed) resource:%s\n", newSource);
+            VRL newParentVrl = newSource.getParent();
 
-            // check parent: 
-            List<ResourceTreeNode> nodes = this.getModel().findNodes(newParentVrl); 
-            if (nodes!=null)
+            // check parent:
+            List<ResourceTreeNode> nodes = this.getModel().findNodes(newParentVrl);
+            if (nodes != null)
             {
-                this.addNodes(newParentVrl, new VRL[]{newSource});
+                this.addNodes(newParentVrl, new VRL[]
+                { newSource });
             }
-            logger.debugPrintf("New node not yet in resoruce tree:%s\n",newSource); 
+            logger.debugPrintf("New node not yet in resoruce tree:%s\n", newSource);
         }
     }
 
@@ -245,7 +251,7 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("addNodes():%s\n", parent);
 
-        BrowserTask task = new BrowserTask(this.getTaskSource(),"update resource tree model for node" + rootItem)
+        BrowserTask task = new BrowserTask(this.getTaskSource(), "update resource tree model for node" + rootItem)
         {
             @Override
             public void doTask()
@@ -261,7 +267,7 @@ public class ResourceTreeUpdater implements VRSEventListener
     {
         logger.debugPrintf("refreshNodes():%s\n", sources.length);
 
-        BrowserTask task = new BrowserTask(this.getTaskSource(),"refreshNodes" + sources.length)
+        BrowserTask task = new BrowserTask(this.getTaskSource(), "refreshNodes" + sources.length)
         {
             @Override
             public void doTask()
@@ -341,7 +347,8 @@ public class ResourceTreeUpdater implements VRSEventListener
             try
             {
                 // Refresh Complete ViewNode:
-                ViewNode[] viewNodes = viewNodeSource.createViewNodes(getUIModel(), new VRL[] { vrl });
+                ViewNode[] viewNodes = viewNodeSource.createViewNodes(getUIModel(), new VRL[]
+                { vrl });
 
                 if ((viewNodes == null) || (viewNodes.length <= 0))
                 {
