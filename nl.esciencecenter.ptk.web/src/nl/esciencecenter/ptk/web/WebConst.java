@@ -22,6 +22,10 @@ package nl.esciencecenter.ptk.web;
 
 public class WebConst
 {
+    public static final int HTTP_PORT=80; 
+    
+    public static final int HTTPS_PORT=443;    
+    
     public static final String HTTP_SCHEME="http";
     
     public static final String HTTPS_SCHEME="https"; 

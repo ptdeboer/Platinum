@@ -137,11 +137,11 @@ public class WebConfig
         {
             if (this.isHTTPS())
             {
-                serverPort = SslConst.HTTPS_PORT;
+                serverPort = WebConst.HTTPS_PORT;
             }
             else
             {
-                serverPort = SslConst.HTTP_PORT;
+                serverPort = WebConst.HTTP_PORT;
             }
         }
 
@@ -209,12 +209,12 @@ public class WebConfig
 
     public boolean isHTTPS()
     {
-        return (protocol != null ? (protocol.equals(SslConst.HTTPS_SCHEME)) : false);
+        return (protocol != null ? (protocol.equals(WebConst.HTTPS_SCHEME)) : false);
     }
 
     public boolean isHTTP()
     {
-        return (protocol != null ? (protocol.equals(SslConst.HTTP_SCHEME)) : false);
+        return (protocol != null ? (protocol.equals(WebConst.HTTP_SCHEME)) : false);
     }
 
     public void setCredentials(String user, Secret passwd)
