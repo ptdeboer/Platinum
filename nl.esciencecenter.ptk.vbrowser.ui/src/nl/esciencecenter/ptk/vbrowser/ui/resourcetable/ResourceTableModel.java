@@ -330,10 +330,15 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     {
         this.iconHeaderName = iconName;
     }
-
-    public void setHeaders(StringList headers)
+    
+    public void setHeaders(List<String> newHeaders)
+    {   
+        headers.setValues(newHeaders);
+    }
+    
+    public void setHeaders(String newHeaders[])    
     {
-        this.headers.setValues(headers);
+        this.headers.setValues(newHeaders);
         this.fireTableStructureChanged();
     }
 
@@ -394,9 +399,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
      * 
      * @return all available attribute names as List.
      */
-    public List<String> getAllAttributeNames()
+    public String[] getAllAttributeNames()
     {
-        return allAttributeNames;
+        return allAttributeNames.toArray();
     }
 
     /**
@@ -407,7 +412,10 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         this.allAttributeNames = list.duplicate();
     }
 
-    public List<String> getHeaders()
+    /**
+     * @return Return copy of headers as Array.
+     */
+    public String[] getHeaders()
     {
         return headers.toArray();
     }
@@ -1099,6 +1107,8 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
         }
         this.fireTableCellUpdated(rownr, colnr);
     }
+
+
 
     // ==========================================================================
     // Misc.

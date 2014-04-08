@@ -33,6 +33,6 @@ public interface AttributeSource
     
     public Attribute getAttribute(String name); 
     
-    public List<Attribute> getAttributes(List<String> names); 
+    public List<Attribute> getAttributes(String[] names); 
     
 }

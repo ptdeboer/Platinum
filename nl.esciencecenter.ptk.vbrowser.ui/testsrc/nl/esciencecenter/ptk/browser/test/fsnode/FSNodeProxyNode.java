@@ -212,7 +212,7 @@ public class FSNodeProxyNode extends ProxyNode
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(List<String> names) throws ProxyException
+    protected List<Attribute> doGetAttributes(String[] names) throws ProxyException
     {
         return metaFile.getAttributes(names); 
     }

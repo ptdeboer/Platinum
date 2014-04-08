@@ -170,7 +170,7 @@ public class VPathNode implements VPath
     }
 
     @Override
-    public List<Attribute> getAttributes(List<String> names) throws VrsException
+    public List<Attribute> getAttributes(String names[]) throws VrsException
     {
         ArrayList<Attribute> list = new ArrayList<Attribute>();
         for (String name : names)

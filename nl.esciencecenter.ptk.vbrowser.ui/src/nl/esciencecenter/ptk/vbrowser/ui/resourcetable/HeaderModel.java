@@ -20,10 +20,9 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
-
 import nl.esciencecenter.ptk.data.StringList;
 
 public class HeaderModel extends AbstractListModel<String>
@@ -46,7 +45,7 @@ public class HeaderModel extends AbstractListModel<String>
 
     public HeaderModel(String values[])
     {
-        init(values);
+        this.values=new StringList(values);
     }
 
     @Override
@@ -63,31 +62,24 @@ public class HeaderModel extends AbstractListModel<String>
 
     public void setValues(String vals[])
     {
-        init(vals);
+        values=new StringList(vals);
         this.fireContentsChanged(this, 0, values.size() - 1);
     }
 
-    private void init(String vals[])
+    public void setValues(List<String> vals) 
     {
-        this.values = new StringList(vals);
-    }
-
-    public void setValues(StringList vals)
-    {
-        init(vals);
+        values=new StringList(vals);
         this.fireContentsChanged(this, 0, values.size() - 1);
     }
-
-    private void init(StringList vals)
+    
+    /**
+     * @return copy of headers as array.
+     */
+    public String[] toArray()
     {
-        this.values = vals.duplicate();
+        return this.values.toArray(); 
     }
-
-    public ArrayList<String> toArray()
-    {
-        return this.values;
-    }
-
+    
     public int indexOf(String name)
     {
         return this.values.indexOf(name);

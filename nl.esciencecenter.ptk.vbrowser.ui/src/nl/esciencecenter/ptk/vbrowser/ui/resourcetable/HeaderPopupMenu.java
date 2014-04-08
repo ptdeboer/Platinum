@@ -139,7 +139,7 @@ public class HeaderPopupMenu extends JPopupMenu
         menu.setText("Columns");
 
         // All Headers!
-        List<String> names = tablePanel.getModel().getAllAttributeNames();
+        String names[]= tablePanel.getModel().getAllAttributeNames();
 
         @SuppressWarnings("unused")
         JMenuItem mitem = null;
@@ -155,8 +155,9 @@ public class HeaderPopupMenu extends JPopupMenu
                     // menu.add(mitem=createCheckBoxMenuItem(name,""+HeaderCommand.INSERT_COLUMN_AFTER+":"+name,present));
                 }
                 else
+                {
                     menu.add(mitem = createCheckBoxMenuItem(name, "" + HeaderCommand.DELETE_COLUMN + ":" + name, present));
-
+                }
             }
         }
 

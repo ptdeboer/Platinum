@@ -42,5 +42,5 @@ public interface AttributeDataSource
     
     public List<String> getAttributeNames(VRL locator) throws ProxyException; 
     
-    public List<Attribute> getAttributes(VRL locator,List<String> attrNames) throws ProxyException; 
+    public List<Attribute> getAttributes(VRL locator,String attrNames[]) throws ProxyException; 
 }

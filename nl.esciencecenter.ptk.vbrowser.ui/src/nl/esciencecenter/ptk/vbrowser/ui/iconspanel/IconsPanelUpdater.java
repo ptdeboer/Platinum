@@ -124,7 +124,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
                     return;
                 }
 
-                refresh();
+                update();
                 break;
             }
             case RESOURCES_DELETED:
@@ -134,7 +134,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
             }
             default:
             {
-                refresh();
+                update();
                 break;
             }
         }
@@ -153,10 +153,19 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
         iconsPanel.revalidate();
     }
 
-    public void refresh()
+    @Override 
+    public void update()
     {
         updateRoot();
         iconsPanel.revalidate();
+    }
+
+    @Override
+    public void update(VRL[] vrls, String[] optAttributeNames)
+    {
+        logger.errorPrintf("FIXME:update(...,...)");
+        // update all for now: 
+        update(); 
     }
 
     private IconItem[] createIconItems(ViewNode[] nodes)
@@ -246,5 +255,6 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
     {
         this.iconsPanel.getModel().setItems(createIconItems(childs));
     }
+
 
 }

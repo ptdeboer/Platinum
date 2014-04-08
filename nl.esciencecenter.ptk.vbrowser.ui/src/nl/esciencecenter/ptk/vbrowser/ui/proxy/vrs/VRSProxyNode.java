@@ -364,7 +364,7 @@ public class VRSProxyNode extends ProxyNode
     }
     
 	@Override
-    protected List<Attribute> doGetAttributes(List<String> names) throws ProxyException
+    protected List<Attribute> doGetAttributes(String names[]) throws ProxyException
     {
         try
         {

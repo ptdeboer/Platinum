@@ -192,12 +192,19 @@ public class DummyProxyNode extends ProxyNode
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(List<String> names) throws ProxyException
+    protected List<Attribute> doGetAttributes(String[] names) throws ProxyException
     {
-        ArrayList<Attribute> attrs = new ArrayList<Attribute>(names.size());
+        if (names==null)
+        {
+            return null; 
+        }
+        
+        ArrayList<Attribute> attrs = new ArrayList<Attribute>(names.length);
 
-        for (int i = 0; i < names.size(); i++)
-            attrs.add(new Attribute(names.get(i), "Value:" + names.get(i)));
+        for (int i = 0; i < names.length; i++)
+        {
+            attrs.add(new Attribute(names[i], "Value:" + names[i]));
+        }
 
         return attrs;
 

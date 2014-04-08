@@ -172,7 +172,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         setCellRenderer(renderer);
 
         // update top level !
-        dataUpdater.updateRoot();
+        dataUpdater.update();
 
         // Properties
         this.setFocusable(true);

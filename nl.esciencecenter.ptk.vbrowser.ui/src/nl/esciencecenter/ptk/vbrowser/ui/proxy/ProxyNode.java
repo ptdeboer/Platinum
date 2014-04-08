@@ -613,7 +613,17 @@ public abstract class ProxyNode
         return getDefaultProxyAttributesNames();
     }
 
-    public List<Attribute> getAttributes(List<String> names) throws ProxyException
+    public List<Attribute> getAttributes(List<String> attrNames) throws ProxyException
+    {
+        if (attrNames==null)
+            return null;
+        
+        // todo List<String> vs String array[]
+        return getAttributes(attrNames.toArray(new String[0]));
+    }
+
+    
+    public List<Attribute> getAttributes(String[] names) throws ProxyException
     {
         List<Attribute> attrs = doGetAttributes(names);
 
@@ -654,14 +664,14 @@ public abstract class ProxyNode
         });
     }
 
-    protected List<Attribute> getDefaultProxyAttributes(List<String> names) throws ProxyException
+    protected List<Attribute> getDefaultProxyAttributes(String[] names) throws ProxyException
     {
         List<Attribute> attrs = new ArrayList<Attribute>();
 
         // hard coded default attributes:
-        for (int i = 0; i < names.size(); i++)
+        for (int i = 0; i < names.length; i++)
         {
-            String name = names.get(i);
+            String name = names[i];
             if (name.equals(AttributeNames.ATTR_ICON))
                 attrs.add(new Attribute(name, this.getIconURL(this.getResourceStatus(), 48)));
             else if (name.equals(AttributeNames.ATTR_NAME))
@@ -791,7 +801,7 @@ public abstract class ProxyNode
 
     abstract protected List<String> doGetAttributeNames() throws ProxyException;
 
-    abstract protected List<Attribute> doGetAttributes(List<String> names) throws ProxyException;
+    abstract protected List<Attribute> doGetAttributes(String names[]) throws ProxyException;
 
     abstract protected Presentation doGetPresentation() throws ProxyException;
 

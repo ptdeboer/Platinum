@@ -150,7 +150,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
 
         if (data)
         {
-            updateData();
+            dpUpdataData();
         }
     }
 
@@ -250,9 +250,10 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
         return getRootViewNode().getVRL();
     }
 
-    public void refreshRoot()
+    @Override 
+    public void update()
     {
-        updateData();
+        dpUpdataData();
     }
 
     protected StringList filterHeaders(StringList headers)
@@ -314,17 +315,16 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
 
     protected void updateRow(String rowKey)
     {
-        List<String> hdrs = tableModel.getHeaders();
-        updateAttributes(new String[]
-        { rowKey }, hdrs);
+        String hdrs[] = tableModel.getHeaders();
+        doUpdateAttributes(new String[] { rowKey }, hdrs);
     }
 
     protected void updateAttribute(String attrName)
     {
-        updateAttributes(tableModel.getRowKeys(), new StringList(attrName));
+        doUpdateAttributes(tableModel.getRowKeys(), new String[]{attrName});
     }
 
-    protected void updateNodeAttributes(ViewNode viewNode, List<String> attrNames) throws ProxyException
+    protected void updateNodeAttributes(ViewNode viewNode, String attrNames[]) throws ProxyException
     {
         List<Attribute> attrs = dataSource.getAttributes(viewNode.getVRL(), attrNames);
 
@@ -377,7 +377,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
                     logger.errorPrintf("FIXME: Cannot added resource if parent is not given!\n");
                     return;
                 }
-                addRows(vrls, false);
+                addRows(vrls, null, false);
                 break;
             }
             case RESOURCES_DELETED:
@@ -456,7 +456,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
         {
             if (vrl.equals(this.getRootVRI()))
             {
-                refreshRoot();
+                update();
             }
 
             if (tableModel.hasRow(tableModel.createRowKey(vrl)))
@@ -467,20 +467,26 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
 
         if (rowCount > 0)
         {
-            addRows(rowVRLs, true);
+            addRows(rowVRLs, null, true);
         }
     }
 
+    
+    public void update(VRL vrl[], String optAttrNames[])
+    {
+        addRows(vrl,optAttrNames,true); 
+    }
+    
     private void refreshRows(final VRL[] vrls)
     {
-        addRows(vrls, false);
+        addRows(vrls, null, false);
     }
-
+    
     // ========================================================================
     // Background Data Fetchers
     // ========================================================================
 
-    private void updateData()
+    private void dpUpdataData()
     {
         tableModel.clearData();
 
@@ -536,7 +542,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
                         }
                         try
                         {
-                            List<String> hdrs = tableModel.getHeaders();
+                            String hdrs[] = tableModel.getHeaders();
                             updateNodeAttributes(node, hdrs);
                             allAttributes.add(dataSource.getAttributeNames(node.getVRL()), true);
                         }
@@ -562,12 +568,12 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
         task.startTask();
     }
 
-    private void updateAttributes(final String rowKeys[], final List<String> attrNames)
+    private void doUpdateAttributes(final String rowKeys[], final String attrNames[])
     {
         final ResourceTableModel model = tableModel;
 
         BrowserTask task = new BrowserTask(this.getTaskSource(), "updateAttributes() #rowKeys=" + rowKeys.length + ",#attrNames="
-                + attrNames.size())
+                + attrNames.length)
         {
             public void doTask()
             {
@@ -598,7 +604,8 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
         task.startTask();
     }
 
-    private void addRows(final VRL[] vrls, final boolean mergeRows)
+
+    private void addRows(final VRL[] vrls, final String optAttrNames[], final boolean mergeRows)
     {
         if (dataSource == null)
         {
@@ -630,7 +637,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
                         }
                     }
                     
-                    updateAttributes(tableModel.createRowKeys(vrls), tableModel.getHeaders()); 
+                    doUpdateAttributes(tableModel.createRowKeys(vrls), optAttrNames); 
                     
                     // update row data.
                 }
@@ -673,7 +680,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
                     }
                     
                     tableModel.replaceRow(index,newNodes[0],new AttributeSet()); 
-                    updateAttributes(new String[]{newKey}, tableModel.getHeaders()); 
+                    doUpdateAttributes(new String[]{newKey}, tableModel.getHeaders()); 
                     
                     // update row data.
                 }

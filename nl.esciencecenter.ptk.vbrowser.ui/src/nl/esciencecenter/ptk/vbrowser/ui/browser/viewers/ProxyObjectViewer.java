@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
 
+import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributePanel;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;

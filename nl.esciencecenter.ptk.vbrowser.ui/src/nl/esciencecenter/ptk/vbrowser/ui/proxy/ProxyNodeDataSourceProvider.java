@@ -142,7 +142,7 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource
     }
 
     @Override
-    public List<Attribute> getAttributes(VRL locator, List<String> attrNames) throws ProxyException
+    public List<Attribute> getAttributes(VRL locator, String attrNames[]) throws ProxyException
     {
         ProxyNode node = proxyFactory.openLocation(locator);
         return node.getAttributes(attrNames);

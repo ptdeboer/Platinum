@@ -149,20 +149,20 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public void initColumns()
     {
         // Use Header from DataModel
-        List<String> headers = getModel().getHeaders();
+        String headers[] = getModel().getHeaders();
 
         logger.infoPrintf("initColumns(): getHeaders() = %s\n", headers.toString());
 
-        if ((headers == null) || (headers.size() <= 0))
+        if ((headers == null) || (headers.length <= 0))
         {
             // Use all attribute names.
             headers = getModel().getAllAttributeNames();
             logger.infoPrintf("initColumns(): getAllHeaders() = %s\n", new StringList(headers).toString());
         }
 
-        if ((headers == null) || (headers.size() <= 0))
+        if ((headers == null) || (headers.length <= 0))
         {
-            headers = new StringList(0);
+            headers = new String[0]; // empty but not null
         }
 
         initColumns(headers);
@@ -237,13 +237,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         throw new Error("Resource Table NOT initialized with compatible Table Model!:" + model.getClass());
     }
 
-    private void initColumns(List<String> headers)
+    private void initColumns(String[] headers)
     {
         TableColumnModel columnModel = new DefaultTableColumnModel();
 
-        for (int i = 0; i < headers.size(); i++)
+        for (int i = 0; i < headers.length; i++)
         {
-            String headerName = headers.get(i);
+            String headerName = headers[i];
             // debug("Creating new column:"+headers[i]);
             TableColumn column = createColumn(i, headerName);
             //
@@ -322,14 +322,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         }
 
         return column;
-    }
-
-    /**
-     * Returns headers as defined in the DATA model
-     */
-    public List<String> getDataModelHeaders()
-    {
-        return getModel().getHeaders();
     }
 
     public int getDataModelHeaderIndex(String name)

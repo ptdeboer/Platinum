@@ -20,11 +20,11 @@ public class Test_ResourceTableModel
         Assert.assertEquals("Empty model should have 0 rows.", 0, model.getRowCount());
         Assert.assertEquals("Number of header doesn't match.", headers.length, model.getColumnCount());
 
-        List<String> headerList = model.getHeaders();
+        String actualHeaders[] = model.getHeaders();
 
         for (int i = 0; i < headers.length; i++)
         {
-            Assert.assertEquals("Header list entry #" + i + "doesn't match", headers[i], headerList.get(i));
+            Assert.assertEquals("Header list entry #" + i + "doesn't match", headers[i], actualHeaders[i]);
         }
     }
     

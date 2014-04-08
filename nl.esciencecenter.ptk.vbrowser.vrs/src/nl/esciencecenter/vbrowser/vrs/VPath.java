@@ -83,7 +83,7 @@ public interface VPath
 
     public List<AttributeDescription> getAttributeDescriptions() throws VrsException; 
 
-    public List<Attribute> getAttributes(List<String> names) throws VrsException;
+    public List<Attribute> getAttributes(String names[]) throws VrsException;
 
     public List<String> getAttributeNames() throws VrsException;
 

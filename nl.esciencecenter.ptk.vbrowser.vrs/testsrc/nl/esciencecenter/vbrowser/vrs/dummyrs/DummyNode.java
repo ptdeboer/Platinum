@@ -90,7 +90,7 @@ public class DummyNode implements VPath
     }
 
     @Override
-    public List<Attribute> getAttributes(List<String> names) throws VrsException
+    public List<Attribute> getAttributes(String names[]) throws VrsException
     {
         return null;
     }

@@ -98,10 +98,14 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
             viewNodeSource.addDataSourceEventListener(this);
         }
         if (update)
-            updateRoot();
+        {
+            update();
+        }
     }
+        
 
-    public void updateRoot()
+    @Override 
+    public void update()
     {
         logger.debugPrintf("updateRoot():\n");
 
@@ -155,7 +159,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
                 deleteNodes(sources);
                 break;
             case REFRESH_RESOURCES:
-                refreshNodes(sources, null);
+                update(sources, null);
                 break;
             case RESOURCES_ADDED:
                 addNodes(parent, sources);
@@ -182,8 +186,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
     protected void updateAttributes(VRL parent, VRL vrl, String[] attrNames)
     {
         // just refresh all:
-        this.refreshNodes(new VRL[]
-        { vrl }, attrNames);
+        this.update(new VRL[] { vrl }, attrNames);
     }
 
     protected void renameNodes(VRL optParent, VRL[] sources, VRL[] targets)
@@ -200,23 +203,19 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
         if (orgSource.equals(newSource))
         {
             // logical rename: just fresh attributes
-            this.refreshNodes(new VRL[]
-            { orgSource }, null);
+            this.update(new VRL[] { orgSource }, null);
         }
         else if ((optParent != null) && optParent.isParentOf(orgSource) && (optParent.isParentOf(newSource)))
         {
             // sibling rename in similar tree branch: remove old and add new:
             logger.debugPrintf("sibling rename of %s=> %s\n", orgSource.getBasename(), newSource.getBasename());
-            this.deleteNodes(new VRL[]
-            { orgSource });
-            this.addNodes(optParent, new VRL[]
-            { newSource });
+            this.deleteNodes(new VRL[]{ orgSource });
+            this.addNodes(optParent, new VRL[]{ newSource });
         }
         else
         {
             // delete old nodes, add new nodes from different tree branch.
-            this.deleteNodes(new VRL[]
-            { orgSource });
+            this.deleteNodes(new VRL[]{ orgSource });
 
             logger.errorPrintf("FIXME: Guessing new PArent VRL of new (renamed) resource:%s\n", newSource);
             VRL newParentVrl = newSource.getParent();
@@ -225,8 +224,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
             List<ResourceTreeNode> nodes = this.getModel().findNodes(newParentVrl);
             if (nodes != null)
             {
-                this.addNodes(newParentVrl, new VRL[]
-                { newSource });
+                this.addNodes(newParentVrl, new VRL[]{ newSource });
             }
             logger.debugPrintf("New node not yet in resoruce tree:%s\n", newSource);
         }
@@ -263,8 +261,9 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
 
         task.startTask();
     }
-
-    protected void refreshNodes(final VRL sources[], final String optAttrNames[])
+    
+    @Override 
+    public void update(final VRL sources[], final String optAttrNames[])
     {
         logger.debugPrintf("refreshNodes():%s\n", sources.length);
 

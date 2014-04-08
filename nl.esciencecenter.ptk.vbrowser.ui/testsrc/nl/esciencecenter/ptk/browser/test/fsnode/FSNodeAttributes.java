@@ -157,11 +157,14 @@ public class FSNodeAttributes implements AttributeSource, IPresentable
     }
 
     @Override
-    public List<Attribute> getAttributes(List<String> names)
+    public List<Attribute> getAttributes(String names[])
     {
-        ArrayList<Attribute> attrs=new ArrayList<Attribute>(names.size()); 
-        for (int i=0;i<names.size();i++)
-            attrs.add(getAttribute(names.get(i)));
+        if (names==null)
+            return null;  
+        
+        ArrayList<Attribute> attrs=new ArrayList<Attribute>(names.length); 
+        for (int i=0;i<names.length;i++)
+            attrs.add(getAttribute(names[i]));
         return attrs; 
     }
 
