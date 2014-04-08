@@ -24,7 +24,7 @@ package nl.esciencecenter.ptk.ui.widgets;
 /**
  * String Selection ComboBox which doesn't use Generic.
  */
-public class StringSelectionComboBox<T> extends SelectionComboBox<String> 
+public class StringSelectionComboBox extends SelectionComboBox<String> 
 {
     private static final long serialVersionUID = -4341388515805762631L;
 
