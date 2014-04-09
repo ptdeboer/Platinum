@@ -46,13 +46,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 {
     private static final long serialVersionUID = 4392816921140385298L;
 
-    private static ClassLogger logger;
-
-    static
-    {
-        logger = ClassLogger.getLogger(ResourceTableModel.class);
-        logger.setLevelToDebug();
-    }
+    private static ClassLogger logger = ClassLogger.getLogger(ResourceTableModel.class);
 
     /**
      * Resource Row Data
@@ -334,6 +328,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     public void setHeaders(List<String> newHeaders)
     {   
         headers.setValues(newHeaders);
+        this.fireTableStructureChanged();
     }
     
     public void setHeaders(String newHeaders[])    
@@ -401,6 +396,9 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
      */
     public String[] getAllAttributeNames()
     {
+        if (allAttributeNames==null)
+            return null;
+        
         return allAttributeNames.toArray();
     }
 

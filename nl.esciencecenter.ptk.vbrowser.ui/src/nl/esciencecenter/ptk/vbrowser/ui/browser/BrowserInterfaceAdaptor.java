@@ -42,13 +42,14 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /** 
  * Default Browser Interface Adaptor, currently used for testing. 
  */
-public class DummyBrowserInterface  implements BrowserInterface
+public class BrowserInterfaceAdaptor  implements BrowserInterface
 {
-    final static ClassLogger logger=ClassLogger.getLogger(DummyBrowserInterface.class); 
+    final static ClassLogger logger=ClassLogger.getLogger(BrowserInterfaceAdaptor.class); 
     
     private BrowserPlatform platform;
-
-    public DummyBrowserInterface(BrowserPlatform platform)
+    private JPopupMenu jpopupMenu;
+    
+    public BrowserInterfaceAdaptor(BrowserPlatform platform)
     {
         this.platform=platform; 
     }
@@ -68,9 +69,14 @@ public class DummyBrowserInterface  implements BrowserInterface
     @Override
     public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode, boolean canvasMenu)
     {
-        return null;
+        return jpopupMenu;
     }
 
+    public void setPopupMenu(JPopupMenu popMenu)
+    {
+        this.jpopupMenu=popMenu; 
+    }
+    
     @Override
     public void handleNodeAction(ViewNodeComponent viewComp, ViewNode node, Action action)
     {

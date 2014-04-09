@@ -149,13 +149,6 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource
     }
 
     @Override
-    public Presentation getChildPresentation(VRL locator) throws ProxyException
-    {
-        ProxyNode node = proxyFactory.openLocation(locator);
-        return node.getPresentation();
-    }
-
-    @Override
     public Presentation getPresentation() throws ProxyException
     {
         return rootNode.getPresentation();

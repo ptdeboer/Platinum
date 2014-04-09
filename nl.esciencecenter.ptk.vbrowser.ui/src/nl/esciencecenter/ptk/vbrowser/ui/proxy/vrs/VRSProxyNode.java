@@ -389,7 +389,7 @@ public class VRSProxyNode extends ProxyNode
         {
             type = vnode.getResourceType();
             VRL vrl=vnode.getVRL(); 
-            return VRSPresentation.getPresentationFor(vrl.getScheme(),vrl.getHostname(),type, true);
+            return VRSPresentation.getPresentationFor(vrl,type, true);
         }
         catch (VrsException e)
         {

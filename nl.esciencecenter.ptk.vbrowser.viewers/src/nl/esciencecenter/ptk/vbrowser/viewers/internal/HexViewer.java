@@ -45,7 +45,7 @@ import javax.swing.JToolBar;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSNode;
-import nl.esciencecenter.ptk.io.RandomReader;
+import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.ui.fonts.FontInfo;
 import nl.esciencecenter.ptk.ui.fonts.FontToolBar;
@@ -156,7 +156,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
 
     protected long scrollMutiplier = 1;
 
-    protected RandomReader reader = null;
+    protected RandomReadable reader = null;
 
     // === GUI components:
     private JToolBar toolBar;
@@ -817,7 +817,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
         }
     }
 
-    private void readBytes(RandomReader reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes)
+    private void readBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes)
             throws IOException, VrsException
     {
         this.getResourceHandler().syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);

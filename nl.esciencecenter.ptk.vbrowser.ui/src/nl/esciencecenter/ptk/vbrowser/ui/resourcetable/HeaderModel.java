@@ -33,19 +33,14 @@ public class HeaderModel extends AbstractListModel<String>
 
     private boolean isEditable = true;
 
-    public HeaderModel(StringList entries)
-    {
-        this.values = entries.duplicate();
-    }
-
     public HeaderModel()
     {
-        values = new StringList(); // empty list
+        init(new StringList()); // empty list
     }
 
     public HeaderModel(String values[])
     {
-        this.values=new StringList(values);
+        init(new StringList(values)); 
     }
 
     @Override
@@ -54,6 +49,12 @@ public class HeaderModel extends AbstractListModel<String>
         return values.get(index);
     }
 
+    private void init(StringList stringList)
+    {
+        this.values=stringList; 
+        System.err.printf(values.toString(">>>",",","\n"));
+    }
+    
     @Override
     public int getSize()
     {

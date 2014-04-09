@@ -24,7 +24,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Complete Proxy(Node) DataSource interface combines all the sub interfaces. 
@@ -36,6 +35,5 @@ public interface ProxyDataSource extends ViewNodeDataSource, AttributeDataSource
     
     public Presentation getPresentation() throws ProxyException;
 
-    public Presentation getChildPresentation(VRL locator) throws ProxyException;
 
 }

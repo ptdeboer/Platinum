@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.swing.Icon;
 
 import nl.esciencecenter.ptk.data.StringList;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.MiniIcons;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -54,6 +55,12 @@ public class ViewNode // candidate: implements Serializable
         return vrls;
     }
 
+    public static ViewNode create(VRL vrl,String name, Icon defaultIcon, boolean isComposite,String resourceType)
+    {
+        ViewNode node=new ViewNode(vrl,defaultIcon,name,isComposite);
+        node.resourceType=resourceType; 
+        return node; 
+    }
     // ==========
     // Instance
     // ==========

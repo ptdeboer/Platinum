@@ -24,7 +24,6 @@ import java.awt.Point;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JPopupMenu;
@@ -51,6 +50,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Generic Resource Table.
@@ -71,7 +72,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     protected int defaultColumnWidth = 80;
 
-    protected ProxyNodeResourceTableUpdater dataProducer;
+    protected ResourceTableUpdater dataProducer;
 
     private TableMouseListener mouseHandler;
 
@@ -87,6 +88,9 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     {
         // defaults
         super(new ResourceTableModel(false));
+
+        logger.setLevelToDebug();
+
         init();
     }
 
@@ -107,11 +111,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     {
         this.setModel(dataModel);
         initColumns();
-    }
-
-    public void refreshAll()
-    {
-        // init();
     }
 
     private void init()
@@ -257,7 +256,10 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             this.updateCellEditors();
         }
         
+        // fist update columns 
         updatePresentation();
+        // now register updater: 
+        columnModel.addColumnModelListener(new TableColumnUpdater(this));
     }
 
     protected void updatePresentation()
@@ -280,7 +282,9 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
                 TableColumn column = model.getColumn(i);
                 Object colName = column.getIdentifier();
                 String headerName = colName.toString();
-                column.setResizable(pres.getAttributeFieldResizable(headerName));
+                
+
+                column.setResizable(pres.getAttributeFieldResizable(headerName,true));
                 // update column width from presentation
                 Integer prefWidth = pres.getAttributePreferredWidth(headerName);
                 if (prefWidth == null)
@@ -291,6 +295,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
                 column.setPreferredWidth(prefWidth);
             }
         }
+
 
     }
 
@@ -343,7 +348,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         {
             names.add(colModel.getColumn(i).getHeaderValue().toString());
         }
-        
+
         return names;
     }
 
@@ -358,7 +363,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         {
             return;
         }
-        
+
         // remove column but use order of columns as currently viewed !
         StringList viewHeaders = this.getColumnHeaders();
         if (insertBefore)
@@ -375,7 +380,9 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public void removeColumn(String headerName, boolean updatePresentation)
     {
         if (this.getHeaderModel().isEditable() == false)
+        {
             return;
+        }
 
         // remove column but use order of columns as currently viewed !
         StringList viewHeaders = this.getColumnHeaders();
@@ -383,12 +390,16 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
         // Triggers restructure, and KEEP the current view order of Columns.
         this.getModel().setHeaders(viewHeaders);
+
         if ((updatePresentation) && (this.getPresentation() != null))
         {
             // Keep headers in persistant Presentation.
-            this.getPresentation().setChildAttributeNames(viewHeaders);
+            this.getPresentation().setPreferredContentAttributeNames(viewHeaders);
+            storePresentation();
         }
+
         this.getModel().fireTableStructureChanged();
+
     }
 
     public HeaderModel getHeaderModel()
@@ -413,7 +424,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     {
         Enumeration<TableColumn> enumeration = getColumnModel().getColumns();
         TableColumn aColumn;
-        //int index = 0;
+        // int index = 0;
 
         while (enumeration.hasMoreElements())
         {
@@ -423,7 +434,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             {
                 return true;
             }
-            //index++;
+            // index++;
         }
 
         return false;
@@ -482,23 +493,57 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     /**
      * Update Data Source.
-     * @throws ProxyException 
+     * 
+     * @throws ProxyException
      */
-    public void setDataSource(ProxyNode node, boolean update) 
+    public void setDataSource(ProxyDataSource dataSource, boolean update)
     {
         ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
-        setDataProducer(new ProxyNodeResourceTableUpdater(this,node, model), true);
 
-        // use presentation from ProxyNode !
-        Presentation pres = node.getPresentation();
-        if (pres != null)
+        try
         {
-            setPresentation(pres.duplicate(true), true);
+            // Copy current presentation from source.
+            Presentation presentation = dataSource.getPresentation();
+            if (presentation != null)
+            {
+                setPresentation(presentation.duplicate(true), true);
+            }
         }
+        catch (ProxyException e)
+        {
+            this.controller.handle("Couldn't get presentation!", e);
+            e.printStackTrace();
+        }
+
+        ResourceTableUpdater updater = new ResourceTableUpdater(this, dataSource, model);
+        setDataProducer(updater, update);
+
     }
 
-    public void setDataProducer(ProxyNodeResourceTableUpdater producer, boolean update)
+    /**
+     * Update Data Source from ProxyNode:
+     * 
+     * @throws ProxyException
+     */
+    public void setDataSource(ProxyNode proxyNode, boolean update)
+    {
+        ResourceTableModel model = new ResourceTableModel(false);
+        this.setModel(model);
+
+        // copy current presentation from source.
+        Presentation presentation = proxyNode.getPresentation();
+        if (presentation != null)
+        {
+            setPresentation(presentation.duplicate(true), true);
+        }
+
+        ResourceTableUpdater updater = new ResourceTableUpdater(this, proxyNode, model);
+        setDataProducer(updater, update);
+
+    }
+
+    public void setDataProducer(ResourceTableUpdater producer, boolean update)
     {
         this.dataProducer = producer;
         if (update == false)
@@ -557,7 +602,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         {
             return this.requestFocusInWindow();
         }
-        
+
         return false; // unfocus not applicable ?
     }
 
@@ -682,7 +727,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         return false;
     }
 
-    public ProxyNodeResourceTableUpdater getDataProducer()
+    public ResourceTableUpdater getDataProducer()
     {
         return this.dataProducer;
     }
@@ -722,10 +767,38 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     public ProxyDataSource getDataSource()
     {
-        if (this.dataProducer==null)
-            return null; 
+        if (this.dataProducer == null)
+        {
+            return null;
+        }
         
-        return this.dataProducer.getDataSource(); 
+        return this.dataProducer.getDataSource();
     }
 
+    public void columnMarginChanged(String name, int w)
+    {
+        // buggy, during resizes invalid values are submitted. 
+        //logger.errorPrintf("FIXME: columnMarginChanged():%s=%d\n", name, w);
+        this.getPresentation().setAttributePreferredWidth(name, w);
+        storePresentation();
+    }
+
+    public void updateAutoResizeMode(int mode)
+    {
+        logger.debugPrintf("updateAutoResizeMode():%d\n", mode);
+        super.setAutoResizeMode(mode);
+        this.getPresentation().setColumnsAutoResizeMode(mode);
+        storePresentation();
+    }
+
+    protected void storePresentation()
+    {
+        ViewNode viewNode=this.getViewNode(); 
+        VRL vrl=viewNode.getVRL(); 
+        String resourceType=viewNode.getResourceType(); 
+        
+        // still buggy:
+        VRSPresentation.storePresentation(vrl,resourceType,getPresentation()); 
+        //logger.errorPrintf("--- presentation ---\n%s\n", getPresentation());
+    }
 }

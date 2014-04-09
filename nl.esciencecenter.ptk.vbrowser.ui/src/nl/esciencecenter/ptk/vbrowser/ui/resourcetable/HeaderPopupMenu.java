@@ -22,7 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -77,10 +77,10 @@ public class HeaderPopupMenu extends JPopupMenu
                     tablePanel.removeColumn(argstr, true);
                     break;
                 case AUTO_FIT_COLUMNS_OFF:
-                    tablePanel.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                    tablePanel.updateAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                     break;
                 case AUTO_FIT_COLUMNS_ON:
-                    tablePanel.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+                    tablePanel.updateAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
                     break;
             }
         }

@@ -45,15 +45,9 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDataSourceUpdater
+public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUpdater
 {
-    private static ClassLogger logger;
-
-    static
-    {
-        logger = ClassLogger.getLogger(ProxyNodeResourceTableUpdater.class);
-        logger.setLevelToDebug();
-    }
+    private static ClassLogger  logger = ClassLogger.getLogger(ResourceTableUpdater.class);
 
     // ========================================================================
     // Instance
@@ -72,7 +66,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
     /** 
      * Create ProxyNode data Updater from ProxyNode 
      */
-    public ProxyNodeResourceTableUpdater(ViewNodeContainer tableContainer, ProxyNode pnode,
+    public ResourceTableUpdater(ViewNodeContainer tableContainer, ProxyNode pnode,
             ResourceTableModel resourceTableModel)
     {
         this.tableContainer = tableContainer;
@@ -82,7 +76,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
     /** 
      * Create Table from default ProxyDataSource. 
      */
-    public ProxyNodeResourceTableUpdater(ViewNodeContainer tableContainer, ProxyDataSource dataSource,
+    public ResourceTableUpdater(ViewNodeContainer tableContainer, ProxyDataSource dataSource,
             ResourceTableModel resourceTableModel)
     {
         this.tableContainer = tableContainer;
@@ -140,6 +134,8 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
 
     public void createTable(boolean headers, boolean data) throws ProxyException
     {
+        logger.debugPrintf("createTable()\n");
+        
         this.rootNode = dataSource.getRoot(uiModel);
         this.tableModel.setRootViewNode(dataSource.getRoot(uiModel));
 
@@ -150,7 +146,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
 
         if (data)
         {
-            dpUpdataData();
+            doUpdataData();
         }
     }
 
@@ -173,7 +169,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
 
                 logger.debugPrintf("Using default Presentation for:%s\n", rootNode);
                 // Check default Presentation form Scheme+Type;
-                pres = Presentation.getPresentationForSchemeType(rootNode.getVRL().getScheme(), rootNode.getResourceType(), true);
+                pres = Presentation.getMasterPresentationFor(rootNode.getVRL().getScheme(), rootNode.getResourceType(), true);
             }
 
         }
@@ -207,7 +203,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
         }
         else
         {
-            names = pres.getPreferredChildAttributeNames();
+            names = pres.getPreferredContentAttributeNames();
             // update icon attribute name:
             iconAttributeName = pres.getIconAttributeName();
             logger.debugPrintf("Using headers from Presentation.getChildAttributeNames():%s\n", new StringList(names));
@@ -253,7 +249,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
     @Override 
     public void update()
     {
-        dpUpdataData();
+        doUpdataData();
     }
 
     protected StringList filterHeaders(StringList headers)
@@ -486,7 +482,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
     // Background Data Fetchers
     // ========================================================================
 
-    private void dpUpdataData()
+    private void doUpdataData()
     {
         tableModel.clearData();
 
@@ -573,7 +569,7 @@ public class ProxyNodeResourceTableUpdater implements VRSEventListener, ProxyDat
         final ResourceTableModel model = tableModel;
 
         BrowserTask task = new BrowserTask(this.getTaskSource(), "updateAttributes() #rowKeys=" + rowKeys.length + ",#attrNames="
-                + attrNames.length)
+                + ((attrNames!=null)?""+attrNames.length:"?"))
         {
             public void doTask()
             {

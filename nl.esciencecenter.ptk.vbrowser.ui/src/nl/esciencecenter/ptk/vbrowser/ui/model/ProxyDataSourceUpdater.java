@@ -2,7 +2,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public interface ProxyDataSourceUpdater extends ViewNodeDataSourceUpdater
+public interface ProxyDataSourceUpdater // extends ViewNodeDataSourceUpdater
 {
     public ProxyDataSource getDataSource(); 
 

@@ -82,7 +82,7 @@ public class FSNodeAttributes implements AttributeSource, IPresentable
     {
         defaultPresentation=Presentation.createDefault(); 
         
-        defaultPresentation.setChildAttributeNames(FileAttribute.getStringValues()); 
+        defaultPresentation.setPreferredContentAttributeNames(FileAttribute.getStringValues()); 
         defaultPresentation.setIconAttributeName(FileAttribute.ICON.getName());
         
 //        Presentation.storeSchemeType(FSNode.FILE_SCHEME,ResourceType.FILE.toString(),defaultPresentation);

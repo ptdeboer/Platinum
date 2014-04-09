@@ -171,7 +171,7 @@ public class ResourceTreeModel extends DefaultTreeModel
     protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode childs[], boolean mergeAppend)
     {
         logger.debugPrintf("+++ updateChilds(append=%s) for:%s,numChilds=#%d\n",
-                (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRI(), childs.length);
+                (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRI(), ((childs!=null)?""+childs.length:"?"));
 
         // possible background thread:
 

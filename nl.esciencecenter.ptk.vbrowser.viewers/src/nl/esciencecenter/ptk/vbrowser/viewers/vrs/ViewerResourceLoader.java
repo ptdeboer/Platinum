@@ -26,8 +26,8 @@ import java.net.URI;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.io.IOUtil;
-import nl.esciencecenter.ptk.io.RandomReader;
-import nl.esciencecenter.ptk.io.RandomWriter;
+import nl.esciencecenter.ptk.io.RandomReadable;
+import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.util.ResourceLoader;
@@ -122,14 +122,14 @@ public class ViewerResourceLoader
         resourceLoader.saveProperties(uri, properties);
     }
 
-    public void syncReadBytes(RandomReader reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
+    public void syncReadBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
     {
         // delegate to IOUtil
         IOUtil.syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
         // reader.close();
     }
 
-    public void syncWriteBytes(RandomWriter writer, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
+    public void syncWriteBytes(RandomWritable writer, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
     {
         writer.writeBytes(fileOffset, buffer, bufferOffset, numBytes);
         writer.close();
@@ -154,12 +154,12 @@ public class ViewerResourceLoader
         return MimeTypes.getDefault().getMimeType(uri.getPath());
     }
 
-    public RandomReader createRandomReader(URI loc) throws IOException
+    public RandomReadable createRandomReader(URI loc) throws IOException
     {
         return resourceLoader.createRandomReader(loc);
     }
 
-    public RandomWriter createRandomWriter(URI loc) throws IOException
+    public RandomWritable createRandomWriter(URI loc) throws IOException
     {
         return resourceLoader.createRandomWriter(loc);
     }

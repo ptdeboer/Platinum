@@ -20,31 +20,23 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
+import nl.esciencecenter.vbrowser.vrs.VPath;
+
 /**
  * Access denied or wrong permissions.
  */
-public class VrsAccessDeniedException extends VrsException
+public class ResourceCreationException extends ResourceException
 {
-    public static final String ACCES_DENIED = "Access Denied";
+    public static final String CREATION_FAILED = "Resource Creation Failed.";
 
     private static final long serialVersionUID = 1829852296515159771L;
-
-    public VrsAccessDeniedException(Throwable cause)
-    {
-        super(ACCES_DENIED, cause, ACCES_DENIED);
-    };
-
-    public VrsAccessDeniedException(String message)
-    {
-        super(message, null, ACCES_DENIED);
-    };
 
     /**
      * Public constructor which holds original system exception.
      */
-    public VrsAccessDeniedException(String message, Throwable cause)
+    public ResourceCreationException(VPath path,String message, Throwable cause)
     {
-        super(message, cause, ACCES_DENIED);
+        super(path, message, cause, CREATION_FAILED);
     };
 
 }

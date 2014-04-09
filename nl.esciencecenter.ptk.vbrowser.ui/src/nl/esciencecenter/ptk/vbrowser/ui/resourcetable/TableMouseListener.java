@@ -53,8 +53,7 @@ public class TableMouseListener extends ViewContainerEventAdapter
         // ------------------
         // Check Header click
         // ------------------
-
-        logger.errorPrintf("Event:%s\n", e);
+       
         if (isHeader(e) && (table.getGuiSettings().isSelection(e)))
         {
             // Header Click:

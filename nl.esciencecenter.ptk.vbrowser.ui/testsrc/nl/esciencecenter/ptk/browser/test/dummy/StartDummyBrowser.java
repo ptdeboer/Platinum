@@ -15,7 +15,7 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */ 
+ */
 // source: 
 
 package nl.esciencecenter.ptk.browser.test.dummy;
@@ -24,36 +24,48 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class StartDummyBrowser 
+public class StartDummyBrowser
 {
+    protected static BrowserPlatform platform = null;
 
-	public static void main(String args[])
-	{
-	    
-	    
-		try 
-		{
-			BrowserPlatform platform=BrowserPlatform.getInstance("dummy"); 
-		    
-		    ProxyBrowserController frame=(ProxyBrowserController)platform.createBrowser();
-		    
-		    ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);  
-		    
-		    platform.registerProxyFactory(dummyFac); 
-		    
-			ProxyNode root = dummyFac.openLocation("dummy:///");
-		
-			frame.setRoot(root,true,true); 
-			
-			
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		} 
-		
-		// frame.setRoot(root); 
-		
-	}
+    public static BrowserPlatform getDummyPlatform()
+    {
+        if (platform == null)
+        {
+            platform = BrowserPlatform.getInstance("dummy");
+
+            ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);
+
+            platform.registerProxyFactory(dummyFac);
+        }
+        return platform;
+
+    }
+
+    public static void main(String args[])
+    {
+
+        try
+        {
+            BrowserPlatform platform = getDummyPlatform();
+            
+            VRL vrl=new VRL("dummy:///"); 
+            
+            ProxyBrowserController frame = (ProxyBrowserController) platform.createBrowser();
+            ProxyFactory dummyFac = platform.getProxyFactoryFor(vrl); 
+            ProxyNode root = dummyFac.openLocation("dummy:///");
+
+            frame.setRoot(root, true, true);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        // frame.setRoot(root);
+
+    }
 }
