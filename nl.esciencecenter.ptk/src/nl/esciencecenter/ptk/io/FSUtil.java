@@ -396,12 +396,12 @@ public class FSUtil implements ResourceProvider
         return newFSNode(filename).createOutputStream(false);
     }
 
-    public RandomReader createRandomReader(FSNode node) throws IOException
+    public RandomReadable createRandomReader(FSNode node) throws IOException
     {
         return node.getFSHandler().createRandomReader(node);
     }
 
-    public RandomWriter createRandomWriter(FSNode node) throws IOException
+    public RandomWritable createRandomWriter(FSNode node) throws IOException
     {
         return node.getFSHandler().createRandomWriter(node);
     }
@@ -455,7 +455,7 @@ public class FSUtil implements ResourceProvider
         {
             byte buffer[] = new byte[len + 1];
     
-            int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len);
+            int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len,false);
             // truncate buffer in the case of a read error:
             buffer[numRead] = 0;
             return new String(buffer, encoding);
@@ -706,13 +706,13 @@ public class FSUtil implements ResourceProvider
     }
 
     @Override
-    public RandomReader createRandomReader(URI uri) throws IOException
+    public RandomReadable createRandomReader(URI uri) throws IOException
     {
         return localFSHandler.createRandomReader(newFSNode(uri));
     }
 
     @Override
-    public RandomWriter createRandomWriter(URI uri) throws IOException
+    public RandomWritable createRandomWriter(URI uri) throws IOException
     {
         return localFSHandler.createRandomWriter(newFSNode(uri));
     }

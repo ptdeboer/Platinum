@@ -23,9 +23,9 @@ package nl.esciencecenter.ptk.io.local;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import nl.esciencecenter.ptk.io.RandomReader;
+import nl.esciencecenter.ptk.io.RandomReadable;
 
-public class LocalFSReader implements RandomReader
+public class LocalFSReader implements RandomReadable
 {
     protected LocalFSNode fsNode; 
     

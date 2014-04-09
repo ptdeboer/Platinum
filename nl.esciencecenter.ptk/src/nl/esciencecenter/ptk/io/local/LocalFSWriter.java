@@ -23,9 +23,9 @@ package nl.esciencecenter.ptk.io.local;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import nl.esciencecenter.ptk.io.RandomWriter;
+import nl.esciencecenter.ptk.io.RandomWritable;
 
-public class LocalFSWriter implements RandomWriter
+public class LocalFSWriter implements RandomWritable
 {
 
     private LocalFSNode fsNode;

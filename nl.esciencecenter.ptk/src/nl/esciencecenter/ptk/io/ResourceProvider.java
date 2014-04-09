@@ -42,8 +42,8 @@ public interface ResourceProvider
 
     public InputStream createInputStream(URI uri) throws IOException;
 
-    public RandomReader createRandomReader(URI uri) throws IOException;
+    public RandomReadable createRandomReader(URI uri) throws IOException;
 
-    public RandomWriter createRandomWriter(URI uri) throws IOException;
+    public RandomWritable createRandomWriter(URI uri) throws IOException;
 
 }

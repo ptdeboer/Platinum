@@ -22,7 +22,7 @@ package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 
-public interface RandomReader
+public interface RandomReadable
 {
     /**
      * Reads <code>nrBytes</code> from file starting to read from

@@ -33,8 +33,8 @@ public abstract class FSHandler
 
     public abstract FSNode newFSNode(java.net.URI uri);
 
-    public abstract RandomReader createRandomReader(FSNode node) throws IOException;
+    public abstract RandomReadable createRandomReader(FSNode node) throws IOException;
 
-    public abstract RandomWriter createRandomWriter(FSNode node) throws IOException;
+    public abstract RandomWritable createRandomWriter(FSNode node) throws IOException;
 
 }

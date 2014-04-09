@@ -29,8 +29,8 @@ import java.util.List;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.FSHandler;
 import nl.esciencecenter.ptk.io.FSNode;
-import nl.esciencecenter.ptk.io.RandomReader;
-import nl.esciencecenter.ptk.io.RandomWriter;
+import nl.esciencecenter.ptk.io.RandomReadable;
+import nl.esciencecenter.ptk.io.RandomWritable;
 
 public class LocalFSHandler extends FSHandler
 {
@@ -63,13 +63,13 @@ public class LocalFSHandler extends FSHandler
     }
 
     @Override
-    public RandomReader createRandomReader(FSNode node) throws IOException
+    public RandomReadable createRandomReader(FSNode node) throws IOException
     {
         return new LocalFSReader((LocalFSNode) node);
     }
 
     @Override
-    public RandomWriter createRandomWriter(FSNode node) throws IOException
+    public RandomWritable createRandomWriter(FSNode node) throws IOException
     {
         return new LocalFSWriter((LocalFSNode) node);
     }
