@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
@@ -38,7 +39,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  * @param <TV>
  *            - The Value Type
  */
-public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serializable
+public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serializable, Duplicatable<HashMapList<TK, TV>>
 {
     private static final long serialVersionUID = -8373244037848706796L;
 
@@ -141,4 +142,51 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
         return this.values().toArray(array);
     }
 
+    @Override
+    public boolean shallowSupported()
+    {
+        return true; 
+    }
+
+    @Override
+    public HashMapList<TK, TV> duplicate()
+    {
+        return duplicate(false);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public HashMapList<TK, TV> duplicate(boolean shallow)
+    {
+        if (shallow)
+        {
+            return (HashMapList<TK, TV>)this.clone(); 
+        }
+        
+        HashMapList<TK, TV> dup=new HashMapList<TK, TV>(); 
+        Iterator<TK> iterator = this.getKeyIterator(); 
+        
+        while(iterator.hasNext())
+        {
+            TK key=iterator.next(); 
+            TV value=this.get(key); 
+            if (shallow)
+            {
+                dup.put(key,value); 
+            }
+            else
+            {
+                if (value instanceof Duplicatable<?>)
+                {
+                    dup.put(key,((Duplicatable<TV>)value).duplicate(false)); 
+                }
+                else
+                {
+                    throw new Error("Value class does not implement non-shallow Duplicatable<> interface:"+value.getClass());
+                }
+            }
+        }
+        
+        return dup;
+    }
 }
