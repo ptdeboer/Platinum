@@ -23,83 +23,170 @@ package nl.esciencecenter.ptk.presentation;
 import java.awt.Color;
 import java.util.Map;
 
-public class AttributePresentation
+import nl.esciencecenter.ptk.object.Duplicatable;
+
+public class AttributePresentation implements Duplicatable<AttributePresentation>
 {
-    // === class === //s
-    public static class PreferredSizes
+    public static class ColorMap
     {
-        int minimum=-1; 
-        int preferred=-1; 
-        int maximum=-1; 
-    
+        protected Color foreground = null;
+
+        protected Color background = null;
+
+        protected Map<String, Color> statusColors = null;
+    }
+
+    public static class PreferredSizes implements Duplicatable<PreferredSizes>
+    {
+        int minimum = -1;
+
+        int preferred = -1;
+
+        int maximum = -1;
+
+        protected PreferredSizes()
+        {
+        }
+
         public PreferredSizes(int minWidth, int prefWidth, int maxWidth)
         {
-            this.minimum=minWidth;
-            this.preferred=prefWidth;
-            this.maximum=maxWidth;
+            this.minimum = minWidth;
+            this.preferred = prefWidth;
+            this.maximum = maxWidth;
         }
-        
+
         public int getMinimum()
         {
-            return minimum; 
+            return minimum;
         }
-        
+
         public int getMaximum()
         {
-            return maximum; 
+            return maximum;
         }
-        
+
         public int getPreferred()
         {
-            return preferred; 
+            return preferred;
         }
-        
+
         public int[] getValues()
         {
-            return new int[]{minimum,preferred,maximum}; 
+            return new int[]
+            { minimum, preferred, maximum };
         }
-    
-        /** Set [minimum,preferred,maximum] values */ 
+
+        /**
+         * Set [minimum,preferred,maximum] values
+         */
         public void setValues(int[] values)
         {
-            this.minimum   = values[0]; 
-            this.preferred = values[1]; 
-            this.maximum   = values[2]; 
+            this.minimum = values[0];
+            this.preferred = values[1];
+            this.maximum = values[2];
+        }
+
+        public String toString()
+        {
+            return "PreferredSizes:[" + minimum + "," + preferred + "," + maximum + "]";
+        }
+
+        public PreferredSizes duplicate()
+        {
+            return duplicate(false);
+        }
+
+        @Override
+        public boolean shallowSupported()
+        {
+            return false;
+        }
+
+        @Override
+        public PreferredSizes duplicate(boolean shallow)
+        {
+            return new PreferredSizes(minimum, preferred, maximum);
+        }
+
+        public void setPreferred(int w)
+        {
+            preferred = w;
         }
     }
+
+    // ============
+    // Instance
+    // ============
 
     protected AttributePresentation.PreferredSizes widths = null;
 
-    protected Color foreground = null;
-    
-    protected  Color background = null;
-
-    protected Map<String, Color> colorMap = null;
-
-    protected boolean attributeFieldResizable=true; 
+    protected boolean attributeFieldResizable = true;
 
     public AttributePresentation.PreferredSizes getWidths()
-    {   
-        return widths; 
+    {
+        return widths;
     }
-    
+
+    protected AttributePresentation()
+    {
+    }
+
+    @Override
+    public boolean shallowSupported()
+    {
+        return false;
+    }
+
+    @Override
+    public AttributePresentation duplicate()
+    {
+        return duplicate(false);
+    }
+
+    public AttributePresentation duplicate(boolean shallow)
+    {
+        AttributePresentation dup = new AttributePresentation();
+        dup.copyFrom(this);
+        return dup;
+    }
+
+    protected void copyFrom(AttributePresentation other)
+    {
+        this.widths = other.widths.duplicate();
+        this.attributeFieldResizable = other.attributeFieldResizable;
+    }
+
     /**
-     * Return {Minimal,Preferred, and Maximum} size triple. 
+     * Return {Minimal,Preferred, and Maximum} size triple.
+     * 
      * @return
      */
     public int[] getWidthValues()
-    {   
-        if (widths==null)
+    {
+        if (widths == null)
+        {
             return null;
-        
-        return widths.getValues();  
+        }
+
+        return widths.getValues();
     }
-    
+
     public void setWidthValues(int[] values)
     {
-        if (this.widths==null)
-            this.widths=new AttributePresentation.PreferredSizes(values[0],values[1],values[2]); 
+        if (this.widths == null)
+        {
+            this.widths = new AttributePresentation.PreferredSizes(values[0], values[1], values[2]);
+        }
         else
-            this.widths.setValues(values); 
+        {
+            this.widths.setValues(values);
+        }
     }
+
+    @Override
+    public String toString()
+    {
+        return "AttributePresentation:[widths=" + widths + ", attributeFieldResizable=" + attributeFieldResizable + "]";
+    }
+
 }

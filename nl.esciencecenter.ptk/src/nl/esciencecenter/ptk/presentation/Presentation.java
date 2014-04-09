@@ -30,6 +30,7 @@ import java.util.TimeZone;
 
 import javax.swing.JTable;
 
+import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.object.Duplicatable;
 
@@ -104,6 +105,7 @@ public class Presentation implements Duplicatable<Presentation>
             store.put(key,pres); 
         }
     }
+   
     
     // =======================================================================
     // Static Fields
@@ -239,10 +241,7 @@ public class Presentation implements Duplicatable<Presentation>
         return tstr;
     }
 
-    /**
-     * @see getPresentationFor(String, String, String, boolean)
-     */
-    public static Presentation getPresentation(String key, boolean autoCreate)
+    protected static Presentation getPresentation(String key, boolean autoCreate)
     {
         synchronized (presentationStore)
         {
@@ -261,9 +260,20 @@ public class Presentation implements Duplicatable<Presentation>
         }
     }
 
-    public static Presentation getPresentationForSchemeType(String scheme, String type, Boolean autoCreate)
+    protected static void storePresentation(String key, Presentation pres)
     {
-        return getPresentation(createKey(scheme, null, type), autoCreate);
+        if (pres == null)
+            return;
+
+        synchronized (presentationStore)
+        {
+            presentationStore.put(key, pres);
+        }
+    }
+    
+    public static Presentation getMasterPresentationFor(String scheme, String resourceType, Boolean autoCreate)
+    {
+        return getPresentation(createKey(scheme, null, resourceType), autoCreate);
     }
 
     public static Presentation getPresentationFor(String scheme, String host, String type, boolean autoCreate)
@@ -283,21 +293,6 @@ public class Presentation implements Duplicatable<Presentation>
         return scheme + "-" + host + "-" + type;
     }
 
-    public static void storeSchemeType(String scheme, String type, Presentation pres)
-    {
-        storePresentation(createKey(scheme, null, type), pres);
-    }
-
-    public static void storePresentation(String key, Presentation pres)
-    {
-        if (pres == null)
-            return;
-
-        synchronized (presentationStore)
-        {
-            presentationStore.put(key, pres);
-        }
-    }
 
     /**
      * Returns size in xxx.yyy[KMGTP] format. argument base1024 specifies wether unit base is 1024 or 1000.
@@ -645,7 +640,7 @@ public class Presentation implements Duplicatable<Presentation>
     protected SortOption sortOption = null;
 
     /** Attribute names from child (contents) to show by default. See also UIPresentation */
-    protected StringList childAttributeNames = null;
+    protected StringList contentAttributeNames = null;
 
     protected StringList sortFields = null;
 
@@ -658,10 +653,14 @@ public class Presentation implements Duplicatable<Presentation>
     // Attribute/Table resize mode
     protected int jtableColumnsAutoResizeMode = JTable.AUTO_RESIZE_ALL_COLUMNS; // .AUTO_RESIZE_OFF;
 
-    protected Map<String, AttributePresentation> attributePresentations = new Hashtable<String, AttributePresentation>();
+    protected HashMapList<String, AttributePresentation> attributePresentations = new HashMapList<String, AttributePresentation>();
 
     protected String iconAttributeName = "icon";
 
+    // ========================================================================
+    // Constructors/Initializers 
+    // ========================================================================
+    
     /** Default Presentation. */
     public Presentation()
     {
@@ -670,7 +669,7 @@ public class Presentation implements Duplicatable<Presentation>
 
     private void initDefaults()
     {
-        this.childAttributeNames = new StringList();
+        this.contentAttributeNames = new StringList();
 
         // SETATTRIBUTEPREFERREDWIDTH(ATTR_ICON, 32);
         // SETATTRIBUTEPREFERREDWIDTH(ATTR_NAME, 200);
@@ -692,13 +691,13 @@ public class Presentation implements Duplicatable<Presentation>
         useBase1024 = other.useBase1024;
         sortOption = other.sortOption;
 
-        if (other.childAttributeNames != null)
+        if (other.contentAttributeNames != null)
         {
-            childAttributeNames = other.childAttributeNames.duplicate();
+            contentAttributeNames = other.contentAttributeNames.duplicate();
         }
         else
         {
-            childAttributeNames = null;
+            contentAttributeNames = null;
         }
 
         if (other.sortFields != null)
@@ -717,28 +716,52 @@ public class Presentation implements Duplicatable<Presentation>
 
         this.locale = other.locale;
         this.jtableColumnsAutoResizeMode = other.jtableColumnsAutoResizeMode;
-        this.attributePresentations = new Hashtable<String, AttributePresentation>(other.attributePresentations);
+        this.attributePresentations = other.attributePresentations.duplicate(); 
         this.iconAttributeName = other.iconAttributeName;
     }
 
-    /**
-     * Get which Child Attribute to show by default. Note that it is the PARENT object which holds the presentation
-     * information about the child attributes. For example when opening a Directory in Table view the Presentation of
-     * the (parent) directory holds the default file attributes to show.
-     */
-    public String[] getPreferredChildAttributeNames()
+    @Override
+    public boolean shallowSupported()
     {
-        if (childAttributeNames == null)
+        return false;
+    }
+
+    @Override
+    public Presentation duplicate()
+    {
+        Presentation pres = new Presentation();
+        pres.copyFrom(this);
+        return pres;
+    }
+
+    @Override
+    public Presentation duplicate(boolean shallow)
+    {
+        return duplicate();
+    }
+    
+    // ========================================================================
+    //
+    // ========================================================================
+    
+    /**
+     * Get which Child Attribute to show by default. Note that it is the Compostie PARENT object which holds the presentation
+     * information about the child attributes. For example when opening a Directory in Table View the Presentation of
+     * the (parent) directory holds the default (table) file attributes to show.
+     */
+    public String[] getPreferredContentAttributeNames()
+    {
+        if (contentAttributeNames == null)
             return null;
-        return childAttributeNames.toArray();
+        return contentAttributeNames.toArray();
     }
 
     /**
-     * Set which child attribute to show.
+     * Set which table attribute to show.
      */
-    public void setChildAttributeNames(List<String> names)
+    public void setPreferredContentAttributeNames(List<String> names)
     {
-        childAttributeNames = new StringList(names); // private copy !
+        contentAttributeNames = new StringList(names); // private copy !
     }
 
     /**
@@ -938,12 +961,12 @@ public class Presentation implements Duplicatable<Presentation>
         if (attrPres.widths == null)
             return null;
 
-        if (attrPres.widths.preferred < 0)
+        if (attrPres.widths.getPreferred() < 0)
             return null;
 
-        return new Integer(attrPres.widths.preferred);
+        return new Integer(attrPres.widths.getPreferred());
     }
-
+    
     /**
      * Returns Integer[]{<Minimum>,<Preferred>,<Maximum>} Triple. Integer value is NULL is it isn't defined. Method will
      * always return an Integer array of size 3, but actual values may be null.
@@ -963,8 +986,8 @@ public class Presentation implements Duplicatable<Presentation>
         if (attrPres.widths.minimum >= 0)
             vals[0] = new Integer(attrPres.widths.minimum);
 
-        if (attrPres.widths.preferred >= 0)
-            vals[1] = new Integer(attrPres.widths.preferred);
+        if (attrPres.widths.getPreferred() >= 0)
+            vals[1] = new Integer(attrPres.widths.getPreferred());
 
         if (attrPres.widths.maximum >= 0)
             vals[2] = new Integer(attrPres.widths.maximum);
@@ -972,7 +995,7 @@ public class Presentation implements Duplicatable<Presentation>
         return vals;
     }
 
-    public void setAttributePreferredWidth(String attrname, int minWidth, int prefWidth, int maxWidth)
+    public void setAttributePreferredWidths(String attrname, int minWidth, int prefWidth, int maxWidth)
     {
         AttributePresentation pres = this.attributePresentations.get(attrname);
 
@@ -994,7 +1017,7 @@ public class Presentation implements Duplicatable<Presentation>
         if (pres.widths == null)
             pres.widths = new AttributePresentation.PreferredSizes(-1, w, -1);
         else
-            pres.widths.preferred = w;
+            pres.widths.setPreferred(w);
 
         this.attributePresentations.put(attrname, pres);// update
     }
@@ -1014,12 +1037,12 @@ public class Presentation implements Duplicatable<Presentation>
         this.attributePresentations.put(attrname, pres);// update
     }
 
-    public boolean getAttributeFieldResizable(String attrname)
+    public boolean getAttributeFieldResizable(String attrname, boolean defaultValue)
     {
         AttributePresentation pres = this.attributePresentations.get(attrname);
 
         if (pres == null)
-            return true;
+            return defaultValue;
 
         return pres.attributeFieldResizable;
     }
@@ -1034,21 +1057,6 @@ public class Presentation implements Duplicatable<Presentation>
         this.jtableColumnsAutoResizeMode = value;
     }
 
-    public String toString()
-    {
-        String str = "<UIPresentation>{sortOption=" + this.sortOption;
-        if (sortFields == null)
-        {
-            str += ",sortFields=<null>";
-        }
-        else
-        {
-            str += ",sortFields=" + sortFields.toString(",");
-        }
-        str += "}";
-        return str;
-    }
-
     public void setIconAttributeName(String name)
     {
         iconAttributeName = name;
@@ -1059,23 +1067,16 @@ public class Presentation implements Duplicatable<Presentation>
         return iconAttributeName;
     }
 
+    // ====== 
+    // Misc. 
+    // ======
+        
     @Override
-    public boolean shallowSupported()
+    public String toString()
     {
-        return false;
-    }
-
-    @Override
-    public Presentation duplicate()
-    {
-        Presentation pres = new Presentation();
-        pres.copyFrom(this);
-        return pres;
-    }
-
-    @Override
-    public Presentation duplicate(boolean shallow)
-    {
-        return duplicate();
+        return "Presentation:[defaultUnitScaleThreshold=" + defaultUnitScaleThreshold + ", defaultNrDecimals=" + defaultNrDecimals
+                + ", useBase1024=" + useBase1024 + ", sortOption=" + sortOption + ", contentAttributeNames=" + contentAttributeNames
+                + ", sortFields=" + sortFields + ", locale=" + locale + ", jtableColumnsAutoResizeMode=" + jtableColumnsAutoResizeMode
+                + ", attributePresentations=" + attributePresentations + ", iconAttributeName=" + iconAttributeName + "]";
     }
 }
