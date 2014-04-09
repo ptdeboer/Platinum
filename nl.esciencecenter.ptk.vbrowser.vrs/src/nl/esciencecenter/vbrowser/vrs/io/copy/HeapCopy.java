@@ -10,11 +10,9 @@ import nl.esciencecenter.ptk.task.TaskMonitorAdaptor;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VPath;
-import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceTypeMismatchException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class HeapCopy
 {
@@ -24,10 +22,11 @@ public class HeapCopy
     {
         protected VPath sourcePath;
         protected String sourceType;
-        protected VPath destPath;  
+        protected VFSPath destDirPath;
         protected long size; 
         protected boolean isDeleted=false;
         public boolean isDone=false;
+        public VFSPath resolvedDestPath;
         
         public HeapCopyElement(VPath path,String type)
         {
@@ -35,10 +34,6 @@ public class HeapCopy
             this.sourceType=type;
         }
         
-        public void setDestPath(VPath destPath)
-        {
-            this.destPath=destPath;
-        }
     }
         
     protected List<? extends VPath> orgSources; 
@@ -164,20 +159,22 @@ public class HeapCopy
             logger.debugPrintf(" - toplevel path:%s\n",vpath);
         }
         // Pass two: depth first recursive scan.
-        heapScan(nodes); 
+        heapScan(this.targetDirPath,nodes); 
         
         monitor.logPrintf(" - total bytes=%s (%d bytes)\n",Presentation.createSizeString(totalBytesTodo, true, 1, 6),totalBytesTodo);
     }
 
-    private void heapScan(List<? extends VPath> nodes) throws VrsException
+    private void heapScan(VFSPath targetDir, List<? extends VPath> nodes) throws VrsException
     {
         // Recursive heap scan, composite first, leafs later. 
         for (VPath node:nodes)
         {
             if (node.isComposite())
             {
+                VFSPath subTargetDir=targetDir.resolvePath(node.getVRL().getBasename()); 
+                
                 monitor.logPrintf(" - scanning directory:%s\n",node.getVRL());
-                heapAddPath(node,node.getResourceType()); 
+                heapAddPath(targetDir,node,node.getResourceType()); 
                 // recursive add, depth first! 
                 
                 if ((isMove) && isSameFileSystem(targetDirPath,node))
@@ -186,7 +183,7 @@ public class HeapCopy
                 }
                 else
                 {
-                    heapScan(node.list()); 
+                    heapScan(subTargetDir,node.list()); 
                 }
             }
         }
@@ -196,7 +193,7 @@ public class HeapCopy
         {
             if (!node.isComposite())
             {
-                heapAddPath(node,node.getResourceType()); 
+                heapAddPath(targetDir,node,node.getResourceType()); 
             }
         }
     }
@@ -206,7 +203,7 @@ public class HeapCopy
         return (vfsPath.getFileSystem().equals(node.getResourceSystem()));
     }
 
-    private void heapAddPath(VPath vpath,String type) throws VrsException
+    private void heapAddPath(VFSPath targetDirPath,VPath vpath, String type) throws VrsException
     {
         logger.debugPrintf(" - adding path:%s\n",vpath); 
         HeapCopyElement el=new HeapCopyElement(vpath,type); 
@@ -215,6 +212,7 @@ public class HeapCopy
             el.size=((VFSPath)vpath).getLength();
             totalBytesTodo+=el.size; 
         }
+        el.destDirPath=targetDirPath;
         pathHeap.add(el); 
     }
 
@@ -249,8 +247,8 @@ public class HeapCopy
             {
                 boolean status=false; 
                 
-                VFSPath resolvedTargetPath = targetDirPath.resolvePath(sourcePath.getVRL().getBasename());
-                heapEl.destPath=resolvedTargetPath; 
+                VFSPath resolvedTargetPath = heapEl.destDirPath.resolvePath(sourcePath.getVRL().getBasename());
+                heapEl.resolvedDestPath=resolvedTargetPath; 
                 
                 logger.debugPrintf("Resolved targetFile: '%s' + '%s' => '%s'\n", targetDirPath.getVRL(), sourcePath.getVRL().getBasename(),
                         resolvedTargetPath.getVRL());
