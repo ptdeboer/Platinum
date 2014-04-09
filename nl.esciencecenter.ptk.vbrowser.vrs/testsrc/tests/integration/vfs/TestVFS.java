@@ -398,12 +398,25 @@ public class TestVFS extends VTestCase
     {
         VFSPath dir = getRemoteTestDir();
         VFileSystem fs = dir.getFileSystem();
-        VRL tildeVRL = dir.resolvePathVRL("/~");
-        messagePrintf("VRL of '/~' => '%s'\n", tildeVRL);
-        VFSPath node = fs.resolvePath(tildeVRL);
-        Assert.assertTrue("Default HOME reports is does not exist (SRB might do this):'/~' => '" + node + "'", node.exists());
-        messagePrintf("Tilde expansion of '/~' => '%s'\n", node.getVRL().getPath());
-
+        
+        for (String tildePath:new String[]{"/~"}) 
+        {
+//            VRL tildeVRL = dir.resolvePathVRL(tildePath);
+//            messagePrintf("VRL of '/~' => '%s'\n", tildeVRL);
+            
+            VFSPath node = fs.resolvePath(tildePath);
+            VRL homeVrl=getVRSContext().getHomeVRL(); 
+    
+            if (node.getVRL().hasScheme("file"))
+            {
+                // check for local file system
+                Assert.assertEquals("Resolving of path starting with '"+tildePath+"' should match wich local user home.",homeVrl,node.getVRL());
+            }
+            
+            Assert.assertTrue("Default HOME reports is does not exist (SRB might do this):'/~' => '" + node + "'", node.exists());
+            messagePrintf("Tilde expansion of '/~' => '%s'\n", node.getVRL().getPath());
+        }
+        
     }
 
     /**
@@ -2432,6 +2445,35 @@ public class TestVFS extends VTestCase
         _testStreamWrite(1024 * 1024); // this didn't work
     }
 
+    /** 
+     * Another regression. File can have tildes in them for example "file~backup.ext".  
+     * If not prefix with slash "/~" or if they are not at the beginning of the path, for example "file:~/localDir" they must be kept as is. 
+     */
+    @Test
+    public void testZTildeInFileName() throws Exception
+    {
+        
+        VFSPath dirPath=createRemoteDir("testZTildeInFileNameDir", false);
+        String baseDir=dirPath.getVRL().getPath(); 
+        String subFilename="prefix~postfix";  
+        String compositePath=baseDir+"/"+subFilename; 
+
+        VFSPath resolvedPath=dirPath.resolvePath(subFilename); 
+        
+        VRL baseDirVrl=dirPath.getVRL();
+        VRL resolvedVrl=resolvedPath.getVRL(); 
+        VRL expectedVrl=baseDirVrl.resolvePath(subFilename); 
+
+        // check VFPath
+        Assert.assertEquals("Resolved path with tilde doesn't match expected path:",compositePath,resolvedPath.getVRL().getPath()); 
+        Assert.assertEquals("VRL of resolvePath doesn't match expected:",expectedVrl,resolvedVrl); 
+
+        // Check VRLs also 
+        Assert.assertEquals("VRL doesn't match expected:",expectedVrl,resolvedVrl); 
+        Assert.assertEquals("VRL path doesn't match expected:",compositePath,resolvedVrl.getPath()); 
+        
+    }
+    
     // ========================================================================
     // Last Test !
     // ========================================================================

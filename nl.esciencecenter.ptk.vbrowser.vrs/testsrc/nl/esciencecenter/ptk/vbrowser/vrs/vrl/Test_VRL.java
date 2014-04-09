@@ -725,4 +725,20 @@ public class Test_VRL
 
     }
     
+    @Test
+    public void testTildeInFilename() throws VRLSyntaxException
+    {
+        String subPath="prefix~postfix";  
+        String baseDir="/home/user"; 
+        String compositePath=baseDir+"/"+subPath; 
+        
+        VRL baseVrl=new VRL("file:"+baseDir); 
+        VRL resolvedVrl=baseVrl.resolvePath(subPath); 
+        VRL expectedVrl=new VRL("file:"+compositePath); 
+        
+        Assert.assertEquals("VRL doesn't match expected:",expectedVrl,resolvedVrl); 
+        Assert.assertEquals("VRL path doesn't match expected:",compositePath,resolvedVrl.getPath()); 
+        
+        
+    }
 }

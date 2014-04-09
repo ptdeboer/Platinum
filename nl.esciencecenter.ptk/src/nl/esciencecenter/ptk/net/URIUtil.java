@@ -47,6 +47,18 @@ public class URIUtil
         return new URIFactory(uri).setHostname(newHostname).toURI();
     }
 
+
+    public static URI resolvePath(URI workingDir, URI userHome, boolean resolveTilde, String path) throws URISyntaxException
+    {
+        if ((resolveTilde) && (path != null) && path.contains("~"))
+        {
+            String homePath = URIFactory.uripath(userHome.getPath());
+            URIUtil.resolveTilde(homePath,path); 
+        }
+
+        return URIUtil.resolvePathURI(workingDir, path);
+    }
+    
     public static URI resolvePathURI(URI uri, String relativePath) throws URISyntaxException
     {
         URIFactory fac=new URIFactory(uri); 
@@ -87,5 +99,32 @@ public class URIUtil
         scanner.close();
         return uris;
     }
+
+    /** 
+     * If path start with tilde, replace actual tilde with userHome. 
+     */
+    public static String resolveTilde(String homePath, String path)
+    {
+        String subPath; 
+        
+        if (path.startsWith("~/"))
+        {   
+            subPath=path.substring(2); 
+            path=homePath+"/"+subPath; 
+        }
+        else if (path.startsWith("~"))
+        {
+            subPath=path.substring(1); 
+            path=homePath+"/"+subPath; 
+        }
+        else if (path.startsWith("/~"))
+        {
+            subPath=path.substring(2);
+            path=homePath+"/"+subPath; 
+        }
+        
+        return path; 
+    }
+
 
 }

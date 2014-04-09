@@ -135,13 +135,7 @@ public class FSUtil implements ResourceProvider
      */
     public URI resolvePathURI(String path) throws URISyntaxException
     {
-        if ((this.fsOptions.resolveTilde) && (path != null) && path.contains("~"))
-        {
-            String homePath = URIFactory.uripath(userHome.getPath());
-            path = path.replace("~", homePath);
-        }
-
-        return URIUtil.resolvePathURI(workingDir, path);
+        return URIUtil.resolvePath(workingDir,userHome,fsOptions.resolveTilde,path); 
     }
 
     public boolean existsPath(String path, LinkOption... linkOptions) throws IOException
