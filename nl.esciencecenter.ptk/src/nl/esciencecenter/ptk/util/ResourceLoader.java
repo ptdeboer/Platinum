@@ -35,18 +35,18 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.io.FSUtil;
-
-import nl.esciencecenter.ptk.io.RandomReader;
-import nl.esciencecenter.ptk.io.RandomWriter;
+import nl.esciencecenter.ptk.io.IOUtil;
+import nl.esciencecenter.ptk.io.RandomReadable;
+import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
- * Generic ResourceLoader class which supports (relative) URIs and URLs.
- * It is recommended to use relative URLs and URIs to local files and other resources which might be on the classpath
- * and not rely on absolute file locations.<br>
- * This allows for a more flexible run time environment in applet and servlet environments.  
+ * Generic ResourceLoader class which supports (relative) URIs and URLs. It is recommended to use relative URLs and URIs
+ * to local files and other resources which might be on the classpath and not rely on absolute file locations.<br>
+ * This allows for a more flexible run time environment in applet and servlet environments.
  * <p>
+ * 
  * @author Piter.T. de Boer
  */
 public class ResourceLoader
@@ -75,19 +75,19 @@ public class ResourceLoader
     /** Default is UTF-8 */
     public static final String DEFAULT_CHARSET = CHARSET_UTF8;
 
-    /** 
-     * Supported character sets. 
+    /**
+     * Supported character sets.
      */
-    public static final String charEncodings[] =  
-        { 
-            CHARSET_UTF8, 
-            CHARSET_UTF16BE, 
-            CHARSET_UTF16LE, 
-            CHARSET_US_ASCII, 
-            CHARSET_ISO_8859_1, 
+    public static final String charEncodings[] =
+    {
+            CHARSET_UTF8,
+            CHARSET_UTF16BE,
+            CHARSET_UTF16LE,
+            CHARSET_US_ASCII,
+            CHARSET_ISO_8859_1,
             CHARSET_LATIN,
-            CHARSET_CP437 
-        };
+            CHARSET_CP437
+    };
 
     private static ResourceLoader instance;
 
@@ -127,29 +127,33 @@ public class ResourceLoader
 
     public ResourceLoader()
     {
-        init(FSUtil.getDefault(),null);
+        init(FSUtil.getDefault(), null);
     }
 
     /**
-     * Initialize ResourceLoader with extra URL search path. 
-     * When resolving relative URLs these path URLs will be searched as well similar as using a PATH environment variable. 
+     * Initialize ResourceLoader with extra URL search path. When resolving relative URLs these path URLs will be
+     * searched as well similar as using a PATH environment variable.
      * 
-     * @param urls - URL search paths
+     * @param urls
+     *            - URL search paths
      */
     public ResourceLoader(URL urls[])
     {
-        init(FSUtil.getDefault(),urls);
+        init(FSUtil.getDefault(), urls);
     }
-    
+
     /**
-     * Initialize ResourceLoader with extra URL search path.
-     * When resolving relative URLs these path URLs will be searched as well similar as using a PATH environment variable. 
-     * @param FSUtil - custom FileSystem utility. 
-     * @param urls - URL search paths
+     * Initialize ResourceLoader with extra URL search path. When resolving relative URLs these path URLs will be
+     * searched as well similar as using a PATH environment variable.
+     * 
+     * @param FSUtil
+     *            - custom FileSystem utility.
+     * @param urls
+     *            - URL search paths
      */
-    public ResourceLoader(ResourceProvider resourceProvider,URL urls[])
+    public ResourceLoader(ResourceProvider resourceProvider, URL urls[])
     {
-        init(resourceProvider,urls);
+        init(resourceProvider, urls);
     }
 
     protected void init(ResourceProvider resourceProvider, URL urls[])
@@ -160,17 +164,17 @@ public class ResourceLoader
             ClassLoader parent = Thread.currentThread().getContextClassLoader();
             classLoader = new URLClassLoader(urls, parent);
         }
-        
-        this.resourceProvider=resourceProvider;
-        
-        if (this.resourceProvider==null)
+
+        this.resourceProvider = resourceProvider;
+
+        if (this.resourceProvider == null)
         {
             resourceProvider = FSUtil.getDefault();
         }
     }
 
-    /** 
-     * Returns default characted encoding which is used when reading text. 
+    /**
+     * Returns default characted encoding which is used when reading text.
      */
     public String getCharEncoding()
     {
@@ -184,11 +188,11 @@ public class ResourceLoader
     {
         charEncoding = encoding;
     }
-    
+
     // =================================================================
-    // URI/URL resolving 
+    // URI/URL resolving
     // =================================================================
-        
+
     /**
      * Resolve URL string to absolute URL
      * 
@@ -198,41 +202,38 @@ public class ResourceLoader
     {
         return resolveUrl(null, urlString);
     }
-    
-//    public URI resolveURI(URI uri) throws MalformedURLException, URISyntaxException
-//    {
-//    {
-//        if (uri.isAbsolute())
-//        {
-//            return uri;    
-//        }
-//        
-//        URL url=resolveUrl(uri.toString());
-//        if (url!=null)
-//        {
-//            return url; 
-//        }
-//        
-//        // If the URL is null, the relative URI can not be resolved against an existing URL on the classpath ! 
-//        // The relative URI should be resolve to the current working directory.
-//        
-//        return resourceProvider.resolveURI(uri.toString()).toURL();  
-//    }
-    
+
+    // public URI resolveURI(URI uri) throws MalformedURLException, URISyntaxException
+    // {
+    // {
+    // if (uri.isAbsolute())
+    // {
+    // return uri;
+    // }
+    //
+    // URL url=resolveUrl(uri.toString());
+    // if (url!=null)
+    // {
+    // return url;
+    // }
+    //
+    // // If the URL is null, the relative URI can not be resolved against an existing URL on the classpath !
+    // // The relative URI should be resolve to the current working directory.
+    //
+    // return resourceProvider.resolveURI(uri.toString()).toURL();
+    // }
+
     /**
-     * Resolve relative resource String and return absolute URL. The URL String
-     * can be matched against the optional ClassLoader in the case the URL
-     * points to a resource loaded by a custom ClasLoader that is not accessible
-     * by the classloader which loaded this (ResourceLoader) class.
+     * Resolve relative resource String and return absolute URL. The URL String can be matched against the optional
+     * ClassLoader in the case the URL points to a resource loaded by a custom ClasLoader that is not accessible by the
+     * classloader which loaded this (ResourceLoader) class.
      * 
-     * If the ResourceLoader has been initialized with extra (ClassPath) URLs,
-     * these will be searched also.
+     * If the ResourceLoader has been initialized with extra (ClassPath) URLs, these will be searched also.
      * 
      * @param optClassLoader
      *            - Optional ClassLoader from plugin class Loader
      * @param url
-     *            - relative URL String, might be absolute but then there is
-     *            nothing to 'resolve'.
+     *            - relative URL String, might be absolute but then there is nothing to 'resolve'.
      * @return resolved Absolute URL
      */
     public URL resolveUrl(ClassLoader optClassLoader, String url)
@@ -245,7 +246,7 @@ public class ResourceLoader
         {
             throw new NullPointerException("URL String can not be null");
         }
-        
+
         // (I) First optional Class Loader !
         if (optClassLoader != null)
         {
@@ -300,7 +301,7 @@ public class ResourceLoader
     }
 
     /**
-     *  Returns current URL search path for relative resources.  
+     * Returns current URL search path for relative resources.
      */
     public URL[] getSearchPath()
     {
@@ -311,30 +312,31 @@ public class ResourceLoader
 
         return urls;
     }
-    
+
     // =================================================================
-    // Input- and OutputStreams 
+    // Input- and OutputStreams
     // =================================================================
-    
+
     /**
-     * Resolves relative URL string and returns InputStream to resource. 
-     * If the urlstr is an absolute URL this method is similar to  <code>URL.openConnection().getInputStream()</code>.
+     * Resolves relative URL string and returns InputStream to resource. If the urlstr is an absolute URL this method is
+     * similar to <code>URL.openConnection().getInputStream()</code>.
      * 
      * @see #resolveUrl(ClassLoader, String)
-     *  
-     * @param urlstr - can be both relative (classpath) url or absolute URI
-     * @return InputStream - InputStream to resource. 
+     * 
+     * @param urlstr
+     *            - can be both relative (classpath) url or absolute URI
+     * @return InputStream - InputStream to resource.
      * @throws IOException
      */
     public InputStream createInputStream(String urlstr) throws IOException
     {
-        URL url=resolveUrl(null, urlstr); 
-        
-        if (url==null)
+        URL url = resolveUrl(null, urlstr);
+
+        if (url == null)
         {
-            throw new FileNotFoundException("Couldn't resolve:"+urlstr); 
+            throw new FileNotFoundException("Couldn't resolve:" + urlstr);
         }
-        
+
         return createInputStream(url);
     }
 
@@ -347,14 +349,14 @@ public class ResourceLoader
      */
     public InputStream createInputStream(URL url) throws IOException
     {
-        if (url==null)
+        if (url == null)
         {
             throw new NullPointerException("URL is NULL!");
         }
-        
+
         try
         {
-            return resourceProvider.createInputStream(url.toURI()); 
+            return resourceProvider.createInputStream(url.toURI());
         }
         catch (IOException | URISyntaxException e)
         {
@@ -365,7 +367,7 @@ public class ResourceLoader
 
     public InputStream createInputStream(URI uri) throws IOException
     {
-        // use URI Provider: 
+        // use URI Provider:
         return resourceProvider.createInputStream(uri);
     }
 
@@ -373,24 +375,24 @@ public class ResourceLoader
     {
         return _createOutputStream(uri);
     }
-    
+
     protected OutputStream _createOutputStream(URI uri) throws IOException
     {
-        return resourceProvider.createOutputStream(uri);  
+        return resourceProvider.createOutputStream(uri);
     }
-    
+
     // =================================================================
-    // Read and Write methods  
+    // Read and Write methods
     // =================================================================
-    
+
     public String readText(URL location) throws IOException
     {
-        return readText(location,this.charEncoding); 
+        return readText(location, this.charEncoding);
     }
-    
+
     public String readText(URI location) throws IOException
     {
-        return readText(location,this.charEncoding); 
+        return readText(location, this.charEncoding);
     }
 
     /**
@@ -399,59 +401,38 @@ public class ResourceLoader
     public String readText(URL location, String charset) throws IOException
     {
         InputStream inps = createInputStream(location);
-        
+
         try
         {
-            String text=readText(inps,charset); 
+            String text = readText(inps, charset);
             return text;
         }
         finally
         {
-            try 
-            {
-                inps.close(); 
-            }
-            catch (IOException e2) 
-            { 
-                ; 
-            }
+            IOUtil.autoClose(inps);
         }
     }
-    
+
     public String readText(URI uri, String charset) throws IOException
     {
-        InputStream inps=createInputStream(uri);
-        
+        InputStream inps = createInputStream(uri);
+
         try
         {
-            String text=readText(inps,charset); 
+            String text = readText(inps, charset);
             return text;
         }
         finally
         {
-            try 
-            {
-                inps.close(); 
-            }
-            catch (IOException e2) 
-            { 
-                ; 
-            }
+            IOUtil.autoClose(inps);
         }
     }
-    
+
     public byte[] readBytes(URL loc) throws IOException
     {
         InputStream inps = createInputStream(loc);
         byte bytes[] = readBytes(inps);
-        try
-        {
-            inps.close();
-        }
-        catch (Exception e)
-        {
-            ;
-        }
+        IOUtil.autoClose(inps);
         return bytes;
     }
 
@@ -459,27 +440,24 @@ public class ResourceLoader
     {
         InputStream inps = createInputStream(pathOrUrl);
         byte bytes[] = readBytes(inps);
-        try
-        {
-            inps.close();
-        }
-        catch (Exception e)
-        {
-            ;
-        }
+        IOUtil.autoClose(inps);
         return bytes;
     }
 
     /**
-     * Read text from InputSream using charset as String encoding. 
-     * Default is UTF-8.
-     * @param inps - The InputStream. all byte will be read, but the InputStream won't be closed
-     * @param charset - Optional Character Encoding. Can be null.  
+     * Read text from InputSream using charset as String encoding. Default is UTF-8.
+     * 
+     * @param inps
+     *            - The InputStream. all byte will be read, but the InputStream won't be closed
+     * @param charset
+     *            - Optional Character Encoding. Can be null.
      */
     public String readText(InputStream inps, String charset) throws IOException
     {
         if (charset == null)
+        {
             charset = charEncoding;
+        }
 
         // just read all:
         try
@@ -493,9 +471,8 @@ public class ResourceLoader
         }
     }
 
-    /** 
-     * Read all bytes from InputStream until an EOF or other IOException occored. 
-     * InputStream won't be closed.  
+    /**
+     * Read all bytes from InputStream until an EOF or other IOException occored. InputStream won't be closed.
      */
     public byte[] readBytes(InputStream inps) throws IOException
     {
@@ -519,41 +496,33 @@ public class ResourceLoader
         byte[] data = bos.toByteArray();
         return data;
     }
-    
 
-    public Properties loadProperties(URL url) throws IOException 
+    public Properties loadProperties(URL url) throws IOException
     {
-        // delegate to universal URI method: 
+        // delegate to universal URI method:
         try
         {
             return loadProperties(url.toURI());
         }
         catch (URISyntaxException e)
         {
-            throw new IOException(e.getMessage(),e); 
-        } 
+            throw new IOException(e.getMessage(), e);
+        }
     }
-    
+
     /**
      * Load properties file from specified location.<br>
      */
     public Properties loadProperties(URI uri) throws IOException
     {
         Properties props = new Properties();
-        
+
         try
         {
             InputStream inps = this.resourceProvider.createInputStream(uri);
             props.load(inps);
             logger.debugPrintf("Read properties from:%s\n", uri);
-            try
-            {
-                inps.close();
-            }
-            catch (Exception e)
-            {
-                ;
-            }
+            IOUtil.autoClose(inps);
         }
         catch (IOException e)
         {
@@ -597,14 +566,7 @@ public class ResourceLoader
         }
         finally
         {
-            try
-            {
-                outps.close();
-            }
-            catch (Exception e)
-            {
-                ;
-            }
+            IOUtil.autoClose(outps);
         }
     }
 
@@ -613,73 +575,60 @@ public class ResourceLoader
      */
     public void writeTextTo(URI loc, String text) throws IOException
     {
-        writeBytesTo(loc,text.getBytes(this.charEncoding));
+        writeBytesTo(loc, text.getBytes(this.charEncoding));
     }
-    
+
     /**
      * Save properties file to specified location.
      */
-    public void writeTextTo(URI loc, String text,String charset) throws IOException
+    public void writeTextTo(URI loc, String text, String charset) throws IOException
     {
-        writeBytesTo(loc,text.getBytes(charset));
+        writeBytesTo(loc, text.getBytes(charset));
     }
-    
-    /** 
-     * Write bytes to URI location. 
-     *  
-     * @param uri - URI of location. URI scheme must support OutputStreams. 
-     * @param bytes - bytes to write to the location
+
+    /**
+     * Write bytes to URI location.
+     * 
+     * @param uri
+     *            - URI of location. URI scheme must support OutputStreams.
+     * @param bytes
+     *            - bytes to write to the location
      * @throws IOException
      */
-    public void writeBytesTo(URI uri,byte[] bytes) throws IOException
+    public void writeBytesTo(URI uri, byte[] bytes) throws IOException
     {
         OutputStream outps = createOutputStream(uri);
-        outps.write(bytes); 
-        
-        this.autoClose(outps); 
+        outps.write(bytes);
+        IOUtil.autoClose(outps);
     }
- 
-    private void autoClose(OutputStream outps)
+
+    public void writeBytes(OutputStream outps, byte[] bytes) throws IOException
     {
-        if (outps==null)
-        {
-            return;
-        }
-        
-        try
-        {
-            outps.close();
-        }
-        catch (Exception e)
-        {
-            logger.logException(ClassLogger.DEBUG, e, "Exception while closing outputstream:%s\n", e);
-        }
+        outps.write(bytes);
     }
-    
+
     // =================================================================
-    // Random IO Interface   
+    // Random IO Interface
     // =================================================================
 
-    /** 
-     * Returns RandomReader if supported by the URI scheme.  
+    /**
+     * Returns RandomReader if supported by the URI scheme.
+     * 
      * @throws IOException
      */
-    public RandomReader createRandomReader(URI loc) throws IOException
+    public RandomReadable createRandomReader(URI loc) throws IOException
     {
         return resourceProvider.createRandomReader(loc);
     }
 
-    /** 
-     * Returns RandomWriter if supported by the URI scheme.  
+    /**
+     * Returns RandomWriter if supported by the URI scheme.
+     * 
      * @throws IOException
      */
-    public RandomWriter createRandomWriter(URI loc) throws IOException
+    public RandomWritable createRandomWriter(URI loc) throws IOException
     {
         return resourceProvider.createRandomWriter(loc);
     }
 
-
-
-
-    
 }
