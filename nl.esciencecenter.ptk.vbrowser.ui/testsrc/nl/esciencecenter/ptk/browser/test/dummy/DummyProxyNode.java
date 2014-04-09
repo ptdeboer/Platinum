@@ -48,7 +48,7 @@ public class DummyProxyNode extends ProxyNode
             dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[] { 42, 42 + i * 42, 42 + 4 * 42 });
         }
         
-        dummyPresentation.setChildAttributeNames(attrNames);
+        dummyPresentation.setPreferredContentAttributeNames(attrNames);
     }
 
     // ---
