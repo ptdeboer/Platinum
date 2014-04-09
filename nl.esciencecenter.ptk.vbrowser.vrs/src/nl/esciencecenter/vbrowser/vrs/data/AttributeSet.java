@@ -53,7 +53,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * @see HashMapList
  */
 public class AttributeSet extends HashMapList<String, Attribute> 
-                          implements Serializable, Cloneable, Duplicatable<AttributeSet>
+                          implements Serializable, Cloneable // Duplicatable<AttributeSet>
 {
     // ========================================================================
     // Class
@@ -255,9 +255,13 @@ public class AttributeSet extends HashMapList<String, Attribute>
             return; // empty set
 
         for (Attribute attr : attrs)
+        {
             // filter bogus attributes!
             if ((attr != null) && (attr.getName() != null))
+            {
                 this.put(attr);
+            }
+        }
     }
 
     @Override
