@@ -26,7 +26,12 @@ import java.io.OutputStream;
 import java.nio.file.FileSystemException;
 
 import nl.esciencecenter.ptk.io.FSUtil;
+import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotEmptyException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
@@ -52,7 +57,7 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
         }
         catch (IOException e)
         {   
-            throw convertException("Failed to resolve path:"+vrl,e);
+            throw convertException(this,"Failed to resolve path:"+vrl,e);
         }
     }
 
@@ -68,32 +73,32 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
         return createVFSNode(vrl).createOutputStream(false);  
     }
 
-    public static VrsException convertException(String actionText,Throwable ex)
+    public static VrsException convertException(VPath sourcePath,String actionText,Throwable ex)
     {
         // new nio.file exceptions have reason in the Exception name. 
         if (ex instanceof java.nio.file.AccessDeniedException)
         {
-            return new VrsIOException(actionText+"\n"+"Access Denied.\n"+ex.getMessage(),ex); 
+            return new ResourceAccessDeniedException(sourcePath,actionText+"\n"+"Access Denied.\n"+ex.getMessage(),ex); 
         }
         else if (ex instanceof java.nio.file.DirectoryNotEmptyException)
         {
-            return new VrsIOException(actionText+"\n"+"Directory not empty.\n"+ex.getMessage(),ex); 
+            return new ResourceNotEmptyException(sourcePath,actionText+"\n"+"Directory not empty.\n"+ex.getMessage(),ex); 
         }
         else if (ex instanceof java.nio.file.FileAlreadyExistsException)
         {
-            return new VrsIOException(actionText+"\n"+"File already exists.\n"+ex.getMessage(),ex); 
+            return new ResourceCreationException(sourcePath,actionText+"\n"+"File already exists.\n"+ex.getMessage(),ex); 
         }
         else if (ex instanceof java.nio.file.NoSuchFileException)
         {
-            return new VrsIOException(actionText+"\n"+"No such file.\n"+ex.getMessage(),ex); 
+            return new ResourceNotFoundException(sourcePath,actionText+"\n"+"No such file.\n"+ex.getMessage(),ex); 
         }
         else if (ex instanceof java.nio.file.NotDirectoryException)
         {
-            return new VrsIOException(actionText+"\n"+"Not a directory.\n"+ex.getMessage(),ex); 
+            return new ResourceNotFoundException(sourcePath,actionText+"\n"+"Not a directory.\n"+ex.getMessage(),ex); 
         }
         else if (ex instanceof java.nio.file.NotLinkException)
         {
-            return new VrsIOException(actionText+"\n"+"Not a link.\n"+ex.getMessage(),ex); 
+            return new ResourceNotFoundException(sourcePath,actionText+"\n"+"Not a link.\n"+ex.getMessage(),ex); 
         }
         else if (ex instanceof FileSystemException)
         {

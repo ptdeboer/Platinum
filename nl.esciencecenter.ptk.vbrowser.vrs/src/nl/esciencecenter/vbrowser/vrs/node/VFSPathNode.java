@@ -160,11 +160,22 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         {
             return supervalue;
         }
-
+        
+        // ---------
+        // immutable 
+        // ---------
+                
         if (name.compareTo(ATTR_DIRNAME) == 0)
             return new Attribute(name, getVRL().getDirname());
         else if (name.compareTo(ATTR_PATH) == 0)
             return new Attribute(name, getVRL().getPath());
+        
+        // --------
+        // mutable 
+        // -------- 
+        
+        if (name.compareTo(ATTR_RESOURCE_EXISTS) == 0)
+            return new Attribute(name, exists());
         else if (name.compareTo(ATTR_ISDIR) == 0)
             return new Attribute(name, isDir());
         else if (name.compareTo(ATTR_ISFILE) == 0)
@@ -206,10 +217,11 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
                 return new Attribute(name, getFileAttributes().getModificationTimeDate());
             }
         }
-        // else if (name.compareTo(ATTR_PERMISSIONSTRING) == 0)
-        // return new
-        // Attribute(name,getFileAttributes().getPermissionsString());
-
+//        else if (name.compareTo(ATTR_PERMISSIONSTRING) == 0)
+//        {
+//            return new Attribute(name,getFileAttributes().getPermissionsString());
+//        }
+        
         return null;
     }
 

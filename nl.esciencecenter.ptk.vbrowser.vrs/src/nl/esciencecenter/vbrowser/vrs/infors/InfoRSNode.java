@@ -37,7 +37,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Super class for all InfoRS Nodes.
  */
-public class InfoRSNode extends VPathNode
+public abstract class InfoRSNode extends VPathNode
 {
     private static final ClassLogger logger = ClassLogger.getLogger(InfoRSNode.class);
 

@@ -54,6 +54,6 @@ public interface VResourceSystem
      * @return resolve VPath 
      * @throws VrsException if VRL contains an invalid path. 
      */
-    public VPath resolvePath(VRL vrl) throws VrsException; 
+    public VPath resolvePath(VRL vrl) throws VrsException;
     
 }

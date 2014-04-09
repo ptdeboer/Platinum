@@ -26,8 +26,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import nl.esciencecenter.ptk.io.RandomReader;
-import nl.esciencecenter.ptk.io.RandomWriter;
+import nl.esciencecenter.ptk.io.RandomReadable;
+import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
@@ -83,13 +83,13 @@ public class VRSResourceProvider implements ResourceProvider
     }
 
     @Override
-    public RandomReader createRandomReader(URI uri) throws IOException
+    public RandomReadable createRandomReader(URI uri) throws IOException
     {
         throw new IOException("not implemented: createRandomReader():"+uri); 
     }
 
     @Override
-    public RandomWriter createRandomWriter(URI uri) throws IOException
+    public RandomWritable createRandomWriter(URI uri) throws IOException
     {
         throw new IOException("not implemented: createRandomWriter():"+uri);
     }

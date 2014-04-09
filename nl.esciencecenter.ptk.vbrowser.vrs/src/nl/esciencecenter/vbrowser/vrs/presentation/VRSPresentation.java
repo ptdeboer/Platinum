@@ -34,13 +34,14 @@ import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_T
 import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_SCHEME;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Factory class for UIPresentation of VRS Nodes.
+ * Factory class for (VRS) Presentation of VRS Nodes.
  */
-public class VRSPresentation
+public class VRSPresentation extends Presentation 
 {
     public static String defaultVFSAttributeNames[] =
     {
@@ -70,86 +71,6 @@ public class VRSPresentation
             ATTR_MIMETYPE
     };
 
-    /**
-     * @see getPresentationFor(String, String, String, boolean)
-     */
-    public static Presentation getPresentationFor(String scheme, String host, String type)
-    {
-        return getPresentationFor(scheme, host, type, true);
-    }
-
-    /**
-     * @see getPresentationFor(String, String, String, boolean)
-     */
-    public static Presentation getPresentationFor(VRL vrl, String type, boolean autocreate)
-    {
-        return getPresentationFor(vrl.getScheme(), vrl.getHostname(), type, autocreate);
-    }
-
-    /**
-     * Checks the PresentationStore if there is already Presentation information
-     * stored. If no presentation can be found and autocreate==true, a default
-     * Presentation object will be created.
-     * 
-     * @param scheme
-     *            scheme of resource
-     * @param host
-     *            hostname of resource
-     * @param type
-     *            VRS type of resource
-     * @param autocreate
-     *            whether to initialize a default Presentation object
-     * @return
-     */
-    public static Presentation getPresentationFor(String scheme, String host, String type, boolean autocreate)
-    {
-        String id = createID(scheme, host, type);
-        Presentation pres = null;
-
-        pres = Presentation.getPresentation(id, false);
-        if (pres != null)
-            return pres;
-
-        if (autocreate == false)
-            return null;
-
-        pres = createDefault();
-
-        //
-        // Set defaults:
-        //
-
-        if (type.compareTo(VRSTypes.DIR_TYPE) == 0)
-        {
-            pres.setChildAttributeNames(new StringList(VRSPresentation.defaultVFSAttributeNames));
-        }
-        else
-        {
-            pres.setChildAttributeNames(new StringList(VRSPresentation.defaultVPathAttributeNames));
-        }
-
-        pres.setIconAttributeName(ATTR_ICON);
-
-        Presentation.storePresentation(id, pres);
-
-        return pres;
-    }
-
-    private static String createID(String scheme, String host, String type)
-    {
-        if (scheme == null)
-            throw new NullPointerException("Presentation must have at least a scheme");
-
-        if (host == null)
-            host = "";
-
-        if (type == null)
-            type = "";
-
-        String id = scheme + "-" + host + "-" + type;
-        return id;
-    }
-
     public static Presentation createDefault()
     {
         Presentation pres = new Presentation();
@@ -159,21 +80,169 @@ public class VRSPresentation
 
     public static void initDefaults(Presentation pres)
     {
-        pres.setAttributePreferredWidth(ATTR_ICON, 32);
+        pres.setAttributePreferredWidths(ATTR_ICON, 32, 32, 999);
         // pres.setAttributePreferredWidth(ATTR_INDEX, 32);
-        pres.setAttributePreferredWidth(ATTR_NAME, 200);
-        pres.setAttributePreferredWidth(ATTR_RESOURCE_TYPE, 140);
-        pres.setAttributePreferredWidth(ATTR_SCHEME, 60);
-        pres.setAttributePreferredWidth(ATTR_HOSTNAME, 140);
+        pres.setAttributePreferredWidths(ATTR_NAME, 48, 200, 999);
+        pres.setAttributePreferredWidths(ATTR_RESOURCE_TYPE, 64, 140, 999);
+        pres.setAttributePreferredWidths(ATTR_MIMETYPE, 100, 160, 999);
+        pres.setAttributePreferredWidths(ATTR_SCHEME, 64, 100, 999);
+        pres.setAttributePreferredWidths(ATTR_HOSTNAME, 64, 140, 999);
         // pres.setAttributePreferredWidth(ATTR_PORT, 32);
-        pres.setAttributePreferredWidth(ATTR_FILE_SIZE, 70);
-        pres.setAttributePreferredWidth(ATTR_PATH, 200);
-        pres.setAttributePreferredWidth(ATTR_RESOURCE_STATUS, 48);
-        pres.setAttributePreferredWidth(ATTR_MODIFICATION_TIME, 120);
-        pres.setAttributePreferredWidth(ATTR_CREATION_TIME, 120);
+        pres.setAttributePreferredWidths(ATTR_FILE_SIZE, 60, 70, 999);
+        pres.setAttributePreferredWidths(ATTR_PATH, 100, 200, 999);
+        pres.setAttributePreferredWidths(ATTR_RESOURCE_STATUS, 48, 64, 999);
+        pres.setAttributePreferredWidths(ATTR_MODIFICATION_TIME, 100, 120, 999);
+        pres.setAttributePreferredWidths(ATTR_CREATION_TIME, 100, 120, 999);
         // VQueues and VJobs:
 
-        pres.setChildAttributeNames(new StringList(defaultVPathAttributeNames));
+        pres.setPreferredContentAttributeNames(new StringList(defaultVPathAttributeNames));
     }
 
+    /**
+     * Master presention for scheme and type only, for example "file" scheme and "Dir" type.
+     * 
+     * @param scheme
+     *            - scheme name for example "file" or "http"
+     * @param resourceType
+     *            - 
+     * @param autocreate
+     *            - whether to autocreate the Presentation Object. 
+     * @return Master or root Presentation
+     */
+    public static Presentation getMasterPresentationFor(String scheme, String resourceType, boolean autocreate)
+    {
+        return getPresentationFor(resourceType + ":" + scheme, resourceType, autocreate);
+    }
+
+    /**
+     * Master presention for scheme and type only, for example "file" scheme and "Dir" type.
+     * 
+     * @param scheme
+     *            - scheme name for example "file" or "http"
+     * @param resourceType
+     *            - VRS ResourceType for example "File" or "Dir". 
+     * @param presentation 
+     *            - actual Presentation. 
+     */
+    public static void storeMasterPresentation(String scheme, String resourceType, Presentation presentation)
+    {
+        Presentation.storePresentation(resourceType + ":" + scheme, presentation);
+    }
+    
+    /**
+     * Checks the PresentationStore if there is already Presentation information stored. If no presentation can be found
+     * and autocreate==true, a default Presentation object will be created.
+     * 
+     * @param VRL
+     *            - vrl
+     * 
+     * @param autocreate
+     *            - whether to initialize a default Presentation object
+     * @return
+     */
+    public static Presentation getPresentationFor(VRL vrl, String resourceType, boolean autoCreate)
+    {
+        // Check VRL bound presentation: 
+        Presentation pres = getPresentationFor(createID(vrl, resourceType), resourceType, false);
+
+        if (pres!=null)
+        {   
+            return pres; 
+        }
+        
+        if (autoCreate==false)
+        {
+            return null;
+        }
+        
+        // Copy from master presentation.  
+        return getMasterPresentationFor(vrl.getScheme(),resourceType,true);
+    }
+
+    protected static Presentation getPresentationFor(String key, String resourceType, boolean autoCreate)
+    {
+        Presentation pres = Presentation.getPresentation(key, false);
+
+        if (pres != null)
+        {
+            return pres;
+        }
+        
+        if (autoCreate == false)
+        {
+            return null;
+        }
+        
+        pres = createDefault();
+
+        //
+        // Set defaults:
+        //
+
+        if (resourceType.compareTo(VRSTypes.DIR_TYPE) == 0)
+        {
+            pres.setPreferredContentAttributeNames(new StringList(VRSPresentation.defaultVFSAttributeNames));
+        }
+        else if (resourceType.compareTo(VRSTypes.FILE_TYPE) == 0)
+        {
+            pres.setPreferredContentAttributeNames(new StringList(VRSPresentation.defaultVFSAttributeNames));
+        }
+        else
+        {
+            pres.setPreferredContentAttributeNames(new StringList(VRSPresentation.defaultVPathAttributeNames));
+        }
+
+        pres.setIconAttributeName(ATTR_ICON);
+
+        return pres;
+    }
+
+    private static String createID(VRL vrl, String resourceType)
+    {
+        String scheme = vrl.getScheme();
+        String hostname = vrl.getHostname();
+        String path = vrl.getPath();
+        int port = vrl.getPort();
+        String portStr = "" + port;
+
+        if (StringUtil.isEmpty(scheme))
+        {
+            throw new NullPointerException("Presentation canot have an empty scheme!");
+        }
+
+        if (port <= 0)
+        {
+            portStr = "";
+        }
+
+        if (StringUtil.isEmpty(hostname))
+        {
+            hostname = "";
+        }
+
+        if (resourceType == null)
+        {
+            resourceType = "";
+        }
+        else
+        {
+            resourceType = "(" + resourceType + ")";
+        }
+
+        String id = scheme + ":" + resourceType + "@" + hostname + ":" + portStr + path;
+
+        return id;
+    }
+
+    public static void storePresentation(VRL vrl, String resourceType, Presentation presentation)
+    {
+        Presentation.storePresentation(createID(vrl, resourceType), presentation);
+    }
+    
+    // static class 
+    
+    private VRSPresentation()
+    {
+    }
+    
 }

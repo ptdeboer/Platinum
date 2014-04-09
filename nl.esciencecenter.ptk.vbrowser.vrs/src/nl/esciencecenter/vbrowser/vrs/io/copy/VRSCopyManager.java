@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.data.ListHolder;
 import nl.esciencecenter.ptk.data.VARHolder;
 import nl.esciencecenter.ptk.data.VARListHolder;
 import nl.esciencecenter.ptk.io.IOUtil;
@@ -39,6 +40,7 @@ import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
 import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
@@ -47,8 +49,8 @@ import nl.esciencecenter.vbrowser.vrs.task.VRSTaskWatcher;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Default Copy and move manager to perform both VFS and non VFS Copy/Move
- * actions. Not all resources can be read from or written to.
+ * Default Copy and move manager to perform both VFS and non VFS Copy/Move actions. Not all resources can be read from
+ * or written to.
  */
 public class VRSCopyManager
 {
@@ -80,7 +82,7 @@ public class VRSCopyManager
         logger.debugPrintf("doLinkDrop():%s, vrls=%s\n", destVrl, new ExtendedList<VRL>(vrls));
         monitor.startTask(taskName, vrls.size());
         monitor.logPrintf("LinkDrop on:%s, vrls=\n", destVrl);
-        
+
         try
         {
             VPath destPath = this.vrsClient.openPath(destVrl);
@@ -95,22 +97,17 @@ public class VRSCopyManager
 
             for (VRL vrl : vrls)
             {
-                VPath sourcePath=vrsClient.openPath(vrl); 
+                VPath sourcePath = vrsClient.openPath(vrl);
                 monitor.logPrintf(" - linkDrop: %s\n", vrl);
                 VInfoResourcePath newNode;
-                
+
                 if (destPath instanceof VInfoResourcePath)
                 {
-                    VInfoResourcePath infoDest=((VInfoResourcePath) destPath); 
-                    
+                    VInfoResourcePath infoDest = ((VInfoResourcePath) destPath);
+
                     if (sourcePath instanceof VInfoResourcePath)
                     {
-                        logger.infoPrintf("Copying Actual ResourceNode attributes to create link to:%s\n",sourcePath);
-                        // copy/link the original ResourceNode and do not create a link-to-a-link(!) 
-                        
-                        VInfoResourcePath infoSource=(VInfoResourcePath)sourcePath; 
-                        AttributeSet infoAttrs=infoSource.getInfoAttributes(); 
-                        newNode=((VInfoResourcePath) destPath).createSubNode(sourcePath.getResourceType(), infoAttrs); 
+                        newNode = doCopyInfoNodeTo(sourcePath, destPath);
                     }
                     else
                     {
@@ -156,67 +153,156 @@ public class VRSCopyManager
         // return false;
     }
 
+    protected VInfoResourcePath doCopyInfoNodeTo(VPath sourcePath, VPath destPath) throws VrsException
+    {
+        logger.infoPrintf("Copying Actual ResourceNode attributes to create link to:%s\n", sourcePath);
+        // copy/link the original ResourceNode and do not create a link-to-a-link(!)
+
+        if ((sourcePath instanceof VInfoResourcePath) == false)
+        {
+            throw new VrsException("Type Mismatch: Source path must be of VInfoResourcePath type! class=" + sourcePath.getClass());
+        }
+
+        VInfoResourcePath infoSource = (VInfoResourcePath) sourcePath;
+        AttributeSet infoAttrs = infoSource.getInfoAttributes();
+        VInfoResourcePath newNode = ((VInfoResourcePath) destPath).createSubNode(sourcePath.getResourceType(), infoAttrs);
+        return newNode;
+
+    }
+    
     public boolean doCopyMove(List<VRL> vrls, VRL destVrl, boolean isMove, VARHolder<VPath> destPathH, VARListHolder<VPath> resultPathsH,
             VARListHolder<VPath> deletedNodesH, ITaskMonitor monitor) throws VrsException
     {
-        logger.errorPrintf("***FIXME:doCopyMove():%s, vrls=%s\n", destVrl, new ExtendedList<VRL>(vrls));
+
+        VPath destPath = vrsClient.openPath(destVrl);
+        List<VPath> sourcePaths = new ArrayList<VPath>();
 
         // Pre Checks:
-        if ((vrls == null) || (vrls.size() < 1))
+        if ((vrls == null) || (vrls.size() <= 0))
+        {
+            throw new VrsException("Nothing to copy/move");
+        }
+
+        for (VRL vrl : vrls)
+        {
+            sourcePaths.add(vrsClient.openPath(vrl));
+        }
+
+        if (destPathH != null)
+        {
+            destPathH.set(destPath);
+        }
+
+        if ((destPath instanceof VFSPath) == false)
+        {
+            throw new VrsException("Don't know how to copy/move to:" + destPath);
+        }
+
+        ListHolder<VFSPath> resultVfsPathsH = new ListHolder<VFSPath>();
+        boolean status = doCopyMove(sourcePaths, (VFSPath) destPath, isMove, resultVfsPathsH, deletedNodesH, monitor);
+
+        // --------------------------------------
+        // todo: check covariance casting here
+        // --------------------------------------
+
+        List<VFSPath> vfsPaths = resultVfsPathsH.get();
+        List<VPath> vpaths = new ArrayList<VPath>();
+
+        for (VFSPath path : vfsPaths)
+        {
+            vpaths.add(path);
+        }
+
+        resultPathsH.set(vpaths);
+        return status; 
+    }
+
+    public boolean doCopyMove(List<? extends VPath> sources, VFSPath vfsDestPath, boolean isMove, VARListHolder<VFSPath> resultPathsH,
+            VARListHolder<VPath> deletedNodesH, ITaskMonitor monitor) throws VrsException
+    {
+        boolean status;
+
+        // Pre Checks:
+        if ((sources == null) || (sources.size() <= 0))
         {
             throw new VrsException("No resource to copy/move");
         }
 
-        String actionStr=((isMove==true)?"Moving":"Copying")+" to:"+destVrl; 
-        monitor.startTask(actionStr, vrls.size());
-        
-        monitor.logPrintf("%s.\n", actionStr); 
-        int index = 0;
-
-        VPath destPath = vrsClient.openPath(destVrl);
-        VPath firstPath = vrsClient.openPath(vrls.get(0));
-
-        if (destPath instanceof VFSPath)
+        String actionStr = ((isMove == true) ? "Moving" : "Copying") + " to:" + vfsDestPath;
+        if (monitor != null)
         {
-            VFSPath vfsDestPath = (VFSPath) destPath;
-            destPathH.set(destPath);
-            boolean status;
-
-            if (vfsDestPath.isDir())
-            {
-                status = doCopyMoveToDir(vrls, vfsDestPath, isMove, resultPathsH, deletedNodesH, monitor);
-            }
-            else if (vfsDestPath.isFile())
-            {
-                if (vrls.size() > 1)
-                {
-                    // could be arguments to start a script/binary here
-                    throw new VrsException("Cannot drop multiple resources onto a single file!");
-                }
-
-                status = doCopyMoveResourceToFile(firstPath, vfsDestPath, isMove, monitor);
-                if (isMove)
-                {
-                    ArrayList<VPath> deletedPaths = new ArrayList<VPath>();
-                    deletedPaths.add(firstPath);
-                    deletedNodesH.set(deletedPaths);
-                }
-            }
-            else
-            {
-                throw new VrsException("Don't know how to copy to VFS Path:" + destPath);
-            }
-
-            monitor.endTask(actionStr);
-            return status;
+            monitor.startTask(actionStr, sources.size());
+            monitor.logPrintf("%s.\n", actionStr);
         }
 
-        monitor.endTask(actionStr);
+        VPath firstPath = sources.get(0);
 
-        throw new VrsException("Don't know how to copy/move to:" + destPath);
+        if (vfsDestPath.isDir())
+        {
+            status = doCopyMoveToDir(sources, vfsDestPath, isMove, resultPathsH, deletedNodesH, monitor);
+        }
+        else if (vfsDestPath.isFile())
+        {
+            if (sources.size() > 1)
+            {
+                // could be arguments to start a script/binary here
+                throw new VrsException("Cannot copy/move multiple resources onto a single file!");
+            }
+
+            status = doCopyMoveResourceToFile(firstPath, vfsDestPath, isMove, monitor);
+            if (isMove)
+            {
+                ArrayList<VPath> deletedPaths = new ArrayList<VPath>();
+                deletedPaths.add(firstPath);
+                deletedNodesH.set(deletedPaths);
+            }
+        }
+
+        else
+        {
+            throw new VrsException("Don't know how to copy to VFS Path:" + vfsDestPath);
+        }
+
+        if (monitor != null)
+        {
+            monitor.endTask(actionStr);
+        }
+
+        return status;
     }
 
-    private boolean doCopyMoveResourceToFile(VPath sourcePath, VFSPath targetPath, boolean isMove, ITaskMonitor monitor)
+    /**
+     * Copy single file
+     * 
+     * @param sourcePath
+     *            soruce VPath which should be StreamReadable.
+     * @param targePath
+     *            - target file VFSPath
+     * @param isMove
+     *            - whether this is a move.
+     * @return
+     * @throws VrsException
+     */
+    public boolean copyMoveToFile(VPath sourcePath, VFSPath targetPath, boolean isMove) throws VrsException
+    {
+        return doCopyMoveResourceToFile(sourcePath, targetPath, isMove, null);
+    }
+
+    /**
+     * 
+     * @param sourcePath
+     *            any VPath which can be copied or is stream readable.
+     * @param targetPath
+     *            VFSTarget Path for the file to download or copy to.
+     * @param isMove
+     *            - whether this is a move. If possible after copying the original source will be deleted.
+     * @param monitor
+     *            optional TaskMonitor
+     * @return true if succesfull. Exceptions should be thrown is copy or move failed.
+     * @throws VrsException
+     *             if copy or move couldn't be perfomed.
+     */
+    protected boolean doCopyMoveResourceToFile(VPath sourcePath, VFSPath targetPath, boolean isMove, ITaskMonitor monitor)
             throws VrsException
     {
         logger.errorPrintf("doCopyMoveResourceToFile: source:%s\n", sourcePath);
@@ -228,7 +314,7 @@ public class VRSCopyManager
         if ((isMove) && (targetVFS.equals(sourceRs)))
         {
             // sourcePath must be VFSPath:
-            return fileSystemRename((VFSPath)sourcePath,targetPath,monitor); 
+            return fileSystemRename((VFSPath) sourcePath, targetPath, monitor);
         }
 
         VPathDeletable deletable = null;
@@ -263,71 +349,65 @@ public class VRSCopyManager
         return true;
     }
 
-    private boolean fileSystemRename(VFSPath sourcePath, VFSPath targetPath,ITaskMonitor monitor) throws VrsException
+    protected boolean fileSystemRename(VFSPath sourcePath, VFSPath targetPath, ITaskMonitor monitor) throws VrsException
     {
         // rename/move on same filesystem
         String renameTask = "Renaming:" + sourcePath.getVRL().getPath() + " to:" + targetPath.getVRL().getPath();
 
-        monitor.startSubTask(renameTask, 1);
-        monitor.logPrintf("%s\n", renameTask);
+        if (monitor != null)
+        {
+            monitor.startSubTask(renameTask, 1);
+            monitor.logPrintf("%s\n", renameTask);
+        }
         VPath newPath = sourcePath.renameTo(targetPath.getVRL().getPath());
-        monitor.updateSubTaskDone(renameTask, 1);
-        monitor.endSubTask(renameTask);
+        if (monitor != null)
+        {
+            monitor.updateSubTaskDone(renameTask, 1);
+            monitor.endSubTask(renameTask);
+        }
         return true;
 
     }
 
-    private boolean doCopyMoveToDir(List<VRL> vrls, VFSPath targetDirPath, boolean isMove, VARListHolder<VPath> resultPathsH,
+    /** 
+     * List contents of source directory and copy that contents to the parent targetDir. 
+     */
+    public boolean copyMoveDirContents(VFSPath sourceDir, VFSPath targetDir, boolean isMove, ITaskMonitor monitor) throws VrsException 
+    {
+        List<? extends VFSPath> nodes = sourceDir.list(); 
+        //Copy contents to targetDirectory 
+        return doCopyMoveToDir(nodes,targetDir,isMove,null,null,monitor); 
+    }   
+    
+    protected boolean doCopyMoveToDir(List<? extends VPath> sources, VFSPath targetDirPath, boolean isMove,
+            VARListHolder<VFSPath> resultPathsH,
             VARListHolder<VPath> deletedNodesH, ITaskMonitor monitor) throws VrsException
     {
-
-        String actionStr=((isMove==true)?"Moving":"Copying"); 
-        
-        monitor.logPrintf("%s to directory:%s.\n", actionStr,targetDirPath.getVRL());
-
-        List<VPath> resultPaths = new ArrayList<VPath>();
-        resultPathsH.set(resultPaths);
-
-        List<VPath> deletedPaths = new ArrayList<VPath>();
-        deletedNodesH.set(deletedPaths);
-
-        for (VRL vrl : vrls)
+        String actionStr = ((isMove == true) ? "Moving" : "Copying");
+        if (monitor != null)
         {
-            VPath sourcePath = vrsClient.openPath(vrl);
-
-            if (sourcePath instanceof VFSPath)
-            {
-                VFSPath actualTargetFile = targetDirPath.resolvePath(sourcePath.getVRL().getBasename());
-                
-                logger.debugPrintf("Resolved targetFile: '%s' + '%s' => '%s'\n", targetDirPath.getVRL(), sourcePath.getVRL().getBasename(),
-                        actualTargetFile.getVRL());
-
-                monitor.logPrintf(" - %s resource:%s => %s\n",actionStr, vrl,actualTargetFile.getVRL());
-                
-                VFSPath vfsPath = (VFSPath) sourcePath;
-
-                if (vfsPath.isFile())
-                {
-                    this.doCopyMoveResourceToFile(vfsPath, actualTargetFile, isMove, monitor);
-                    resultPaths.add(actualTargetFile);
-                    if (isMove)
-                    {
-                        deletedPaths.add(sourcePath);
-                    }
-                }
-                else
-                {
-                    monitor.logPrintf(" - Skipping Directory:%s\n", vfsPath);
-                }
-            }
-            else
-            {
-                monitor.logPrintf(" - Skipping non VFS Path:%s\n", sourcePath);
-            }
+            monitor.logPrintf("%s to directory:%s.\n", actionStr, targetDirPath.getVRL());
         }
 
-        // DirHeapCopy dirHeapCopy=new DirHeapCopy(vrls,dirPath);
-        return (resultPaths.size() > 0);
+        HeapCopy heapCopy = new HeapCopy(this, sources, targetDirPath, isMove, monitor);
+        heapCopy.copy();
+
+        if (resultPathsH!=null)
+        {   
+            resultPathsH.set(heapCopy.getResultPaths());
+        }
+        
+        if (deletedNodesH!=null)
+        {
+            deletedNodesH.set(heapCopy.getDeletedPaths());
+        }
+        
+        if (monitor != null)
+        {
+            monitor.logPrintf("Done.\n");
+        }
+
+        return true;
     }
 
     public void streamCopyFile(VPath sourcePath, VFSPath targetFile, ITaskMonitor monitor) throws VrsException
@@ -347,7 +427,7 @@ public class VRSCopyManager
 
         try
         {
-            boolean targetExists = targetFile.exists(LinkOption.NOFOLLOW_LINKS);
+            // boolean targetExists = targetFile.exists(LinkOption.NOFOLLOW_LINKS);
 
             long len = -1;
             if (sourcePath instanceof VFSPath)
@@ -371,4 +451,11 @@ public class VRSCopyManager
         }
 
     }
+
+    public VRSClient getVRSClient()
+    {
+        return this.vrsClient;
+    }
+
+
 }

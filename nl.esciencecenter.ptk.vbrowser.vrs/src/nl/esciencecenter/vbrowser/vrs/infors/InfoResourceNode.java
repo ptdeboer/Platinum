@@ -102,7 +102,7 @@ public class InfoResourceNode extends InfoRSNode implements VStreamAccessable, V
     // ==========
     // Instance
     // ==========
-
+    
     protected InfoResourceNode(InfoRS infoRS, String type, VRL logicalVRL)
     {
         super(infoRS, type, logicalVRL);

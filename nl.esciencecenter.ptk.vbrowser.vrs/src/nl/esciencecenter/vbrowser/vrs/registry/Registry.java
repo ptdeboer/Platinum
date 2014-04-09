@@ -114,6 +114,11 @@ public class Registry
     
     public VResourceSystem getVResourceSystemFor(VRSContext vrsContext, VRL vrl) throws VrsException
     {
+        if (vrl==null)
+        {
+            throw new NullPointerException("VRL is NULL"); 
+        }
+        
         VResourceSystemFactory factory = getVResourceSystemFactoryFor(vrsContext,vrl.getScheme());
         
         if (factory==null)

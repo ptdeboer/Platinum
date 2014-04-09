@@ -99,7 +99,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
                 return strValue; // keep normalized DateTime String "as is".
             }
             default:
-                throw new ValueParseException("Cannot convert String:'" + strValue + "' to type:" + toType);
+                throw new ValueParseException("Cannot convert String:'" + strValue + "' to type:" + toType,strValue);
         }
     }
 

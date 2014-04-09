@@ -70,6 +70,8 @@ public class AttributeNames
 
     public static final String ATTR_RESOURCE_STATUS = "resourceStatus";
 
+    public static final String ATTR_RESOURCE_EXISTS = "resourceExists";
+    
     public static final String ATTR_UNIX_USERID = "unix.userID";
 
     public static final String ATTR_UNIX_GROUPID = "unix.groupID";

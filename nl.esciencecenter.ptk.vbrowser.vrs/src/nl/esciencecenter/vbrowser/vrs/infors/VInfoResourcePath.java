@@ -7,5 +7,5 @@ import nl.esciencecenter.vbrowser.vrs.VPath;
  */
 public interface VInfoResourcePath extends VInfoResource,VPath
 {
-    
+
 }

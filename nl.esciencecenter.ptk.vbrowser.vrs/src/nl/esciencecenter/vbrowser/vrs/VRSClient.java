@@ -20,23 +20,28 @@
 
 package nl.esciencecenter.vbrowser.vrs;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.data.Holder;
 import nl.esciencecenter.ptk.data.ListHolder;
 import nl.esciencecenter.ptk.data.VARHolder;
 import nl.esciencecenter.ptk.data.VARListHolder;
+import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceTypeMismatchException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsResourceCreationException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
+import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
+import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
 import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.util.VRSResourceProvider;
@@ -204,11 +209,164 @@ public class VRSClient
        boolean result=transferManager.doCopyMove(new ExtendedList<VRL>(sourceFile), destDirectory,false, null,resultPathsH,null,null); 
        if ( (result==false) || (resultPathsH.isEmpty()) )
        {
-           throw new VrsResourceCreationException("No results for CopyMove action:"+sourceFile+"to:"+destDirectory);  
+           throw new ResourceCreationException(null,"No results for CopyMove action:"+sourceFile+"to:"+destDirectory,null);  
        }
        return resultPathsH.get().get(0); 
     }
     
+    public VPath copyDirToDir(VRL sourceDir,VRL destParentDirectory) throws VrsException
+    {
+       VARListHolder<VPath> resultPathsH=new ListHolder<VPath>(); 
+       boolean result=transferManager.doCopyMove(new ExtendedList<VRL>(sourceDir), destParentDirectory,false, null,resultPathsH,null,null); 
+       if ( (result==false) || (resultPathsH.isEmpty()) )
+       {
+           throw new ResourceCreationException(null,"No results for CopyMove action:"+sourceDir+"to:"+destParentDirectory,null);  
+       }
+       return resultPathsH.get().get(0); 
+    }
+
+    public boolean existsDir(VRL dirVrl) throws VrsException
+    {
+        VPath path=this.openPath(dirVrl);  
+        if ((path instanceof VFSPath)==false)
+        {
+            return false;
+        }
+        
+        VFSPath vfsPath=(VFSPath)path; 
+        return (vfsPath.exists() && vfsPath.isDir());
+    }
     
+    public boolean existsFile(VRL dirVrl) throws VrsException
+    {
+        VPath path=this.openPath(dirVrl);  
+        if ((path instanceof VFSPath)==false)
+        {
+            return false;
+        }
+        
+        VFSPath vfsPath=(VFSPath)path; 
+        return (vfsPath.exists() && vfsPath.isFile());
+    }
     
+    public VFSPath mkdirs(VRL dirVrl) throws VrsException
+    {
+        VFSPath path=openVFSPath(dirVrl);
+        path.mkdirs(true); 
+        return path; 
+    }
+
+    public OutputStream createOutputStream(VPath file, boolean append)  throws VrsException
+    {
+        if (file instanceof VStreamWritable)
+        {
+            return ((VStreamWritable)file).createOutputStream(append); 
+        }
+        else
+        {
+            throw new ResourceTypeMismatchException(file,"Cannot create InputStream from:"+file,null); 
+        }
+    }
+ 
+    public InputStream createInputStream(VPath file)  throws VrsException
+    {
+        if (file instanceof VStreamReadable)
+        {
+            return ((VStreamReadable)file).createInputStream();
+        }
+        else
+        {
+            throw new ResourceTypeMismatchException(file,"Cannot create InputStream from:"+file,null); 
+        }
+    }
+
+    public byte[] readContents(VPath file) throws VrsException
+    {
+        InputStream inps=this.createInputStream(file);
+        byte[] bytes;
+        try
+        {
+            bytes = new ResourceLoader().readBytes(inps);
+            return bytes; 
+        }
+        catch (IOException e)
+        {
+            throw new VrsIOException(e.getMessage(),e); 
+        } 
+        finally
+        {
+            IOUtil.autoClose(inps); 
+        }
+    }
+
+    public void writeContents(VPath file, byte bytes[]) throws VrsException
+    {
+        OutputStream outps=this.createOutputStream(file,false);
+        try
+        {
+            new ResourceLoader().writeBytes(outps,bytes);
+        }
+        catch (IOException e)
+        {
+            throw new VrsIOException(e.getMessage(),e); 
+        } 
+        finally
+        {
+            IOUtil.autoClose(outps); 
+        }
+    }
+
+    public VFSPath moveFileToDir(VFSPath file, VFSPath destinationDir) throws VrsException
+    {
+        VARListHolder<VFSPath> resultPathsH=new ListHolder<VFSPath>(); 
+        VARListHolder<VPath> deletedNodesH=new ListHolder<VPath>(); 
+        this.transferManager.doCopyMove(new ExtendedList<VFSPath>(file), destinationDir, true, resultPathsH, deletedNodesH, null); 
+        return resultPathsH.get(0); 
+    }
+   
+
+    public VFSPath copyFileToDir(VFSPath file, VFSPath destinationDir) throws VrsException
+    {
+        VARListHolder<VFSPath> resultPathsH=new ListHolder<VFSPath>(); 
+        VARListHolder<VPath> deletedNodesH=new ListHolder<VPath>(); 
+        this.transferManager.doCopyMove(new ExtendedList<VFSPath>(file), destinationDir, false, resultPathsH, deletedNodesH, null); 
+        return resultPathsH.get(0); 
+    }
+
+    public VFSPath moveFileToFile(VFSPath sourceFile, VFSPath targetFile) throws VrsException
+    {
+        transferManager.copyMoveToFile(sourceFile, targetFile, true); 
+        return targetFile; 
+    }
+
+    public VFSPath copyFileToFile(VFSPath sourceFile, VFSPath targetFile) throws VrsException
+    {
+        transferManager.copyMoveToFile(sourceFile, targetFile, false); 
+        return targetFile; 
+    }
+    
+    public VFSPath copyDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName) throws VrsException
+    {
+        return copyMoveDirToDir(sourceDir,destinationPARENTDir,optSubdirectoryName,false); 
+    }
+    
+    public VFSPath moveDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName) throws VrsException
+    {
+        return copyMoveDirToDir(sourceDir,destinationPARENTDir,optSubdirectoryName,true); 
+    }
+    
+    public VFSPath copyMoveDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName, boolean isMove) throws VrsException
+    {
+        // resolve optional new SubDirectory name
+        if (optSubdirectoryName==null)
+        {   
+            optSubdirectoryName=sourceDir.getVRL().getBasename(); 
+        }
+        
+        VFSPath targetDir=destinationPARENTDir.resolvePath(optSubdirectoryName); 
+        targetDir.mkdir(false);
+        this.transferManager.copyMoveDirContents(sourceDir,targetDir, true, null); 
+        return targetDir; 
+    }
+     
 }

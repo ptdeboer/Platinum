@@ -24,9 +24,9 @@ public class ValueException extends VrsException
 {
     private static final long serialVersionUID = 9158591583323556443L;
 
-    public ValueException(String message, Throwable cause)
+    public ValueException(String message, Throwable cause, String name)
     {
-        super(message,cause);
+        super(message,cause, name);
     }
 
 }
