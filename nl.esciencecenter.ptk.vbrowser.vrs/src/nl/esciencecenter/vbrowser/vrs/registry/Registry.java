@@ -46,6 +46,8 @@ public class Registry
     
     public static Registry getInstance()
     {
+        logger.setLevelToDebug();
+        
         synchronized(Registry.class)
         {
             if (instance==null)
@@ -179,6 +181,7 @@ public class Registry
                 ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);    
                 if (list==null)
                 {
+                    logger.debugPrintf("Registering scheme:%s =>%s\n",scheme,vrsClass.getCanonicalName());
                     list=new ArrayList<SchemeInfo>(); 
                     registeredSchemes.put(scheme,list); 
                 }
@@ -188,4 +191,42 @@ public class Registry
         }       
     }
 
+    public void unregisterFactory(Class<? extends VResourceSystemFactory> vrsClass) 
+    { 
+        VResourceSystemFactory vrsInstance;  
+        
+        synchronized(registeredServices)
+        {
+            vrsInstance = registeredServices.remove(vrsClass.getCanonicalName());  
+        }
+        
+        if (vrsInstance==null)
+            return; 
+        
+        synchronized(registeredSchemes)
+        {
+            for (String scheme:vrsInstance.getSchemes())
+            {
+                ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);    
+                if (list==null)
+                {
+                    return; 
+                }
+
+                // reverse list and remove entries.
+                int listSize=list.size(); 
+                
+                for (int i=listSize-1;i>=0;i--) 
+                {
+                    SchemeInfo entry = list.get(i); 
+                    
+                    if (entry.vrsFactory==vrsInstance)
+                    {
+                        list.remove(i);
+                        listSize=list.size(); 
+                    }
+                }
+            }
+        }       
+    }
 }
