@@ -94,8 +94,6 @@ public class BrowserPlatform
 
     private PluginRegistry viewerRegistry;
 
-    private ResourceLoader resourceLoader;
-
     private JFrame rootFrame;
 
     private IconProvider iconProvider;
@@ -122,7 +120,7 @@ public class BrowserPlatform
         // ==================
 
         // use custom configuration location for platform specific settings.
-        URI cfgDir = getPlatformConfigDir(null);
+        VRL cfgDir = getPlatformConfigDir(null);
         initVRSContext(cfgDir);
         guiSettings = new UIProperties();
 
@@ -138,7 +136,7 @@ public class BrowserPlatform
 
         // root Frame and Icon Renderer/provider:
         this.rootFrame = new JFrame();
-        this.iconProvider = new IconProvider(rootFrame, getResourceLoader());
+        this.iconProvider = new IconProvider(rootFrame, vrsClient.createResourceLoader());
 
         // ===================================
         // Init Viewers and ViewerPlugins.
@@ -147,17 +145,16 @@ public class BrowserPlatform
         initViewers();
     }
 
-    private void initVRSContext(URI cfgDir) throws Exception
+    private void initVRSContext(VRL cfgDir) throws Exception
     {
         VRSProperties props = new VRSProperties("VRSBrowserProperties");
         this.vrsContext = new VRSContext(props);
         this.vrsClient = new VRSClient(getVRSContext());
-        this.resourceLoader = vrsClient.createResourceLoader();
     }
 
     private void initViewers() throws Exception
     {
-        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(resourceLoader, getPlatformConfigDir("viewers"));
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient, getPlatformConfigDir("viewers"));
         // ~/.vbtk2/viewers
 
         // Viewer Registry for this Platform:
@@ -172,17 +169,6 @@ public class BrowserPlatform
     public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception
     {
         vrsContext.getRegistry().registerFactory(clazz);
-    }
-
-    public void setResourceLoader(ResourceLoader resourceLoader)
-    {
-        this.resourceLoader = resourceLoader;
-        viewerRegistry.getResourceHandler().setResourceLoader(resourceLoader);
-    }
-
-    public ResourceLoader getResourceLoader()
-    {
-        return resourceLoader;
     }
 
     public String getPlatformID()
@@ -232,7 +218,7 @@ public class BrowserPlatform
         return viewerRegistry;
     }
 
-    public URI getPlatformConfigDir(String optionalSubPath) throws Exception
+    public VRL getPlatformConfigDir(String optionalSubPath) throws Exception
     {
         String cfgPath = GlobalProperties.getGlobalUserHome();
         cfgPath += "." + getPlatformID().toLowerCase();
@@ -244,7 +230,7 @@ public class BrowserPlatform
         // normalize path
         cfgPath = URIFactory.uripath(cfgPath);
 
-        return new URI("file", null, null, 0, cfgPath, null, null);
+        return new VRL("file", null, null, 0, cfgPath, null, null);
     }
 
     /**

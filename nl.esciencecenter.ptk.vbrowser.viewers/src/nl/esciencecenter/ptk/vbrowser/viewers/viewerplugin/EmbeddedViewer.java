@@ -35,6 +35,7 @@ import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin,MimeViewer
 {
@@ -90,7 +91,7 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
 
     public String getURIBasename()
     {
-        return new URIFactory(getURI()).getBasename(); 
+        return getVRL().getBasename(); 
     }
     
     protected ResourceLoader getResourceLoader()
@@ -145,18 +146,17 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
        return  new StringList(getMimeTypes()).contains(mimeType); 
     }
     
-    public URI getConfigPropertiesURI(String configPropsName) throws URISyntaxException
+    public VRL getConfigPropertiesURI(String configPropsName) throws URISyntaxException
     {
-        URI confUri=this.getResourceHandler().getViewerConfigDir();
-        if (confUri==null)
+        VRL confVrl=this.getResourceHandler().getViewerConfigDir();
+        if (confVrl==null)
         {
             logger.warnPrintf("No viewer configuration directory configured\n");
             return null;
         }
         
-        URIFactory factory=new URIFactory(confUri);
-        factory.appendPath("/viewers/"+configPropsName);
-        return factory.toURI(); 
+        VRL vrl=confVrl.appendPath("/viewers/"+configPropsName);
+        return vrl;
     }
     
     protected Properties loadConfigProperties(String configPropsName) throws IOException
@@ -171,6 +171,10 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
             {
                 throw new IOException("Invalid properties location:"+e.getReason(),e);
             }
+            catch (Exception e)
+            {
+                throw new IOException(e.getMessage(),e);
+            }
         }
         return properties; 
     }
@@ -184,6 +188,10 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
         catch (URISyntaxException e)
         {
             throw new IOException("Invalid properties location:"+e.getReason(),e);
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e.getMessage(),e);
         }
     }
     

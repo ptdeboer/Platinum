@@ -38,6 +38,7 @@ import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 
 public class X509Viewer extends EmbeddedViewer implements CertPanelListener
@@ -152,16 +153,16 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     @Override
     public void doStartViewer(String optionalMethod)
     {
-        updateURI(getURI(),optionalMethod);
+        doUpdate(getVRL(),optionalMethod);
     }
 
     @Override
-    public void doUpdateURI(URI uri) 
+    public void doUpdate(VRL vrl) 
     {
-        updateURI(uri,null); 
+        doUpdate(vrl,null); 
     }
 
-    public void updateURI(URI location, String optMethodName)
+    public void doUpdate(VRL location, String optMethodName)
     {
         //default to true ?
         boolean add=true;
@@ -178,12 +179,12 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
         addCertificate(location,add);  
     }   
     
-    public void askCertificate(URI loc) throws VrsException
+    public void askCertificate(VRL loc) throws VrsException
     {
         addCertificate(loc,true);
     }
     
-    public void addCertificate(URI loc,boolean askToAdd) 
+    public void addCertificate(VRL loc,boolean askToAdd) 
     {
         try
         {
@@ -236,9 +237,9 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
         return true;
     }
 
-    private X509Certificate instCert(URI certUri) throws Exception
+    private X509Certificate instCert(VRL certUri) throws Exception
     {
-        String txt = getResourceLoader().readText(certUri, textEncoding);
+        String txt = getResourceHandler().readText(certUri, textEncoding);
 
         // Use hardcoded String to find start of certificate. 
         // Current Pem reader is just as simplistic.  

@@ -1,8 +1,7 @@
 package test.viewers;
 
-import java.net.URI;
-
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class StartX509Viewer
 {
@@ -14,7 +13,7 @@ public class StartX509Viewer
         
         try
         {
-            ViewerTests.testViewer(X509Viewer.class,new URI("file:///home/ptdeboer/tests/cert.pem"));
+            ViewerTests.testViewer(X509Viewer.class,new VRL("file:///home/ptdeboer/tests/cert.pem"));
             // viewStandAlone(null);
         }
         catch (Exception e)

@@ -20,11 +20,9 @@
 
 package nl.esciencecenter.ptk.io;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /** 
  * Shared interface for ResourceLoader and (vbrowser) VRS Resource Loaders.
@@ -36,14 +34,14 @@ public interface ResourceProvider
     /** 
      * Resolve relative path, for example "image.gif" and provide full URI.<br>
      */
-    public URI resolvePathURI(String path) throws URISyntaxException;
+    public URI resolvePathURI(String path) throws Exception;
 
-    public OutputStream createOutputStream(URI uri) throws IOException;
+    public OutputStream createOutputStream(URI uri) throws Exception;
 
-    public InputStream createInputStream(URI uri) throws IOException;
+    public InputStream createInputStream(URI uri) throws Exception;
 
-    public RandomReadable createRandomReader(URI uri) throws IOException;
+    public RandomReadable createRandomReader(URI uri) throws Exception;
 
-    public RandomWritable createRandomWriter(URI uri) throws IOException;
+    public RandomWritable createRandomWriter(URI uri) throws Exception;
 
 }

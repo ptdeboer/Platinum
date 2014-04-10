@@ -153,24 +153,21 @@ public class MimeTypes
     public String getMagicMimeType(byte firstBytes[]) throws Exception
     {
         MagicMatch match;
-
-        try
-        {
-            match = Magic.getMagicMatch(firstBytes);
-            return match.getMimeType();
-        }
-        catch (MagicParseException e)
-        {
-            throw new Exception("MagicParseException:\n" + e.getMessage(), e);
-        }
-        catch (MagicMatchNotFoundException e)
-        {
-            throw new Exception("MagicMatchNotFoundException\n" + e.getMessage(), e);
-        }
-        catch (MagicException e)
-        {
-            throw new Exception("MagicException\n" + e.getMessage(), e);
-        }
+        match = Magic.getMagicMatch(firstBytes);
+        return match.getMimeType();
+        
+//        catch (MagicParseException e)
+//        {
+//            throw new Exception("MagicParseException:\n" + e.getMessage(), e);
+//        }
+//        catch (MagicMatchNotFoundException e)
+//        {
+//            throw new Exception("MagicMatchNotFoundException\n" + e.getMessage(), e);
+//        }
+//        catch (MagicException e)
+//        {
+//            throw new Exception("MagicException\n" + e.getMessage(), e);
+//        }
     }
 
     /**

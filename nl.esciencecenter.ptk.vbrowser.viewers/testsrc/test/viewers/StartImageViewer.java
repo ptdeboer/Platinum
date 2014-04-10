@@ -1,8 +1,7 @@
 package test.viewers;
 
-import java.net.URI;
-
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class StartImageViewer
 {
@@ -14,7 +13,7 @@ public class StartImageViewer
         
         try
         {
-            ViewerTests.testViewer(ImageViewer.class,new URI("file:///home/ptdeboer/tests/image1.jpg"));
+            ViewerTests.testViewer(ImageViewer.class,new VRL("file:///home/ptdeboer/tests/image1.jpg"));
 
             // viewStandAlone(null);
         }

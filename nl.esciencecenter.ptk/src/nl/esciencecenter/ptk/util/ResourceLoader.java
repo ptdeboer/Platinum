@@ -203,26 +203,6 @@ public class ResourceLoader
         return resolveUrl(null, urlString);
     }
 
-    // public URI resolveURI(URI uri) throws MalformedURLException, URISyntaxException
-    // {
-    // {
-    // if (uri.isAbsolute())
-    // {
-    // return uri;
-    // }
-    //
-    // URL url=resolveUrl(uri.toString());
-    // if (url!=null)
-    // {
-    // return url;
-    // }
-    //
-    // // If the URL is null, the relative URI can not be resolved against an existing URL on the classpath !
-    // // The relative URI should be resolve to the current working directory.
-    //
-    // return resourceProvider.resolveURI(uri.toString()).toURL();
-    // }
-
     /**
      * Resolve relative resource String and return absolute URL. The URL String can be matched against the optional
      * ClassLoader in the case the URL points to a resource loaded by a custom ClasLoader that is not accessible by the
@@ -358,9 +338,17 @@ public class ResourceLoader
         {
             return resourceProvider.createInputStream(url.toURI());
         }
-        catch (IOException | URISyntaxException e)
+        catch (URISyntaxException e)
         {
             // wrap:
+            throw new IOException("Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
             throw new IOException("Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
         }
     }
@@ -368,7 +356,18 @@ public class ResourceLoader
     public InputStream createInputStream(URI uri) throws IOException
     {
         // use URI Provider:
-        return resourceProvider.createInputStream(uri);
+        try
+        {
+            return resourceProvider.createInputStream(uri);
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e.getMessage(), e);
+        }
     }
 
     public OutputStream createOutputStream(URI uri) throws IOException
@@ -378,7 +377,65 @@ public class ResourceLoader
 
     protected OutputStream _createOutputStream(URI uri) throws IOException
     {
-        return resourceProvider.createOutputStream(uri);
+        try
+        {
+            return resourceProvider.createOutputStream(uri);
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e.getMessage(), e);
+        }
+    }
+
+    // =================================================================
+    // Random IO Interface
+    // =================================================================
+
+    /**
+     * Returns RandomReader if supported by the URI scheme.
+     * 
+     * @throws IOException
+     */
+    public RandomReadable createRandomReader(URI loc) throws IOException
+    {
+        try
+        {
+            return resourceProvider.createRandomReader(loc);
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e.getMessage(), e);
+        }
+
+    }
+
+    /**
+     * Returns RandomWriter if supported by the URI scheme.
+     * 
+     * @throws IOException
+     */
+    public RandomWritable createRandomWriter(URI loc) throws IOException
+    {
+        try
+        {
+            return resourceProvider.createRandomWriter(loc);
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e.getMessage(), e);
+        }
     }
 
     // =================================================================
@@ -526,7 +583,7 @@ public class ResourceLoader
         }
         catch (IOException e)
         {
-            throw new IOException("Couldn't load propertied from:" + uri + "\n" + e.getMessage(), e);
+            throw new IOException("Couldn't load properties from:" + uri + "\n" + e.getMessage(), e);
         }
         // in the case of applet startup: Not all files are
         // accessable, wrap exception for gracefull exception handling.
@@ -534,6 +591,10 @@ public class ResourceLoader
         {
             // Applet/Servlet environment !
             throw new IOException("Security Exception: Permission denied for:" + uri, ex);
+        }
+        catch (Exception e)
+        {
+            throw new IOException("Couldn't load properties from:" + uri + "\n" + e.getMessage(), e);
         }
 
         for (Enumeration<Object> keys = props.keys(); keys.hasMoreElements();)
@@ -605,30 +666,6 @@ public class ResourceLoader
     public void writeBytes(OutputStream outps, byte[] bytes) throws IOException
     {
         outps.write(bytes);
-    }
-
-    // =================================================================
-    // Random IO Interface
-    // =================================================================
-
-    /**
-     * Returns RandomReader if supported by the URI scheme.
-     * 
-     * @throws IOException
-     */
-    public RandomReadable createRandomReader(URI loc) throws IOException
-    {
-        return resourceProvider.createRandomReader(loc);
-    }
-
-    /**
-     * Returns RandomWriter if supported by the URI scheme.
-     * 
-     * @throws IOException
-     */
-    public RandomWritable createRandomWriter(URI loc) throws IOException
-    {
-        return resourceProvider.createRandomWriter(loc);
     }
 
 }

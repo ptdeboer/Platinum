@@ -1,8 +1,7 @@
 package test.viewers;
 
-import java.net.URI;
-
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.JavaWebStarter;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 
 public class StartWebStarterJGridStart
@@ -15,7 +14,7 @@ public class StartWebStarterJGridStart
         
         try
         {
-            ViewerTests.testViewer(JavaWebStarter.class,new URI("http://ca.dutchgrid.nl/start/jgridstart.jnlp"));
+            ViewerTests.testViewer(JavaWebStarter.class,new VRL("http://ca.dutchgrid.nl/start/jgridstart.jnlp"));
         }
         catch (Exception e)
         {

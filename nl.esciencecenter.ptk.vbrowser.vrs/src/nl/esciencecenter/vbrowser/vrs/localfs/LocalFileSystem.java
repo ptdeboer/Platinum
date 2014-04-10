@@ -72,6 +72,11 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
         }
     }
 
+    protected FSUtil getFSUtil()
+    {
+        return this.fsUtil;
+    }
+    
     @Override
     public InputStream createInputStream(VRL vrl) throws VrsException
     {
@@ -129,5 +134,6 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
         }
 
     }
+
 
 }

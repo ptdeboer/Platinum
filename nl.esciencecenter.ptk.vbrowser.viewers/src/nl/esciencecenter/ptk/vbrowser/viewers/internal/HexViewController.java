@@ -31,6 +31,7 @@ import java.net.URI;
 import java.util.List;
 
 import nl.esciencecenter.ptk.ui.widgets.URIDropTargetLister;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class HexViewController implements AdjustmentListener, KeyListener, ActionListener, URIDropTargetLister
 {
@@ -56,7 +57,7 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
 
     public void handleDrop(URI uri)
     {
-	    this.hexViewer.doUpdateURI(uri); 
+	    this.hexViewer.doUpdate(new VRL(uri)); 
     }
 
     public void adjustmentValueChanged(AdjustmentEvent e)
@@ -216,7 +217,7 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
     {
         if (uriList.size()>0)
         {
-            hexViewer.doUpdateURI(uriList.get(0));
+            hexViewer.doUpdate(new VRL(uriList.get(0)));
         }
     }
 	

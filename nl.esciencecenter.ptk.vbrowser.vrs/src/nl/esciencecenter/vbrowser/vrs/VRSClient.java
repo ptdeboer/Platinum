@@ -28,9 +28,10 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.ListHolder;
-import nl.esciencecenter.ptk.data.VARHolder;
 import nl.esciencecenter.ptk.data.VARListHolder;
 import nl.esciencecenter.ptk.io.IOUtil;
+import nl.esciencecenter.ptk.io.RandomReadable;
+import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceTypeMismatchException;
@@ -40,6 +41,8 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
+import nl.esciencecenter.vbrowser.vrs.io.VRandomReadable;
+import nl.esciencecenter.vbrowser.vrs.io.VRandomWritable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
 import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
@@ -280,6 +283,30 @@ public class VRSClient
         }
     }
 
+    public RandomReadable createRandomReader(VPath file) throws VrsException
+    {
+        if (file instanceof VRandomReadable)
+        {
+            return ((VRandomReadable)file).createRandomReadable();
+        }
+        else
+        {
+            throw new ResourceTypeMismatchException(file,"Cannot create RandomReadable from:"+file,null); 
+        }
+    }
+
+    public RandomWritable createRandomWriter(VPath file) throws VrsException
+    {
+        if (file instanceof VRandomWritable)
+        {
+            return ((VRandomWritable)file).createRandomWriter();
+        }
+        else
+        {
+            throw new ResourceTypeMismatchException(file,"Cannot create RandomWriter from:"+file,null); 
+        }
+    }
+    
     public byte[] readContents(VPath file) throws VrsException
     {
         InputStream inps=this.createInputStream(file);
@@ -368,5 +395,8 @@ public class VRSClient
         this.transferManager.copyMoveDirContents(sourceDir,targetDir, true, null); 
         return targetDir; 
     }
+
+
+
      
 }

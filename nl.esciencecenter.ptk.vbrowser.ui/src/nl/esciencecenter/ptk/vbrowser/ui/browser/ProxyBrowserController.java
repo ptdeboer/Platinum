@@ -502,7 +502,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             {
                 try
                 {
-                    finalViewer.startViewerFor(vrl.toURI(), optMenuMethod);
+                    finalViewer.startViewerFor(vrl, optMenuMethod);
                 }
                 catch (Throwable e)
                 {

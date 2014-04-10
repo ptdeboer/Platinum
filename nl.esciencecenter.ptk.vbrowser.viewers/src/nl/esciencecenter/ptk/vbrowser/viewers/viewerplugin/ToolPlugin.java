@@ -22,6 +22,8 @@ package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 
 import javax.swing.Icon;
 
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
 /**
  * Interface for Viewers which are Custom "Tools". These viewers will appears
  * under the "Tools" menu and optionally have their own ToolBar.
@@ -54,7 +56,7 @@ public interface ToolPlugin
 
     /**
      * Default method name to use when the viewer is started from the Tool Menu.
-     * see {@link ViewerPanel#startViewerFor(java.net.URI, String)}
+     * see {@link ViewerPanel#startViewerFor(VRL, String)}
      * 
      * @return
      */

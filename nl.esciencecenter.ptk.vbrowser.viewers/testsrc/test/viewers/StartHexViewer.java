@@ -1,8 +1,7 @@
 package test.viewers;
 
-import java.net.URI;
-
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class StartHexViewer
 {
@@ -14,7 +13,7 @@ public class StartHexViewer
         
         try
         {
-            ViewerTests.testViewer(HexViewer.class,new URI("file:///home/ptdeboer/tests/image1.jpg"));
+            ViewerTests.testViewer(HexViewer.class,new VRL("file:///home/ptdeboer/tests/image1.jpg"));
             // viewStandAlone(null);
         }
         catch (Exception e)

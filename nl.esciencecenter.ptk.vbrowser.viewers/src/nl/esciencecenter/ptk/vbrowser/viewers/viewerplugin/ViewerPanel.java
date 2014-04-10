@@ -24,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +33,7 @@ import javax.swing.JPanel;
 import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Embedded Viewer Panel for VBrowser (viewers) plugins. Note that the actual Viewers implement Viewer Interfaces.
@@ -46,7 +46,7 @@ public abstract class ViewerPanel extends JPanel implements Disposable
 
     private JPanel innerPanel;
 
-    private URI viewedUri;
+    private VRL viewedUri;
 
     private boolean isBusy;
 
@@ -92,19 +92,19 @@ public abstract class ViewerPanel extends JPanel implements Disposable
         return innerPanel;
     }
 
-    final public URI getURI()
+    final public VRL getVRL()
     {
         return viewedUri;
     }
 
-    final protected void setURI(URI uri)
+    final protected void setVrl(VRL vrl)
     {
-        this.viewedUri = uri;
+        this.viewedUri = vrl;
     }
 
-    final public void startViewerFor(URI newUri, String optMenuMethod)
+    final public void startViewerFor(VRL newVRL, String optMenuMethod)
     {
-        this.setURI(newUri);
+        this.setVrl(newVRL);
         startViewer(optMenuMethod);
         // doUpdateURI(newUri);
     }
@@ -114,10 +114,10 @@ public abstract class ViewerPanel extends JPanel implements Disposable
      * 
      * @param newUri
      */
-    final public void updateURI(URI newURI)
+    final public void updateVRL(VRL vrl)
     {
-        setURI(newURI);
-        doUpdateURI(newURI);
+        setVrl(vrl);
+        doUpdate(vrl);
     }
 
     /**
@@ -309,7 +309,7 @@ public abstract class ViewerPanel extends JPanel implements Disposable
     /**
      * Update content.
      */
-    abstract protected void doUpdateURI(URI uri);
+    abstract protected void doUpdate(VRL vrl);
 
     /**
      * Stop/suspend viewer. All background activity must stop. After a stopViewer() a startViewer() may occur to notify

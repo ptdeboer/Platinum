@@ -22,7 +22,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -225,19 +224,19 @@ public class ProxyObjectViewer extends EmbeddedViewer implements ProxyViewer
     }
 
     @Override
-    protected void doUpdateURI(URI uri)
+    protected void doUpdate(VRL vrl)
     {
         try
         {
-            updateNode(this.getProxyNode(new VRL(uri)));
+            updateNode(this.getProxyNode(new VRL(vrl)));
         }
         catch (ProxyException e)
         {
-            handle("Failed to load:" + uri, e);
+            handle("Failed to load:" + vrl, e);
         }
     }
 
-    private void handle(String actionText, Throwable e)
+    protected void handle(String actionText, Throwable e)
     {
         if (browser == null)
         {

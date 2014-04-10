@@ -581,7 +581,7 @@ public class IconProvider
             return  biggestImage;  
             
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             throw new IOException("Read error:"+iconurl,e); 
         }

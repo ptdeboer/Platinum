@@ -32,7 +32,9 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Content Factory and Resource Manager for the various embedded Viewers.
@@ -44,18 +46,20 @@ public class ViewerResourceLoader
     // ========
     // Instance
     // ======== 
+    private VRSClient vrsClient;
     
     private ResourceLoader resourceLoader;
 
-    private URI viewersConfigDir;
+    private VRL viewersConfigDir;
 
     private CertificateStore certificateStore;
 
     // === //
 
-    public ViewerResourceLoader(ResourceLoader resourceLoader, URI viewersConfigDir)
+    public ViewerResourceLoader(VRSClient vrsClient, VRL viewersConfigDir)
     {
-        this.resourceLoader = resourceLoader;
+        this.vrsClient=vrsClient;
+        this.resourceLoader = vrsClient.createResourceLoader();
         logger.infoPrintf("ViewerConfigDir=%s\n", viewersConfigDir);
         this.viewersConfigDir = viewersConfigDir;
     }
@@ -65,19 +69,20 @@ public class ViewerResourceLoader
         this.resourceLoader = resourceLoader;
     }
 
-    protected void setViewerConfigDir(URI configDir)
+    protected void setViewerConfigDir(VRL configDir)
     {
+        this.viewersConfigDir = configDir;
     }
 
-    public URI getViewerConfigDir()
+    public VRL getViewerConfigDir()
     {
         return viewersConfigDir;
     }
 
-    public InputStream openInputStream(URI uri) throws IOException
+    public InputStream openInputStream(VRL uri) throws Exception
     {
         // register/cache streams ?
-        return resourceLoader.createInputStream(uri);
+        return vrsClient.createInputStream(uri);
     }
 
     public ResourceLoader getResourceLoader()
@@ -85,41 +90,41 @@ public class ViewerResourceLoader
         return resourceLoader;
     }
 
-    public void writeText(URI uri, String txt, String encoding) throws IOException
+    public void writeText(VRL vrl, String txt, String encoding) throws Exception
     {
-        resourceLoader.writeTextTo(uri, txt, encoding);
+        resourceLoader.writeTextTo(vrl.toURI(), txt, encoding);
+    }
+    
+    public String readText(VRL vrl, String textEncoding) throws Exception
+    {
+        return resourceLoader.readText(vrl.toURI(), textEncoding);
     }
 
-    public String getText(URI uri, String textEncoding) throws IOException
-    {
-        return resourceLoader.readText(uri, textEncoding);
-    }
-
-    public boolean hasReplicas(URI uri)
+    public boolean hasReplicas(VRL vrl)
     {
         return false;
     }
 
-    public URI[] getReplicas(URI uri)
+    public VRL[] getReplicas(VRL vrl)
     {
         return null;
     }
 
-    public Properties loadProperties(URI uri) throws IOException
+    public Properties loadProperties(VRL vrl) throws Exception
     {
-        if (uri == null)
+        if (vrl == null)
             return null;
 
-        return resourceLoader.loadProperties(uri);
+        return resourceLoader.loadProperties(vrl.toURI());
     }
 
-    public void saveProperties(URI uri, Properties properties) throws IOException
+    public void saveProperties(VRL vrl, Properties properties) throws Exception
     {
-        logger.infoPrintf("Saving Properties to:" + uri);
-        if (uri == null)
+        logger.infoPrintf("Saving Properties to:" + vrl);
+        if (vrl == null)
             return;
 
-        resourceLoader.saveProperties(uri, properties);
+        resourceLoader.saveProperties(vrl.toURI(), properties);
     }
 
     public void syncReadBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
@@ -148,20 +153,26 @@ public class ViewerResourceLoader
     {
         this.certificateStore = store;
     }
-
+    
+    public String getMimeType(String path)
+    {
+        return MimeTypes.getDefault().getMimeType(path);
+    }
+    
     public String getMimeType(URI uri)
     {
         return MimeTypes.getDefault().getMimeType(uri.getPath());
     }
 
-    public RandomReadable createRandomReader(URI loc) throws IOException
+    public RandomReadable createRandomReader(VRL loc) throws Exception
     {
-        return resourceLoader.createRandomReader(loc);
+        return vrsClient.createRandomReader(vrsClient.openPath(loc));
     }
 
-    public RandomWritable createRandomWriter(URI loc) throws IOException
+    public RandomWritable createRandomWriter(VRL loc) throws Exception
     {
-        return resourceLoader.createRandomWriter(loc);
+        return vrsClient.createRandomWriter(vrsClient.openPath(loc));
     }
+
 
 }

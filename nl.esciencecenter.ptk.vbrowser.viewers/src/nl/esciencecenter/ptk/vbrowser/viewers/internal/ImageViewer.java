@@ -42,6 +42,7 @@ import nl.esciencecenter.ptk.ui.image.ImagePane;
 import nl.esciencecenter.ptk.ui.image.ImagePane.ImageWaiter;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Implementation of an Image Viewer.<br>
@@ -174,24 +175,24 @@ public class ImageViewer extends EmbeddedViewer
     @Override
     public void doStartViewer(String optionalMethod)
     {
-        doUpdateURI(getURI());
+        doUpdate(getVRL());
     }
     
-    public void doUpdateURI(URI uri)
+    public void doUpdate(VRL vrl)
     {
         try
         {
-            loadImage(uri);
+            loadImage(vrl);
         }
         catch (Exception e)
         {
-            notifyException("Failed to load image:"+getURI(),e); 
+            notifyException("Failed to load image:"+vrl,e); 
         }
     }
 
-    public void loadImage(java.net.URI uri) throws Exception 
+    public void loadImage(VRL vrl) throws Exception 
     {
-        if (uri==null)
+        if (vrl==null)
         {
             return; 
         }
@@ -203,7 +204,7 @@ public class ImageViewer extends EmbeddedViewer
 
             // load image and wait:
             // this.imagePane.loadImage(location,true);
-            loadImage(uri, false);
+            loadImage(vrl, false);
 
             // keep original image for zoom purposes;
             this.orgImage = imagePane.getImage();
@@ -222,9 +223,9 @@ public class ImageViewer extends EmbeddedViewer
         }
     }
 
-    public void loadImage(URI location, boolean wait) throws IOException
+    public void loadImage(VRL vrl, boolean wait) throws Exception
     {
-        InputStream inps=getResourceHandler().openInputStream(location); 
+        InputStream inps=getResourceHandler().openInputStream(vrl); 
         
         Image image;
         image = ImageIO.read(inps);
@@ -240,7 +241,7 @@ public class ImageViewer extends EmbeddedViewer
         
         if (image==null)
         {
-            throw new IOException("Failed to load image: Image loader returned NULL for:"+location); 
+            throw new IOException("Failed to load image: Image loader returned NULL for:"+vrl.toURI()); 
         }
         
         imagePane.setImage(image,wait);

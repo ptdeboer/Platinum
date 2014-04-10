@@ -62,6 +62,7 @@ import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Embedded textviewer for the VBrowser.
@@ -386,11 +387,12 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
      */
     public void doStartViewer(String optionalMethod)
     {
-        doUpdateURI(getURI());
+        doUpdate(getVRL());
     }
 
-    protected void doUpdateURI(final URI location)
+    protected void doUpdate(final VRL location)
     {
+        
         try
         {
 
@@ -421,12 +423,12 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
         }
         catch (Exception e)
         {
-            notifyException("Failed to (re)load URI:" + getURI(), e);
+            notifyException("Failed to (re)load URI:" + getVRL(), e);
         }
 
     }
 
-    protected void _load(URI uri)
+    protected void _load(VRL uri)
     {
         infoPrintf("TextViewer Loading:%s\n", uri);
 
@@ -445,11 +447,11 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
         try
         {
-            setViewerTitle("Loading :" + getURI());
+            setViewerTitle("Loading :" + getVRL());
 
             String txt = "";
 
-            String mimeType = getResourceHandler().getMimeType(getURI());
+            String mimeType = getResourceHandler().getMimeType(uri.getPath());
 
             if (this.muststop == true)
             {
@@ -458,9 +460,9 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
             }
 
             // Special Replica handling:
-            if (this.getResourceHandler().hasReplicas(getURI()))
+            if (this.getResourceHandler().hasReplicas(getVRL()))
             {
-                URI vrls[] = getResourceHandler().getReplicas(getURI());
+                VRL vrls[] = getResourceHandler().getReplicas(getVRL());
 
                 if ((vrls == null) || (vrls.length <= 0))
                 {
@@ -473,7 +475,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
             }
             //
 
-            txt = getResourceHandler().getText(uri, textEncoding);
+            txt = getResourceHandler().readText(uri, textEncoding);
             // Override
             if (StringUtil.equals(mimeType, "text/x-nfo"))
             {
@@ -500,10 +502,10 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
         catch (Exception e)
         {
             loadError = true;
-            setViewerTitle("Error Loading :" + getURI());
+            setViewerTitle("Error Loading :" + getVRL());
             //
             setText("");
-            notifyException("Failed to load text:" + getURI(), e);
+            notifyException("Failed to load text:" + getVRL(), e);
         }
         finally
         {
@@ -519,9 +521,9 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     protected void updateTitle()
     {
         if (this.editable == false)
-            setViewerTitle("Viewing:" + new URIFactory(getURI()).getBasename());
+            setViewerTitle("Viewing:" + getVRL().getBasename());
         else
-            setViewerTitle("Editing:" + new URIFactory(getURI()).getBasename());
+            setViewerTitle("Editing:" + getVRL().getBasename());
     }
 
     protected void requestFocusOnText()
@@ -589,11 +591,11 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                     notifyException("Still Saving!", new Exception("Still waiting for previous save to finished!"));
                     return;
                 }
-                doUpdateURI(getURI());
+                doUpdate(getVRL());
             }
             catch (Exception ex)
             {
-                notifyException("Failed to (re)load:" + getURI(), ex);
+                notifyException("Failed to (re)load:" + getVRL(), ex);
             }
         }
         else if ((source == this.saveConfigButton) || (source == this.saveConfigMenuItem))
@@ -626,7 +628,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
             }
             catch (Exception ex)
             {
-                this.notifyException("Failed to save:" + getURI(), ex);
+                this.notifyException("Failed to save:" + getVRL(), ex);
             }
         }
         else if (source == enableEncodingMenuitem)
@@ -746,11 +748,11 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
             setViewerTitle("Saving text:" + getURIBasename());
             updateTitle();
 
-            this.getResourceHandler().writeText(getURI(), txt, encoding);
+            this.getResourceHandler().writeText(getVRL(), txt, encoding);
         }
         catch (Exception e)
         {
-            notifyException("Failed to write text to:" + getURI(), e);
+            notifyException("Failed to write text to:" + getVRL(), e);
         }
         finally
         {

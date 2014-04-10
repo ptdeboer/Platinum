@@ -39,6 +39,7 @@ import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.MimeViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -115,7 +116,7 @@ public class JavaWebStarter extends ViewerPanel implements ActionListener, Viewe
     }
 
     @Override
-    public void doUpdateURI(URI loc)
+    public void doUpdate(VRL loc)
     {
         startURI(loc);
     }
@@ -123,10 +124,10 @@ public class JavaWebStarter extends ViewerPanel implements ActionListener, Viewe
     @Override
     public void doStartViewer(String optionalMethod)
     {
-        startURI(getURI()); 
+        startURI(getVRL()); 
     }
     
-    public void startURI(URI loc) 
+    public void startURI(VRL loc) 
     {
         try
         {
@@ -141,7 +142,7 @@ public class JavaWebStarter extends ViewerPanel implements ActionListener, Viewe
         }
     }
 
-    private void executeJavaws(URI loc)
+    private void executeJavaws(VRL loc)
     {
         try
         {

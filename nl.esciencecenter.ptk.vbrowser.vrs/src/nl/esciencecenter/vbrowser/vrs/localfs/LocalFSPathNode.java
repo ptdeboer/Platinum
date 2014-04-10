@@ -27,18 +27,21 @@ import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.io.RandomReadable;
+import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.local.LocalFSNode;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.io.VRandomAccessable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.node.FileAttributes;
 import nl.esciencecenter.vbrowser.vrs.node.VFSPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
+public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable 
 {
     private static final ClassLogger logger=ClassLogger.getLogger(LocalFSPathNode.class);
     
@@ -254,5 +257,32 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable
         {
             throw LocalFileSystem.convertException(this,"Couldn't get file size of:"+getVRL(),e); 
         } 
+    }
+
+    @Override
+    public RandomReadable createRandomReadable() throws VrsException
+    {
+        try
+        {   
+            return this.localfs.getFSUtil().createRandomReader(fsNode); 
+        }
+        catch (IOException e)
+        {
+            throw LocalFileSystem.convertException(this,"Couldn't create RandomReadable from:"+getVRL(),e); 
+        }    
+
+    }
+
+    @Override
+    public RandomWritable createRandomWriter() throws VrsException
+    {
+        try
+        {
+            return this.localfs.getFSUtil().createRandomWriter(fsNode); 
+        }
+        catch (IOException e)
+        {
+            throw LocalFileSystem.convertException(this,"Couldn't create RandomWriter from:"+getVRL(),e); 
+        }   
     }
 }

@@ -29,7 +29,6 @@ import java.awt.Frame;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.TooManyListenersException;
@@ -42,9 +41,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
+import net.sf.jmimemagic.MagicMatchNotFoundException;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.ui.fonts.FontInfo;
@@ -54,9 +53,9 @@ import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ToolPlugin;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Implementation of a simple Binary Hex Viewer.<br>
@@ -64,28 +63,28 @@ import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
  * 
  * @author Piter.NL.
  */
-public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, ToolPlugin
+public class HexViewer extends EmbeddedViewer implements FontToolbarListener// , ToolPlugin
 
 {
     // todo: UTF-8 Char Mapping
     public final String specialCharMapping[] =
     {
-        "�", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 00 - 0F                              
-        "", "", "", "\u240d", "", "", "", "", "", "", "", "", "", "", "", "", // 10-1F
-        "", "A", "B", "C", "D", "E", "F", "G", "", "", "", "", "", "", "", "", // 20
-        "H", "I", "J", "K", "L", "M", "N", "O", "", "", "", "", "", "", "", "", // 30
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 40
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 50
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 60
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 70
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 90
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // a0
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // b0
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // c0
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // d0
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // e0
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // f0
-     };
+            "�", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 00 - 0F
+            "", "", "", "\u240d", "", "", "", "", "", "", "", "", "", "", "", "", // 10-1F
+            "", "A", "B", "C", "D", "E", "F", "G", "", "", "", "", "", "", "", "", // 20
+            "H", "I", "J", "K", "L", "M", "N", "O", "", "", "", "", "", "", "", "", // 30
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 40
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 50
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 60
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 70
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 90
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // a0
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // b0
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // c0
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // d0
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // e0
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // f0
+    };
 
     /** unicode for Carriage return C/R */
 
@@ -301,11 +300,10 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
 
         initDnD();
     }
-    
-    
+
     private void initDnD()
     {
-        
+
         // DROP TARGET
         {
             DropTarget dropTarget = new DropTarget();
@@ -349,7 +347,6 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
         this.length = buffer.length; // update with nrBytes actual read
         updateMagic();
         redrawContents();
-
     }
 
     public void updateMagic()
@@ -357,6 +354,11 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
         try
         {
             this.magicField.setText(MimeTypes.getDefault().getMagicMimeType(buffer));
+        }
+        catch (MagicMatchNotFoundException e)
+        {
+            logException(ClassLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL().getPath());
+            // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
         }
         catch (Exception e)
         {
@@ -682,22 +684,22 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
 
     public void doStartViewer(String optionalMethod)
     {
-        doUpdateURI(getURI());
+        doUpdate(getVRL());
         this.validate();
     }
 
-    public void doUpdateURI(final URI loc)
+    public void doUpdate(final VRL loc)
     {
         debug("updateLocation:" + loc);
 
         if (loc == null)
             return;
 
-        this.updateTask = new ActionTask(null, "loading:" + getURI())
+        this.updateTask = new ActionTask(null, "loading:" + getVRL())
         {
 
             @Override
-            protected void doTask() 
+            protected void doTask()
             {
                 try
                 {
@@ -705,8 +707,8 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
                 }
                 catch (Throwable t)
                 {
-                    this.setException(t); 
-                    handle("failed to load:"+getURI(),t); 
+                    this.setException(t);
+                    handle("failed to load:" + getVRL(), t);
                 }
             }
 
@@ -719,7 +721,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
         updateTask.startTask();
     }
 
-    private synchronized void _reload(final URI loc) throws IOException
+    private synchronized void _reload(final VRL loc) throws IOException
     {
         debug("_update:" + loc);
 
@@ -735,7 +737,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
             updateMagic();
             redrawContents();
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             throw new IOException(e);
         }
@@ -758,7 +760,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
             }
         }
 
-        this.updateTask = new ActionTask(null, "loading:" + getURI())
+        this.updateTask = new ActionTask(null, "loading:" + getVRL())
         {
 
             @Override
@@ -809,14 +811,14 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
         {
             notifyBusy(true);
 
-            this.setViewerTitle("Reading:" + getURI());
+            this.setViewerTitle("Reading:" + getVRL());
             // new FileReader(vfile).read(fileOffset,buffer,0,len);
             readBytes(reader, fileOffset, buffer, 0, len);
-            this.setViewerTitle("Inspecting:" + getURI());
+            this.setViewerTitle("Inspecting:" + getVRL());
         }
         catch (Exception e)
         {
-            this.setViewerTitle("Error reading:" + getURI());
+            this.setViewerTitle("Error reading:" + getVRL());
             notifyException("Failed to read buffer", e);
         }
         finally
@@ -896,7 +898,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
 
     public void updateFont(Font font, Map<?, ?> renderingHints)
     {
-        //GuiSettings.updateRenderingHints(this, renderingHints); // useAntialising);
+        // GuiSettings.updateRenderingHints(this, renderingHints); // useAntialising);
         textArea.setFont(font);
         redrawContents();
     }
@@ -915,32 +917,28 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
             this.fontToolBar.setVisible(true);
 
         this.validate();
-        //this.requestFrameResizeToPreferred();
+        // this.requestFrameResizeToPreferred();
     }
 
-//    public void doMethod(String methodName, ActionContext actionContext) throws VrsException
-//    {
-//        if (actionContext.getSource() != null)
-//            this.updateLocation(actionContext.getSource());
-//    }
+    // public void doMethod(String methodName, ActionContext actionContext) throws VrsException
+    // {
+    // if (actionContext.getSource() != null)
+    // this.updateLocation(actionContext.getSource());
+    // }
 
     /*
-     * public Vector<ActionMenuMapping> getActionMappings() { ActionMenuMapping
-     * mapping=new ActionMenuMapping("viewBinary",
-     * "View Binary (Hex Viewer)","binary");
+     * public Vector<ActionMenuMapping> getActionMappings() { ActionMenuMapping mapping=new
+     * ActionMenuMapping("viewBinary", "View Binary (Hex Viewer)","binary");
      * 
-     * // '/' is not a RE character Pattern patterns[]=new
-     * Pattern[mimeTypes.length];
+     * // '/' is not a RE character Pattern patterns[]=new Pattern[mimeTypes.length];
      * 
-     * for (int i=0;i<mimeTypes.length;i++)
-     * patterns[i]=Pattern.compile(mimeTypes[i]);
+     * for (int i=0;i<mimeTypes.length;i++) patterns[i]=Pattern.compile(mimeTypes[i]);
      * 
      * mapping.addMimeTypeMapping(patterns);
      * 
-     * Vector<ActionMenuMapping> mappings=new Vector<ActionMenuMapping>();
-     * mappings.add(mapping); return mappings; }
+     * Vector<ActionMenuMapping> mappings=new Vector<ActionMenuMapping>(); mappings.add(mapping); return mappings; }
      */
-  
+
     public long getOffset()
     {
         return offset;
@@ -973,13 +971,13 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
 
     protected void debugPrintf(String format, Object... args)
     {
-        System.err.printf(format,args); 
+        System.err.printf(format, args);
         super.debugPrintf(format, args);
     }
 
-    protected void logException(Level error, Exception e, String message)
+    protected void logException(Level error, Exception e, String format, Object... args)
     {
-        errorPrintf("Exception during:%s\n",message); 
+        errorPrintf(format, args);
         e.printStackTrace();
     }
 
@@ -987,15 +985,16 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
     public Map<String, List<String>> getMimeMenuMethods()
     {
         // Use HashMapList to keep order of menu entries: first is default(!)
-        
-        Map<String,List<String>> mappings=new HashMapList<String,List<String>>(); 
-        
-        for (int i=0;i<mimeTypes.length;i++)
+
+        Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
+
+        for (int i = 0; i < mimeTypes.length; i++)
         {
-            List<String> list=new StringList(new String[]{"view:View Binary"}); 
-            mappings.put(mimeTypes[i],list); 
+            List<String> list = new StringList(new String[]
+            { "view:View Binary" });
+            mappings.put(mimeTypes[i], list);
         }
-        
-        return mappings; 
+
+        return mappings;
     }
 }

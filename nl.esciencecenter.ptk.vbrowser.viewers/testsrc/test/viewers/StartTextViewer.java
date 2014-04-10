@@ -1,9 +1,7 @@
 package test.viewers;
 
-import java.net.URI;
-
-import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class StartTextViewer
 {
@@ -15,7 +13,7 @@ public class StartTextViewer
         
         try
         {
-            ViewerTests.testViewer(TextViewer.class,new URI("file:///home/ptdeboer/tests/testText.txt"));
+            ViewerTests.testViewer(TextViewer.class,new VRL("file:///home/ptdeboer/tests/testText.txt"));
 
             // viewStandAlone(null);
         }

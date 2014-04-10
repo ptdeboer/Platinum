@@ -227,7 +227,7 @@ public class InfoRootNode extends InfoResourceNode
             
             vrsClient.createResourceLoader().writeTextTo(configVrl.toURI(), xml);
         }
-        catch (IOException | URISyntaxException e)
+        catch (Exception e)
         {
             throw new VrsException(e.getMessage(),e); 
         }
@@ -270,7 +270,7 @@ public class InfoRootNode extends InfoResourceNode
             data.addXMLResourceNodesTo(this, xml);
             
         }
-        catch (IOException | URISyntaxException e)
+        catch (Exception e)
         {
             throw new VrsException("Failed to load config from:"+loadVrl+".\n"+e.getMessage(),e); 
         }
