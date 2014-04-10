@@ -428,7 +428,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         {
             ViewerPanel viewer; 
             
-            if ((filterOctetStreamMimeType) && (StringUtil.equals(node.getMimeType(),MimeTypes.MIME_BINARY))) 
+            if ((filterOctetStreamMimeType) && (StringUtil.equals(node.getMimeType(),MimeTypes.MIME_BINARY)) && (optViewerClass==null)) 
             {
                 viewer= null; 
             }
