@@ -697,9 +697,17 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
         {
 
             @Override
-            protected void doTask() throws IOException
+            protected void doTask() 
             {
-                _reload(loc);
+                try
+                {
+                    _reload(loc);
+                }
+                catch (Throwable t)
+                {
+                    this.setException(t); 
+                    handle("failed to load:"+getURI(),t); 
+                }
             }
 
             @Override
@@ -965,6 +973,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener//, 
 
     protected void debugPrintf(String format, Object... args)
     {
+        System.err.printf(format,args); 
         super.debugPrintf(format, args);
     }
 

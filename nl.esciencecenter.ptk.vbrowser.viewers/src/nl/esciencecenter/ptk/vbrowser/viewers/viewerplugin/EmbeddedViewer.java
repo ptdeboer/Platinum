@@ -30,6 +30,7 @@ import javax.swing.Icon;
 
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
@@ -217,5 +218,8 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
         logger.errorPrintf("MESSAGE:"+format,args); 
     }
 
-
+    protected void handle(String messageString,Throwable ex)
+    {
+        ExceptionDialog.show(this, messageString, ex, false);
+    }
 }
