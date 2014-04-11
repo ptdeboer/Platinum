@@ -35,8 +35,8 @@ import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfoRegistry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
- * Main Context of the Virtual Resource Systems. 
- * Hold Registry, ResourceSystemInfoRegistry and instanciated ResourceSystems. 
+ * Main Context of the Virtual Resource System. 
+ * Hold Registry, ResourceSystemInfoRegistry and instantiated ResourceSystems. 
  */
 public class VRSContext
 {
@@ -145,7 +145,12 @@ public class VRSContext
     {
         resourceInfoRegistry.putInfo(info); 
     }
-
+    /** 
+     * For head-less environments, getUI() will return a dummy Object.    
+     * For non graphical environments this method will return a dummy ui. 
+     * When registered in the VBrowser this method will return an interactive callback interface to the VBrowser. 
+     * @return register UI or dummy UI for non-interactive environments. 
+     */
     public UI getUI()
     {
         return ui; 

@@ -26,6 +26,7 @@ import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
@@ -55,7 +56,15 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
 
     public static final String ATTR_SSH_IDENTITY = "sshIdentity"; 
     
- 
+    public static final String ATTR_AUTH_SCHEME="authScheme"; 
+    
+    public static enum AuthScheme
+    {
+        NONE,
+        PASSWORD,
+        CERTIFICATE
+    };
+    
     // ==================
     // Instance 
     // ==================
@@ -144,7 +153,17 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     {
         properties.set(name, value);  
     }
-    
+
+    public Attribute getAttribute(String name)
+    {
+        return properties.get(name); 
+    }
+
+    public void setAttribute(Attribute attr)
+    {
+        properties.put(attr); 
+    }
+
     public String getProperty(String name)
     {
         return properties.getStringValue(name); 
@@ -204,9 +223,10 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
         properties.set(NEED_USERINFO,value);
     }
     
-    public void setNeedServerPath(boolean value)
+    public void setServerPath(String serverPath, boolean isMandatory)
     {
-        properties.set(NEED_SERVERPATH,value);
+        properties.set(SERVER_PATH,serverPath);
+        properties.set(NEED_SERVERPATH,isMandatory);
     }
 
     /** 
@@ -260,22 +280,13 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
         passwd=secret; 
     }
 
-    public boolean setIfNotSet(String name, String value)
-    {
-        if (properties.get(name)==null)
-        {
-            properties.set(name, value); 
-            return true;
-        }
-        return false; 
-    }
+
 
     public String getID()
     {
         return this.id; 
     }
     
-
     @Override
     public boolean shallowSupported()
     {
@@ -304,25 +315,60 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
         return this.properties; 
     }
     
+    public boolean setIfNotSet(String name, String value, boolean editable)
+    {
+        if (properties.get(name)==null)
+        {
+            Attribute attr=AttributeUtil.createStringAttribute(name, value,editable); 
+            properties.set(attr); 
+            return true;
+        }
+        return false; 
+    }
+    
+    public boolean setIfNotSet(Attribute attr, boolean editable)
+    {
+        Attribute prevAttr=properties.get(attr.getName()); 
+        if (prevAttr!=null)
+        {
+            if (editable!=prevAttr.isEditable())
+            {
+                attr.setEditable(editable); 
+                properties.put(attr);
+                return true;
+            }
+            else
+            {
+                return false; 
+            }
+        }
+        
+        attr.setEditable(editable);
+        properties.set(attr); 
+        return true; 
+    }
+    
+    public void setAuthScheme(AuthScheme scheme,boolean editable)
+    {
+        properties.set(AttributeUtil.createStringAttribute(ATTR_AUTH_SCHEME,""+scheme,editable));    
+    }
+    
+    public void setAuthSchemeToNone()
+    {
+        properties.set(ATTR_AUTH_SCHEME,""+AuthScheme.NONE); 
+    }
+
+    public void setAuthSchemeToPassword()
+    {
+        properties.set(ATTR_AUTH_SCHEME,""+AuthScheme.PASSWORD); 
+    }
+
     public String toString()
     {
         return "ResourceSystemInfo:[id="+id
                 +",serverVrl=+"+getServerVRL()
                 +",password="+((passwd!=null)?"<PASSWORD>":"<No Password>")
                 +",properties="+properties+"]"; 
-    }
-
-    public boolean setIfNotSet(Attribute attr)
-    {
-        System.err.printf("attr=%s",attr); 
-        
-        if (properties.containsKey(attr.getName()))
-        {
-            return false;
-        }
-       
-        properties.set(attr); 
-        return true; 
     }
 
 

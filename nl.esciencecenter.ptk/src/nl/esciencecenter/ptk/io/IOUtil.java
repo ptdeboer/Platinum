@@ -39,12 +39,7 @@ public class IOUtil
 
     static
     {
-        logger.setLevelToDebug(); 
-    }
-    
-    public static interface Readable
-    {
-        public int read(byte buffer[], int bufferOffset, int numBytes) throws IOException;
+        logger.setLevelToDebug();
     }
 
     public static class ReadFunctor implements Readable
@@ -66,12 +61,12 @@ public class IOUtil
     {
         protected RandomReadable reader;
 
-        protected long offset; 
-        
+        protected long offset;
+
         public RandomReaderFunctor(RandomReadable reader, long offset)
         {
             this.reader = reader;
-            this.offset=offset; 
+            this.offset = offset;
         }
 
         public int read(byte buffer[], int bufferOffset, int numBytes) throws IOException
@@ -82,7 +77,9 @@ public class IOUtil
 
     /**
      * Copy all the data from the InputStream to the OutputStream.
-     * 
+     *
+     * @param input
+     * @param output
      * @param autoCloseStream
      *            - set to true to close the Input- and OuputStream after a copy.
      * @throws IOException
@@ -98,35 +95,52 @@ public class IOUtil
     }
 
     /**
-     * Parallel StreamCopy using circular stream buffer. Starts a read in the background to enable full duplex reading
-     * and writing.
+     * Dual threaded stream copy starts a reader thread in the background and performs the writes during the current
+     * thread. This way full duplex reading and writing occurs during the copy.
+     * 
+     * @param inputs
+     *            - InputStream to read from.
+     * @param outputs
+     *            - OutputStream to write to.
+     * @param nrToTransfer
+     *            - number of bytes to transfer. Set to -1 for continue until EOF encountered.
+     * @param bufferSize
+     *            - buffer size to use during transfer. This is not the actual chunk size used during read and write operations. 
+     * @param autoClose
+     *            - whether to close the streams after the transfer.
+     * @param monitor
+     *            - optional Task Monitor
+     * @return number of bytes transferred. This either matches nrToTransfer, or in the case if nrToTransfer has been set to -1,
+     *         the actual number of transferred bytes. 
+     * @throws IOException
+     *            - an EOF exception is thrown if the nrToTransfer bytes > 0 and that number could not be transferred.
      */
     public static long circularStreamCopy(
-            InputStream inps,
-            OutputStream outps,
+            InputStream inputs,
+            OutputStream outputs,
             long nrToTransfer,
             int bufferSize,
             boolean autoClose, ITaskMonitor monitor) throws IOException
     {
         logger.debugPrintf("circularStreamCopy():START: bufSize=%d, totalToTransfer=%d\n", bufferSize, nrToTransfer);
-
-        if (monitor == null)
-            monitor = new TaskMonitorAdaptor(); // defaut:
-
+        
         // Setup & Initiate Stream Copy:
         //
         String subTaskName = "Performing stream copy";
 
         try
         {
-            monitor.startSubTask(subTaskName, nrToTransfer);
+            if (monitor!=null)
+            {
+                monitor.startSubTask(subTaskName, nrToTransfer);
+            }
 
             // do not allocate buffer size bigger than than file size
             if ((nrToTransfer > 0) && (nrToTransfer < bufferSize))
             {
                 bufferSize = (int) nrToTransfer;
             }
-            
+
             // Use CirculareStreamBuffer to copy from InputStream =>
             // OutputStream
             RingBufferStreamTransferer cbuffer = new RingBufferStreamTransferer(bufferSize);
@@ -158,8 +172,8 @@ public class IOUtil
             logger.debugPrintf(" + streamCopy buffer size    =%d\n", cbuffer.getCopyBufferSize());
 
             // start background writer:
-            cbuffer.setInputStream(inps);
-            cbuffer.setOutputstream(outps);
+            cbuffer.setInputStream(inputs);
+            cbuffer.setOutputstream(outputs);
 
             // ====================================
             // Transfer !
@@ -178,8 +192,8 @@ public class IOUtil
                 try
                 {
                     // writer task done or Exception :
-                    outps.flush();
-                    outps.close();
+                    outputs.flush();
+                    outputs.close();
                 }
                 catch (Exception e)
                 {
@@ -189,7 +203,7 @@ public class IOUtil
                 try
                 {
                     // istr.flush();
-                    inps.close();
+                    inputs.close();
                 }
                 catch (Exception e)
                 {
@@ -198,16 +212,23 @@ public class IOUtil
             }
 
             long numTransferred = cbuffer.getTotalWritten();
-            monitor.updateSubTaskDone(subTaskName, numTransferred);
-            monitor.endSubTask(subTaskName);
-
+            
+            if (monitor!=null)
+            {
+                monitor.updateSubTaskDone(subTaskName, numTransferred);
+                monitor.endSubTask(subTaskName);
+            }
+            
             logger.debugPrintf("circularStreamCopy():DONE: totalTransfered=%s\n", numTransferred);
 
             return numTransferred;
         }
         catch (Exception ex)
         {
-            monitor.endSubTask("Performing stream copy: Error");
+            if (monitor!=null)
+            {
+                monitor.endSubTask("Performing stream copy: Error");
+            }
 
             if (ex instanceof IOException)
             {
@@ -224,16 +245,19 @@ public class IOUtil
         }
     }
 
-    /** 
-     * Read exactly numBytes, if actually return number of bytes < numBytes the end of the file was encountered ! 
-     * @throws IOException 
+    /**
+     * Read exactly numBytes, if actually returned number of bytes < numBytes the end of the file was encountered !
+     * 
+     * @throws IOException
      */
-    public static int syncReadLoop(Readable readerF,byte buffer[], int bufferOffset,int numBytes, int timeOutMillies) throws IOException
+    public static int syncReadLoop(Readable readerF, byte buffer[], int bufferOffset, int numBytes, int timeOutMillies) throws IOException
     {
-        int totalRead=0; 
-        int nullReads=0; 
+        int microSleepTime=10; 
         
-        while (totalRead<numBytes)
+        int totalRead = 0;
+        int nullReads = 0;
+
+        while (totalRead < numBytes)
         {
             int numToRead = (numBytes - totalRead);
             int numRead = readerF.read(buffer, bufferOffset, (int) numToRead);
@@ -241,54 +265,54 @@ public class IOUtil
             if (numRead > 0)
             {
                 totalRead += numRead;
-                // reset; 
-                nullReads=0; 
-                
+                // reset;
+                nullReads = 0;
+
                 logger.debugPrintf("syncReadLoop: Current numRead/totalRead=%d/%d\n", numRead, totalRead);
             }
             else if (numRead == 0)
             {
                 // ---
                 // Although java read() specifies 0 is only returned when numBytes==0, the underlaying implementation
-                // might stil return 0 when there is no data (yet) available. 
-                // For asynchronous reads, returning 0 is actaully allowed. 
-                // --- 
-                
+                // might stil return 0 when there is no data (yet) available.
+                // For asynchronous reads, returning 0 is actaully allowed.
+                // ---
+
                 // micro sleep: 10 milli seconds time out
-                if ((timeOutMillies>0) && (nullReads * 10 >= timeOutMillies))
+                if ((timeOutMillies > 0) && (nullReads * microSleepTime >= timeOutMillies))
                 {
-                    throw new IOException("Reading Timeout waiting time>"+timeOutMillies);
+                    throw new IOException("Reading Timeout waiting time>" + timeOutMillies);
                 }
-                
+
                 nullReads++;
-                
+
                 try
                 {
-                    Thread.sleep(10);
+                    Thread.sleep(microSleepTime);
                 }
                 catch (InterruptedException e)
                 {
-                    // contract of Interrupted is to stop immediatly. 
                     e.printStackTrace();
-                    break ;
+                    // Contract of Interrupted is to stop immediately.
+                    throw new IOException("Copy thread was Interrupted!\n"+e.getMessage(),e); 
                 }
             }
             else if (numRead < 0)
             {
-                if (totalRead>0)
+                if (totalRead > 0)
                 {
-                    // no more bytes left, return remainder 
+                    // No more bytes left, return remainder
                     return totalRead;
                 }
                 else
                 {
-                    throw new IOException("EOF: Can not read past end.\n"); 
+                    throw new IOException("EOF: Can not read past end.\n");
                 }
             }
         }
 
         logger.debugPrintf("syncReadLoop: Finished totalRead=%d\n", totalRead);
-        return totalRead; 
+        return totalRead;
     }
 
     /**
@@ -300,13 +324,20 @@ public class IOUtil
      * Returns -1 when EOF is encountered, or actual nr of bytes read. If the return value doesn't match the nrBytes
      * wanted, no extra bytes could be read so this method doesn't have to be called again.
      */
-    public static int syncReadBytes(RandomReadable source, long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
+    public static int syncReadBytes(RandomReadable source, long fileOffset, byte[] buffer, int bufferOffset, int nrBytes)
+            throws IOException
     {
-        // Delegate to functor: 
-        RandomReaderFunctor reader= new RandomReaderFunctor(source, fileOffset); 
-        return syncReadLoop(reader,buffer,bufferOffset,nrBytes,-1);
+        // Delegate to functor:
+        RandomReaderFunctor reader = new RandomReaderFunctor(source, fileOffset);
+        return syncReadLoop(reader, buffer, bufferOffset, nrBytes, -1);
     }
-
+    
+    /**
+     * Synchronized read helper method. Since some read() method only read small chunks each time, this method tries to
+     * read until either EOF is reached, or the desired nrOfBytes has been read.<br>
+     * Note: if an EOF was encounted but some bytes were read, this actual number of bytes read is return and NO EOF Exception is thrown. 
+     * If an EOF was encountered and no bytes were read, an EOF Exception will be thrown. 
+     */
     public static int syncReadBytes(InputStream inps, byte[] buffer, int bufferOffset, int nrOfBytes, boolean autoClose) throws IOException
     {
         return syncReadBytes(inps, 0, buffer, bufferOffset, nrOfBytes, autoClose);
@@ -314,7 +345,9 @@ public class IOUtil
 
     /**
      * Synchronized read helper method. Since some read() method only read small chunks each time, this method tries to
-     * read until either EOF is reached, or the desired nrOfBytes has been read.
+     * read until either EOF is reached, or the desired nrOfBytes has been read.<br>
+     * Note: if an EOF was encounted but some bytes were read, this actual number of bytes read is return and NO EOF Exception is thrown. 
+     * If an EOF was encountered and no bytes were read, an EOF Exception will be thrown. 
      */
     public static int syncReadBytes(InputStream inps, long fileOffset, byte[] buffer, int bufferOffset, int nrOfBytes, boolean autoClose)
             throws IOException
@@ -336,8 +369,8 @@ public class IOUtil
             {
                 inps.skip(fileOffset);
             }
-            
-            return syncReadLoop(new ReadFunctor(inps),buffer,bufferOffset,nrOfBytes,-1); 
+
+            return syncReadLoop(new ReadFunctor(inps), buffer, bufferOffset, nrOfBytes, -1);
         }
         catch (IOException e)
         {
@@ -385,7 +418,6 @@ public class IOUtil
         {
             logger.logException(ClassLogger.DEBUG, e, "Exception when closing output stream:%s\n", outps);
         }
-
     }
 
 }

@@ -564,15 +564,23 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
         task.startTask();
     }
 
-    private void doUpdateAttributes(final String rowKeys[], final String attrNames[])
+    private void doUpdateAttributes(final String rowKeys[], String attrNames[])
     {
         final ResourceTableModel model = tableModel;
-
+        // update current shown attributes: 
+        if (attrNames==null)
+        {
+            attrNames=model.getHeaders(); 
+        }
+        
+        final String finalAttrs[]=attrNames; 
+        
         BrowserTask task = new BrowserTask(this.getTaskSource(), "updateAttributes() #rowKeys=" + rowKeys.length + ",#attrNames="
                 + ((attrNames!=null)?""+attrNames.length:"?"))
         {
             public void doTask()
             {
+                
                 for (String rowKey : rowKeys)
                 {
                     if (this.isCancelled())
@@ -586,7 +594,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
                     {
                         if (node != null)
                         {
-                            updateNodeAttributes(node, attrNames);
+                            updateNodeAttributes(node, finalAttrs);
                         }
                     }
                     catch (ProxyException e)

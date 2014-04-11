@@ -22,12 +22,8 @@ package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 
-public abstract class FSHandler
+public interface FSHandler
 {
-    protected FSHandler()
-    {
-
-    }
 
     public abstract String getScheme();
 

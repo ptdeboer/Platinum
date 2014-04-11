@@ -21,8 +21,10 @@
 package nl.esciencecenter.ptk.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -188,5 +190,15 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
         }
         
         return dup;
+    }
+
+    public List<TV> toList()
+    {
+        ArrayList<TV> list=new ArrayList<TV>(size());
+        for (TK key:keySet())
+        {
+            list.add(get(key));
+        }
+        return list; 
     }
 }

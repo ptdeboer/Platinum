@@ -26,6 +26,9 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface VResourceSystemFactory
 {
+    /** 
+     * @return supported schemes. 
+     */
     public String[] getSchemes();
 
     /**

@@ -45,7 +45,7 @@ public abstract class FileAttributes implements BasicFileAttributes
         {
             return null;
         }
-        return Presentation.createDate(time.toMillis());
+        return Presentation.createDate(time);
     }
 
     public java.util.Date getCreationTimeDate()
@@ -55,7 +55,7 @@ public abstract class FileAttributes implements BasicFileAttributes
         {
             return null;
         }
-        return Presentation.createDate(time.toMillis());
+        return Presentation.createDate(time);
     }
 
     public java.util.Date getLastAccessTimeDate()
@@ -65,7 +65,7 @@ public abstract class FileAttributes implements BasicFileAttributes
         {
             return null;
         }
-        return Presentation.createDate(time.toMillis());
+        return Presentation.createDate(time);
     }
 
     @Override

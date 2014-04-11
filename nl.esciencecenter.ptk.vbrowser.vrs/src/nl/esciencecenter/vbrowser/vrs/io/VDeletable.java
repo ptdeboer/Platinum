@@ -30,7 +30,7 @@ public interface VDeletable
  
     /** 
      * Delete this resource, throws Exception if deletion failed. 
-     * @reeturns false if not applicable. 
+     * @returns false if not applicable. 
      */ 
     public boolean delete() throws VrsException; 
     

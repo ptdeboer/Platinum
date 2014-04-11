@@ -20,27 +20,34 @@
 
 package nl.esciencecenter.vbrowser.vrs.node;
 
+import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public abstract class VResourceSystemNode extends VPathNode implements VResourceSystem
+public abstract class VResourceSystemNode implements VResourceSystem
 {
     protected VRSContext vrsContext=null;
     
+    protected VRL serverVrl; 
+    
     protected VResourceSystemNode(VRSContext context,VRL serverVrl)
     {
-        super(null,serverVrl);  
-        this.resourceSystem=this; 
         this.vrsContext=context; 
+        this.serverVrl=serverVrl; 
     }
 
     @Override
     public VRL getServerVRL()
     {
-        return this.getVRL(); 
+        return this.serverVrl; 
+    }
+    
+    public VRL getVRL()
+    {
+        return this.getServerVRL();  
     }
     
     @Override
@@ -49,14 +56,19 @@ public abstract class VResourceSystemNode extends VPathNode implements VResource
         return this.getServerVRL().resolvePath(path); 
     }
     
-    protected VRSContext getVRSContext()
+    public VPath resolvePath(String path) throws VrsException
+    {
+        return resolvePath(resolveVRL(path)); 
+    }
+    
+    public VRSContext getVRSContext()
     {
         return vrsContext; 
     }
     
     protected ResourceSystemInfo getResourceSystemInfo() throws VrsException
     {
-        return vrsContext.getResourceSystemInfoFor(getVRL(), true);
+        return vrsContext.getResourceSystemInfoFor(getServerVRL(), true);
     }
 
     @Override
@@ -88,5 +100,16 @@ public abstract class VResourceSystemNode extends VPathNode implements VResource
         return "<VResourceSystem>[serverVrl="+getServerVRL()+"]"; 
     }
     
+    // =================== 
+    // Abstract interface 
+    // ===================
+    
+    /** 
+     * Resolve relative or absolute VRL to VPath. 
+     * @param vrl relative or absolute VRL 
+     * @return resolve VPath 
+     * @throws VrsException if VRL contains an invalid path. 
+     */
+    abstract public VPath resolvePath(VRL vrl) throws VrsException;
 
 }

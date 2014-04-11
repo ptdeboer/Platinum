@@ -156,9 +156,16 @@ public abstract class FSNode
      * Returns creation time in millis since EPOCH, if supported. Returns -1
      * otherwise.
      */
-    public long getAccessTime() throws IOException
+    public FileTime getAccessTime() throws IOException
     {
-        return -1;
+        BasicFileAttributes attrs = this.getBasicAttributes();
+        
+        if (attrs==null)
+        {
+            return null; 
+        }
+            
+        return attrs.lastAccessTime();
     }
 
     public boolean isHidden()
@@ -170,10 +177,15 @@ public abstract class FSNode
 
     /**
      * Is a unix style soft- or symbolic link
+     * @throws IOException 
      */
-    public boolean isSymbolicLink()
+    public boolean isSymbolicLink() throws IOException
     {
-        return false;
+        BasicFileAttributes attrs = this.getBasicAttributes();
+        if (attrs==null)
+            return false; 
+        
+        return attrs.isSymbolicLink(); 
     }
 
     // =======================================================================
@@ -240,15 +252,6 @@ public abstract class FSNode
         return true;
     }
 
-    /**
-     * Returns creation time in millis since EPOCH, if supported. Returns -1
-     * otherwise.
-     */
-    public long getCreationTime() throws IOException
-    {
-        return -1;
-    }
-
     public boolean isRoot()
     {
         String path = this.getPathname();
@@ -261,34 +264,41 @@ public abstract class FSNode
         return false;
     }
 
-    public long getCreateionTime() throws IOException
+    public FileTime getCreationTime() throws IOException
     {
         BasicFileAttributes attrs = this.getBasicAttributes();
 
         if (attrs == null)
-            return -1;
-
-        FileTime time = attrs.creationTime();
-
-        if (time == null)
-            return -1;
-
-        return time.toMillis();
+        {
+            return null; 
+        }
+        
+        return attrs.creationTime();
     }
 
-    public long getModificationTime() throws IOException
+    public long getModificationTimeMillies() throws IOException
+    {
+        FileTime time=getModificationTime();
+        if (time==null)
+        {
+            return -1;
+        }
+        else
+        {
+            return time.toMillis();
+        }
+    }
+    
+    public FileTime getModificationTime() throws IOException
     {
         BasicFileAttributes attrs = this.getBasicAttributes();
 
         if (attrs == null)
-            return -1;
-
-        FileTime time = attrs.lastModifiedTime();
-
-        if (time == null)
-            return -1;
-
-        return time.toMillis();
+        {
+            return null; 
+        }
+        
+        return attrs.lastModifiedTime();
     }
 
     public long getFileSize() throws IOException

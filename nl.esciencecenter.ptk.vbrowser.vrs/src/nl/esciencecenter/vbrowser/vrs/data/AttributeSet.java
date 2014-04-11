@@ -31,7 +31,6 @@ import java.util.Set;
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
@@ -39,21 +38,18 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * A VAttributeSet is implemented as an LinkedHashMap with extra set
- * manipulation methods. 
+ * A VAttributeSet is implemented as an LinkedHashMap with extra set manipulation methods.
  * <p>
  * About the he set() methods:<br>
- * The set methods only add a new value (using put) to the Hashtable if the
- * VAttribute object entry wasn't stored yet. If the VAttribute object already
- * exists, the Value of that VAttribute will be changed, keeping the original
+ * The set methods only add a new value (using put) to the Hashtable if the VAttribute object entry wasn't stored yet.
+ * If the VAttribute object already exists, the Value of that VAttribute will be changed, keeping the original
  * VAttribute object in the Set. The VAttribute has to be Editable.<br>
- * This way it is possible to keep references to the stored VAttribute for
- * advanced manipulation methods.
+ * This way it is possible to keep references to the stored VAttribute for advanced manipulation methods.
  * 
  * @see HashMapList
  */
-public class AttributeSet extends HashMapList<String, Attribute> 
-                          implements Serializable, Cloneable // Duplicatable<AttributeSet>
+public class AttributeSet extends HashMapList<String, Attribute>
+        implements Serializable, Cloneable // Duplicatable<AttributeSet>
 {
     // ========================================================================
     // Class
@@ -132,8 +128,8 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Constructs an VAttributeSet from the Map. Note that VAttributeSet is a
-     * map as well, so this contructor can be used as an Copy Constructor.
+     * Constructs an VAttributeSet from the Map. Note that VAttributeSet is a map as well, so this contructor can be
+     * used as an Copy Constructor.
      * 
      * @param map
      *            source map.
@@ -144,21 +140,20 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Constructs an VAttributeSet from the Map. Note that VAttributeSet is a
-     * map as well, so this contructor can be used as an Copy Constructor.
+     * Constructs an VAttributeSet from the Map. Note that VAttributeSet is a map as well, so this contructor can be
+     * used as an Copy Constructor.
      * 
      * @param map
      *            source map.
      */
-    public AttributeSet(Collection<Attribute> attrs) 
+    public AttributeSet(Collection<Attribute> attrs)
     {
         init(attrs.toArray(new Attribute[0]));
     }
-    
+
     /**
-     * Create attribute set from generic <Key,Value> Map. As key value, the
-     * STRING representation of the Key object is used. As value the VAttribute
-     * factory createFrom(object) is used.
+     * Create attribute set from generic <Key,Value> Map. As key value, the STRING representation of the Key object is
+     * used. As value the VAttribute factory createFrom(object) is used.
      */
     private void init(Map<? extends Object, ? extends Object> map)
     {
@@ -207,9 +202,8 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * This method will add the attribute to the hashtable and keep the order in
-     * which it is put. If the attribute already has been added the order will
-     * be kept.
+     * This method will add the attribute to the hashtable and keep the order in which it is put. If the attribute
+     * already has been added the order will be kept.
      */
     public void put(Attribute attr)
     {
@@ -235,19 +229,18 @@ public class AttributeSet extends HashMapList<String, Attribute>
 
     public AttributeType getTypeOf(String key)
     {
-        Attribute attr=this.get(key);
-        
-        if (attr==null)
+        Attribute attr = this.get(key);
+
+        if (attr == null)
         {
             return null;
         }
-        
-        return attr.getType(); 
+
+        return attr.getType();
     }
-    
+
     /**
-     * Create from Array. Duplicate entries are overwritten. Last entry is kept,
-     * NULL entries are skipped.
+     * Create from Array. Duplicate entries are overwritten. Last entry is kept, NULL entries are skipped.
      */
     public AttributeSet(Attribute[] attrs)
     {
@@ -291,8 +284,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Returns Object value of Attribute with name 'name' Returns null if the
-     * attribute is not in the set.
+     * Returns Object value of Attribute with name 'name' Returns null if the attribute is not in the set.
      */
     public Object getValue(String name)
     {
@@ -307,8 +299,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Returns String value of Attribute with name 'name' Returns null if the
-     * attribute is not in the set.
+     * Returns String value of Attribute with name 'name' Returns null if the attribute is not in the set.
      */
     public String getStringValue(String name)
     {
@@ -412,14 +403,12 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Set Attribute Value. Returns previous value if any. The difference
-     * between put and set is that this method changes the stored Attribute in
-     * the hashtable by using VAttribute.setValue(). It does NOT put a new
-     * VAttribute into the hashtable. <br>
-     * This means that already stored VAttribute has to be editable!
-     * This way the 'changed' flag is updated from the VAttribute. If the named attribute
-     * isn't stored, a new attribute will be created and the behavior is similar
-     * to put().
+     * Set Attribute Value. Returns previous value if any. The difference between put and set is that this method
+     * changes the stored Attribute in the hashtable by using VAttribute.setValue(). It does NOT put a new VAttribute
+     * into the hashtable. <br>
+     * This means that already stored VAttribute has to be editable! This way the 'changed' flag is updated from the
+     * VAttribute. If the named attribute isn't stored, a new attribute will be created and the behavior is similar to
+     * put().
      */
     public String set(String name, String val)
     {
@@ -447,12 +436,12 @@ public class AttributeSet extends HashMapList<String, Attribute>
     {
         _set(AttributeType.VRL, attrName, vrl);
     }
-    
+
     public void setAny(String attrName, Object object)
     {
-        _set(AttributeType.ANY,attrName,object);
+        _set(AttributeType.ANY, attrName, object);
     }
-    
+
     public boolean getBooleanValue(String name, boolean defaultValue)
     {
         Attribute attr = get(name);
@@ -490,17 +479,15 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Stored new String Attribute, replacing already stored VAttribute if it
-     * already exists.
+     * Stored new String Attribute, replacing already stored VAttribute if it already exists.
      * 
-     * @see #set(String, String) Use set() method to keep already stored
-     *      VAttributes.
+     * @see #set(String, String) Use set() method to keep already stored VAttributes.
      */
     public void put(String name, String value)
     {
-        if (value==null)
+        if (value == null)
         {
-            this.remove(name); // clear, do not store nill value. 
+            this.remove(name); // clear, do not store nill value.
         }
         else
         {
@@ -510,9 +497,9 @@ public class AttributeSet extends HashMapList<String, Attribute>
 
     public void put(String name, VRL vrl)
     {
-        if (vrl==null)
+        if (vrl == null)
         {
-            this.remove(name); // clear, do not store nill value. 
+            this.remove(name); // clear, do not store nill value.
         }
         else
         {
@@ -521,11 +508,9 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Stored new Integer Attribute, replacing already stored VAttribute if it
-     * already exists.
+     * Stored new Integer Attribute, replacing already stored VAttribute if it already exists.
      * 
-     * @see #set(String, int) Use set() method to keep already stored
-     *      VAttributes.
+     * @see #set(String, int) Use set() method to keep already stored VAttributes.
      */
     public void put(String attrName, int val)
     {
@@ -533,11 +518,9 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Stored new boolean Attribute, replacing already stored VAttribute if it
-     * already exists.
+     * Stored new boolean Attribute, replacing already stored VAttribute if it already exists.
      * 
-     * @see #set(String, boolean) Use set() method to keep already stored
-     *      VAttributes.
+     * @see #set(String, boolean) Use set() method to keep already stored VAttributes.
      */
     public void put(String attrName, boolean val)
     {
@@ -559,7 +542,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
                 numChanged++;
             }
         }
-        
+
         Attribute attrs[] = new Attribute[numChanged];
 
         for (int i = 0; i < this.size(); i++)
@@ -569,7 +552,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
                 attrs[index++] = this.elementAt(i);
             }
         }
-        
+
         return attrs;
     }
 
@@ -591,7 +574,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
         return new StringList(this.getKeyArray(new String[0]));
     }
 
-    // explicited typed remove. 
+    // explicited typed remove.
     public Attribute remove(String name)
     {
         return super.remove((Object) name);
@@ -613,12 +596,10 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Match this VAttributeSet with template set. If attribute in templateSet
-     * is not in this set, it will be copied. If attribute exists in this set,
-     * it's type and flags will be copied, but not the actual value unless it is
-     * NULL or empty. This allows updating of VAttributeSet while keeping their
-     * value. Set boolean remoteOthers to true to remove attribute not in the
-     * template set. Is used by ServerInfo to update Server Attributes.
+     * Match this VAttributeSet with template set. If attribute in templateSet is not in this set, it will be copied. If
+     * attribute exists in this set, it's type and flags will be copied, but not the actual value unless it is NULL or
+     * empty. This allows updating of VAttributeSet while keeping their value. Set boolean remoteOthers to true to
+     * remove attribute not in the template set. Is used by ServerInfo to update Server Attributes.
      */
     public void matchTemplate(AttributeSet templateSet, boolean removeOthers)
     {
@@ -641,7 +622,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
 
                 if ((oldVal != null) && StringUtil.isEmpty(oldVal.toString()) == false)
                 {
-                    // update with new value. type is automatfically adjusted. 
+                    // update with new value. type is automatfically adjusted.
                     newAttr.setObjectValue(oldAttr.getValue());
                 }
                 // else keep new non empty value !
@@ -655,7 +636,7 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Returns sub set of attributes 
+     * Returns sub set of attributes
      */
     public AttributeSet getAttributes(String[] names)
     {
@@ -676,40 +657,41 @@ public class AttributeSet extends HashMapList<String, Attribute>
     }
 
     /**
-     * Copy to VRSProperties object. This will remove type data and enum values. 
-     * @return VRSProperties object of this AttributeSet. 
+     * Copy to VRSProperties object. This will remove type data and enum values.
+     * 
+     * @return VRSProperties object of this AttributeSet.
      */
     public VRSProperties toVRSProperties()
     {
-        VRSProperties props=new VRSProperties(this.getName());
+        VRSProperties props = new VRSProperties(this.getName());
         // respect order of attributes.
-        for (String key:this.keySet())
+        for (String key : this.keySet())
         {
-            props.set(key, this.get(key).getValue()); 
+            props.set(key, this.get(key).getValue());
         }
-        return props; 
+        return props;
     }
- 
+
     public Attribute[] toArray()
     {
-        return this.toArray(new Attribute[0]); 
+        return this.toArray(new Attribute[0]);
     }
-    
+
     public List<Attribute> toList()
     {
-        return new ExtendedList<Attribute>(this.values());  
+        return new ExtendedList<Attribute>(this.values());
     }
 
     public void update(Attribute attr, boolean checkType)
     {
-        Attribute org=this.get(attr.getName());
-        if (org==null)
+        Attribute org = this.get(attr.getName());
+        if (org == null)
         {
-            this.put(attr.getName(),attr);
-            return; 
+            this.put(attr.getName(), attr);
+            return;
         }
-        
-        AttributeType orgType=org.getType();
+
+        AttributeType orgType = org.getType();
         if (checkType)
         {
             // use same type
@@ -717,10 +699,10 @@ public class AttributeSet extends HashMapList<String, Attribute>
         }
         else
         {
-            // use new type: 
-            org.setValue(attr.getType(), attr.getValue()); 
+            // use new type:
+            org.setValue(attr.getType(), attr.getValue());
         }
-        
+
     }
 
 }

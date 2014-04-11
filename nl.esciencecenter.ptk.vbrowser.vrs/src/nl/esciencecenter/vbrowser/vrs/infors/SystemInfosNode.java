@@ -131,14 +131,14 @@ public class SystemInfosNode extends InfoRSNode
         return node;
     }
 
-    public Attribute getAttribute(String name) throws VrsException
+    public Attribute getResourceAttribute(String name) throws VrsException
     {
         if (name == null)
         {
             return null;
         }
         
-        Attribute attr = super.getAttribute(name);
+        Attribute attr = super.getResourceAttribute(name);
         
         if (attr != null)
         {

@@ -42,7 +42,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
-import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
+import nl.esciencecenter.vbrowser.vrs.io.VFSDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
 import nl.esciencecenter.vbrowser.vrs.task.VRSTaskWatcher;
@@ -317,7 +317,7 @@ public class VRSCopyManager
             return fileSystemRename((VFSPath) sourcePath, targetPath, monitor);
         }
 
-        VPathDeletable deletable = null;
+        VFSDeletable deletable = null;
 
         // ---------------------------
         // Check move.
@@ -326,9 +326,9 @@ public class VRSCopyManager
 
         if (isMove)
         {
-            if (sourcePath instanceof VPathDeletable)
+            if (sourcePath instanceof VFSDeletable)
             {
-                deletable = (VPathDeletable) sourcePath;
+                deletable = (VFSDeletable) sourcePath;
             }
             else
             {
@@ -433,7 +433,7 @@ public class VRSCopyManager
             if (sourcePath instanceof VFSPath)
             {
                 VFSPath vfsPath = (VFSPath) sourcePath;
-                len = vfsPath.getLength();
+                len = vfsPath.fileLength();
             }
 
             InputStream inps = ((VStreamReadable) sourcePath).createInputStream();

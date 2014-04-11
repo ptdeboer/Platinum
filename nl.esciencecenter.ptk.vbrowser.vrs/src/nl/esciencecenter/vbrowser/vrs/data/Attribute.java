@@ -36,11 +36,9 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.ValueParseException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * This class provides a high level interface to Resource Attributes. It is a
- * <code> {name, value}</code> pair with dynamic typing. The Attribute itself
- * does not do any type checking, so casting is possible. For example
- * getStringValue() after setValue(int) will return the string representation of
- * the integer. <br>
+ * This class provides a high level interface to Resource Attributes. It is a <code> {name, value}</code> pair with
+ * dynamic typing. The Attribute itself does not do any type checking, so casting is possible. For example
+ * getStringValue() after setValue(int) will return the string representation of the integer. <br>
  * 
  * @see AttributeType
  * 
@@ -55,8 +53,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         logger = ClassLogger.getLogger(Attribute.class);
     }
 
-    protected static String[] booleanEnumValues =
-    { "false", "true" };
+    protected static String[] booleanEnumValues =  { "false", "true" };
 
     // ========================================================================
     // Class Methods
@@ -99,19 +96,23 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
                 return strValue; // keep normalized DateTime String "as is".
             }
             default:
-                throw new ValueParseException("Cannot convert String:'" + strValue + "' to type:" + toType,strValue);
+                throw new ValueParseException("Cannot convert String:'" + strValue + "' to type:" + toType, strValue);
         }
     }
 
     public static List<Attribute> toList(Attribute[] attrs)
     {
         if (attrs == null)
+        {
             return null;
-
+        }
+        
         ArrayList<Attribute> list = new ArrayList<Attribute>(attrs.length);
         for (Attribute attr : attrs)
+        {
             list.add(attr);
-
+        }
+        
         return list;
     }
 
@@ -130,8 +131,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     private Object _value = null;
 
     /**
-     * Whether attribute is editable. No runtime checking is done. This
-     * attribute is only used in Attribute Editor forms.
+     * Whether attribute is editable. No runtime checking is done. This attribute is only used in Attribute Editor
+     * forms.
      */
     private boolean editable = false;
 
@@ -210,8 +211,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Create new Enumerated Attribute with enumVals as possible values and
-     * defaultVal (which must be element of enumVals) as default.
+     * Create new Enumerated Attribute with enumVals as possible values and defaultVal (which must be element of
+     * enumVals) as default.
      */
     public Attribute(String name, String[] enumVals, String defaultVal)
     {
@@ -221,7 +222,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         {
             throw new NullPointerException("Cannot not have empty enum value list !");
         }
-        
+
         StringList enums = new StringList(enumVals);
 
         // robuustness! add defaultVal if not in enumVals!
@@ -275,8 +276,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     /**
      * Main init method to be called by other constructors. <br>
-     * This method may only be used by contructors. Object value must be a
-     * private owned copy!
+     * This method may only be used by contructors. Object value must be a private owned copy!
      */
     protected void init(AttributeType type, String name, Object value)
     {
@@ -296,16 +296,16 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         // Null types are either ANY or String (enums are also STRING)
         if (value == null)
         {
-            if ((type != AttributeType.ANY) && (type != AttributeType.STRING)  && (type != AttributeType.ENUM))
+            if ((type != AttributeType.ANY) && (type != AttributeType.STRING) && (type != AttributeType.ENUM))
             {
-                throw new Error("Null objects must resolve to either ANY, String or Enum (type="+type+")");
+                throw new Error("Null objects must resolve to either ANY, String or Enum (type=" + type + ")");
             }
             else
             {
                 if (type == AttributeType.ENUM)
                 {
-                    // TBI, enum value must be one of allowed enums. 
-                    logger.errorPrintf("Warning: NULL Enum value\n"); 
+                    // TBI, enum value must be one of allowed enums.
+                    logger.errorPrintf("Warning: NULL Enum value\n");
                 }
                 // null may match against ANY,STRING or ENUM (which are strings).
                 return;
@@ -356,9 +356,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Master setter method. All set() methods must call this method. If type is
-     * specified and is not equal to ANY, the object must be compatible with
-     * specified AttributeType.
+     * Master setter method. All set() methods must call this method. If type is specified and is not equal to ANY, the
+     * object must be compatible with specified AttributeType.
      */
     private void _setValue(AttributeType type, Object object)
     {
@@ -388,8 +387,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Return duplicate of this object. This method returns the same class
-     * instead of the object.clone() method All values are copied.
+     * Return duplicate of this object. This method returns the same class instead of the object.clone() method All
+     * values are copied.
      * 
      * @return full non-shallow copy of this Object
      */
@@ -426,8 +425,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Get Name of Attribute. Note that the Name may never change during the
-     * lifetime of an VAttribute !
+     * Get Name of Attribute. Note that the Name may never change during the lifetime of an VAttribute !
      */
     public String getName()
     {
@@ -443,8 +441,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Explicit return value as String. Performs toString() if object isn't a
-     * string type
+     * Explicit return value as String. Performs toString() if object isn't a string type
      */
     public String getStringValue()
     {
@@ -558,8 +555,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Return true if this Attribute is supposed to be editable. The set()
-     * methods still work, this is just a flag used for Attribute Editor panels.
+     * Return true if this Attribute is supposed to be editable. The set() methods still work, this is just a flag used
+     * for Attribute Editor panels.
      * 
      * @return whether this Attribute is supposed to be editable.
      */
@@ -569,9 +566,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Set whether this Attribute is supposed to be editable. The set() method
-     * do not check this and no exception is thrown if the Attribute is set
-     * anyway.
+     * Set whether this Attribute is supposed to be editable. The set() method do not check this and no exception is
+     * thrown if the Attribute is set anyway.
      * 
      * @param value
      *            - set whether this Attribute is supposed to be editable.
@@ -712,8 +708,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Return as VRL. Autocasts value to VRL object if possible. Return nulls
-     * otherwise!
+     * Return as VRL. Autocasts value to VRL object if possible. Return nulls otherwise!
      */
     public VRL getVRLorNull()
     {
@@ -752,9 +747,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     }
 
     /**
-     * Compares this value to value of other VAttribute 'attr'. The type of this
-     * attribute is used and the other attribute is converted (casted) to this
-     * type.
+     * Compares this value to value of other VAttribute 'attr'. The type of this attribute is used and the other
+     * attribute is converted (casted) to this type.
      * 
      * @param other
      * @return

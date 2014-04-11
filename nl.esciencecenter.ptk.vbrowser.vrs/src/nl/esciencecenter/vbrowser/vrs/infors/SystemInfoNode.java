@@ -100,9 +100,9 @@ public class SystemInfoNode extends InfoResourceNode
         return descs;
     }
     
-    public Attribute getAttribute(String name) throws VrsException
+    public Attribute getResourceAttribute(String name) throws VrsException
     {
-        Attribute superAttr=super.getAttribute(name); 
+        Attribute superAttr=super.getResourceAttribute(name); 
         
         ResourceSystemInfo info=this.getResourceSystemInfo();
 
@@ -116,6 +116,6 @@ public class SystemInfoNode extends InfoResourceNode
             return superAttr;// could be null; 
         }
         
-        return AttributeUtil.createStringAttribute(name,value); 
+        return AttributeUtil.createStringAttribute(name,value,false); 
     }
 }

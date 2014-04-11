@@ -20,7 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.node;
 
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*; 
 
 import java.nio.file.LinkOption;
 import java.util.ArrayList;
@@ -39,13 +39,15 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
-import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
-import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/**
+ * Default implementation for VFSPaths.  
+ */
 public abstract class VFSPathNode extends VPathNode implements VFSPath
 {
+    private static final ClassLogger logger=ClassLogger.getLogger(VFSPathNode.class); 
+    
     public static final String[] vfsAttributeNames =
     {
             ATTR_RESOURCE_TYPE,
@@ -62,7 +64,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
             ATTR_FILE_SIZE,
             // minimal time wich must be supported
             ATTR_MODIFICATION_TIME,
-            // ATTR_ISSYMBOLICLINK,
+            ATTR_ISSYMBOLIC_LINK,
             ATTR_PERMISSIONSTRING // implementation specific permissions string
     };
 
@@ -144,48 +146,64 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         }
         return attrs;
     }
-
+    
+    public Attribute getImmutableAttribute(String name) throws VrsException
+    {
+        // extra Immutable VFS Attributes: 
+        if (name.compareTo(ATTR_DIRNAME) == 0)
+        {
+            return new Attribute(name, getVRL().getDirname());
+        }
+        else if (name.compareTo(ATTR_PATH) == 0)
+        {
+            return new Attribute(name, getVRL().getPath());
+        }
+        
+        return super.getImmutableAttribute(name);
+        
+    }
     /**
      * Returns single File Resource Attribute.
      */
-    public Attribute getAttribute(String name) throws VrsException
+    public Attribute getResourceAttribute(String name) throws VrsException
     {
         if (name == null)
+        {
             return null;
-
+        }
+        
         // Check if super class has this attribute
-        Attribute supervalue = super.getAttribute(name);
+        Attribute supervalue = super.getResourceAttribute(name);
 
         if (supervalue != null)
         {
             return supervalue;
         }
         
-        // ---------
-        // immutable 
-        // ---------
-                
-        if (name.compareTo(ATTR_DIRNAME) == 0)
-            return new Attribute(name, getVRL().getDirname());
-        else if (name.compareTo(ATTR_PATH) == 0)
-            return new Attribute(name, getVRL().getPath());
-        
         // --------
         // mutable 
         // -------- 
         
         if (name.compareTo(ATTR_RESOURCE_EXISTS) == 0)
+        {
             return new Attribute(name, exists());
+        }
         else if (name.compareTo(ATTR_ISDIR) == 0)
+        {
             return new Attribute(name, isDir());
+        }
         else if (name.compareTo(ATTR_ISFILE) == 0)
+        {
             return new Attribute(name, isFile());
+        }
+        else if (name.compareTo(ATTR_ISSYMBOLIC_LINK) == 0)
+        {
+            return new Attribute(name,  getFileAttributes().isSymbolicLink());
+        }
         else if (name.compareTo(ATTR_FILE_SIZE) == 0)
+        {
             return new Attribute(name, getFileAttributes().size());
-        // else if (name.compareTo(ATTR_ISREADABLE) == 0)
-        // return new Attribute(name, getFileAttributes().isReadable());
-        // else if (name.compareTo(ATTR_ISWRITABLE) == 0)
-        // return new Attribute(name, getFileAttributes().isWritable());
+        }
         else if (name.compareTo(ATTR_ISHIDDEN) == 0)
         {
             return new Attribute(name, getFileAttributes().isHidden());
@@ -312,6 +330,12 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         while (path.isRoot()==false)
         {
             path=path.getParent();
+            if (path==null)
+            {
+                logger.errorPrintf("FIXME: Current path is not root, but getParent() return null!\n"); 
+                break;
+            }
+            
             if (paths.contains(path))
             {
                 ClassLogger.getLogger(this.getClass()).errorPrintf("*** Path Cycle detected, parent path:"+path+" already in path list from:"+this); 
@@ -332,13 +356,6 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         
         return mkdir(ignoreExisting); 
     }
-    
-    @Override
-    public boolean delete(boolean recurse) throws VrsException
-    {
-        // todo make option: default link behaviour 
-        return delete(recurse,LinkOption.NOFOLLOW_LINKS); 
-    }
 
     @Override
     public VFSPath renameTo(String nameOrPath) throws VrsException
@@ -354,27 +371,99 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         return "<VFSPathNode>:[vrl="+getVRL()+"]"; 
     }
     
+    public boolean delete() throws VrsException
+    {
+        return delete(LinkOption.NOFOLLOW_LINKS);
+    }
+    
+    public boolean delete(boolean recurse) throws VrsException
+    {
+        return delete(recurse,LinkOption.NOFOLLOW_LINKS); 
+    }
+    
+    public boolean delete(boolean recurse, LinkOption... linkOptions) throws VrsException
+    {
+        if (recurse==true)
+        {
+            deleteContents(this,linkOptions); 
+        }
+        
+        return delete(linkOptions);
+    }
+    /** 
+     * Recursive delete contents. Does not delete this directory. 
+     */
+    public static void deleteContents(VFSPath dirPath,LinkOption... linkOptions) throws VrsException
+    {
+        // add content of current to heap  
+        List<? extends VFSPath> nodes = dirPath.list();
+         
+        if ((nodes==null) || (nodes.size()<=0)) 
+        {
+            return;
+        }
+        
+        for (VFSPath node:nodes)
+        {
+            // Pre emptive interruption! 
+            if (Thread.currentThread().isInterrupted())
+            {
+                throw new VrsException("Recursive delete was Interrupted!",new InterruptedException("Interrupted!")); 
+            }
+            
+            // --- 
+            // Assertion that the delete will not go UP the directory!
+            // (Yes this has happened). 
+            // ---
+            if (node.getVRL().isParentOf(dirPath.getVRL()))
+            {
+                throw new VrsException("Refusing to delete parent of current path:"+node); 
+            }
+            else if (node.getVRL().equals(dirPath.getVRL()))
+            {
+                throw new VrsException("Recursive delete detected. Child node euqals parent:"+node); 
+            }
+            
+            if (node.isDir(linkOptions))
+            {
+                deleteContents(node,linkOptions);
+            }
+            node.delete(); 
+        }
+    }
+    
     // ===================
     // Abstract Interface
     // ===================
 
     /**
      * @return - true if path exists. 
-     * @throws VrsException
+     * @throws VrsException 
      */
+    @Override
     public abstract boolean exists(LinkOption... linkOptions) throws VrsException; 
     
+    /** 
+     * @return returns FileAttributes for this VFSPath. FileAttributes extend java.nio.file.attribute.BasicFileAttributes. 
+     * @see java.nio.file.attribute.BasicFileAttributes; 
+     */
     public abstract FileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException;
 
+    /** 
+     * @return whether the current path is the FileSystem root path. 
+     */
     @Override
     public abstract boolean isRoot() throws VrsException;
 
+    /** 
+     * Lists unfiltered and complete contents of this resource. Method should not sort the contents and return the list as-is.  
+     */
     @Override
     public abstract List<? extends VFSPath> list() throws VrsException;
 
     /**
      * Create this (virtual) path as an actual file on this FileSystem.
-     * 
+     * @return true. 
      * @throws VrsException
      */
     public abstract boolean createFile(boolean ignoreExisting) throws VrsException;
@@ -384,18 +473,25 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
      * 
      * @param ignoreExisting
      *            - if directory already exists, return without exception.
+     * @return true. 
      * @throws VrsException
      */
     public abstract boolean mkdir(boolean ignoreExisting) throws VrsException;
     
-    public abstract boolean delete(boolean recurse, LinkOption... linkOptions) throws VrsException;
+    /**
+     * Delete this resource.
+     * @return true
+     */
+    public abstract boolean delete(LinkOption... linkOptions) throws VrsException;
 
     /** 
      * Path must be an same FileSystem. 
      * @param newPath - target path 
-     * @return similar path 
+     * @return equivalent  path but object might not be the exact same object as was passed through.   
      * @throws VrsException
      */
     public abstract VFSPath renameTo(VFSPath newPath) throws VrsException;
+
+
 
 }

@@ -46,7 +46,10 @@ import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
+import nl.esciencecenter.vbrowser.vrs.VRSClient;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VReplicatable;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
@@ -69,318 +72,21 @@ import tests.integration.vfs.TestSettings.TestLocation;
  * @author P.T. de Boer
  */
 
-public class CopyOfTestVFS extends VTestCase
+public class CopyOfTestVFS extends TestVFS
 {
-    private static final String TEST_CONTENTS = 
-              ">>> This is a testfile used for the VFS unit tests  <<<\n"
-            + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\n" + "0123456789@#$%*()_+\n"
-            + "Strange characters:áéíóúâêîôû\n<TODO more...>\nUTF8:<TODO>\n" 
-            + "\n --- If you read this, you can delete this file ---\n";
-
-    private static int uniquepathnr = 0;
-    
-    // ========================================================================
-    // Instance
-    // ========================================================================
-
-    private VFSPath remoteTestDir = null;
-
-    protected VFSPath localTempDir = null;
-
-    private boolean testRenames = true;
-
-    private boolean doWrites = true;
-
-    private boolean doBigTests = true;
-
-    private VRL localTempDirVrl = TestSettings.getTestLocation(TestLocation.VFS_LOCAL_TEMPDIR_LOCATION);
-
-    private VRL remoteTestDirVrl = null;
-
-    private Object uniquepathnrMutex = new Object();
-
-    private Object setupMutex = new Object();
-
-    private VRL otherRemoteLocation = null;
-
-    private boolean testEncodedPaths = true;
-
-    private boolean testStrangeChars=true;
-    
-    /**
-     * Return path with incremental number to make sure each new file did exist
-     * before
-     */
-    public String nextFilename(String prefix)
-    {
-        synchronized (uniquepathnrMutex)
-        {
-            return prefix + uniquepathnr++;
-        }
-    }
-
-    /**
-     * Override this method if the local test dir has to have a different
-     * location
-     */ 
-    public VRL getLocalTempDirVRL()
-    {
-        return localTempDirVrl;
-    }
-
-    public VRL getRemoteLocation()
-    {
-        return remoteTestDirVrl;
-    }
-
-    public void setRemoteLocation(VRL remoteLocation)
-    {
-        this.remoteTestDirVrl = remoteLocation;
-    }
-
-    private String readContentsAsString(VFSPath file) throws IOException,VrsException, URISyntaxException
-    {
-       return  this.getVRSResourceLoader().readText(file.getVRL().toURI());  
-    }
-
-    private void writeContents(VFSPath file, String text) throws IOException,VrsException, URISyntaxException
-    {
-        this.getVRSResourceLoader().writeTextTo(file.getVRL().toURI(), text);
-    }
-    
-    private void writeContents(VFSPath file, byte[] bytes) throws  IOException, VrsException, URISyntaxException
-    {
-        this.getVRSResourceLoader().writeBytesTo(file.getVRL().toURI(), bytes);
-    }
-    
-    private void streamWrite(VFSPath file, byte[] buffer, int bufOffset, int numBytes) throws IOException, VrsException
-    {
-        OutputStream outps = getVFS().createOutputStream(file,false); 
-        outps.write(buffer, bufOffset, numBytes); 
-        try 
-        {
-            outps.close(); 
-        }
-        catch (IOException e)
-        {
-            // logger.
-        }
-        // after a stream write, update file meta data since the length and time has changed. 
-        file.sync(); 
-    }
-    
-    private byte[] readContents(VFSPath file) throws IOException, VrsException
-    {
-        return getVFS().readContents(file); 
-    }
-    
-    /**
-     * Sets up the tests fixture. (Called before every tests case method.)
-     * 
-     * @throws Exception
-     */
-    @Before // Before the new Setup()!
-    public void setUpTestEnv() throws Exception
-    {
-        debugPrintf("setUp(): Checking remote test location:%s\n",getRemoteLocation());
-
-        checkAuthentication(); 
-        
-        synchronized (setupMutex)
-        {
-            // create/get only if VFSPath hasn't been fetched/created before !
-            if (getRemoteTestDir() == null)
-            {
-                if (getVFS().existsDir(getRemoteLocation()))
-                {
-                    setRemoteTestDir(getVFS().openVFSPath(getRemoteLocation()));
-                    debugPrintf("setUp(): Using existing remoteDir:%s\n",getRemoteTestDir());
-                }
-                else
-                {
-                    // create complete path !
-                    try
-                    {
-                        debugPrintf("setUp:Creating new remote test location:%s\n",getRemoteLocation());
-                        setRemoteTestDir(getVFS().mkdirs(getRemoteLocation()));
-                        messagePrintf("setUp:Created new remote test directory:%s\n",getRemoteTestDir());
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                        throw e;
-                    }
-                }
-            }
-
-            if (localTempDir == null)
-            {
-                VRL localdir = getLocalTempDirVRL();
-
-                if (getVFS().existsDir(localdir))
-                {
-                    localTempDir = getVFS().openVFSPath(localdir);
-                    // localTempDir.delete(true);
-                }
-                else
-                {
-                    // create complete path !
-                    localTempDir = getVFS().mkdirs(localdir);
-                    messagePrintf("setUp: created new local test location:%s\n",localTempDir);
-                }
-            }
-        }
-    }
-    
-    private boolean existsDir(VFSPath parent, String path) throws VrsException
-    {
-        return getVFS().existsDir(parent.resolvePathVRL(path)); 
-    }
-    
-    private boolean existsFile(VFSPath parent, String path) throws VrsException
-    {
-        return getVFS().existsFile(parent.resolvePathVRL(path)); 
-    }
-    
-
-    private VFSPath getRemoteFile(String fileName) throws VrsException
-    {
-        VFSPath dir=this.getRemoteTestDir(); 
-        VFSPath subPath=dir.resolvePath(fileName); 
-        subPath.createFile(true); 
-        return subPath;
-    }
-
-    private VFSPath getRemoteDir(String dirName) throws VrsException
-    {
-        VFSPath dir=this.getRemoteTestDir(); 
-        VFSPath subPath=dir.resolvePath(dirName); 
-        subPath.mkdir(true);  
-        return subPath;
-    }
-    
-    private VFSPath createRemoteFile(String fileName, boolean ignoreExisting) throws VrsException
-    {
-        VFSPath path=getRemoteFile(fileName); 
-        path.createFile(ignoreExisting); 
-        return path; 
-    }
-    
-    private VFSPath createRemoteFile(VRL vrl, boolean ignoreExisting) throws VrsException
-    {
-        VFSPath path=getRemoteTestDir().getFileSystem().resolvePath(vrl); 
-        path.createFile(ignoreExisting); 
-        return path; 
-    }
-
-    private VFSPath createRemoteDir(String dirName) throws VrsException
-    {
-        VFSPath subPath=getRemoteDir(dirName); 
-        subPath.mkdir(true);  
-        return subPath;
-    }
-
-    protected void checkAuthentication() throws Exception
-    {
-        ; // check here 
-    }
-    
-    @After
-    public void tearDown()
-    {
-        // 
-    }
-    
-    /** Whether to test strange characters, like spaces, in paths */
-    boolean getTestEncodedPaths()
-    {
-        return this.testEncodedPaths;
-    }
-    
-    void setTestEncodedPaths(boolean doEncoding)
-    {
-        this.testEncodedPaths = doEncoding;
-    }
-    
-    boolean getTestStrangeCharsInPaths()
-    {
-        return this.testStrangeChars; 
-    }
-    
-    boolean getTestRenames()
-    {
-        return testRenames;
-    }
    
-    
-    // =======
-    // Actual Tests
-    // =======
-
-    /**
-     * Print some info before starting
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testPrintInfo() throws Exception
-    {
-        ResourceSystemInfo info = this.getVFS().getVRSContext().getResourceSystemInfoFor(this.getRemoteLocation(), false);
-
-        message(" --- Test Info ---");
-        message(" remote test dir         =" + getRemoteTestDir());
-        message(" remote test dir exists  =" + getRemoteTestDir().exists());
-        message(" - do big tests          =" + this.getTestDoBigTests());
-        message(" - do write tests        =" + this.getTestWriteTests());
-        message(" - do rename tests       =" + this.getTestRenames());
-        message(" - do strange char tests =" + this.getTestStrangeCharsInPaths());
-        message(" - do URL en-decoding    =" + this.getTestEncodedPaths());
-        message("--- info ---");
-        message("" + info);
-
-        if (info != null)
-        {
-            message("--- ResourceSystemInfo ---");
-            message(" - Host:port           =" + info.getServerHostname() + ":" + info.getServerPort());
-            message(" - remote home         =" + info.getServerPath());
-            //message(" - info.getUsePassive()=" + info.getUsePassiveMode(false));
-        }
-
-    }
-
-   
-
-    public ResourceSystemInfo getResourceSystemInfo() throws Exception
-    {
-        return this.getVFS().getVRSContext().getResourceSystemInfoFor(this.remoteTestDir.getVRL(), false);
-    }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-
     // =======================================================================
     // VFSPath.list() filter tests
     // =======================================================================
 
     @Test public void testListDirFiltered() throws Exception
     {
-        VFSPath ldir = createRemoteDir("dirListTest");
+        VFSPath ldir = createRemoteDir("dirListTest",false);
 
         // list EMPTY dir:
-        VFSPath[] nodes = ldir.list();
+        List<? extends VFSPath> nodes = ldir.list();
 
-        if ((nodes != null) && (nodes.length > 0))
+        if ((nodes != null) && (nodes.size() > 0))
         {
             // previous junit test was aborted.
             try
@@ -396,34 +102,34 @@ public class CopyOfTestVFS extends VTestCase
 
         try
         {
-            ldir.createFile("file0");
-            ldir.createFile("file1.txt");
-            ldir.createFile("file2.aap");
-            ldir.createFile("file3.aap.txt");
+            ldir.resolvePath("file0").createFile(false); 
+            ldir.resolvePath("file1.txt").createFile(false); 
+            ldir.resolvePath("file2.aap").createFile(false); 
+            ldir.resolvePath("file3.aap.txt").createFile(false); 
 
             // check plain list():
-            VFSPath[] result = ldir.list();
+            List<? extends VFSPath> result = ldir.list();
             Assert.assertNotNull("List result may not be null", result);
-            Assert.assertEquals("Number of returned files is not correct.", 4, result.length);
+            Assert.assertEquals("Number of returned files is not correct.", 4, result.size());
 
             result = ldir.list("*", false);
             Assert.assertNotNull("List result may not be null", result);
-            Assert.assertEquals("Number of returned files is not correct.", 4, result.length);
+            Assert.assertEquals("Number of returned files is not correct.", 4, result.size());
 
-            message("nr of filtered files '*' =" + result.length);
+            message("nr of filtered files '*' =" + result.size());
 
             result = ldir.list("*.txt", false);
             Assert.assertNotNull("List result may not be null", result);
-            Assert.assertEquals("Number of returned files is not correct.", 2, result.length);
+            Assert.assertEquals("Number of returned files is not correct.", 2, result.size());
 
-            message("nr of filtered files '*.txt' =" + result.length);
+            message("nr of filtered files '*.txt' =" + result.size());
 
             // test RE version of *.txt
             result = ldir.list(".*\\.txt", true);
             Assert.assertNotNull("List result may not be null", result);
-            Assert.assertEquals("Number of returned files is not correct.", 2, result.length);
+            Assert.assertEquals("Number of returned files is not correct.", 2, result.size());
 
-            message("nr of filtered files '.*\\.txt' =" + result.length);
+            message("nr of filtered files '.*\\.txt' =" + result.size());
 
         }
         finally
@@ -435,18 +141,18 @@ public class CopyOfTestVFS extends VTestCase
 
     @Test public void testListDirIterator() throws Exception
     {
-        VFSPath ldir = createRemoteDir("dirListTest2");
+        VFSPath ldir = createRemoteDir("dirListTest2",false);
         String fileName0 = "file0";
         String fileName1 = "file1";
         String fileName2 = "file2";
 
         try
         {
-            ldir.createFile(fileName0);
-            ldir.createFile(fileName1);
-            ldir.createFile(fileName2);
-            ldir.createFile("file3");
-
+            ldir.resolvePath(fileName0).createFile(false);
+            ldir.resolvePath(fileName1).createFile(false);
+            ldir.resolvePath(fileName2).createFile(false);
+            ldir.resolvePath("file3").createFile(false);
+            
             IntegerHolder totalNumNodes = new IntegerHolder();
 
             // ===
@@ -654,7 +360,7 @@ public class CopyOfTestVFS extends VTestCase
     // Test eXtra Resource Interfaces (Under construction)
     // ========================================================================
     
-    @Test public void testVUnixAttributes() throws Exception
+    @Test public void testPosixAttributes() throws Exception
     {
     	if ((getRemoteTestDir().isLocal()) && (GlobalProperties.isWindows()))
     	{
@@ -788,7 +494,7 @@ public class CopyOfTestVFS extends VTestCase
             return;
         }
         VReplicatable replicable = (VReplicatable) remoteFile;
-        long len = remoteFile.getLength();
+        long len = remoteFile.fileLength();
 
         VRL[] replicas = replicable.getReplicas();
         ITaskMonitor monitor = getVRSContext().getTaskWatcher().getCurrentThreadTaskMonitor("Test VReplicable:", -1);
@@ -808,7 +514,8 @@ public class CopyOfTestVFS extends VTestCase
         // get all se
         ArrayList<StorageArea> se = service.getSRMv22SAsforVO(VRSContext.getDefault().getVO());
 
-        VFSClient vfs = new VFSClient();
+        VRSClient vfs = getVFS(); 
+        
 
         unregisterEmptyRep(replicable, vfs);
 
@@ -841,7 +548,7 @@ public class CopyOfTestVFS extends VTestCase
                 message("   Exists?: " + exists);
                 Assert.assertTrue(exists);
                 // is the same size??
-                long replicaLen = replicaFile.getLength();
+                long replicaLen = replicaFile.fileLength();
                 message("   Original length " + len + " replica lenght: " + replicaLen);
                 Assert.assertEquals(len, replicaLen);
 
@@ -876,7 +583,7 @@ public class CopyOfTestVFS extends VTestCase
         }
         catch (Exception ex)
         {
-            if (!(ex instanceof ResourceCreationFailedException))
+            if (!(ex instanceof ResourceCreationException))
             {
                 Assert.fail("Wrong exeption. Should be ResourceCreationFailedException instead got: " + ex);
             }
@@ -955,12 +662,12 @@ public class CopyOfTestVFS extends VTestCase
 
     }
 
-    private void unregisterEmptyRep(VReplicatable rep, VFSClient vfs)
+    private void unregisterEmptyRep(VReplicatable rep, VRSClient vfs)
     {
         VRL[] replicas = null;
         if (vfs == null)
         {
-            vfs = new VFSClient();
+            vfs = getVFS();
         }
         VFSPath file = null;
         ArrayList<VRL> emptyRep = new ArrayList<VRL>();

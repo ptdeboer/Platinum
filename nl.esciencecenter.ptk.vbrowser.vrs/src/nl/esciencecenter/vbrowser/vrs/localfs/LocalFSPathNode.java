@@ -34,6 +34,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotEmptyException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VRandomAccessable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
@@ -144,12 +145,6 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
         }
     }
 
-    @Override
-    public boolean delete() throws VrsException
-    {
-        delete(false);
-        return true; // delete is applicable. 
-    }
 
     @Override
     public boolean createFile(boolean ignoreExisting) throws VrsException
@@ -197,25 +192,28 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
         
         return true; 
     }
+    public boolean delete() throws VrsException
+    {
+        return delete(LinkOption.NOFOLLOW_LINKS); 
+    }
 
     @Override
-    public boolean delete(boolean recurse,LinkOption... linkOptions) throws VrsException
+    public boolean delete(LinkOption... options) throws VrsException
     {
         try
         {
-            if (fsNode.isDirectory(linkOptions))
+            if (fsNode.isDirectory(options))
             {
-                if (recurse)
+                String[] nodes = fsNode.list();
+                
+                if ((nodes!=null) && (nodes.length>0))
                 {
-                    String[] nodes = fsNode.list(); 
-                    if ((nodes!=null) && (nodes.length>0))
-                    {
-                        throw new VrsException("Recursive Delete not yet supported"); 
-                    }
+                    throw new ResourceNotEmptyException(this, "Directory is not empty:"+fsNode, null); 
                 }
             }
+            
         
-            fsNode.delete(linkOptions);
+            fsNode.delete(options);
         }
         catch (IOException e)
         {
@@ -243,11 +241,11 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     @Override
     public boolean sync()
     {
-        return false;
+        return fsNode.sync();
     }
 
     @Override
-    public long getLength(LinkOption... linkOptions) throws VrsException
+    public long fileLength(LinkOption... linkOptions) throws VrsException
     {
         try
         {

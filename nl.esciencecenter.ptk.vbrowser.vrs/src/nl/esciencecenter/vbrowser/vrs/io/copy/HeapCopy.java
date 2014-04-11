@@ -109,7 +109,7 @@ public class HeapCopy
         
         if (monitor==null)
         {
-            monitor=new TaskMonitorAdaptor(actionStr,this.orgSources.size()); 
+            monitor=new TaskMonitorAdaptor(actionStr,(orgSources!=null)?orgSources.size():0); 
         }
     }
     
@@ -145,6 +145,11 @@ public class HeapCopy
     protected void doScan() throws VrsException, InterruptedException
     {
         ArrayList<VPath> nodes=new ArrayList<VPath>(); 
+         
+        if ((orgSources==null) || (orgSources.size()<=0))
+        {
+            return; 
+        }
         
         // Pass one: scan toplevel current VRLs: 
         for (int i=0;i<orgSources.size();i++) 
@@ -209,7 +214,7 @@ public class HeapCopy
         HeapCopyElement el=new HeapCopyElement(vpath,type); 
         if (vpath instanceof VFSPath)
         {
-            el.size=((VFSPath)vpath).getLength();
+            el.size=((VFSPath)vpath).fileLength();
             totalBytesTodo+=el.size; 
         }
         el.destDirPath=targetDirPath;

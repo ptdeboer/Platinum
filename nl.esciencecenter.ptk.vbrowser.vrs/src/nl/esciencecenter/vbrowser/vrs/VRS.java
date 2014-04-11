@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/** 
+ * Static interface to the Virtual Resource System (and Virtual File System). 
+ */
 public class VRS
 {
     public final static String FILE_SCHEME="file"; 

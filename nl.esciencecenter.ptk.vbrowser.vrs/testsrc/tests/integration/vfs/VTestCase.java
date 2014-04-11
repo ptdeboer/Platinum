@@ -4,6 +4,7 @@ import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
+import nl.esciencecenter.vbrowser.vrs.registry.Registry;
 
 /**
  * Super class for the VFS Test Cases. 
@@ -67,6 +68,27 @@ public class VTestCase
             System.out.printf(format, args);
     }
 
+
+    // =========
+    // Static
+    // =========
+    
+    protected static VRSContext staticContext;
+    
+    public static VRSContext getStaticContext()
+    {
+        if (staticContext==null)
+        {
+            staticContext=new VRSContext(); 
+        }
+        return staticContext; 
+    }
+
+    public static Registry getStaticRegistry()
+    {
+        return getStaticContext().getRegistry();   
+    }
+
     // =========
     // Instance
     // =========
@@ -79,7 +101,7 @@ public class VTestCase
     {
         if (vrs == null)
         {
-            vrs = VRS.createVRSClient();
+            vrs = new VRSClient(getStaticContext()); 
         }
         return vrs;
     }

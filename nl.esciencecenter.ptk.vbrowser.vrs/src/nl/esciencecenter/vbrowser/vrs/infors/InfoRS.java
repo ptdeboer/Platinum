@@ -96,7 +96,7 @@ public class InfoRS extends VResourceSystemNode // implements VStreamCreator
         return vrsClient;
     }
     
-    protected VRSContext getVRSContext()
+    public VRSContext getVRSContext()
     {
         return vrsClient.getVRSContext(); 
     }

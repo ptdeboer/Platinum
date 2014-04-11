@@ -135,7 +135,7 @@ public class FSNodeAttributes implements AttributeSource, IPresentable
         try
         {
             if (name.equalsIgnoreCase(""+FileAttribute.MODIFICATION_TIME))
-                return new Attribute(name,anyFile.getModificationTime());
+                return new Attribute(name,Presentation.createDate(anyFile.getModificationTime()));
             
             if (name.equals(""+FileAttribute.MODIFICATION_TIME_STRING))
                 return new Attribute(name,Presentation.createDate(anyFile.getModificationTime()));

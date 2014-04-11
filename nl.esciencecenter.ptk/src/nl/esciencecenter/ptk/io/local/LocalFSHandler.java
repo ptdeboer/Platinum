@@ -32,7 +32,7 @@ import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 
-public class LocalFSHandler extends FSHandler
+public class LocalFSHandler implements FSHandler
 {
     private static Object instanceMutex = new Object();
 

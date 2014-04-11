@@ -20,14 +20,13 @@
 
 package nl.esciencecenter.vbrowser.vrs.webrs;
 
-import java.net.Proxy;
 import java.net.URISyntaxException;
 
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.web.WebClient;
-import nl.esciencecenter.ptk.web.WebException;
 import nl.esciencecenter.ptk.web.WebConfig.AuthenticationType;
+import nl.esciencecenter.ptk.web.WebException;
 import nl.esciencecenter.ptk.web.WebException.Reason;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -167,10 +166,9 @@ public class WebResourceSystem extends VResourceSystemNode
     {
     }
 
-    @Override
     public VRL getVRL()
     {
-        return this.sourceVrl; 
+        return this.getServerVRL();  
     }
 
     public VRL resolve(String path) throws VRLSyntaxException 

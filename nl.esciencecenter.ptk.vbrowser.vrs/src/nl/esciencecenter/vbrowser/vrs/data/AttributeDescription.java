@@ -49,6 +49,8 @@ public class AttributeDescription
     
     protected String descriptionText=null; 
     
+    protected Object allowedValues[]; 
+    
     AttributeDescription(String name)
     {
         this.name=name; 

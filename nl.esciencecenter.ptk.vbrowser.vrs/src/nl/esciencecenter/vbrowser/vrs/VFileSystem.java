@@ -25,6 +25,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface VFileSystem extends VResourceSystem
 {
+    public VRL resolvePathVRL(String path) throws VrsException; 
+    
     // Downcast to VFSPath
     public VFSPath resolvePath(String path) throws VrsException; 
     

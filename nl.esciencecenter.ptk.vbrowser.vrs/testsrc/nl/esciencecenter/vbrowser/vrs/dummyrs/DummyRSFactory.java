@@ -40,10 +40,10 @@ public class DummyRSFactory implements VResourceSystemFactory
     @Override
     public ResourceSystemInfo updateResourceInfo(VRSContext context, ResourceSystemInfo info, VRL vrl)
     {
-        info.setIfNotSet(new Attribute(dummyIntPar,1)); 
-        info.setIfNotSet(new Attribute(dummyStringPar,"stringValue")); 
-        info.setIfNotSet(new Attribute(dummyBoolPar,true)); 
-        info.setIfNotSet(new Attribute(dummyEnumPar,new String[]{"enum1","enum2"},0)); 
+        info.setIfNotSet(new Attribute(dummyIntPar,1),true); 
+        info.setIfNotSet(new Attribute(dummyStringPar,"stringValue"),true); 
+        info.setIfNotSet(new Attribute(dummyBoolPar,true),true); 
+        info.setIfNotSet(new Attribute(dummyEnumPar,new String[]{"enum1","enum2"},0),true); 
         
         for (String name:attrNames)
         {   

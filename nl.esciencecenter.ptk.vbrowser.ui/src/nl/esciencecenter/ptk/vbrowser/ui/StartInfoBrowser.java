@@ -29,43 +29,47 @@ import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Start Browser with virtual Info Resource.  
+ * Start Browser with virtual Info Resource.
  */
-public class StartInfoBrowser 
+public class StartInfoBrowser
 {
+    public static void main(String args[])
+    {
+        try
+        {
+            start(args);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
-	public static void main(String args[])
-	{
-		try 
-		{
-			BrowserPlatform platform=BrowserPlatform.getInstance("ptkvb"); 
-		    
-		    ProxyBrowserController frame=(ProxyBrowserController)platform.createBrowser();
-		    
-		    VRSProxyFactory fac = VRSProxyFactory.createFor(platform);  
-		    
-		    platform.registerProxyFactory(fac); 
-		    
-		    VRSContext context=platform.getVRSContext();
-		    VRL config=context.getHomeVRL().resolvePath(".vrsrc"); 
-		    context.setPersistantConfigLocation(config, true);
+    public static void start(String args[]) throws Exception
+    {
+        BrowserPlatform platform = BrowserPlatform.getInstance("ptkvb");
 
-		    // start with Root InfoNode: 
-		    InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
-		    rootNode.loadPersistantConfig(); 
-		    //Add default links: 
-		    rootNode.addResourceLink("My Links", "Root:/",new VRL("file:///"), null); 
-            rootNode.addResourceLink("My Links", "Home/",context.getHomeVRL(), null); 
-		    
-		    ProxyNode root = fac.openLocation("info:/");
-		
-			frame.setRoot(root,true,true); 
-			
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		} 
-		
-	}
+        ProxyBrowserController frame = (ProxyBrowserController) platform.createBrowser();
+
+        VRSProxyFactory fac = VRSProxyFactory.createFor(platform);
+
+        platform.registerProxyFactory(fac);
+
+        VRSContext context = platform.getVRSContext();
+        VRL config = context.getHomeVRL().resolvePath(".vrsrc");
+        context.setPersistantConfigLocation(config, true);
+
+        // start with Root InfoNode:
+        InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
+        rootNode.loadPersistantConfig();
+        // Add default links:
+        rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null);
+        rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null);
+
+        ProxyNode root = fac.openLocation("info:/");
+
+        frame.setRoot(root, true, true);
+
+    }
+
 }

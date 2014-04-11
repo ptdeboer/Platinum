@@ -33,7 +33,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties>// , Comparable<VRSProperties>
+public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties>
 {
     private static final long serialVersionUID = 1515535666077358909L;
 
@@ -407,4 +407,5 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     {
         return "VRSProperties[properties=" + _properties + "]";
     }
+
 }

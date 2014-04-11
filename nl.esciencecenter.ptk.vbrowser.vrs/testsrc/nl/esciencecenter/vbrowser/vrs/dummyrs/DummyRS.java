@@ -49,4 +49,10 @@ public class DummyRS implements VResourceSystem
         return new DummyNode(this,vrl,false); 
     }
 
+    @Override
+    public VRSContext getVRSContext()
+    {
+        return vrsContext;
+    }
+
 }

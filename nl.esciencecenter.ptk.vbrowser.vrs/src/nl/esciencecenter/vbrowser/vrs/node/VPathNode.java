@@ -142,7 +142,7 @@ public class VPathNode implements VPath
         return list;
     }
 
-    public List<AttributeDescription> getResourceAttributeDescriptions()
+    public List<AttributeDescription> getResourceAttributeDescriptions() throws VrsException
     {
         return null;
     }
@@ -188,21 +188,34 @@ public class VPathNode implements VPath
         return list;
     }
 
-    public Attribute getAttribute(String name) throws VrsException
+    final public Attribute getAttribute(String name) throws VrsException
     {
-        return getImmutableAttribute(name);
+        Attribute attr = getImmutableAttribute(name);
+ 
+        if (attr!=null)
+        {
+            return attr;
+        }
+        else
+        {
+            return getResourceAttribute(name);  
+        }
     }
 
+    /** 
+     * Implement this for Resource Specific Attributes. 
+     */
     public Attribute getResourceAttribute(String name) throws VrsException
     {
         return null;
     }
 
     /**
-     * Get Immutable attribute. Typically these are location derived attributes like Scheme,Host,Port,etc.
+     * Get Immutable attribute. Typically these are location derived attributes like Scheme,Host,Port,etc. and
+     * do not change during the lifetime of this object. 
      * 
      * @param name
-     *            immutable attribute name
+     *            - immutable attribute name
      * @return Attribute or null if attribute isn't defined.
      */
     public Attribute getImmutableAttribute(String name) throws VrsException
@@ -250,7 +263,7 @@ public class VPathNode implements VPath
         // Since a filesystem extends PathNode itself, check for cycle.
         if (this.resourceSystem == this)
         {
-            throw new Error("Internal Error: resolvePath(): Cannot delegate resolvePath to resourceSystem as I *am* the ResourceSystem!");
+            throw new Error("Internal Error: resolvePath(): Cannot delegate resolvePath to resourceSystem as I *am* the ResourceSystem:"+this);
         }
 
         return this.resourceSystem.resolvePath(path);
@@ -259,6 +272,12 @@ public class VPathNode implements VPath
     @Override
     public VPath getParent() throws VrsException
     {
+        if (vrl.isRootPath())
+        {
+            // break infinite parent of parent loop.  
+            return null; 
+        }
+        
         String parentPath = this.vrl.getDirname();
         return resourceSystem.resolvePath(parentPath);
     }
@@ -280,18 +299,6 @@ public class VPathNode implements VPath
     {
         throw new VrsException("Can not create new '" + type + "' node named:" + name);
     }
-
-//    @Override
-//    public void delete(boolean recurse) throws VrsException
-//    {
-//        throw new VrsException("Can not delete:" + this);
-//    }
-//
-//    @Override
-//    public VPath renameTo(String nameOrPath) throws VrsException
-//    {
-//        throw new VrsException("Can not rename:" + nameOrPath);
-//    }
 
     @Override
     public boolean sync() throws VrsException

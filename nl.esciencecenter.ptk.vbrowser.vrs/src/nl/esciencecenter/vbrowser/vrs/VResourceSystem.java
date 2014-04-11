@@ -23,8 +23,13 @@ package nl.esciencecenter.vbrowser.vrs;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/** 
+ * Factory interface for VPaths. 
+ */
 public interface VResourceSystem
 {
+    public VRSContext getVRSContext();
+    
     /**
      *  Server location also counts as unique identigyin ID. 
      *  Equivalent ResourceSystems should have similar Server VRL().  

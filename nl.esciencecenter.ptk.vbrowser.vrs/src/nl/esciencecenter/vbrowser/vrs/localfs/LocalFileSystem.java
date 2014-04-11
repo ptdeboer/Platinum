@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.nio.file.FileSystemException;
 
 import nl.esciencecenter.ptk.io.FSUtil;
+import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -63,12 +64,12 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
         {
             // optionall resolve tilde:
             VRL homeVLR = this.getVRSContext().getHomeVRL();
-            path = URIUtil.resolveTilde(homeVLR.getPath(), path);
+            path = URIFactory.resolveTilde(homeVLR.getPath(), path);
             return new LocalFSPathNode(this, fsUtil.newLocalFSNode(path));
         }
         catch (IOException e)
         {
-            throw convertException(this, "Failed to resolve path:" + vrl, e);
+            throw convertException(null, "Failed to resolve path:" + path, e);
         }
     }
 

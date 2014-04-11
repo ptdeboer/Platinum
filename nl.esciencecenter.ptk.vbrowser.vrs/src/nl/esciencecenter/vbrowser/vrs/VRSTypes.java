@@ -20,6 +20,9 @@
 
 package nl.esciencecenter.vbrowser.vrs;
 
+/** 
+ * Known VRS and VFSTypes. 
+ */
 public class VRSTypes
 {
     // == Types == // 

@@ -222,45 +222,45 @@ public class TestVFS extends VTestCase
         }
     }
 
-    private boolean existsDir(VFSPath parent, String path) throws VrsException
+    protected boolean existsDir(VFSPath parent, String path) throws VrsException
     {
         return getVFS().existsDir(parent.resolvePathVRL(path));
     }
 
-    private boolean existsFile(VFSPath parent, String path) throws VrsException
+    protected boolean existsFile(VFSPath parent, String path) throws VrsException
     {
         return getVFS().existsFile(parent.resolvePathVRL(path));
     }
 
-    private VFSPath getRemoteFile(String fileName) throws VrsException
+    protected VFSPath getRemoteFile(String fileName) throws VrsException
     {
         VFSPath dir = this.getRemoteTestDir();
         VFSPath subPath = dir.resolvePath(fileName);
         return subPath;
     }
 
-    private VFSPath getRemoteDir(String dirName) throws VrsException
+    protected VFSPath getRemoteDir(String dirName) throws VrsException
     {
         VFSPath dir = this.getRemoteTestDir();
         VFSPath subPath = dir.resolvePath(dirName);
         return subPath;
     }
 
-    private VFSPath createRemoteFile(String fileName, boolean ignoreExisting) throws VrsException
+    protected VFSPath createRemoteFile(String fileName, boolean ignoreExisting) throws VrsException
     {
         VFSPath path = getRemoteFile(fileName);
         path.createFile(ignoreExisting);
         return path;
     }
 
-    private VFSPath createRemoteFile(VRL vrl, boolean ignoreExisting) throws VrsException
+    protected VFSPath createRemoteFile(VRL vrl, boolean ignoreExisting) throws VrsException
     {
         VFSPath path = getRemoteTestDir().getFileSystem().resolvePath(vrl);
         path.createFile(ignoreExisting);
         return path;
     }
 
-    private VFSPath createRemoteDir(String dirName, boolean ignoreExisting) throws VrsException
+    protected VFSPath createRemoteDir(String dirName, boolean ignoreExisting) throws VrsException
     {
         VFSPath subPath = getRemoteDir(dirName);
         subPath.mkdir(ignoreExisting);
@@ -338,7 +338,6 @@ public class TestVFS extends VTestCase
     {
         //
     }
-    
 
     /**
      * Exist is a basic method used a lot in the unit tests and VRS methods.
@@ -398,25 +397,27 @@ public class TestVFS extends VTestCase
     {
         VFSPath dir = getRemoteTestDir();
         VFileSystem fs = dir.getFileSystem();
-        
-        for (String tildePath:new String[]{"/~"}) 
+
+        for (String tildePath : new String[]
+        { "/~" })
         {
-//            VRL tildeVRL = dir.resolvePathVRL(tildePath);
-//            messagePrintf("VRL of '/~' => '%s'\n", tildeVRL);
-            
+            // VRL tildeVRL = dir.resolvePathVRL(tildePath);
+            // messagePrintf("VRL of '/~' => '%s'\n", tildeVRL);
+
             VFSPath node = fs.resolvePath(tildePath);
-            VRL homeVrl=getVRSContext().getHomeVRL(); 
-    
+            VRL homeVrl = getVRSContext().getHomeVRL();
+
             if (node.getVRL().hasScheme("file"))
             {
                 // check for local file system
-                Assert.assertEquals("Resolving of path starting with '"+tildePath+"' should match wich local user home.",homeVrl,node.getVRL());
+                Assert.assertEquals("Resolving of path starting with '" + tildePath + "' should match wich local user home.", homeVrl,
+                        node.getVRL());
             }
-            
+
             Assert.assertTrue("Default HOME reports is does not exist (SRB might do this):'/~' => '" + node + "'", node.exists());
             messagePrintf("Tilde expansion of '/~' => '%s'\n", node.getVRL().getPath());
         }
-        
+
     }
 
     /**
@@ -434,7 +435,7 @@ public class TestVFS extends VTestCase
         VFSPath newFile = getRemoteFile(nextFilename("testFile"));
         newFile.createFile(false);
         Assert.assertNotNull("New created file may not be NULL", newFile);
-        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.getLength() == 0);
+        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.fileLength() == 0);
         newFile.delete();
         Assert.assertFalse("After deletion, a file may NOT report it still 'exists'!", newFile.exists());
 
@@ -443,7 +444,7 @@ public class TestVFS extends VTestCase
         // ---
         newFile = createRemoteFile("testFile1c", false);
         Assert.assertNotNull("New created file may not be NULL", newFile);
-        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.getLength() == 0);
+        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.fileLength() == 0);
         newFile.delete();
         Assert.assertFalse("After deletion, a file may NOT report it still 'exists'!", newFile.exists());
     }
@@ -469,7 +470,7 @@ public class TestVFS extends VTestCase
 
         // sftp created 1-length new files !
         Assert.assertNotNull("New created file may not be NULL", newFile);
-        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.getLength() == 0);
+        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.fileLength() == 0);
 
         newFile.delete();
         Assert.assertFalse("After deletion, a file may NOT report it still 'exists'!", newFile.exists());
@@ -483,7 +484,7 @@ public class TestVFS extends VTestCase
 
         // sftp created 1-length new files !
         Assert.assertNotNull("New created file may not be NULL", newFile);
-        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.getLength() == 0);
+        Assert.assertTrue("Length of newly created file must be 0!:" + getRemoteTestDir(), newFile.fileLength() == 0);
 
         newFile.delete();
         Assert.assertFalse("After deletion, a file may NOT report it still 'exists'!", newFile.exists());
@@ -514,7 +515,7 @@ public class TestVFS extends VTestCase
         // sftp created 1-length new files !
         Assert.assertNotNull("New created file may not be NULL. Must throw exception", newFile);
         Assert.assertTrue("Length of new created file must be of 0 size:" + getRemoteTestDir(),
-                newFile.getLength() == 0);
+                newFile.fileLength() == 0);
         Assert.assertEquals("File should use complete pathname as new file name", filevrl.getPath(), newFile.getVRL().getPath());
 
         // cleanup:
@@ -531,7 +532,7 @@ public class TestVFS extends VTestCase
         // sftp created 1-length new files !
         Assert.assertNotNull("New created file may not be NULL. Must throw exception", newFile);
         Assert.assertTrue("Length of new created file must be of 0 size:" + getRemoteTestDir(),
-                newFile.getLength() == 0);
+                newFile.fileLength() == 0);
         Assert.assertEquals("File should use complete pathname as new file name", filevrl.getPath(), newFile.getVRL().getPath());
 
         // cleanup:
@@ -588,9 +589,9 @@ public class TestVFS extends VTestCase
     @Test
     public void testCreateAndIgnoreExistingFile() throws Exception
     {
-        // create, may not exists: 
+        // create, may not exists:
         VFSPath newFile = createRemoteFile(nextFilename("testFileX"), false);
-        // create, may exists: 
+        // create, may exists:
         newFile = createRemoteFile(nextFilename("testFileY"), true);
         // cleanup
         newFile.delete();
@@ -984,7 +985,7 @@ public class TestVFS extends VTestCase
         VFSPath newFile = getRemoteTestDir().resolvePath("testFile7");
 
         writeContents(newFile, TEST_CONTENTS);
-        long newLen = newFile.getLength();
+        long newLen = newFile.fileLength();
         Assert.assertFalse("After setting contents, size may NOT be zero", newLen == 0);
 
         String str = readContentsAsString(newFile);
@@ -1032,7 +1033,7 @@ public class TestVFS extends VTestCase
         VFSPath newFile = createRemoteFile("testFile7b", false);
         writeContents(newFile, TEST_CONTENTS);
 
-        long newLen = newFile.getLength();
+        long newLen = newFile.fileLength();
         Assert.assertFalse("After setting contents, size may NOT be zero", newLen == 0);
 
         String str = readContentsAsString(newFile);
@@ -1110,11 +1111,11 @@ public class TestVFS extends VTestCase
         if (getTestDoBigTests() == false)
             return;
 
-        testCopyForthAndBack(10*1024*1024, false);
-        testCopyForthAndBack(10*1024*1024, true);
-        
+        testCopyForthAndBack(10 * 1024 * 1024, false);
+        testCopyForthAndBack(10 * 1024 * 1024, true);
+
     }
-    
+
     public void testCopyForthAndBack(int size, boolean isMove) throws Exception
     {
         VFSPath localFile = null;
@@ -1123,7 +1124,7 @@ public class TestVFS extends VTestCase
         {
             localFile = localTempDir.resolvePath(nextFilename("test10MBmove"));
 
-            //int len = 10 * 1024 * 1024;
+            // int len = 10 * 1024 * 1024;
 
             // create random file: fixed seed for reproducable tests
             Random generator = new Random(13);
@@ -1135,7 +1136,7 @@ public class TestVFS extends VTestCase
             // move to remote (and do same basic asserts).
             long start_time = System.currentTimeMillis();
             verbose(1, "moving localfile to:" + getRemoteTestDir());
-            
+
             if (isMove)
             {
                 remoteFile = getVFS().moveFileToDir(localFile, getRemoteTestDir());
@@ -1144,7 +1145,7 @@ public class TestVFS extends VTestCase
             {
                 remoteFile = getVFS().copyFileToDir(localFile, getRemoteTestDir());
             }
-            
+
             long total_millis = System.currentTimeMillis() - start_time;
             double up_speed = (size / 1024.0) / (total_millis / 1000.0);
             verbose(1, "upload speed=" + ((int) (up_speed * 1000)) / 1000.0 + "KB/s");
@@ -1158,14 +1159,14 @@ public class TestVFS extends VTestCase
             {
                 Assert.assertFalse("local file reports it still exists, after it has moved", localFile.exists());
             }
-            
+
             // move back to local with new name (and do same basic asserts).
             start_time = System.currentTimeMillis();
 
             VFSPath localTargetFile = localTempDir.resolvePath("test10MBback");
-            
-            VFSPath newLocalFile; 
-            
+
+            VFSPath newLocalFile;
+
             if (isMove)
             {
                 newLocalFile = getVFS().moveFileToFile(remoteFile, localTargetFile);
@@ -1174,7 +1175,7 @@ public class TestVFS extends VTestCase
             {
                 newLocalFile = getVFS().copyFileToFile(remoteFile, localTargetFile);
             }
-            
+
             Assert.assertNotNull("new local File is NULL", newLocalFile);
             if (isMove)
             {
@@ -1201,12 +1202,12 @@ public class TestVFS extends VTestCase
                 }
             }
 
-            // cleanup 
+            // cleanup
             newLocalFile.delete();
-            
-            if (isMove==false)
+
+            if (isMove == false)
             {
-                localFile.delete(); 
+                localFile.delete();
                 remoteFile.delete();
             }
         }
@@ -1376,7 +1377,7 @@ public class TestVFS extends VTestCase
         // use streamWrite for now:
         verbose(1, "streadWriting to:" + remoteFile);
         streamWrite(remoteFile, buffer, 0, buffer.length);
-        Assert.assertEquals("Initial remote file size NOT correct", remoteFile.getLength(), originalLength);
+        Assert.assertEquals("Initial remote file size NOT correct", remoteFile.fileLength(), originalLength);
 
         // reduce size!
         int newLength = 5 * 1024; // new size less then 10k!
@@ -1387,21 +1388,15 @@ public class TestVFS extends VTestCase
         {
             OutputStream outps = getVFS().createOutputStream(remoteFile, false);
             outps.write(buffer, 0, buffer.length);
-            try
-            {
-                outps.flush();
-                outps.close();
-            }
-            catch (IOException e)
-            {
-                // logger.
-            }
-            // imporant: sync with filesystem and updat meta-data!
-            remoteFile.sync();
+            outps.flush();
+            outps.close();
         }
-
-        debugPrintf("testStreamWriteMustTruncateFile(), after write new length=%d\n", remoteFile.getLength());
-        Assert.assertEquals("File length must match new (smaller) size.", newLength, remoteFile.getLength());
+        
+        // imporant: sync with filesystem and update meta-data!
+        Assert.assertTrue("sync() must be supported to really test the fileLength change.",remoteFile.sync());
+        
+        debugPrintf("testStreamWriteMustTruncateFile(), after write new length=%d\n", remoteFile.fileLength());
+        Assert.assertEquals("File length must match new (smaller) size.", newLength, remoteFile.fileLength());
         remoteFile.delete();
     }
 
@@ -1413,10 +1408,6 @@ public class TestVFS extends VTestCase
     @Test
     public void testMultiStreamWritesCheckLengths() throws Exception
     {
-        // disabled for now :
-        if (true)
-            return;
-
         int numTries = 50;
         int maxSize = 1000;
 
@@ -1438,7 +1429,7 @@ public class TestVFS extends VTestCase
 
             streamWrite(remoteFile, buffer, 0, testSize);
 
-            Assert.assertEquals("LFC File size NOT correct", remoteFile.getLength(), testSize);
+            Assert.assertEquals("LFC File size NOT correct", remoteFile.fileLength(), testSize);
 
             if (remoteFile instanceof VReplicatable)
             {
@@ -1449,7 +1440,7 @@ public class TestVFS extends VTestCase
                 }
 
                 VFSPath rep = (VFSPath) remoteFile.getFileSystem().resolvePath(reps[0]);
-                long repLen = rep.getLength();
+                long repLen = rep.fileLength();
                 verbose(1, "streamWriting #" + testSize + " replica (@" + rep.getVRL().getHostname() + ") length=" + repLen);
                 Assert.assertEquals("LFC Replica File size NOT correct", repLen, testSize);
             }
@@ -1945,19 +1936,19 @@ public class TestVFS extends VTestCase
     public void testCopyEmptyDir() throws Exception
     {
         VFSPath sourceDir = getRemoteTestDir().resolvePath(nextFilename("testFSDirEmpty_sourceDir"));
-        sourceDir.mkdir(true); 
+        sourceDir.mkdir(true);
         Assert.assertTrue("Source directory must exists:" + sourceDir, sourceDir.exists());
 
-        String targetSubDir="testFSDirEmpty_targetDir"; 
-        
-        VFSPath parentDir=sourceDir.getParent(); 
-        VFSPath expectedPath=parentDir.resolvePath(targetSubDir); 
-        
-        // test dir copy with optional subdir renaming: 
-        VFSPath newDir = getVFS().copyDirToDir(sourceDir, parentDir,targetSubDir);
-        Assert.assertEquals("New created directory path must match expectedPath",expectedPath.getVRL(),newDir.getVRL());
+        String targetSubDir = "testFSDirEmpty_targetDir";
+
+        VFSPath parentDir = sourceDir.getParent();
+        VFSPath expectedPath = parentDir.resolvePath(targetSubDir);
+
+        // test dir copy with optional subdir renaming:
+        VFSPath newDir = getVFS().copyDirToDir(sourceDir, parentDir, targetSubDir);
+        Assert.assertEquals("New created directory path must match expectedPath", expectedPath.getVRL(), newDir.getVRL());
         Assert.assertTrue("Remote directory must exist:" + newDir, newDir.exists());
-        
+
         // cleanup:
         sourceDir.delete();
         newDir.delete();
@@ -1996,7 +1987,7 @@ public class TestVFS extends VTestCase
             getRemoteTestDir().resolvePath(localTestDir.getVRL().getBasename()).delete(true);
         }
 
-        VFSPath newRemoteDir = getVFS().moveDirToDir(localTestDir, getRemoteTestDir(),subdirName);
+        VFSPath newRemoteDir = getVFS().moveDirToDir(localTestDir, getRemoteTestDir(), subdirName);
 
         boolean result = existsDir(getRemoteTestDir(), subdirName);
         Assert.assertEquals("New remote directory doesn't exist (I):" + subdirName, true, result);
@@ -2066,7 +2057,7 @@ public class TestVFS extends VTestCase
         byte[] buffer = new byte[targetSize];
         streamWrite(file, buffer, 0, buffer.length);
 
-        long size = file.getLength();
+        long size = file.fileLength();
         Assert.assertEquals("testing write > 32k bug: Size of file after streamWrite not correct:" + size, size,
                 targetSize);
         file.delete();
@@ -2088,7 +2079,7 @@ public class TestVFS extends VTestCase
         // Non existante file:
         testVFSPathAttributes(newFile, false, null);
 
-        newFile.createFile(false); 
+        newFile.createFile(false);
         testVFSPathAttributes(newFile, true, "File");
 
         newFile.delete();
@@ -2156,7 +2147,7 @@ public class TestVFS extends VTestCase
         Assert.assertEquals("Both exists() and getAttribute(ATTR_EXISTS) must return same value", newFile.exists(),
                 getFileAttribute(newFile, ATTR_RESOURCE_EXISTS).getBooleanValue());
 
-        Assert.assertEquals("File should exists(), doesn't matchfor:"+newFile, exists, newFile.exists());
+        Assert.assertEquals("File should exists(), doesn't matchfor:" + newFile, exists, newFile.exists());
 
         if (newFile.exists())
         {
@@ -2164,7 +2155,7 @@ public class TestVFS extends VTestCase
             {
                 // File specified attributes:
                 Assert.assertEquals("Both getLength() and getAttribute(ATTR_LENGTH) must return same value", newFile
-                        .getLength(), getFileAttribute(newFile, ATTR_FILE_SIZE).getLongValue());
+                        .fileLength(), getFileAttribute(newFile, ATTR_FILE_SIZE).getLongValue());
             }
 
             Assert.assertEquals("Both getType() and getAttribute(ATTR_TYPE) must return same value", newFile.getResourceType(),
@@ -2445,35 +2436,35 @@ public class TestVFS extends VTestCase
         _testStreamWrite(1024 * 1024); // this didn't work
     }
 
-    /** 
-     * Another regression. File can have tildes in them for example "file~backup.ext".  
-     * If not prefix with slash "/~" or if they are not at the beginning of the path, for example "file:~/localDir" they must be kept as is. 
+    /**
+     * Another regression. File can have tildes in them for example "file~backup.ext". If not prefix with slash "/~" or
+     * if they are not at the beginning of the path, for example "file:~/localDir" they must be kept as is.
      */
     @Test
     public void testZTildeInFileName() throws Exception
     {
-        
-        VFSPath dirPath=createRemoteDir("testZTildeInFileNameDir", false);
-        String baseDir=dirPath.getVRL().getPath(); 
-        String subFilename="prefix~postfix";  
-        String compositePath=baseDir+"/"+subFilename; 
 
-        VFSPath resolvedPath=dirPath.resolvePath(subFilename); 
-        
-        VRL baseDirVrl=dirPath.getVRL();
-        VRL resolvedVrl=resolvedPath.getVRL(); 
-        VRL expectedVrl=baseDirVrl.resolvePath(subFilename); 
+        VFSPath dirPath = createRemoteDir("testZTildeInFileNameDir", false);
+        String baseDir = dirPath.getVRL().getPath();
+        String subFilename = "prefix~postfix";
+        String compositePath = baseDir + "/" + subFilename;
+
+        VFSPath resolvedPath = dirPath.resolvePath(subFilename);
+
+        VRL baseDirVrl = dirPath.getVRL();
+        VRL resolvedVrl = resolvedPath.getVRL();
+        VRL expectedVrl = baseDirVrl.resolvePath(subFilename);
 
         // check VFPath
-        Assert.assertEquals("Resolved path with tilde doesn't match expected path:",compositePath,resolvedPath.getVRL().getPath()); 
-        Assert.assertEquals("VRL of resolvePath doesn't match expected:",expectedVrl,resolvedVrl); 
+        Assert.assertEquals("Resolved path with tilde doesn't match expected path:", compositePath, resolvedPath.getVRL().getPath());
+        Assert.assertEquals("VRL of resolvePath doesn't match expected:", expectedVrl, resolvedVrl);
 
-        // Check VRLs also 
-        Assert.assertEquals("VRL doesn't match expected:",expectedVrl,resolvedVrl); 
-        Assert.assertEquals("VRL path doesn't match expected:",compositePath,resolvedVrl.getPath()); 
-        
+        // Check VRLs also
+        Assert.assertEquals("VRL doesn't match expected:", expectedVrl, resolvedVrl);
+        Assert.assertEquals("VRL path doesn't match expected:", compositePath, resolvedVrl.getPath());
+
     }
-    
+
     // ========================================================================
     // Last Test !
     // ========================================================================
@@ -2502,12 +2493,12 @@ public class TestVFS extends VTestCase
     }
 
     // ========================================================================
-    // Abstract Interface
+    // 
     // ========================================================================
 
-    // VFS methods which must be subclassed by VFS Implementation.
-
-    /** For 3rd party transfer ! */
+    /** 
+     * For 3rd party transfer ! 
+     */
     protected VRL getOtherRemoteLocation()
     {
         return this.otherRemoteLocation;
@@ -2543,12 +2534,12 @@ public class TestVFS extends VTestCase
         return doBigTests;
     }
 
-    public void setRemoteTestDir(VFSPath remoteTestDir)
+    protected void setRemoteTestDir(VFSPath remoteTestDir)
     {
         this.remoteTestDir = remoteTestDir;
     }
 
-    public VFSPath getRemoteTestDir()
+    protected VFSPath getRemoteTestDir()
     {
         return remoteTestDir;
     }

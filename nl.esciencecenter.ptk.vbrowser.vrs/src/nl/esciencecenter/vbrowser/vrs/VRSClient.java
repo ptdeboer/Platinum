@@ -94,8 +94,8 @@ public class VRSClient
         {
             throw new VrsException("Location is not a filesystem path:(type="+path.getResourceType()+"):"+vrl); 
         }
-        
     }
+    
     public VResourceSystem getVResourceSystemFor(VRL vrl) throws VrsException
     {
         VResourceSystem resourceSystem = vrsContext.getRegistry().getVResourceSystemFor(vrsContext,vrl); 
@@ -197,7 +197,7 @@ public class VRSClient
     }
 
     /** 
-     * Create stateful resourceloader using this VRSClient. 
+     * Create statefull resourceloader using this VRSClient. 
      */
     public ResourceLoader createResourceLoader()
     {
@@ -395,8 +395,5 @@ public class VRSClient
         this.transferManager.copyMoveDirContents(sourceDir,targetDir, true, null); 
         return targetDir; 
     }
-
-
-
      
 }

@@ -83,10 +83,15 @@ public class AttributeUtil
         return new Attribute(name, val);
     }
 
-    /** Static factory method for String Attribute */
-    public static Attribute createStringAttribute(String name, String value)
+    /** 
+     * Static factory method for String Attribute 
+     * @param editable 
+     */
+    public static Attribute createStringAttribute(String name, String value, boolean editable)
     {
-        return new Attribute(name, value);
+        Attribute attr=new Attribute(name, value);
+        attr.setEditable(editable);
+        return attr; 
     }
 
     /**

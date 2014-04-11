@@ -31,7 +31,7 @@ import java.util.Scanner;
  */
 public class URIUtil
 {
-
+    
     public static URI replacePath(URI uri, String newPath) throws URISyntaxException
     {
         return new URIFactory(uri).setPath(newPath).toURI();
@@ -47,16 +47,15 @@ public class URIUtil
         return new URIFactory(uri).setHostname(newHostname).toURI();
     }
 
-
-    public static URI resolvePath(URI workingDir, URI userHome, boolean resolveTilde, String path) throws URISyntaxException
+    public static URI resolvePath(URI workingDir, URI userHome, boolean resolveTilde, String relativePath) throws URISyntaxException
     {
-        if ((resolveTilde) && (path != null) && path.contains("~"))
+        if ((resolveTilde) && (relativePath != null) && relativePath.contains("~"))
         {
             String homePath = URIFactory.uripath(userHome.getPath());
-            URIUtil.resolveTilde(homePath,path); 
+            relativePath=URIFactory.resolveTilde(homePath,relativePath);
         }
 
-        return URIUtil.resolvePathURI(workingDir, path);
+        return URIUtil.resolvePathURI(workingDir, relativePath);
     }
     
     public static URI resolvePathURI(URI uri, String relativePath) throws URISyntaxException
@@ -100,31 +99,7 @@ public class URIUtil
         return uris;
     }
 
-    /** 
-     * If path start with tilde, replace actual tilde with userHome. 
-     */
-    public static String resolveTilde(String homePath, String path)
-    {
-        String subPath; 
-        
-        if (path.startsWith("~/"))
-        {   
-            subPath=path.substring(2); 
-            path=homePath+"/"+subPath; 
-        }
-        else if (path.startsWith("~"))
-        {
-            subPath=path.substring(1); 
-            path=homePath+"/"+subPath; 
-        }
-        else if (path.startsWith("/~"))
-        {
-            subPath=path.substring(2);
-            path=homePath+"/"+subPath; 
-        }
-        
-        return path; 
-    }
+    
 
 
 }

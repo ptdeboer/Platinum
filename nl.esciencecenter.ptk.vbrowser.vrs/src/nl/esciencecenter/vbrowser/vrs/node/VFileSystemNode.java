@@ -20,44 +20,28 @@
 
 package nl.esciencecenter.vbrowser.vrs.node;
 
-import java.util.List;
-
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
-import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
-import nl.esciencecenter.vbrowser.vrs.VRSTypes;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/** 
+ * Adaptor class for the VFileSystem. 
+ */
 public abstract class VFileSystemNode extends VResourceSystemNode implements VFileSystem //, VFSPath
 {
-
     protected VFileSystemNode(VRSContext context, VRL serverVrl)
     {
         super(context, serverVrl);
-
     }
-
-    @Override
-    public String getResourceType()
+    
+    public VRL  resolvePathVRL(String relativePath) throws VRLSyntaxException
     {
-        return VRSTypes.FILESYSTEM_TYPE;
+        return this.getServerVRL().resolvePath(relativePath);
     }
-
-    @Override
-    public VPath getParent() throws VrsException
-    {
-        // default of FileSystem Root is FileSystem itself.
-        return this;
-    }
-
-    @Override
-    public List<? extends VFSPath> list() throws VrsException
-    {
-        return createVFSNode(this.getServerVRL()).list();
-    }
-
+    
     @Override
     public VFSPath resolvePath(String relativePath) throws VrsException
     {

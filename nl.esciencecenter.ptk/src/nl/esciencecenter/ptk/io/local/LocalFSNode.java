@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -34,16 +33,15 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.io.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
 
@@ -58,11 +56,10 @@ public class LocalFSNode extends FSNode
     private BasicFileAttributes basicAttrs;
 
     private PosixFileAttributes posixAttrs;
-    
-    
-    public LocalFSNode(LocalFSHandler fsHandler,Path path)
+
+    public LocalFSNode(LocalFSHandler fsHandler, Path path)
     {
-        super(fsHandler,path.toUri());
+        super(fsHandler, path.toUri());
         init(path);
     }
 
@@ -80,30 +77,30 @@ public class LocalFSNode extends FSNode
         return true;
     }
 
-    public LocalFSNode(LocalFSHandler fsHandler,URI loc)
+    public LocalFSNode(LocalFSHandler fsHandler, URI loc)
     {
-        super(fsHandler,loc);
+        super(fsHandler, loc);
         FileSystem fs = FileSystems.getDefault();
         if (GlobalProperties.isWindows())
         {
-        	String dosPath=new URIFactory(loc).getDosPath();
-        	init(fs.getPath(dosPath));
+            String dosPath = new URIFactory(loc).getDosPath();
+            init(fs.getPath(dosPath));
         }
         else
         {
-        	init(fs.getPath(loc.getPath()));
+            init(fs.getPath(loc.getPath()));
         }
     }
-    
+
     protected LocalFSHandler getFSHandler()
     {
-        return (LocalFSHandler)super.getFSHandler(); 
+        return (LocalFSHandler) super.getFSHandler();
     }
-    
+
     @Override
     public boolean exists(LinkOption... linkOptions)
     {
-        if (linkOptions==null)
+        if (linkOptions == null)
         {
             return Files.exists(_path);
         }
@@ -116,7 +113,7 @@ public class LocalFSNode extends FSNode
     @Override
     public boolean isDirectory(LinkOption... linkOptions)
     {
-        if (linkOptions==null)
+        if (linkOptions == null)
         {
             return Files.isDirectory(_path);
         }
@@ -134,12 +131,12 @@ public class LocalFSNode extends FSNode
         {
             Iterator<Path> dirIterator = dirStream.iterator();
             ArrayList<String> list = new ArrayList<String>();
-    
+
             while (dirIterator.hasNext())
             {
                 list.add(dirIterator.next().getFileName().toString());
             }
-    
+
             return list.toArray(new String[0]);
         }
         finally
@@ -156,12 +153,12 @@ public class LocalFSNode extends FSNode
         {
             Iterator<Path> dirIterator = dirStream.iterator();
             ArrayList<LocalFSNode> list = new ArrayList<LocalFSNode>();
-    
+
             while (dirIterator.hasNext())
             {
-                list.add(new LocalFSNode(getFSHandler(),dirIterator.next()));
+                list.add(new LocalFSNode(getFSHandler(), dirIterator.next()));
             }
-            
+
             return list.toArray(new LocalFSNode[0]);
 
         }
@@ -169,13 +166,13 @@ public class LocalFSNode extends FSNode
         {
             dirStream.close();
         }
-        
+
     }
 
     public boolean delete(LinkOption... linkOptions) throws IOException
     {
         Files.delete(_path);
-        return true; 
+        return true;
     }
 
     @Override
@@ -188,35 +185,38 @@ public class LocalFSNode extends FSNode
     public boolean mkdir() throws IOException
     {
         Files.createDirectory(_path);
-        return true; 
+        return true;
     }
 
     @Override
     public boolean mkdirs() throws IOException
     {
         Files.createDirectories(_path);
-        return true; 
+        return true;
     }
 
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException
     {
-        int n=3; 
-        if (append)
-            n=4; 
-        
-        OpenOption openOptions[]=new OpenOption[n];
-        
-        openOptions[0]=StandardOpenOption.WRITE; 
-        openOptions[1]=StandardOpenOption.CREATE;  // create if not exists 
-        openOptions[2]=StandardOpenOption.TRUNCATE_EXISTING; 
-        
+        OpenOption openOptions[];
+
         if (append)
         {
-            openOptions[3]=StandardOpenOption.APPEND; 
+            openOptions = new OpenOption[4];
+            openOptions[0] = StandardOpenOption.WRITE;
+            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
+            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
+            openOptions[3] = StandardOpenOption.APPEND;
         }
-                
-        return Files.newOutputStream(_path,openOptions); // OpenOptions..
+        else
+        {
+            openOptions = new OpenOption[3];
+            openOptions[0] = StandardOpenOption.WRITE;
+            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
+            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
+        }
+
+        return Files.newOutputStream(_path, openOptions); // OpenOptions..
     }
 
     @Override
@@ -233,40 +233,19 @@ public class LocalFSNode extends FSNode
 
     public Path getPath()
     {
-        return _path; 
+        return _path;
     }
-    
+
     @Override
     public LocalFSNode getParent()
     {
-        return new LocalFSNode(getFSHandler(),_path.getParent());
+        return new LocalFSNode(getFSHandler(), _path.getParent());
     }
 
-    @Override
-    public long getModificationTime() throws IOException
-    {
-        FileTime value = getBasicAttributes().lastModifiedTime();
-        return value.toMillis();
-    }
-
-    @Override
-    public long getCreationTime() throws IOException
-    {
-        FileTime value = getBasicAttributes().creationTime();
-        return value.toMillis();
-    }
-
-    @Override
-    public long getAccessTime() throws IOException
-    {
-        FileTime value = getBasicAttributes().lastAccessTime();
-        return value.toMillis();
-    }
-    
     @Override
     public LocalFSNode newFile(String path) throws FileURISyntaxException
     {
-        LocalFSNode lfile = new LocalFSNode(getFSHandler(),resolvePathURI(path));
+        LocalFSNode lfile = new LocalFSNode(getFSHandler(), resolvePathURI(path));
         return lfile;
     }
 
@@ -283,14 +262,14 @@ public class LocalFSNode extends FSNode
 
     public boolean isBrokenLink() throws IOException
     {
-        if (isSymbolicLink()==false)
+        if (isSymbolicLink() == false)
         {
-            return false; 
+            return false;
         }
-        
-        return (getSymbolicLinkTarget().exists()==false);
+
+        return (getSymbolicLinkTarget().exists() == false);
     }
-    
+
     /**
      * Returns symbolic link target or NULL
      */
@@ -301,7 +280,7 @@ public class LocalFSNode extends FSNode
 
         Path target = Files.readSymbolicLink(_path);
 
-        return new LocalFSNode(getFSHandler(),target);
+        return new LocalFSNode(getFSHandler(), target);
     }
 
     public BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException
@@ -310,15 +289,15 @@ public class LocalFSNode extends FSNode
         {
             if (basicAttrs == null)
             {
-                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class,linkOptions);
+                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class, linkOptions);
             }
         }
         catch (IOException e)
         {
-            // Auto dereference in the case of a borken link: 
+            // Auto dereference in the case of a borken link:
             if (isBrokenLink())
             {
-                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class,LinkOption.NOFOLLOW_LINKS);
+                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
             }
             else
             {
@@ -330,7 +309,7 @@ public class LocalFSNode extends FSNode
     }
 
     public PosixFileAttributes getPosixAttributes() throws IOException
-    {   
+    {
         try
         {
             if (posixAttrs == null)
@@ -340,10 +319,10 @@ public class LocalFSNode extends FSNode
         }
         catch (IOException e)
         {
-            // auto dereference in the case of a borken link: 
+            // auto dereference in the case of a borken link:
             if (isBrokenLink())
             {
-                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class,LinkOption.NOFOLLOW_LINKS);
+                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
             }
             else
             {
@@ -352,109 +331,54 @@ public class LocalFSNode extends FSNode
         }
         catch (UnsupportedOperationException e)
         {
-        	return null; 
+            return null;
         }
-        
+
         return posixAttrs;
     }
 
-	public int getUnixFileMode() throws IOException
+    public int getUnixFileMode() throws IOException
     {
-		PosixFileAttributes attrs;
-		if ((attrs=getPosixAttributes())==null)
-			return 0; 
-		
+        PosixFileAttributes attrs;
+        if ((attrs = getPosixAttributes()) == null)
+            return 0;
+
         Set<PosixFilePermission> perms = attrs.permissions();
-        
-        return toUnixFileMode(perms);
-    }
 
-    public static int toUnixFileMode(Set<PosixFilePermission> perms)
-    {
-        int mode = 0;
-
-        if (perms.contains(PosixFilePermission.OWNER_READ))
-            mode |= 0400;
-        if (perms.contains(PosixFilePermission.OWNER_WRITE))
-            mode |= 0200;
-        if (perms.contains(PosixFilePermission.OWNER_EXECUTE))
-            mode |= 0100;
-        if (perms.contains(PosixFilePermission.GROUP_READ))
-            mode |= 0040;
-        if (perms.contains(PosixFilePermission.GROUP_WRITE))
-            mode |= 0020;
-        if (perms.contains(PosixFilePermission.GROUP_EXECUTE))
-            mode |= 0010;
-        if (perms.contains(PosixFilePermission.OTHERS_READ))
-            mode |= 0004;
-        if (perms.contains(PosixFilePermission.OTHERS_WRITE))
-            mode |= 0002;
-        if (perms.contains(PosixFilePermission.OTHERS_EXECUTE))
-            mode |= 0001;
-
-        return mode;
-    }
-
-    public static Set<PosixFilePermission> fromUnixFileMode(int mode)
-    {
-        Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
-
-        if ((mode & 0400) > 0)
-            perms.add(PosixFilePermission.OWNER_READ);
-        if ((mode & 0200) > 0)
-            perms.add(PosixFilePermission.OWNER_WRITE);
-        if ((mode & 0100) > 0)
-            perms.add(PosixFilePermission.OWNER_EXECUTE);
-
-        if ((mode & 0040) > 0)
-            perms.add(PosixFilePermission.GROUP_READ);
-        if ((mode & 0020) > 0)
-            perms.add(PosixFilePermission.GROUP_WRITE);
-        if ((mode & 0010) > 0)
-            perms.add(PosixFilePermission.GROUP_EXECUTE);
-
-        if ((mode & 0004) > 0)
-            perms.add(PosixFilePermission.OTHERS_READ);
-        if ((mode & 0002) > 0)
-            perms.add(PosixFilePermission.OTHERS_WRITE);
-        if ((mode & 0001) > 0)
-            perms.add(PosixFilePermission.OTHERS_EXECUTE);
-
-        return perms;
+        return FSUtil.toUnixFileMode(perms);
     }
 
     public void setUnixFileMode(int mode) throws IOException
     {
-        Files.setPosixFilePermissions(_path, fromUnixFileMode(mode));
+        Files.setPosixFilePermissions(_path, FSUtil.fromUnixFileMode(mode));
     }
 
-	public String getOwnerName() throws IOException
-	{
-		PosixFileAttributes attrs;
-		
-		if ((attrs=this.getPosixAttributes())==null)
-			return null;
-		
-		return attrs.owner().getName(); 
-	}
+    public String getOwnerName() throws IOException
+    {
+        PosixFileAttributes attrs;
 
-	public String getGroupName() throws IOException
-	{
-		PosixFileAttributes attrs;
-		
-		if ((attrs=this.getPosixAttributes())==null)
-			return null;
-		
-		return attrs.group().getName(); 
-	}
+        if ((attrs = this.getPosixAttributes()) == null)
+            return null;
+
+        return attrs.owner().getName();
+    }
+
+    public String getGroupName() throws IOException
+    {
+        PosixFileAttributes attrs;
+
+        if ((attrs = this.getPosixAttributes()) == null)
+            return null;
+
+        return attrs.group().getName();
+    }
 
     public String renameTo(String relativeOrAbsolutePath) throws IOException
     {
-        Path targetPath=_path.resolve(relativeOrAbsolutePath); 
-        Path actualPath=Files.move(this._path, targetPath);
-        // no errrors, assume path is renamed. 
-        return actualPath.toAbsolutePath().toString(); 
+        Path targetPath = _path.resolve(relativeOrAbsolutePath);
+        Path actualPath = Files.move(this._path, targetPath);
+        // no errrors, assume path is renamed.
+        return actualPath.toAbsolutePath().toString();
     }
-
 
 }

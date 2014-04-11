@@ -36,7 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
-import nl.esciencecenter.vbrowser.vrs.io.VPathDeletable;
+import nl.esciencecenter.vbrowser.vrs.io.VFSDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
@@ -450,9 +450,9 @@ public class VRSProxyNode extends ProxyNode
     {
         try
         {
-            if (vnode instanceof VPathDeletable)
+            if (vnode instanceof VFSDeletable)
             {
-                ((VPathDeletable)vnode).delete(recurse);
+                ((VFSDeletable)vnode).delete(recurse);
             }
             else if (vnode instanceof VDeletable)
             {

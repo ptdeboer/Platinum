@@ -36,7 +36,7 @@ public interface UI
     public static int CANCEL_OPTION = JOptionPane.CANCEL_OPTION;
     
     /**
-     * Whether user interaction is possible. 
+     * Whether user interaction is possible. Before calling any of the UI method, check this method first. 
      * @return false for robots and non-interactive scripts/applications, true for interactive applications.  
      */ 
     public boolean isEnabled();

@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.presentation;
 
+import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
@@ -390,6 +391,11 @@ public class Presentation implements Duplicatable<Presentation>
         return 42;
     }
 
+    public static Date createDate(FileTime time)
+    {
+        return createDate(time.toMillis()); 
+    }
+    
     /**
      * Convert millis since Epoch to Date object.
      */
@@ -1079,4 +1085,6 @@ public class Presentation implements Duplicatable<Presentation>
                 + ", sortFields=" + sortFields + ", locale=" + locale + ", jtableColumnsAutoResizeMode=" + jtableColumnsAutoResizeMode
                 + ", attributePresentations=" + attributePresentations + ", iconAttributeName=" + iconAttributeName + "]";
     }
+
+
 }
