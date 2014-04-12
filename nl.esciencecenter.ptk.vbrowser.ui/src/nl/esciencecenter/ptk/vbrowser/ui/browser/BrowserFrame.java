@@ -669,7 +669,7 @@ public class BrowserFrame extends JFrame
         }
         else
         {
-            logger.errorPrintf("FIXME:Component is not a TabTopLabelPabel:%s\n",tabComp); 
+            logger.errorPrintf("FIXME:Component is not a TabTopLabelPanel:%s\n",tabComp); 
         }
         
         this.uiRightTabPane.setTitleAt(index, name);
