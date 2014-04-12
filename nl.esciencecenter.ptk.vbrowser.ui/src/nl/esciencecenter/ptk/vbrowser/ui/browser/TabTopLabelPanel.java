@@ -129,6 +129,8 @@ public class TabTopLabelPanel extends JPanel
 
     private TabContentPanel tabPane;
 
+    private JLabel tabLabel; 
+    
     public TabTopLabelPanel(final TabContentPanel pane, final BrowserFrame.TabButtonHandler buttonHandler)
     {
 
@@ -144,19 +146,14 @@ public class TabTopLabelPanel extends JPanel
 
         setOpaque(false);
 
-        // make JLabel read titles from JTabbedPane
-        @SuppressWarnings("serial")
-        JLabel label = new JLabel()
+        // tab lable; 
         {
-            public String getText()
-            {
-                return pane.getName();
-            }
-        };
-
-        add(label);
+            this.tabLabel = new JLabel(pane.getName());
+            add(tabLabel);
+        }
+        
         // add more space between the label and the button
-        label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+        tabLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         // tab button
 
         {
@@ -186,4 +183,9 @@ public class TabTopLabelPanel extends JPanel
         addButton.setVisible(value);
     }
 
+    public void setTabLabelText(String text)
+    {
+        tabLabel.setText(text); 
+    }
+    
 }

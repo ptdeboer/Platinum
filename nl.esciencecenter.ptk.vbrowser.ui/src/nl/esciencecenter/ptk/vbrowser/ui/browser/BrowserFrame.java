@@ -285,6 +285,7 @@ public class BrowserFrame extends JFrame
             Component tabComp = uiRightTabPane.getTabComponentAt(newIndex - 1);
             if (tabComp instanceof TabTopLabelPanel)
             {
+                // disable add button if not lasts. 
                 ((TabTopLabelPanel) tabComp).setEnableAddButton(false);
             }
         }
@@ -363,8 +364,10 @@ public class BrowserFrame extends JFrame
         else
         {
             if (autoCreate == false)
+            {
                 return;
-
+            }
+            
             tbl = new ResourceTable(this.browserController, new ResourceTableModel(false));
             tab.setContent(tbl);
         }
@@ -658,6 +661,17 @@ public class BrowserFrame extends JFrame
         if (index < 0)
             return;
 
+        Component tabComp = uiRightTabPane.getTabComponentAt(index); 
+        
+        if (tabComp instanceof TabTopLabelPanel)
+        {
+            ((TabTopLabelPanel)tabComp).setTabLabelText(name);
+        }
+        else
+        {
+            logger.errorPrintf("FIXME:Component is not a TabTopLabelPabel:%s\n",tabComp); 
+        }
+        
         this.uiRightTabPane.setTitleAt(index, name);
         tab.setName(name);
 
