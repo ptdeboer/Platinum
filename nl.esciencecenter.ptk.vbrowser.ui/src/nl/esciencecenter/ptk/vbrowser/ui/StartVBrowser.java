@@ -29,15 +29,15 @@ import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Start Browser with virtual Info Resource.
+ * Start VBrowser with Virtual Info Resource Root. 
  */
-public class StartInfoBrowser
+public class StartVBrowser
 {
     public static void main(String args[])
     {
         try
         {
-            start(args);
+            startVBrowser(args);
         }
         catch (Exception e)
         {
@@ -45,31 +45,34 @@ public class StartInfoBrowser
         }
     }
 
-    public static void start(String args[]) throws Exception
+    public static ProxyBrowserController startVBrowser(String args[]) throws Exception
     {
-        BrowserPlatform platform = BrowserPlatform.getInstance("ptkvb");
+        // vbrowser
+        BrowserPlatform platform = BrowserPlatform.getInstance("vbrowser");
 
-        ProxyBrowserController frame = (ProxyBrowserController) platform.createBrowser();
-
-        VRSProxyFactory fac = VRSProxyFactory.createFor(platform);
-
-        platform.registerProxyFactory(fac);
-
+        // VRSContext 
         VRSContext context = platform.getVRSContext();
         VRL config = context.getHomeVRL().resolvePath(".vrsrc");
-        context.setPersistantConfigLocation(config, true);
+        platform.setPersistantConfigLocation(config, true);
+        
+        // ProxyBrowser
+        ProxyBrowserController browser = (ProxyBrowserController) platform.createBrowser();
+        VRSProxyFactory fac = VRSProxyFactory.createFor(platform);
+        platform.registerProxyFactory(fac);
 
-        // start with Root InfoNode:
+        // Start with Root InfoNode:
         InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
         rootNode.loadPersistantConfig();
-        // Add default links:
+        
+        // Add default links, will be ignored if already exists. 
         rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null);
         rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null);
 
+        // main location to start browsing: 
         ProxyNode root = fac.openLocation("info:/");
-
-        frame.setRoot(root, true, true);
-
+        browser.setRoot(root, true, true);
+        
+        return browser; 
     }
 
 }

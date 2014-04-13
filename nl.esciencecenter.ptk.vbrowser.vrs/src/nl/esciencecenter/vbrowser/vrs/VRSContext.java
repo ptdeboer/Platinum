@@ -57,9 +57,9 @@ public class VRSContext
 
     protected UI ui;
 
-    private VRL persistantConfigLocation;
+    private VRL persistantConfigLocation=null;
 
-    private boolean hasPersistantConfig; 
+    private boolean hasPersistantConfig=false;
     
     public VRSContext()
     {

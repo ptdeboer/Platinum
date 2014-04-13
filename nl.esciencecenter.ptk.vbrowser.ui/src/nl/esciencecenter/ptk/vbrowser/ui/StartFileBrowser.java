@@ -26,28 +26,24 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 
 /** 
- * Browser start Class. 
- * This package used the shortname "platinum" as convenience for startup scripts. 
- *  
  * @author Piter T. de Boer. 
  */
-public class StartBrowser 
+public class StartFileBrowser 
 {
 
 	public static void main(String args[])
 	{
 		try 
 		{
-			BrowserPlatform platform=BrowserPlatform.getInstance("ptkvb"); 
-		    
+		    // Start plain File Browser. 
+			BrowserPlatform platform=BrowserPlatform.getInstance("vbrowser"); 
+		        
 		    ProxyBrowserController frame=(ProxyBrowserController)platform.createBrowser();
-		    
 		    VRSProxyFactory fac = VRSProxyFactory.createFor(platform);  
-		    
 		    platform.registerProxyFactory(fac); 
-		    
+
+		    // startin location. 
 			ProxyNode root = fac.openLocation("file:/home/");
-		
 			frame.setRoot(root,true,true); 
 			
 		}

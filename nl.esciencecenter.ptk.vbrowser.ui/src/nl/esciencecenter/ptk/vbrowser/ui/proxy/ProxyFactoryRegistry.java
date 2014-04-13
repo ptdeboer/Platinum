@@ -32,8 +32,6 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ProxyFactoryRegistry
 {
-    private static ProxyFactoryRegistry instance;
-    
     private static ClassLogger logger; 
     
     static
@@ -41,12 +39,9 @@ public class ProxyFactoryRegistry
         logger=ClassLogger.getLogger("ProxyRegistry.class"); 
     }
     
-    public static ProxyFactoryRegistry getInstance()
+    public static ProxyFactoryRegistry createInstance()
     {
-        if (instance==null)
-           instance=new ProxyFactoryRegistry(); 
-        
-        return instance; 
+        return new ProxyFactoryRegistry(); 
     }
     
     // ========================================================================

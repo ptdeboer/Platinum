@@ -81,9 +81,15 @@ public class UIGlobal
 		 return (SwingUtilities.isEventDispatchThread()==true);
 	}
 
+	public static boolean isHeadless() 
+	{
+	    return false;
+    }
+	   
 	public static boolean isApplet() 
 	{
 		return false;
 	}
+	
 }
 

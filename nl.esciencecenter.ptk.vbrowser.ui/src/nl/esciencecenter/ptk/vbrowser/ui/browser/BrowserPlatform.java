@@ -20,18 +20,13 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
-import java.net.URI;
 import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.TransferHandler;
 
-import nl.esciencecenter.ptk.GlobalProperties;
-import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
-import nl.esciencecenter.ptk.util.ResourceLoader;
-import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
@@ -113,26 +108,19 @@ public class BrowserPlatform
     {
         this.platformID = id;
         // init defaults:
-        this.proxyRegistry = ProxyFactoryRegistry.getInstance();
-
-        // ==================
-        // Configuration
-        // ==================
-
-        // use custom configuration location for platform specific settings.
-        VRL cfgDir = getPlatformConfigDir(null);
-        initVRSContext(cfgDir);
-        guiSettings = new UIProperties();
+        this.proxyRegistry = ProxyFactoryRegistry.createInstance();
 
         // ===================================
         // Init VRS Classes
         // ===================================
 
-        initVRSContext(cfgDir);
+        initVRSContext(null);
 
         // ===================================
         // Swing resources and producers
         // ===================================
+
+        guiSettings = new UIProperties();
 
         // root Frame and Icon Renderer/provider:
         this.rootFrame = new JFrame();
@@ -145,18 +133,31 @@ public class BrowserPlatform
         initViewers();
     }
 
-    private void initVRSContext(VRL cfgDir) throws Exception
+    protected void initVRSContext(VRL cfgDir) throws Exception
     {
         VRSProperties props = new VRSProperties("VRSBrowserProperties");
         this.vrsContext = new VRSContext(props);
         this.vrsClient = new VRSClient(getVRSContext());
     }
 
-    private void initViewers() throws Exception
+    public void setPersistantConfigLocation(VRL configHome, boolean persistantConfig)
     {
-        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient, getPlatformConfigDir("viewers"));
-        // ~/.vbtk2/viewers
+        vrsContext.setPersistantConfigLocation(configHome, persistantConfig);
+    }
 
+    /**
+     * @return persistant configuration directory where to store properties for example '$HOME/.mypropertiesrc/'. <br>
+     *         Is null for non persistant platforms.
+     */
+    public VRL getPersistantConfigLocation()
+    {
+        return vrsContext.getPersistantConfigLocation();
+    }
+
+    protected void initViewers() throws Exception
+    {
+        // create custom subdirectory for viewer settings. 
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient, createCustomConfigDir("viewers"));
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
     }
@@ -186,10 +187,12 @@ public class BrowserPlatform
         return createBrowser(true);
     }
 
-    /** 
-     * Create actual browser. 
-     * @param show - show browser frame.  
-     * @return Master browser controller interface. 
+    /**
+     * Create actual browser.
+     * 
+     * @param show
+     *            - show browser frame.
+     * @return Master browser controller interface.
      */
     public BrowserInterface createBrowser(boolean show)
     {
@@ -218,19 +221,16 @@ public class BrowserPlatform
         return viewerRegistry;
     }
 
-    public VRL getPlatformConfigDir(String optionalSubPath) throws Exception
+    public VRL createCustomConfigDir(String subPath) throws Exception
     {
-        String cfgPath = GlobalProperties.getGlobalUserHome();
-        cfgPath += "." + getPlatformID().toLowerCase();
+        VRL configDir = this.vrsContext.getPersistantConfigLocation();
 
-        if (StringUtil.isEmpty(optionalSubPath) == false)
+        if (configDir == null)
         {
-            cfgPath += cfgPath + optionalSubPath;
+            return null;
         }
-        // normalize path
-        cfgPath = URIFactory.uripath(cfgPath);
 
-        return new VRL("file", null, null, 0, cfgPath, null, null);
+        return configDir.resolvePath(subPath);
     }
 
     /**
