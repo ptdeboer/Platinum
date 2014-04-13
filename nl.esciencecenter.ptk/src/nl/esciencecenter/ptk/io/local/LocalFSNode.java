@@ -21,17 +21,13 @@
 package nl.esciencecenter.ptk.io.local;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
@@ -51,7 +47,7 @@ import nl.esciencecenter.ptk.net.URIFactory;
 public class LocalFSNode extends FSNode
 {
     // nio !
-    private Path _path;
+    protected Path _path;
 
     private BasicFileAttributes basicAttrs;
 
@@ -195,36 +191,7 @@ public class LocalFSNode extends FSNode
         return true;
     }
 
-    @Override
-    public OutputStream createOutputStream(boolean append) throws IOException
-    {
-        OpenOption openOptions[];
-
-        if (append)
-        {
-            openOptions = new OpenOption[4];
-            openOptions[0] = StandardOpenOption.WRITE;
-            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
-            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
-            openOptions[3] = StandardOpenOption.APPEND;
-        }
-        else
-        {
-            openOptions = new OpenOption[3];
-            openOptions[0] = StandardOpenOption.WRITE;
-            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
-            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
-        }
-
-        return Files.newOutputStream(_path, openOptions); // OpenOptions..
-    }
-
-    @Override
-    public InputStream createInputStream() throws IOException
-    {
-        return Files.newInputStream(_path);
-    }
-
+   
     @Override
     public String getPathname()
     {

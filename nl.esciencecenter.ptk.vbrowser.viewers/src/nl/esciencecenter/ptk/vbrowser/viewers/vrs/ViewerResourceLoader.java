@@ -137,7 +137,6 @@ public class ViewerResourceLoader
     public void syncWriteBytes(RandomWritable writer, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
     {
         writer.writeBytes(fileOffset, buffer, bufferOffset, numBytes);
-        writer.close();
     }
 
     public CertificateStore getCertificateStore() throws CertificateStoreException

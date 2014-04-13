@@ -22,7 +22,7 @@ package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 
-public interface RandomReadable
+public interface RandomReadable extends AutoCloseable
 {
     /**
      * Reads <code>nrBytes</code> from file starting to read from
@@ -40,7 +40,7 @@ public interface RandomReadable
      * &lt; length of resource.
      */
     long getLength() throws IOException;
-
-    // public void close() throws IOException;
-
+    
+    // explicit inheritance
+    public void close() throws Exception; 
 }

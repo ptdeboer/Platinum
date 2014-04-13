@@ -96,7 +96,11 @@ public class TaskMonitorAdaptor implements ITaskMonitor
             return;
         TaskStats subTask = this.subTaskStats.get(taskName);
         if (subTask == null)
+        {
+            // auto create stats ? 
             return;
+        }
+        
         subTask.updateDone(done);
         // subTask.doneLastUpdateTimeMillies=System.currentTimeMillis();
     }
@@ -117,7 +121,6 @@ public class TaskMonitorAdaptor implements ITaskMonitor
         {
             subTask = createSubTask(taskName, todo);
         }
-
         subTask.markStart();
     }
 

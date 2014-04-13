@@ -22,7 +22,12 @@ package nl.esciencecenter.ptk.io.local;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +79,8 @@ public class LocalFSHandler implements FSHandler
         return new LocalFSWriter((LocalFSNode) node);
     }
 
-    public List<FSNode> listLocalRoots()
+    @Override
+    public List<FSNode> listRoots()
     {
         File roots[] = null;
 
@@ -135,5 +141,41 @@ public class LocalFSHandler implements FSHandler
 
         return rootsArr;
     }
+
+    @Override
+    public InputStream createInputStream(FSNode node) throws IOException
+    {
+        return Files.newInputStream(((LocalFSNode)node)._path); 
+    }
+
+    @Override
+    public OutputStream createOutputStream(FSNode node, boolean append) throws IOException
+    {
+        return createOutputStream((LocalFSNode)node,append); 
+    }
+
+    public OutputStream createOutputStream(LocalFSNode node, boolean append) throws IOException
+    {
+        OpenOption openOptions[];
+
+        if (append)
+        {
+            openOptions = new OpenOption[4];
+            openOptions[0] = StandardOpenOption.WRITE;
+            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
+            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
+            openOptions[3] = StandardOpenOption.APPEND;
+        }
+        else
+        {
+            openOptions = new OpenOption[3];
+            openOptions[0] = StandardOpenOption.WRITE;
+            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
+            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
+        }
+
+        return Files.newOutputStream(node._path, openOptions); // OpenOptions..
+    }
+
 
 }

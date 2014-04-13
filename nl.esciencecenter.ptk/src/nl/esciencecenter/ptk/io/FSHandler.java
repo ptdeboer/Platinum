@@ -21,16 +21,27 @@
 package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
+/** 
+ * Delegated FileSystem handler. 
+ */
 public interface FSHandler
 {
+    public abstract String getScheme(); 
 
-    public abstract String getScheme();
-
+    public abstract List<FSNode> listRoots() throws IOException;
+    
     public abstract FSNode newFSNode(java.net.URI uri);
 
     public abstract RandomReadable createRandomReader(FSNode node) throws IOException;
 
     public abstract RandomWritable createRandomWriter(FSNode node) throws IOException;
+
+    public abstract InputStream createInputStream(FSNode node) throws IOException;
+
+    public abstract OutputStream createOutputStream(FSNode node,boolean append) throws IOException;
 
 }

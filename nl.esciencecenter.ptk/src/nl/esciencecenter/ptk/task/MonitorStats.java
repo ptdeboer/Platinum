@@ -30,18 +30,34 @@ import nl.esciencecenter.ptk.util.StringUtil;
  */
 public class MonitorStats
 {
-
+    /** 
+     * Monitor stats types the taskMonitor could provide. 
+     */
+    public enum MonitorStatsType
+    {
+        TOTAL_BYTES_TRANSFERRED,
+        CURRENT_BYTES_TRANSFERRED,
+        TOTAL_SOURCES_COPIED,
+        TOTAL_SOURCES_DELETED
+    };
+    
     // ========================================================================
     //
     // ========================================================================
 
     protected ITaskMonitor monitor = null;
 
-    // Presentation presentation=new Presentation();
+    Presentation presentation=new Presentation();
 
     public MonitorStats(ITaskMonitor monitor)
     {
         this.monitor = monitor;
+    }
+
+    public MonitorStats(ITaskMonitor monitor, Presentation presentation)
+    {
+        this.monitor = monitor;
+        this.presentation=presentation; 
     }
 
     /**
@@ -376,6 +392,62 @@ public class MonitorStats
             timestr += " (" + Presentation.createRelativeTimeString(eta, false) + ")";
 
         return timestr;
+    }
+
+    public boolean hasSubTask(String taskName)
+    {
+        return (monitor.getSubTaskStats(taskName)!=null); 
+    }
+
+    public boolean hasSubTask(MonitorStatsType taskType)
+    {
+        if (taskType==null)
+        {
+            return false; 
+        }
+        return (monitor.getSubTaskStats(""+taskType)!=null); 
+    }
+    
+    public String createTotalBytesTransferredString()
+    {
+        TaskStats stats = monitor.getSubTaskStats(""+MonitorStatsType.TOTAL_BYTES_TRANSFERRED);
+        return createBytesTransferredString(stats);
+    }
+    
+    public String createCurrentBytesTransferredString()
+    {
+        TaskStats stats = monitor.getSubTaskStats(""+MonitorStatsType.CURRENT_BYTES_TRANSFERRED);
+        return createBytesTransferredString(stats);
+    }
+    
+    public String createBytesTransferredString(TaskStats stats)
+    {
+        String speedStr; 
+
+        if (stats==null)
+        {
+            return "?";
+        }
+        
+        String amountStr = sizeString(stats.done) + " (of " + sizeString(stats.todo) + ")";
+
+        
+        // done can be 0, but update time must be > start time (divide by zero error).
+        if ((stats == null) || (stats.done<0) || (stats.doneLastUpdateTimeMillies<=stats.startTimeMillies)) 
+        {
+            speedStr="(?)KB/s";
+        }
+        else
+        {
+            speedStr=stats.done/(stats.doneLastUpdateTimeMillies-stats.startTimeMillies+1)+"KB/s"; 
+        }
+                
+        return amountStr+" "+speedStr; 
+    }   
+    
+    public String sizeString(long done)
+    {
+        return presentation.sizeString(done, true, 1, 2); 
     }
 
 }

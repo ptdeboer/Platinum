@@ -34,6 +34,7 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.MonitorStats;
 import nl.esciencecenter.ptk.task.ITaskMonitor.TaskStats;
+import nl.esciencecenter.ptk.task.MonitorStats.MonitorStatsType;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -46,7 +47,9 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
 {
     private static final long serialVersionUID = -6694878602014623166L;
 
-    private JTextField taskTF;
+    private JTextField mainTaskTF;
+    private JTextField mainTaskStatusTF;
+
     private JPanel progresPanel;
     private JProgressBar subProgressBar;
     private JTextField progresPercTF;
@@ -90,11 +93,12 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
         if (taskMonitor == null)
             return;
 
-        String task = this.taskMonitor.getTaskName();
+  
         String subTask = this.taskMonitor.getCurrentSubTaskName();
-
+        
         // Master Task:
-        this.taskTF.setText(task);
+        this.mainTaskTF.setText(getMainTaskText());
+        this.mainTaskStatusTF.setText(getMainTaskStatusText());
 
         long todo = taskMonitor.getTaskStats().todo;
 
@@ -113,7 +117,7 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
             this.progresPercTF.setText("" + value + "%  ");
         }
 
-        if (taskMonitor.isDone() == true)
+        if (taskMonitor.isDone())
         {
             this.progresPercTF.setText("Done.");
 
@@ -136,11 +140,11 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
             // Sub Task if active:
             if (subTask == null)
             {
-                this.currentTF.setText(task);
+                this.currentTF.setText("?");
             }
             else
             {
-                this.currentTF.setText(subTask);
+                this.currentTF.setText(getSubTaskText());
                 todo = monitorStats.getSubTaskTodo(subTask);
                 if (todo > 0)
                 {
@@ -155,9 +159,45 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
 
     }
 
+    private String getMainTaskText()
+    {
+        String task = this.taskMonitor.getTaskName();
+        return task;
+    }
+
+    private String getMainTaskStatusText()
+    {
+        String taskStr = this.taskMonitor.getTaskName();
+        
+        if (monitorStats.hasSubTask(MonitorStatsType.TOTAL_BYTES_TRANSFERRED))
+        {
+            String transferStr=monitorStats.createTotalBytesTransferredString(); 
+            taskStr= "Total:"+transferStr; 
+        }
+        else
+        {
+            taskStr = "...";
+        }
+        
+        return taskStr;
+    }
+
+    private String getSubTaskText()
+    {
+        String taskStr = this.taskMonitor.getCurrentSubTaskName();
+        
+        if (monitorStats.hasSubTask(MonitorStatsType.CURRENT_BYTES_TRANSFERRED))
+        {
+            String transferStr=monitorStats.createCurrentBytesTransferredString(); 
+            taskStr= taskStr+" "+transferStr; 
+        }
+        
+        return taskStr;
+    }
+    
     public String getTitle()
     {
-        return this.taskTF.getText();
+        return this.mainTaskTF.getText();
     }
 
     protected Container getContentPane()
@@ -170,13 +210,14 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
         try
         {
             {
-                FormLayout transferInfoLayout = new FormLayout("5dlu, 5dlu, 178dlu:grow, max(p;5dlu)",
-                        "max(p;5dlu), max(p;8dlu), 5dlu, max(p;15dlu), 5dlu");
+                FormLayout transferInfoLayout = new FormLayout("5dlu, 5dlu, 16dlu,178dlu:grow, max(p;5dlu)",
+                        "max(p;5dlu), max(p;8dlu), 5dlu, max(p;8dlu), 5dlu,max(p;15dlu), 5dlu");
                 this.setLayout(transferInfoLayout);
 
                 this.setBorder(BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
-                this.add(getTaskTF(), new CellConstraints("2, 2, 2, 1, default, default"));
-                this.add(getProgresPanel(), new CellConstraints("2, 4, 2, 1, default, default"));
+                this.add(getMainTaskTF(), new CellConstraints("2, 2, 3, 1, default, default"));
+                this.add(getMainTaskStatusTF(), new CellConstraints("4, 4, 1, 1, default, default"));
+                this.add(getProgresPanel(), new CellConstraints("2, 6, 3, 1, default, default"));
             }
             {
                 // defaults:
@@ -212,6 +253,7 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
 
         String progstr = "";
 
+             
         String speedStr = sizeString((int) monitorStats.getTotalSpeed()) + "B/s";
         String amountStr = sizeString(info.getTaskStats().done) + " (of " + sizeString(info.getTaskStats().todo) + ")";
 
@@ -235,9 +277,12 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
         if (showTransfersSpeeds)
             progstr += " (" + speedStr + ")";
 
+        progstr += monitorStats.createTotalBytesTransferredString(); 
+        
         return progstr;
     }
 
+    
     public String sizeString(long size)
     {
         if (size < 0)
@@ -250,16 +295,26 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
     {
     }
 
-    private JTextField getTaskTF()
+    private JTextField getMainTaskTF()
     {
-        if (taskTF == null)
+        if (mainTaskTF == null)
         {
-            taskTF = new JTextField();
-            taskTF.setText("Task");
+            mainTaskTF = new JTextField();
+            mainTaskTF.setText("Task");
         }
-        return taskTF;
+        return mainTaskTF;
     }
 
+    private JTextField getMainTaskStatusTF()
+    {
+        if (mainTaskStatusTF == null)
+        {
+            mainTaskStatusTF = new JTextField();
+            mainTaskStatusTF.setText("???");
+        }
+        return mainTaskStatusTF;
+    }
+    
     private JProgressBar getProgressBar()
     {
         if (progressBar == null)
@@ -284,7 +339,8 @@ public class TaskMonitorPanel extends JPanel implements ActionListener
         if (progresPercTF == null)
         {
             progresPercTF = new JTextField();
-            progresPercTF.setText("999.99%");
+            // alloc size 
+            progresPercTF.setText("000.000%");
         }
         return progresPercTF;
     }

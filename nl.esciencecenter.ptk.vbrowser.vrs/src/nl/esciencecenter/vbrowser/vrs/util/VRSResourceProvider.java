@@ -45,9 +45,16 @@ public class VRSResourceProvider implements ResourceProvider
     }
 
     @Override
-    public URI resolvePathURI(String path) throws URISyntaxException, VRLSyntaxException
+    public URI resolvePathURI(String path) throws VRLSyntaxException
     {
-        return vrsClient.resolvePath(path).toURI();
+        try
+        {
+            return vrsClient.resolvePath(path).toURI();
+        }
+        catch (URISyntaxException e)
+        {
+          throw new VRLSyntaxException(e.getMessage(),e); 
+        }
     }
 
     public VPath resolvePath(URI uri) throws VrsException

@@ -23,40 +23,43 @@ package nl.esciencecenter.ptk.io.local;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 
 public class LocalFSReader implements RandomReadable
 {
-    protected LocalFSNode fsNode; 
-    
+    protected LocalFSNode fsNode;
+
+    protected RandomAccessFile randomFile = null;
+
     public LocalFSReader(LocalFSNode node) throws IOException
     {
-        this.fsNode=node;
+        this.fsNode = node;
+        this.randomFile = new RandomAccessFile(fsNode.toJavaFile(), "r");
     }
 
     public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
     {
         RandomAccessFile afile = null;
-        
+
         try
         {
-            afile = new RandomAccessFile(fsNode.toJavaFile(), "r");
-            afile.seek(fileOffset);
-            int nrRead = afile.read(buffer, bufferOffset, nrBytes);
-         
+            // Seek sets position starting from beginnen, not current seek position.
+            randomFile.seek(fileOffset);
+            int nrRead = randomFile.read(buffer, bufferOffset, nrBytes);
             return nrRead;
         }
         catch (IOException e)
         {
-            throw new IOException("Could open location for reading:" + this,e);
+            throw new IOException("Could open location for reading:" + this, e);
         }
         finally
         {
-            if (afile!=null)
+            if (afile != null)
             {
                 try
                 {
-                    // Must close between Reads! (not fast but ensures consistency between reads). 
+                    // Must close between Reads! (not fast but ensures consistency between reads).
                     afile.close();
                 }
                 catch (IOException e)
@@ -70,7 +73,24 @@ public class LocalFSReader implements RandomReadable
     @Override
     public long getLength() throws IOException
     {
-        return fsNode.getFileSize(); 
+        return fsNode.getFileSize();
+    }
+
+    public boolean autoClose()
+    {
+        if (randomFile == null)
+        {
+            return false;
+        }
+        boolean status = IOUtil.autoClose(randomFile);
+        randomFile = null;
+        return status;
+    }
+
+    @Override
+    public void close()
+    {
+        autoClose();
     }
 
 }

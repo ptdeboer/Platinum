@@ -70,11 +70,19 @@ public class SubTaskPanel extends JPanel implements ActionListener
 
     private boolean showTransfersSpeeds = true;
 
-    // constructor for Jigloo
     public SubTaskPanel()
     {
         super();
         initGUI();
+    }
+
+    public SubTaskPanel(boolean init)
+    {
+        super();
+        if (init)
+        {
+            initGUI();
+        }
     }
 
     public SubTaskPanel(ITaskMonitor monitor)
@@ -84,7 +92,7 @@ public class SubTaskPanel extends JPanel implements ActionListener
         setMonitor(monitor);
     }
 
-    private void initGUI()
+    protected void initGUI()
     {
 
         try

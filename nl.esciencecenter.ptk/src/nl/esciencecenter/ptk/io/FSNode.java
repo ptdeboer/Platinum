@@ -192,16 +192,6 @@ public abstract class FSNode
     // IO Methods
     // =======================================================================
 
-    public InputStream createInputStream() throws IOException
-    {
-        throw new Error("Not supported: createInputStream() of:" + this);
-    }
-
-    public OutputStream createOutputStream(boolean append) throws IOException
-    {
-        throw new Error("Not supported: createOutputStream() of:" + this);
-    }
-
     public FSNode createDir(String subdir) throws IOException, FileURISyntaxException
     {
         FSNode dir = newFile(resolvePath(subdir));
@@ -245,7 +235,7 @@ public abstract class FSNode
         byte bytes[] = new byte[0];
 
         // Default way to create a file is by writing zero bytes:
-        OutputStream outps = this.createOutputStream(false);
+        OutputStream outps = this.fsHandler.createOutputStream(this,false);
         outps.write(bytes);
         outps.close();
 
@@ -312,6 +302,20 @@ public abstract class FSNode
     }
 
     // =======================================================================
+    // InputStream/OutputStream 
+    // =======================================================================
+    
+    public InputStream createInputStream() throws IOException
+    {
+        return fsHandler.createInputStream(this);
+    }
+    
+    public OutputStream createOutputStream(boolean append) throws IOException
+    {
+        return fsHandler.createOutputStream(this,append);
+    }
+    
+    // =======================================================================
     // Abstract Interface
     // =======================================================================
 
@@ -349,5 +353,7 @@ public abstract class FSNode
     public abstract boolean mkdirs() throws IOException;
 
     public abstract BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException;
+
+
 
 }

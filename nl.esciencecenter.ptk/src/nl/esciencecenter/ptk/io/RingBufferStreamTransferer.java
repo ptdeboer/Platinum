@@ -495,8 +495,7 @@ public class RingBufferStreamTransferer
         }
         catch (InterruptedException e)
         {
-            throw e; // new
-                     // nl.piter.exceptions.InterException("InterruptedException",e.getMessage(),e);
+            throw e; 
         }
         // after transfer make sure all streams are flushes and closed !
 

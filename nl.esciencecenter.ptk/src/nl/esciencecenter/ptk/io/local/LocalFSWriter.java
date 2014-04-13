@@ -23,58 +23,51 @@ package nl.esciencecenter.ptk.io.local;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomWritable;
 
 public class LocalFSWriter implements RandomWritable
 {
+    protected LocalFSNode fsNode;
 
-    private LocalFSNode fsNode;
+    protected RandomAccessFile randomFile = null;
 
     public LocalFSWriter(LocalFSNode node)
     {
-        fsNode=node;
+        fsNode = node;
     }
 
     @Override
-    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset,  int nrBytes) throws IOException
+    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
     {
-        RandomAccessFile afile = null;
 
         try
         {
-            afile = new RandomAccessFile(fsNode.toJavaFile(), "rw");
-            afile.seek(fileOffset);
-            afile.write(buffer, bufferOffset, nrBytes);
-            afile.close(); // MUST CLOSE !
-            // if (truncate)
-            // afile.setLength(fileOffset+nrBytes);
+            randomFile = new RandomAccessFile(fsNode.toJavaFile(), "rw");
+            randomFile.seek(fileOffset);
+            randomFile.write(buffer, bufferOffset, nrBytes);
             return;// if failed, some exception occured !
         }
         catch (IOException e)
         {
             throw e;
         }
-        finally
+    }
+
+    public boolean autoClose()
+    {
+        if (randomFile == null)
         {
-            if (afile!=null)
-            {
-                try
-                {
-                    // Must close between Reads! (not fast but ensures consistency between reads). 
-                    afile.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
+            return false;
         }
+        boolean status = IOUtil.autoClose(randomFile);
+        randomFile = null;
+        return status;
     }
 
     @Override
-    public void close() throws IOException
+    public void close()
     {
-        
+        autoClose();
     }
-    
-
 }

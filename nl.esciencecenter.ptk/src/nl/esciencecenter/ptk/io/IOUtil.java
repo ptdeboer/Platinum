@@ -23,9 +23,9 @@ package nl.esciencecenter.ptk.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
 import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.task.TaskMonitorAdaptor;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
@@ -55,6 +55,7 @@ public class IOUtil
         {
             return inps.read(buffer, bufferOffset, numBytes);
         }
+
     }
 
     public static class RandomReaderFunctor implements Readable
@@ -385,39 +386,63 @@ public class IOUtil
         }
     }
 
-    public static void autoClose(InputStream inps)
+    public static boolean autoClose(InputStream inps)
     {
         if (inps == null)
         {
-            return;
+            return false; 
         }
 
         try
         {
             inps.close();
+            return true; 
         }
         catch (IOException e)
         {
             logger.logException(ClassLogger.DEBUG, e, "Exception when closing input stream:%s\n", inps);
+            return false;
         }
-
     }
 
-    public static void autoClose(OutputStream outps)
+    
+    public static boolean autoClose(OutputStream outps)
     {
         if (outps == null)
         {
-            return;
+            return false;
         }
 
         try
         {
             outps.close();
+            return true; 
         }
         catch (IOException e)
         {
             logger.logException(ClassLogger.DEBUG, e, "Exception when closing output stream:%s\n", outps);
+            return false; 
         }
     }
 
+    public static boolean autoClose(RandomAccessFile rndFile)
+    {
+        if (rndFile == null)
+        {
+            return false; 
+        }
+
+        try
+        {
+            rndFile.close();
+            return true; 
+        }
+        catch (IOException e)
+        {
+            logger.logException(ClassLogger.DEBUG, e, "Exception when closing input stream:%s\n", rndFile);
+            return false; 
+        }
+
+    }
+    
 }

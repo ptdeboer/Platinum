@@ -107,7 +107,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
     			locationTF.setToolTipText("Enter location."); 
     			return true; 
     		}
-    		catch (URISyntaxException e1) 
+    		catch (FileURISyntaxException e1) 
     		{
     		    showError("Syntax Error: Not a valid path or URI:"+e1.getInput());
     			//locationTF.setBackground(Color.RED);
@@ -250,7 +250,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
     	
     }
 
-    public java.net.URI getLocationURI() throws URISyntaxException
+    public java.net.URI getLocationURI() throws FileURISyntaxException
     {	
     	// Use FSUtil to resolve URI: 
     	return FSUtil.getDefault().resolvePathURI(locationTF.getText()); 
@@ -262,7 +262,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
     	{
     		return (getLocationURI()!=null); 
     	}
-    	catch (URISyntaxException e)
+    	catch (FileURISyntaxException e)
     	{
     		return false; 
     	}
@@ -383,7 +383,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
                 this.setLocationURI(path);
             }
         }
-        catch (URISyntaxException e)
+        catch (FileURISyntaxException e)
         {
             e.printStackTrace();
         }

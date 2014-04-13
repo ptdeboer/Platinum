@@ -25,16 +25,13 @@ import java.io.OutputStream;
 import java.net.URI;
 
 /** 
- * Shared interface for ResourceLoader and (vbrowser) VRS Resource Loaders.
- * Provides method to resolve relative paths to absolute URI and openening them 
+ * Shared interface for ResourceLoader, FSUtil and (VBrowser) VRS Resource Loaders.
+ * Provides methods to resolve relative paths to absolute URIs and openening them 
  * for reading and writing. 
  */
 public interface ResourceProvider
 {
-    /** 
-     * Resolve relative path, for example "image.gif" and provide full URI.<br>
-     */
-    public URI resolvePathURI(String path) throws Exception;
+    public java.net.URI resolvePathURI(String relpath) throws Exception; 
 
     public OutputStream createOutputStream(URI uri) throws Exception;
 

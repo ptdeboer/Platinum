@@ -105,21 +105,24 @@ public abstract class ActionTask implements Runnable
      */
     final public Thread getThread()
     {
-        if (threads == null)
-            return null;
+        synchronized (threadMutex)
+        {
+            if (threads == null)
+                return null;
 
-        return this.threads[0];
+            return this.threads[0];
+        }
     }
 
     public boolean hasThread(Thread thread)
     {
-        if (this.threads == null)
-        {
-            return false;
-        }
-
         synchronized (threadMutex)
         {
+            if (this.threads == null)
+            {
+                return false;
+            }
+            // loop inside mutex
             for (Thread thr : threads)
             {
                 if (thr == thread)
@@ -137,11 +140,15 @@ public abstract class ActionTask implements Runnable
      */
     final int getNumThreads()
     {
-        if (this.threads == null)
+        synchronized (threadMutex)
         {
-            return 0;
+            if (this.threads == null)
+            {
+                return 0;
+            }
+
+            return this.threads.length;
         }
-        return this.threads.length;
     }
 
     /**
@@ -153,12 +160,15 @@ public abstract class ActionTask implements Runnable
      */
     final public Thread getThread(int index)
     {
-        if (threads == null)
+        synchronized (threadMutex)
         {
-            return null;
-        }
+            if (threads == null)
+            {
+                return null;
+            }
 
-        return this.threads[index];
+            return this.threads[index];
+        }
     }
 
     /**
@@ -166,11 +176,14 @@ public abstract class ActionTask implements Runnable
      */
     final public boolean isAlive()
     {
-        if (threads == null)
-            return false;
 
         synchronized (threadMutex)
         {
+            if (threads == null)
+            {
+                return false;
+            }
+            
             for (Thread thread : threads)
             {
                 if ((thread != null) && (thread.isAlive()))
@@ -206,21 +219,34 @@ public abstract class ActionTask implements Runnable
 
     /**
      * Tries to join with all active threads.
+     * @return true of all active thread could be joint. False if one of the threads wasn't active or the join failed. 
      */
     final public boolean join() throws InterruptedException
     {
-        if ((threads == null) || (threads.length <= 0))
+        Thread _threadz[];
+        
+        // Join is time expensive, can copy out thread array. 
+        synchronized (threadMutex)
         {
-            return false;
+            if ((threads == null) ||  (threads.length <= 0))
+            {
+                return false; 
+            }
+            
+            _threadz = threads.clone(); 
         }
-
-        boolean joined = false;
-        for (Thread thread : threads)
+        
+        boolean joined = true; 
+        
+        for (Thread thread : _threadz)
         {
             if ((thread != null) && (thread.isAlive()))
             {
                 thread.join();
-                joined = true;
+            }
+            else
+            {
+                joined=false; 
             }
         }
 
@@ -232,12 +258,24 @@ public abstract class ActionTask implements Runnable
      */
     final public boolean join(int index) throws InterruptedException
     {
-        if ((threads == null) || (threads[index] == null) || threads[index].isAlive() == false)
+        Thread thread;
+        
+        synchronized(threadMutex)
         {
-            return false;
+            if ((threads == null) ||  (threads.length <= 0) || (index>=threads.length))
+            {
+                return false;
+            }
+            
+            thread=threads[index];
         }
-
-        this.threads[index].join();
+        
+        if (thread.isAlive() == false)
+        {
+            return false; 
+        }
+        
+        thread.join();
 
         return true;
     }
@@ -266,17 +304,18 @@ public abstract class ActionTask implements Runnable
     final public void joinAll(long timeOutMillis) throws InterruptedException
     {
         Thread _threadz[];
-
-        if ((threads == null) || (threads.length <= 0))
+        
+        // Join is time expensive, can copy out thread array. 
+        synchronized (threadMutex)
         {
-            return;
+            if  ((threads==null) || (threads.length <= 0))
+            {
+                return; 
+            }
+            
+            _threadz = threads.clone(); 
         }
-
-        synchronized (threads)
-        {
-            _threadz = threads;
-        }
-
+    
         for (Thread thread : _threadz)
         {
             if (thread != null)
@@ -298,15 +337,15 @@ public abstract class ActionTask implements Runnable
     final public void interruptAll()
     {
         Thread _threadz[];
-
-        if ((threads == null) || (threads.length <= 0))
+        
+        synchronized (threadMutex)
         {
-            return;
-        }
-
-        synchronized (threads)
-        {
-            _threadz = threads;
+            if  ((threads==null) || (threads.length <= 0))
+            {
+                return; 
+            }
+            
+            _threadz = threads.clone(); 
         }
 
         for (Thread thread : _threadz)
@@ -417,17 +456,20 @@ public abstract class ActionTask implements Runnable
 
     private void clearThreads()
     {
-        if (threads == null)
-        {
-            return;
-        }
 
         synchronized (threadMutex)
         {
+            if (threads == null)
+            {
+                return;
+            }
+
             // trigger release resources held by threads:
             for (int i = 0; i < threads.length; i++)
+            {
                 threads[i] = null; // nullify !
-
+            }
+            
             this.threads = null;
         }
     }
@@ -486,17 +528,30 @@ public abstract class ActionTask implements Runnable
      */
     final public boolean isInterrupted()
     {
-        if ((this.threads == null) || (threads.length <= 0))
+        synchronized(threads)
         {
-            return false;
+            if ((this.threads == null) || (threads.length <= 0))
+            {
+                return false;
+            }
+            
+            // unroll for length==1:
+            if (threads.length==1)
+            {
+                return threads[0].isInterrupted();
+            }
         }
-
-        for (Thread thread : threads)
+        
+        // This method might be called al lot during loops, perform outside mutex, do no copy thread array.
+        
+        int index=0; 
+        while ( (threads!=null) && (index<threads.length))
         {
-            if (thread.isInterrupted())
+            if (threads[index].isInterrupted())
             {
                 return true;
             }
+            index++; 
         }
 
         return false;

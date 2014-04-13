@@ -22,9 +22,10 @@ package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 
-public interface RandomWritable
+public interface RandomWritable extends AutoCloseable
 {
     public void writeBytes(long fileOffset, byte buffer[], int bufferOffset, int nrBytes) throws IOException;
 
-    public void close() throws IOException;
+    // explicit inheritance
+    public void close() throws Exception;
 }

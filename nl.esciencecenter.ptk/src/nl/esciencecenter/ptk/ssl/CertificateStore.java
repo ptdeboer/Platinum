@@ -535,7 +535,7 @@ public class CertificateStore
                         {
                             _keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
     
-                            in = fsUtil.getInputStream(keyStoreLocation);
+                            in = fsUtil.createInputStream(keyStoreLocation);
                             _keyStore.load(in, passphrase);
                             in.close();
                         }

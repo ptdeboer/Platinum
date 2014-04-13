@@ -22,52 +22,58 @@ package panels;
 
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
+import nl.esciencecenter.ptk.task.MonitorStats;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TaskMonitorDialog;
 
 public class TestTaskMonitorDialog
 {
 
-    /**
-     * Auto-generated main method to display this 
-     * JPanel inside a new JFrame.
-     */
      public static void main(String[] args) 
      {
-         
+         testMonitorDialog(10,50,100,123); 
+     }
+     
+     public static void testMonitorDialog(final int N,final int M, final int sleepStart,final int mulK)
+     {
          ActionTask task=new ActionTask(null,"TaskMonitorDailog tester")
          {
              public void doTask()
              {
-                 
                 ITaskMonitor monitor = this.getMonitor(); 
-              
-                int N=100;
-                int M=10; 
-                int sleep=100;
+                
+                int sleep=sleepStart; 
+                int sleepDelta=0; // go faster 
+                int totalTodo=N*M*mulK;
                 
                 monitor.startTask("DailogTest",N); 
-                
+                monitor.startSubTask(""+MonitorStats.MonitorStatsType.TOTAL_BYTES_TRANSFERRED, totalTodo);
+                monitor.startSubTask(""+MonitorStats.MonitorStatsType.TOTAL_SOURCES_COPIED, N);
+
                 for (int i=0;i<N;i++)
                 {
-                    String subTask="Subtask:"+i; 
-                    
+                    String subTask="Subtask:#"+(i+1); 
+                    monitor.startSubTask(""+MonitorStats.MonitorStatsType.CURRENT_BYTES_TRANSFERRED, M*mulK);
                     monitor.startSubTask(subTask, M);
                     monitor.logPrintf("New subtask:%s\n",subTask);
                     
                     for (int j=0;j<M;j++)
                     {
-                        
+
                         try
                         {
                             Thread.sleep(sleep);
+                            sleep+=sleepDelta;
                         }
                         catch (InterruptedException e)
                         {
                             e.printStackTrace();
                         }
                         
+                        int totalDone=(i*M+j)*mulK;  
+                        monitor.updateSubTaskDone(""+MonitorStats.MonitorStatsType.TOTAL_BYTES_TRANSFERRED, totalDone);
+                        monitor.updateSubTaskDone(""+MonitorStats.MonitorStatsType.CURRENT_BYTES_TRANSFERRED, j*mulK);
                         monitor.updateSubTaskDone(subTask, j); 
-                        
+                           
                         if (this.isCancelled())
                         {
                             monitor.logPrintf("***Cancelled***\n",subTask);
@@ -75,12 +81,16 @@ public class TestTaskMonitorDialog
                         }
                     }
                     
+                    monitor.endSubTask(""+MonitorStats.MonitorStatsType.TOTAL_BYTES_TRANSFERRED);
+                    monitor.updateSubTaskDone(""+MonitorStats.MonitorStatsType.TOTAL_SOURCES_COPIED, (i+1));
+                    
                     monitor.endSubTask(subTask); 
                     monitor.updateTaskDone(i); 
                 }
 
+                monitor.endSubTask(""+MonitorStats.MonitorStatsType.TOTAL_SOURCES_COPIED);
+                // end all
                 monitor.endTask(null);
-                
              }
 
              @Override
