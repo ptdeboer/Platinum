@@ -31,10 +31,12 @@ import java.net.URI;
 import java.util.List;
 
 import nl.esciencecenter.ptk.ui.widgets.URIDropTargetLister;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class HexViewController implements AdjustmentListener, KeyListener, ActionListener, URIDropTargetLister
 {
+    private static final ClassLogger logger=ClassLogger.getLogger(HexViewController.class); 
     
 	private HexViewer hexViewer;
 
@@ -62,50 +64,16 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
 
     public void adjustmentValueChanged(AdjustmentEvent e)
 	{
+		logger.debugPrintf("adjustmentValueChanged(): %s\n",e); 
+		logger.debugPrintf(" - new value=%d\n",+e.getValue());
 		
-		debug("adjustment event+"+e);
-		debug(">>> new value="+e.getValue());
 		int val=e.getValue(); 
-		
-		//val=val-(val%hexViewer.nrBytesPerLine); 
  		this.hexViewer.moveToOffset(val); 
- 		hexViewer.redrawContents(); 
- 		
- 		if (true) 
- 			return; 
- 		
-		
-		long prev=hexViewer.getOffset();
-		// round step to nrBytesPerLine 
-		long diff=val-prev;
-		long nrbpl=hexViewer.getNrBytesPerLine();
-		
-		debug("diff="+diff+", nrbpl="+nrbpl);
-		// micro increments! make sure minimum is nr  bytes per line 
-		
-		if ((diff>-nrbpl) && (diff<nrbpl))
-		{
-			if (diff<0) 
-				diff=-nrbpl;
-			else if (diff>=0)
-				diff=nrbpl;
-			//else diff=0 
-		}
-		// minus remainder to make sure increment is whole multiplication of nrBytesPerLine
-		if (diff>0) 
-			diff=diff-(diff%nrbpl);
-		else if (diff<0)
-			diff=diff+(diff%nrbpl);
-		
-		debug("diff="+diff);
-		
-		//val=val-(val%hexViewer.nrBytesPerLine); 
- 		this.hexViewer.moveToOffset(prev+diff); 
- 		hexViewer.redrawContents(); 
 	}
 
 	public void keyTyped(KeyEvent e) 
 	{		
+	    
 	}
 	
 	public void keyPressed(KeyEvent e)
@@ -115,9 +83,7 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
 		int mods=e.getModifiers(); 
 		
 		String kstr=KeyEvent.getKeyText(kcode);
-		hexViewer.debug("kstr="+kstr);
-		hexViewer.debug("kchar="+kchar);
-
+		//logger.debugPrintf("key pressed (Char,str)='%s' => '%s'\n",kchar,kstr); 
 		
 
 		if ((mods & KeyEvent.CTRL_MASK) >0)
@@ -189,6 +155,10 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
 			hexViewer.addOffset(hexViewer.nrBytesPerLine);  			
 			hexViewer.redrawContents(); 
 		}
+		else if (kstr.compareToIgnoreCase("F5")==0)
+		{
+		    hexViewer.redrawContents(); 
+		}
 	}
 	
 	public void keyReleased(KeyEvent e) 
@@ -197,7 +167,7 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
 	
 	void debug(String msg) 
 	{
-	    hexViewer.debugPrintf("%s\n",msg); 
+	    logger.debugPrintf("%s\n",msg); 
 	}
 
 	public void actionPerformed(ActionEvent e) 
@@ -208,7 +178,6 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
 		{
 			String txt=this.hexViewer.offsetField.getText();
 			hexViewer.moveToOffset(Long.decode(txt));
-			hexViewer.redrawContents();
 		}
 	}
 

@@ -27,12 +27,10 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.dnd.DropTarget;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.TooManyListenersException;
-import java.util.logging.Level;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,6 +38,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import net.sf.jmimemagic.MagicMatchNotFoundException;
 import nl.esciencecenter.ptk.data.HashMapList;
@@ -64,8 +63,9 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * @author Piter.NL.
  */
 public class HexViewer extends EmbeddedViewer implements FontToolbarListener// , ToolPlugin
-
 {
+    private static final ClassLogger logger = ClassLogger.getLogger(HexViewer.class);
+
     // todo: UTF-8 Char Mapping
     public final String specialCharMapping[] =
     {
@@ -98,8 +98,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     private static final long serialVersionUID = 4959020834564707156L;
 
     /** The mimetypes I can view */
-    private static String mimeTypes[] =
-    { "application/octet-stream", };
+    private static String mimeTypes[] = { "application/octet-stream", };
 
     static private boolean default_show_font_toolbar = false;
 
@@ -137,10 +136,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
     /** Actual bytes per line (nrBytesPerLine) is nrWordPerLine*wordSize */
     private int minimumBytesPerLine = 32;
-
-    // == Swing ==
-    // private ViewerDropTarget defaultDropTarget=null;
-
+    
     // ================================
     // Derived/Secondary fields:
     // ================================
@@ -157,37 +153,31 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
     protected RandomReadable reader = null;
 
-    // === GUI components:
-    private JToolBar toolBar;
+    // === pacakge protected GUI components ===
+    
+    protected JTextField offsetField;
 
-    JTextArea textArea = null;
-
-    private JPanel mainPanel;
-
-    private JScrollBar scrollbar;
+    // === GUI components === //
 
     private HexViewController hexViewController;
-
-    private JLabel offsetLabel;
-
-    JTextField offsetField;
-
-    private JLabel lengthLabel;
-
-    private JTextField lengthField;
-
-    private JLabel magicLabel;
-
-    private JTextField magicField;
-
-    private JPanel toolPanel;
-
     private FontToolBar fontToolBar;
 
+    // === fiels === //
+    private JTextArea textArea = null;
+    private JToolBar toolBar;
+    private JPanel mainPanel;
+    private JScrollBar scrollbar;
+    private JLabel offsetLabel;
+    private JLabel lengthLabel;
+    private JTextField lengthField;
+    private JLabel magicLabel;
+    private JTextField magicField;
+    private JPanel toolPanel;
     private JLabel encodingLabel;
-
     private JTextField encodingField;
 
+    // tasks // 
+    
     private ActionTask updateTask;
 
     public void initGui()
@@ -303,7 +293,6 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
     private void initDnD()
     {
-
         // DROP TARGET
         {
             DropTarget dropTarget = new DropTarget();
@@ -316,13 +305,94 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
             }
             catch (TooManyListenersException e)
             {
-                System.err.println("***Error: Exception:" + e);
-                e.printStackTrace();
+                logger.errorPrintf("FIXME:TooManyListenersException:%s\n",e);
             }
         }
 
     }
 
+    @Override
+    public void doInitViewer()
+    {
+        initGui();
+    }
+
+    @Override
+    public String getViewerName()
+    {
+        return "Binary Viewer";
+    }
+
+    public void doStartViewer(String optionalMethod)
+    {
+        doUpdate(getVRL());
+        this.validate();
+    }
+
+    public void doUpdate(final VRL loc)
+    {
+        debug("updateLocation:" + loc);
+
+        if (loc == null)
+            return;
+
+        this.updateTask = new ActionTask(null, "loading:" + getVRL())
+        {
+
+            @Override
+            protected void doTask()
+            {
+                try
+                {
+                    _reload(loc);
+                }
+                catch (Throwable t)
+                {
+                    this.setException(t);
+                    handle("failed to load:" + getVRL(), t);
+                }
+            }
+
+            @Override
+            public void stopTask()
+            {
+            }
+        };
+
+        updateTask.startTask();
+    }
+
+    @Override
+    public void doStopViewer()
+    {
+        if (this.updateTask!=null)
+        {
+            updateTask.signalTerminate(); 
+        }
+    }
+
+    public void doDisposeViewer()
+    {
+        this.textArea = null;
+        disposeReader();
+    }
+
+    protected void disposeReader()
+    {
+        if (reader != null)
+        {
+            try
+            {
+                reader.close();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            reader = null;
+        }
+    }
+        
     @Override
     public String[] getMimeTypes()
     {
@@ -339,32 +409,17 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return textArea.getText();
     }
 
+    /** 
+     * For binary dropped content. 
+     */
     public void setContents(byte[] bytes)
     {
         this.fileOffset = 0;
         this.offset = 0;
         this.buffer = bytes;
         this.length = buffer.length; // update with nrBytes actual read
-        updateMagic();
+        _updateMagic();
         redrawContents();
-    }
-
-    public void updateMagic()
-    {
-        try
-        {
-            this.magicField.setText(MimeTypes.getDefault().getMagicMimeType(buffer));
-        }
-        catch (MagicMatchNotFoundException e)
-        {
-            logException(ClassLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL().getPath());
-            // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
-        }
-        catch (Exception e)
-        {
-            logException(ClassLogger.ERROR, e, "Exception when updating magic\n");
-        }
-
     }
 
     public boolean isTool()
@@ -381,13 +436,28 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     {
         return true;
     }
-
-    synchronized void redrawContents()
+    
+    void redrawContents()
     {
+        uiRedrawContents(); 
+    }
+    
+    void uiRedrawContents()
+    {
+        if (SwingUtilities.isEventDispatchThread()==false)
+        {
+            Runnable runner=new Runnable() {
+                public void run() {
+                    uiRedrawContents(); 
+                }
+            };
+            
+            SwingUtilities.invokeLater(runner);
+        }
+        
         // ASSERT
         if (buffer == null)
         {
-            // nl.uva.vlet.Global.debugPrintln("HexViewer","Received NULL contents");
             return;
         }
 
@@ -396,7 +466,6 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
         // ================
         // Step II)
-        //
         // Running Variables
         //
 
@@ -464,21 +533,14 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         resetFocus();
     }
 
-    private void updateSizes()
+    protected void updateSizes()
     {
         String maxLenStr = Long.toHexString(length);
+
         // ===============================================
         // Step I)
         // update sizes/ derived variables :
         // ================================================
-
-        // update form parent Port Size ?
-        // Dimension size=this.getViewPortSize();
-        // if (size!=null)
-        // {
-        // this.setSize(size);
-        // this.validate();
-        // }
 
         Dimension targetSize = textArea.getSize();
         FontMetrics metrics = textArea.getFontMetrics(textArea.getFont());
@@ -507,18 +569,16 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         if (scrollMax < 0)
             scrollMax = 0;
 
-        if (scrollMax > Integer.MAX_VALUE)
+        if (scrollMax >= Integer.MAX_VALUE)
         {
-            this.scrollMutiplier = scrollMax / Integer.MAX_VALUE;
-            // use FLOOR value to divide to value less then integer max.
+            // Use upper value:
+            this.scrollMutiplier = (scrollMax / Integer.MAX_VALUE) + 1;
             scrollMax = scrollMax / scrollMutiplier;
         }
-        this.scrollbar.setMaximum((int) scrollMax);
-        this.scrollbar.setMinimum(0);
-        this.scrollbar.setBlockIncrement(nrBytesPerView);
-        this.scrollbar.setUnitIncrement(this.nrBytesPerLine);
-        this.scrollbar.setValue((int) this.offset);
-        // this.scrollbar.setVisibleAmount(nrBytesPerView);
+
+        updateScrollBarRange(0, scrollMax, nrBytesPerView, nrBytesPerLine);
+        setScrollBarValue(offset / scrollMutiplier);
+
         /**
          * if (offset+nrBytesPerView>length) offset=(length-nrBytesPerView);
          * 
@@ -528,10 +588,44 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
          */
 
         // update gui fields:
-
         this.offsetField.setText(getPosStr(offset, maxLenStr.length()));
         this.lengthField.setText(getPosStr(length, maxLenStr.length()));
+    }
 
+    protected void setScrollBarValue(long value)
+    {
+        // Bug: Fix disappearing ScrollBar if offset
+        // note: if scrolbar value is exactly Integer.MIN_VALUE the scrollbar is not visible.
+        
+        if (value >= Integer.MAX_VALUE)
+        {
+            logger.errorPrintf("Offset exceeds Integer.MAX_VALUE:%d\n",value);
+        }
+        else if (value <= Integer.MIN_VALUE)
+        {
+            logger.errorPrintf("Offset exceeds Integer.MIN_VALUE:%d\n,value");
+        }
+
+        logger.infoPrintf("setScrollBarValue(): %d\n", value);
+        this.scrollbar.setValue((int) value);
+    }
+
+    protected void updateScrollBarRange(int min, long max, int blockIncrement, int unitIncrement)
+    {
+        if (max >= Integer.MAX_VALUE)
+        {
+            logger.errorPrintf("Maximum exceeds Integer.MAX_VALUE\n");
+        }
+        else if (max <= Integer.MIN_VALUE)
+        {
+            logger.errorPrintf("Maximum exceeds Integer.MAX_VALUE\n");
+        }
+
+        logger.infoPrintf("updateScrollBarRange(): range=[%d,%d], block,unit=[%d,%d]\n", min, max, blockIncrement, unitIncrement);
+        this.scrollbar.setMinimum(min);
+        this.scrollbar.setMaximum((int) max);
+        this.scrollbar.setBlockIncrement(blockIncrement);
+        this.scrollbar.setUnitIncrement(unitIncrement);
     }
 
     private String fillWithSpaces(String orgstr, int len)
@@ -656,98 +750,14 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
                     break;
             }
         }
-
         return str;
     }
-
-    @Override
-    public void doStopViewer()
-    {
-    }
-
-    public void doDisposeViewer()
-    {
-        this.textArea = null;
-    }
-
-    @Override
-    public void doInitViewer()
-    {
-        initGui();
-    }
-
-    @Override
-    public String getViewerName()
-    {
-        return "Binary Viewer";
-    }
-
-    public void doStartViewer(String optionalMethod)
-    {
-        doUpdate(getVRL());
-        this.validate();
-    }
-
-    public void doUpdate(final VRL loc)
-    {
-        debug("updateLocation:" + loc);
-
-        if (loc == null)
-            return;
-
-        this.updateTask = new ActionTask(null, "loading:" + getVRL())
-        {
-
-            @Override
-            protected void doTask()
-            {
-                try
-                {
-                    _reload(loc);
-                }
-                catch (Throwable t)
-                {
-                    this.setException(t);
-                    handle("failed to load:" + getVRL(), t);
-                }
-            }
-
-            @Override
-            public void stopTask()
-            {
-            }
-        };
-
-        updateTask.startTask();
-    }
-
-    private synchronized void _reload(final VRL loc) throws IOException
-    {
-        debug("_update:" + loc);
-
-        try
-        {
-            this.reader = this.getResourceHandler().createRandomReader(loc);
-            this.length = reader.getLength();
-            this.offset = 0;
-
-            // check buffered read
-            // Fill Buffer: use direct read (already in background)
-            readBuffer();
-            updateMagic();
-            redrawContents();
-        }
-        catch (Exception e)
-        {
-            throw new IOException(e);
-        }
-    }
-
+    
     public void moveToOffset(final long offset)
     {
         if (this.offset == offset)
         {
-            debug("Ignoring moveTo same offset" + offset);
+            logger.debugPrintf("Ignoring moveTo same offset:%d\n", offset);
             return;
         }
 
@@ -755,7 +765,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         {
             if (updateTask.isAlive())
             {
-                debug("*** Already updating! Ingoring move to:" + offset);
+                logger.errorPrintf("FIXME: Already updating! Ignoring move to:%d\n", offset);
                 return;
             }
         }
@@ -778,122 +788,14 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         updateTask.startTask();
     }
 
-    private synchronized void readBuffer()
-    {
-        debug("readBuffer:" + offset);
-
-        if (reader == null)
-        {
-            // no vfile, set to defaults:
-            fileOffset = 0;
-            length = buffer.length;
-            // offset=0;
-            return;
-        }
-
-        int len = 0;
-        len = maxBufferSize;
-
-        // check end of file
-        if (fileOffset + len > length)
-            len = (int) (length - fileOffset);
-
-        // check buffer size:
-        if ((buffer == null) || (len != buffer.length))
-            buffer = new byte[len];
-
-        debug("read buffer. offset        =" + offset);
-        debug("read buffer. fileOffset    =" + fileOffset);
-        debug("read buffer. buffer length =" + buffer.length);
-
-        // fill buffer:
-        try
-        {
-            notifyBusy(true);
-
-            this.setViewerTitle("Reading:" + getVRL());
-            // new FileReader(vfile).read(fileOffset,buffer,0,len);
-            readBytes(reader, fileOffset, buffer, 0, len);
-            this.setViewerTitle("Inspecting:" + getVRL());
-        }
-        catch (Exception e)
-        {
-            this.setViewerTitle("Error reading:" + getVRL());
-            notifyException("Failed to read buffer", e);
-        }
-        finally
-        {
-            notifyBusy(false);
-        }
-    }
-
-    private void readBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes)
-            throws IOException, VrsException
-    {
-        this.getResourceHandler().syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
-    }
-
     void debug(String msg)
     {
-        debugPrintf("%s\n", msg);
-    }
-
-    public synchronized void _moveToOffset(long value)
-    {
-        debug("_moveToOffset:" + value);
-
-        this.offset = value;
-
-        if (offset >= length - nrBytesPerView)
-            offset = length - nrBytesPerView;
-
-        if (offset < 0)
-            offset = 0;
-
-        debug("new offset=" + offset);
-
-        // move buffer window up (only if buffer doesn't already contain the
-        // last
-        // part of the file.
-        if ((offset > this.fileOffset + buffer.length - this.nrBytesPerView)
-                && (fileOffset + this.maxBufferSize < length))
-        {
-
-            // read half buffer before and after current offset
-            fileOffset = offset - maxBufferSize / 2;
-
-            if (fileOffset < 0)
-                fileOffset = 0;
-
-            readBuffer();
-        }
-
-        // OR move buffer window down
-        if (offset < this.fileOffset)
-        {
-            // read half buffer before and after current offset
-            fileOffset = offset - maxBufferSize / 2;
-
-            if (fileOffset < 0)
-                fileOffset = 0;
-
-            readBuffer();
-        }
-
-        // ===
-        // POST MOVE TO
-        // ===
-        redrawContents(); // (re)draw
+        logger.debugPrintf("%s\n", msg);
     }
 
     public void addOffset(int delta)
     {
         moveToOffset(offset + delta);
-    }
-
-    public void actionPerformed(ActionEvent e)
-    {
-
     }
 
     public void updateFont(Font font, Map<?, ?> renderingHints)
@@ -969,18 +871,6 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return this.nrBytesPerLine;
     }
 
-    protected void debugPrintf(String format, Object... args)
-    {
-        System.err.printf(format, args);
-        super.debugPrintf(format, args);
-    }
-
-    protected void logException(Level error, Exception e, String format, Object... args)
-    {
-        errorPrintf(format, args);
-        e.printStackTrace();
-    }
-
     @Override
     public Map<String, List<String>> getMimeMenuMethods()
     {
@@ -997,4 +887,162 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
         return mappings;
     }
+
+    // ========================================================================
+    // IO Methods/backgrounded methods
+    // ========================================================================
+
+    private synchronized void _reload(final VRL loc) throws IOException
+    {
+        debug("_update:" + loc);
+
+        try
+        {
+            disposeReader();
+
+            this.reader = this.getResourceHandler().createRandomReader(loc);
+            this.length = reader.getLength();
+            this.offset = 0;
+
+            // check buffered read
+            // Fill Buffer: use direct read (already in background)
+            _readBuffer();
+            redrawContents();
+            _updateMagic();
+        }
+        catch (Exception e)
+        {
+            throw new IOException(e);
+        }
+    }
+
+    public void _moveToOffset(long value)
+    {
+        if (SwingUtilities.isEventDispatchThread())
+        {
+            throw new Error("No IO during EventDispatchThread!");
+        }
+
+        debug("_moveToOffset:" + value);
+
+        this.offset = value;
+
+        if (offset >= length - nrBytesPerView)
+            offset = length - nrBytesPerView;
+
+        if (offset < 0)
+            offset = 0;
+
+        debug("new offset=" + offset);
+
+        // move buffer window up (only if buffer doesn't already contain the
+        // last
+        // part of the file.
+        if ((offset > this.fileOffset + buffer.length - this.nrBytesPerView)
+                && (fileOffset + this.maxBufferSize < length))
+        {
+
+            // read half buffer before and after current offset
+            fileOffset = offset - maxBufferSize / 2;
+
+            if (fileOffset < 0)
+                fileOffset = 0;
+
+            _readBuffer();
+        }
+
+        // OR move buffer window down
+        if (offset < this.fileOffset)
+        {
+            // read half buffer before and after current offset
+            fileOffset = offset - maxBufferSize / 2;
+
+            if (fileOffset < 0)
+                fileOffset = 0;
+
+            _readBuffer();
+        }
+
+        // ===
+        // POST MOVE TO
+        // ===
+        redrawContents(); // (re)draw
+    }
+
+    private void _readBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes)
+            throws IOException, VrsException
+    {
+        this.getResourceHandler().syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
+    }
+
+    private synchronized void _readBuffer()
+    {
+        debug("readBuffer:" + offset);
+
+        if (reader == null)
+        {
+            // no vfile, set to defaults:
+            fileOffset = 0;
+            length = buffer.length;
+            // offset=0;
+            return;
+        }
+
+        int len = 0;
+        len = maxBufferSize;
+
+        // check end of file
+        if (fileOffset + len > length)
+            len = (int) (length - fileOffset);
+
+        // check buffer size:
+        if ((buffer == null) || (len != buffer.length))
+            buffer = new byte[len];
+
+        debug("read buffer. offset        =" + offset);
+        debug("read buffer. fileOffset    =" + fileOffset);
+        debug("read buffer. buffer length =" + buffer.length);
+
+        // fill buffer:
+        try
+        {
+            notifyBusy(true);
+
+            this.setViewerTitle("Reading:" + getVRL());
+            // new FileReader(vfile).read(fileOffset,buffer,0,len);
+            _readBytes(reader, fileOffset, buffer, 0, len);
+            this.setViewerTitle("Inspecting:" + getVRL());
+        }
+        catch (Exception e)
+        {
+            this.setViewerTitle("Error reading:" + getVRL());
+            notifyException("Failed to read buffer", e);
+        }
+        finally
+        {
+            notifyBusy(false);
+        }
+    }
+
+
+    public void _updateMagic()
+    {
+        try
+        {
+            String magic = MimeTypes.getDefault().getMagicMimeType(buffer);
+            logger.infoPrintf("Magic Type=%s\n", magic);
+            this.magicField.setText(magic);
+        }
+        catch (MagicMatchNotFoundException e)
+        {
+            logger.logException(ClassLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL().getPath());
+            // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
+        }
+        catch (Exception e)
+        {
+            logger.logException(ClassLogger.ERROR, e, "Exception when updating magic\n");
+        }
+
+    }
+    
 }
