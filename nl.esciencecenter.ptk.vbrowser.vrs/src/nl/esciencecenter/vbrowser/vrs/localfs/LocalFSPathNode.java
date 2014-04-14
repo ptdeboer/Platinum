@@ -272,7 +272,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     }
 
     @Override
-    public RandomWritable createRandomWriter() throws VrsException
+    public RandomWritable createRandomWritable() throws VrsException
     {
         try
         {

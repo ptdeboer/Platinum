@@ -5,5 +5,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
 public interface VRandomWritable
 {
-    RandomWritable createRandomWriter() throws VrsException; 
+    
+    RandomWritable createRandomWritable() throws VrsException; 
+
 }

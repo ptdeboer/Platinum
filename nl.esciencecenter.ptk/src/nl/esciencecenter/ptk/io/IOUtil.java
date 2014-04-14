@@ -55,7 +55,11 @@ public class IOUtil
         {
             return inps.read(buffer, bufferOffset, numBytes);
         }
-
+        
+        public void close() throws Exception
+        {
+            inps.close(); 
+        }
     }
 
     public static class RandomReaderFunctor implements Readable
@@ -74,6 +78,12 @@ public class IOUtil
         {
             return reader.readBytes(offset, buffer, bufferOffset, numBytes);
         }
+        
+        public void close() throws Exception
+        {
+            reader.close(); 
+        }
+        
     }
 
     /**

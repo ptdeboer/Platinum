@@ -25,46 +25,60 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Generic interface for Shell Channels which have a pty (pseudo-terminal) associated with it.  
- * Whether features are supported depends on the implementing shell channel. 
+ * Generic interface for Shell Channels which have a pty (pseudo-terminal) associated with it. Whether features are
+ * supported depends on the implementing shell channel.
  */
-public interface ShellChannel 
+public interface ShellChannel
 {
-    /** 
-     * Get stdin OutputStream (to write to remote shell) after channel has connected. 
-     */ 
+    /**
+     * Get stdin OutputStream (to write to remote shell) after channel has connected.
+     */
     public OutputStream getStdin();
 
-    /** 
-     * Get stdout InputStream (to read from remote shell) after channel has connected. 
-     */ 
-    public InputStream getStdout();
-    
-    /** 
-     * Get Optional stderr InputStream if supported. Stderr might be mixed with stdout.
-     */ 
-    public InputStream getStderr(); 
-
-    public void connect() throws IOException; 
-    
-    public void disconnect(boolean waitForTermination) throws IOException; 
-
-    // === tty/shell Options === 
-    
-    public String getTermType() throws IOException; 
-    
-    public boolean setTermType(String type) throws IOException; 
-    
-    public boolean setTermSize(int col, int row, int wp, int hp) throws IOException; 
-    
     /**
-     * Returns array of int[2] {col,row} or int[4] {col,row,wp,hp} of remote terminal (pty) size.
-     * Return NULL if size couldn't be determined (terminal sizes not supported)  
-     */ 
-    public int[] getTermSize() throws IOException; 
+     * Get stdout InputStream (to read from remote shell) after channel has connected.
+     */
+    public InputStream getStdout();
 
-    // === Life Cycle management === 
+    /**
+     * Get Optional stderr InputStream if supported. Stderr might be mixed with stdout.
+     */
+    public InputStream getStderr();
+
+    public void connect() throws IOException;
+
+    public void disconnect(boolean waitForTermination) throws IOException;
+
+    // === tty/shell Options ===
+
+    /** 
+     * @return terminal type, for example "vt100" or "xterm". 
+     * @throws IOException
+     */
+    public String getTermType() throws IOException;
     
+    /** 
+     * Tries to set terminal type to underlaying shell channel. For example ror example "vt100" or "xterm".
+     * @return true of terminal type was succesfuly updated. False if terminal type is not supported.  
+     * @throws IOException
+     */
+    public boolean setTermType(String type) throws IOException;
+
+    /** 
+     * Tries to set terminal size to underlaying shell channel. 
+     * @return true of terminal type was succesfuly updated. False if terminal type is not supported.  
+     * @throws IOException
+     */
+    public boolean setTermSize(int numColumns, int numRows, int wp, int hp) throws IOException;
+
+    /**
+     * Returns array of int[2] {col,row} or int[4] {col,row,wp,hp} of remote terminal (pty) size. Return NULL if size
+     * couldn't be determined (terminal sizes not supported)
+     */
+    public int[] getTermSize() throws IOException;
+
+    // === Life Cycle management ===
+
     public void waitFor() throws InterruptedException;
 
     public int exitValue();

@@ -5,5 +5,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
 public interface VRandomReadable
 {
+    
     RandomReadable createRandomReadable() throws VrsException; 
+
 }

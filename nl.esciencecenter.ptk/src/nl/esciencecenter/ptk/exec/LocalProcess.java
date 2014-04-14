@@ -78,7 +78,9 @@ public class LocalProcess implements Disposable
 
             // wait for completion of streamreader also !
             if (streamReaderTask != null)
+            {
                 streamReaderTask.waitForAll();
+            }
 
         }
         catch (InterruptedException e)
@@ -202,12 +204,8 @@ public class LocalProcess implements Disposable
                                 stderrWriter.write(val2);
                             }
                         }
-                    } while ((stop == false) && ((val1 >= 0) || (val2 >= 0))); // continue
-                                                                               // until
-                                                                               // EOF
-                                                                               // on
-                                                                               // both
-                                                                               // streams
+                        // continue until EOF has occured on both streams.
+                    } while ((stop == false) && ((val1 >= 0) || (val2 >= 0)));
                 }
                 catch (IOException e)
                 {
@@ -226,15 +224,20 @@ public class LocalProcess implements Disposable
         };
 
         if (syncWait == false)
-            streamReaderTask.startTask();// background
+        {
+            // background
+            streamReaderTask.startTask();
+        }
         else
-            streamReaderTask.run();// call run() directly
+        {
+            // call run() directly
+            streamReaderTask.run();
+        }
 
     }
 
     /**
-     * Set list of command + argumen to start. cmds[0] is the actual command,
-     * cmds[1],...,cmds[2] are the arguments.
+     * Set list of command + argument to start. cmds[0] is the actual command, cmds[1],...,cmds[2] are the arguments.
      * 
      * @param cmds
      */
@@ -244,8 +247,8 @@ public class LocalProcess implements Disposable
     }
 
     /**
-     * Returns stdout of terminated process. If this method is called during
-     * execution of a process this method will return null.
+     * Returns stdout of terminated process as String. If this method is called during execution of a process this method will
+     * return null.
      */
     public String getStdout()
     {
@@ -253,8 +256,8 @@ public class LocalProcess implements Disposable
     }
 
     /**
-     * Returns stderr of terminated process. If this method is called during
-     * execution of a process this method will return null.
+     * Returns stderr of terminated process as String. If this method is called during execution of a process this method will
+     * return null.
      */
     public String getStderr()
     {
@@ -323,7 +326,7 @@ public class LocalProcess implements Disposable
             catch (Exception e)
             {
             }
-            
+
             stdinStream = null;
         }
 
@@ -336,7 +339,7 @@ public class LocalProcess implements Disposable
             catch (Exception e)
             {
             }
-            
+
             stdoutStream = null;
         }
 
@@ -349,7 +352,7 @@ public class LocalProcess implements Disposable
             catch (Exception e)
             {
             }
-            
+
             stderrStream = null;
         }
 
@@ -358,7 +361,6 @@ public class LocalProcess implements Disposable
             process.destroy();
             process = null;
         }
-
     }
 
 }

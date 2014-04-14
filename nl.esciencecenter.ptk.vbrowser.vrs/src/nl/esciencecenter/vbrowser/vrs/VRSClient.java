@@ -299,7 +299,7 @@ public class VRSClient
     {
         if (file instanceof VRandomWritable)
         {
-            return ((VRandomWritable)file).createRandomWriter();
+            return ((VRandomWritable)file).createRandomWritable();
         }
         else
         {
