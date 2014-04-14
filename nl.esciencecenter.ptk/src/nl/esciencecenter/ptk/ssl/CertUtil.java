@@ -32,7 +32,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.FileURISyntaxException;
+import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
 

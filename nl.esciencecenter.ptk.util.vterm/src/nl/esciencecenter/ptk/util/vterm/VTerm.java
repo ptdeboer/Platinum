@@ -55,7 +55,7 @@ import javax.swing.SwingUtilities;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.exec.ShellChannel;
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.FileURISyntaxException;
+import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.ui.charpane.ColorMap;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.util.ResourceLoader;

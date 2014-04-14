@@ -18,7 +18,7 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.io;
+package nl.esciencecenter.ptk.io.exceptions;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

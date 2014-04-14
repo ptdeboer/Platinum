@@ -50,7 +50,7 @@ import javax.swing.border.LineBorder;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.FileURISyntaxException;
+import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.jfx.util.FXFileChooser;
 import nl.esciencecenter.ptk.jfx.util.FXFileChooser.ChooserType;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
