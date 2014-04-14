@@ -53,7 +53,7 @@ public class LocalFSNode extends FSNode
 
     private PosixFileAttributes posixAttrs;
 
-    public LocalFSNode(LocalFSHandler fsHandler, Path path)
+    public LocalFSNode(LocalFSNodeProvider fsHandler, Path path)
     {
         super(fsHandler, path.toUri());
         init(path);
@@ -73,7 +73,7 @@ public class LocalFSNode extends FSNode
         return true;
     }
 
-    public LocalFSNode(LocalFSHandler fsHandler, URI loc)
+    public LocalFSNode(LocalFSNodeProvider fsHandler, URI loc)
     {
         super(fsHandler, loc);
         FileSystem fs = FileSystems.getDefault();
@@ -88,9 +88,9 @@ public class LocalFSNode extends FSNode
         }
     }
 
-    protected LocalFSHandler getFSHandler()
+    protected LocalFSNodeProvider getFSHandler()
     {
-        return (LocalFSHandler) super.getFSHandler();
+        return (LocalFSNodeProvider) super.getFSHandler();
     }
 
     @Override

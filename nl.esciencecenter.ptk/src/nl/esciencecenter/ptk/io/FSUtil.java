@@ -35,7 +35,7 @@ import java.util.Set;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
-import nl.esciencecenter.ptk.io.local.LocalFSHandler;
+import nl.esciencecenter.ptk.io.local.LocalFSNodeProvider;
 import nl.esciencecenter.ptk.io.local.LocalFSNode;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
@@ -147,7 +147,7 @@ public class FSUtil implements ResourceProvider
 
     protected FSOptions fsOptions = new FSOptions();
 
-    private LocalFSHandler localFSHandler;
+    private LocalFSNodeProvider localFSHandler;
 
     public FSUtil()
     {
@@ -156,7 +156,7 @@ public class FSUtil implements ResourceProvider
 
     private void init()
     {
-        this.localFSHandler = LocalFSHandler.getDefault();
+        this.localFSHandler = LocalFSNodeProvider.getDefault();
 
         try
         {
@@ -362,7 +362,7 @@ public class FSUtil implements ResourceProvider
     {
         if (localFileURI.isAbsolute())
         {
-            return new LocalFSNode(LocalFSHandler.getDefault(), localFileURI);
+            return new LocalFSNode(LocalFSNodeProvider.getDefault(), localFileURI);
         }
         else
         {

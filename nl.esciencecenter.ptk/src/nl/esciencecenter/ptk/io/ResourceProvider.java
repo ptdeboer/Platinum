@@ -26,7 +26,7 @@ import java.net.URI;
 
 /** 
  * Shared interface for ResourceLoader, FSUtil and (VBrowser) VRS Resource Loaders.
- * Provides methods to resolve relative paths to absolute URIs and openening them 
+ * Provides methods to resolve relative paths to absolute URIs and opening them 
  * for reading and writing. 
  */
 public interface ResourceProvider

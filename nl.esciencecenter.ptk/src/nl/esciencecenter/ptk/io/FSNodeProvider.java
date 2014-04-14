@@ -28,7 +28,7 @@ import java.util.List;
 /** 
  * Delegated FileSystem handler. 
  */
-public interface FSHandler
+public interface FSNodeProvider
 {
     public abstract String getScheme(); 
 

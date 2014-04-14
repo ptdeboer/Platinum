@@ -52,15 +52,15 @@ public abstract class FSNode
 
     private URI uri = null;
 
-    private FSHandler fsHandler = null;
+    private FSNodeProvider fsHandler = null;
 
-    protected FSNode(FSHandler fsHandler, URI uri)
+    protected FSNode(FSNodeProvider fsHandler, URI uri)
     {
         this.uri = uri;
         this.fsHandler = fsHandler;
     }
 
-    protected FSHandler getFSHandler()
+    protected FSNodeProvider getFSHandler()
     {
         return fsHandler;
     }

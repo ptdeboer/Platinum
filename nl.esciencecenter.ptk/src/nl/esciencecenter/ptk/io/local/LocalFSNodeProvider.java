@@ -32,24 +32,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.GlobalProperties;
-import nl.esciencecenter.ptk.io.FSHandler;
+import nl.esciencecenter.ptk.io.FSNodeProvider;
 import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 
-public class LocalFSHandler implements FSHandler
+public class LocalFSNodeProvider implements FSNodeProvider
 {
     private static Object instanceMutex = new Object();
 
-    private static LocalFSHandler instance = null;
+    private static LocalFSNodeProvider instance = null;
 
-    public static LocalFSHandler getDefault()
+    public static LocalFSNodeProvider getDefault()
     {
         synchronized (instanceMutex)
         {
             if (instance == null)
             {
-                instance = new LocalFSHandler();
+                instance = new LocalFSNodeProvider();
             }
 
             return instance;
