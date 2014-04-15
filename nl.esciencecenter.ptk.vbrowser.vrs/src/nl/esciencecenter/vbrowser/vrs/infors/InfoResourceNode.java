@@ -53,6 +53,20 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
 {
     private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
 
+    public static InfoResourceNode createSubPathLinkNode(InfoRSPathNode parent, String subPath, String logicalName, VRL targetLink, String optIconURL,
+            boolean showLinkIcon) throws VRLSyntaxException
+    {
+        VRL logicalVRL = parent.createSubPathVRL(subPath);
+        InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
+
+        node.setTargetVRL(targetLink);
+        node.setIconUrl(optIconURL);
+        node.setShowLinkIcon(showLinkIcon);
+        node.setLogicalName(logicalName);
+
+        return node;
+    }
+    
     public static InfoResourceNode createLinkNode(InfoRSPathNode parent, String logicalName, VRL targetLink, String optIconURL,
             boolean showLinkIcon) throws VRLSyntaxException
     {

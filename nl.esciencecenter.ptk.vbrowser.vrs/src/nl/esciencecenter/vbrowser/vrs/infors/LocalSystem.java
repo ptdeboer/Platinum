@@ -105,11 +105,7 @@ public class LocalSystem extends InfoRSPathNode
 
     protected InfoResourceNode createSubPathLinkNode(String subPath, VRL targetVrl, String name, String iconUrl) throws VRLSyntaxException
     {
-        VRL logicalVrl = this.createSubPathVRL(subPath);
-
-        InfoLinkNode node = new InfoLinkNode(this, logicalVrl, targetVrl);
-        node.setLogicalName(name);
-        node.setIconUrl(iconUrl);
+        InfoResourceNode node = InfoResourceNode.createSubPathLinkNode(this, subPath,  name, targetVrl, iconUrl, true); 
         return node;
     }
 
