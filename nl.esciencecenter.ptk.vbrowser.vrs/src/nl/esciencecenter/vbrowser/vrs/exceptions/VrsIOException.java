@@ -43,5 +43,10 @@ public class VrsIOException extends VrsException
     {
         super(message,ex); 
     }
+
+    public VrsIOException(String message, Exception e, String exceptionName)
+    {
+        super(message,e,exceptionName); 
+    }
     
 }

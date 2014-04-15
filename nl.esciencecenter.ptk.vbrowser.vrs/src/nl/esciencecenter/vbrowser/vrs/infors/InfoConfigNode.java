@@ -26,7 +26,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
  * Fixed Config Node.
  * Hold global VRS configuration and settings.  
  */
-public class InfoConfigNode extends InfoRSNode
+public class InfoConfigNode extends InfoRSPathNode
 {
     protected SystemInfosNode infosNode=null;
     

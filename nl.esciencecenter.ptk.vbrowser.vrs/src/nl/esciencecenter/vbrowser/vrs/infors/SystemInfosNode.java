@@ -34,7 +34,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Fixed LocalSystem node.
  */
-public class SystemInfosNode extends InfoRSNode
+public class SystemInfosNode extends InfoRSPathNode
 {
     private final static ClassLogger logger = ClassLogger.getLogger(SystemInfosNode.class);
 
@@ -61,7 +61,7 @@ public class SystemInfosNode extends InfoRSNode
         initConfigs();
     }
 
-    public List<? extends InfoRSNode> list() throws VrsException
+    public List<? extends InfoRSPathNode> list() throws VrsException
     {
         sync();
         return super.list();

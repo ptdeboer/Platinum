@@ -39,7 +39,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public class SystemInfoNode extends InfoResourceNode
 {
 
-    protected SystemInfoNode(InfoRSNode parent, VRL logicalVRL, ResourceSystemInfo info)
+    protected SystemInfoNode(InfoRSPathNode parent, VRL logicalVRL, ResourceSystemInfo info)
     {
         super(parent, InfoRSConstants.RESOURCEINFO_CONFIG, logicalVRL);
         this.setTargetVRL(info.getServerVRL());

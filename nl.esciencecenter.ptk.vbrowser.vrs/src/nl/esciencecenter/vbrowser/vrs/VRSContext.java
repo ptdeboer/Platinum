@@ -28,6 +28,8 @@ import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.vrs.credentials.Credential;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.Registry;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
@@ -186,6 +188,21 @@ public class VRSContext
     public boolean hasPersistantConfig() 
     {
         return this.hasPersistantConfig; 
+    }
+
+    public String getVO()
+    {
+        return null;
+    }
+
+    public Credential getCredential(String credentialType)
+    {
+        return null; 
+    }
+
+    public VRL getInfoRootNodeVRL() throws VRLSyntaxException
+    {
+        return new VRL("info:/"); 
     }
     
 }

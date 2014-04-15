@@ -7,8 +7,8 @@ public interface VReplicatable
     
     public VRL[] getReplicas();
 
-    public boolean registerReplicas(VRL[] vrls);
+    public boolean registerReplicas(VRL[] replicaVRLs);
     
-    public boolean unregisterReplicas(VRL[] emptyRepArray);
+    public boolean unregisterReplicas(VRL[] replicaVRLs);
 
 }

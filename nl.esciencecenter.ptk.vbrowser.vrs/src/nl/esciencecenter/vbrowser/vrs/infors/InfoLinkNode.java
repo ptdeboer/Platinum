@@ -27,7 +27,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class InfoLinkNode extends InfoResourceNode
 {
-    protected InfoLinkNode(InfoRSNode parent, VRL logicalVRL, VRL targetVRL)
+    protected InfoLinkNode(InfoRSPathNode parent, VRL logicalVRL, VRL targetVRL)
     {
         super(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
         this.setTargetVRL(targetVRL);

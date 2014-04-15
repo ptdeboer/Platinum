@@ -176,7 +176,7 @@ public class VRSClient
      */
     public InfoRootNode getInfoRootNode() throws VrsException
     {
-        return (InfoRootNode)openPath(new VRL("info:/")); 
+        return (InfoRootNode)openPath(vrsContext.getInfoRootNodeVRL()); 
     }
 
     public List<VPath> openPaths(List<VRL> vrls) throws VrsException
@@ -261,6 +261,7 @@ public class VRSClient
 
     public OutputStream createOutputStream(VPath file, boolean append)  throws VrsException
     {
+ 
         if (file instanceof VStreamWritable)
         {
             return ((VStreamWritable)file).createOutputStream(append); 

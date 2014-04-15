@@ -38,7 +38,10 @@ public class VRS
     public final static String SSH_SCHEME="ssh";
     public final static String SRB_SCHEME="srb";
     public final static String IRODS_SCHEME="irods";
-        
+    public static final String SRM_SCHEME = "srm";
+    public static final String LFN_SCHEME = "lfn";
+    public static final String INFORS_SCHEME = "info";
+            
     private static Map<String,Integer> defaultPorts; 
     
     static

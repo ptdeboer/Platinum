@@ -20,12 +20,11 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
+import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -53,7 +52,7 @@ public class InfoRootNode extends InfoResourceNode
     
     public InfoRootNode(InfoRS infoRS) throws VrsException
     {
-        super(infoRS, InfoRSConstants.INFOSYSTEMROOTNODE, new VRL("info", null, 0, "/"));
+        super(infoRS, InfoRSConstants.INFOSYSTEMROOTNODE, new VRL(VRS.INFORS_SCHEME, null, 0, "/"));
         infors = infoRS;
         init();
     }
@@ -74,7 +73,7 @@ public class InfoRootNode extends InfoResourceNode
     /** 
      * Root node has top level recursive find node method. 
      */
-    public InfoRSNode findNode(VRL vrl) throws VrsException
+    public InfoRSPathNode findNode(VRL vrl) throws VrsException
     {
         String paths[] = vrl.getPathElements();
 
@@ -92,7 +91,7 @@ public class InfoRootNode extends InfoResourceNode
 
         if (n > 0)
         {
-            InfoRSNode node = this.findSubNode(vrl, true);
+            InfoRSPathNode node = this.findSubNode(vrl, true);
 
             if (node != null)
             {

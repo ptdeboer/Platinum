@@ -23,7 +23,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.XMLDataException;
-import nl.esciencecenter.vbrowser.vrs.infors.InfoRSNode;
+import nl.esciencecenter.vbrowser.vrs.infors.InfoRSPathNode;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoResourceNode;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;

@@ -37,7 +37,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Fixed LocalSystem node.
  */
-public class LocalSystem extends InfoRSNode
+public class LocalSystem extends InfoRSPathNode
 {
     protected FSUtil fsUtil = null;
 

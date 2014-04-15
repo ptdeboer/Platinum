@@ -28,6 +28,7 @@ import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
+import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -35,18 +36,24 @@ import nl.esciencecenter.vbrowser.vrs.node.VPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Super class for all InfoRS Nodes.
+ * Super class for all InfoRS Nodes. Manages a list of "sub" nodes.
  */
-public abstract class InfoRSNode extends VPathNode
+public abstract class InfoRSPathNode extends VPathNode
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(InfoRSNode.class);
+    private static final ClassLogger logger = ClassLogger.getLogger(InfoRSPathNode.class);
 
     // ===============
     // Class Constants
     // ===============
 
-    public static List<String> defaultFolderChildTypes = new StringList(InfoRSConstants.RESOURCEFOLDER, InfoRSConstants.RESOURCELINK,
-            VRSTypes.VLINK_TYPE);
+    public final static String subNodeTypes_arr[] =
+        {
+            InfoRSConstants.RESOURCEFOLDER,
+            InfoRSConstants.RESOURCELINK,
+            VRSTypes.VLINK_TYPE
+        };
+
+    public static StringList defaultFolderChildTypes = new StringList(subNodeTypes_arr);
 
     // ===============
     // Instance
@@ -57,20 +64,22 @@ public abstract class InfoRSNode extends VPathNode
      */
     protected AttributeSet attributes = null;
 
-    protected ArrayList<InfoRSNode> subNodes = new ArrayList<InfoRSNode>();
+    protected ArrayList<InfoRSPathNode> subNodes = new ArrayList<InfoRSPathNode>();
 
-    protected InfoRSNode parent;
+    protected InfoRSPathNode parent;
 
     protected String resourceType = null;
 
-    protected InfoRSNode(InfoRS fileSystem, String type, VRL vrl)
+    private boolean isEditable;
+
+    protected InfoRSPathNode(VResourceSystem infoRs, String type, VRL vrl)
     {
-        super(fileSystem, vrl);
+        super(infoRs, vrl);
         this.resourceType = type;
         this.attributes = new AttributeSet(type);
     }
 
-    protected VRSContext getVRSContext()
+    public VRSContext getVRSContext()
     {
         return this.getInfoRS().getVRSContext();
     }
@@ -80,7 +89,7 @@ public abstract class InfoRSNode extends VPathNode
         return (InfoRS) resourceSystem;
     }
 
-    protected InfoRSNode(InfoRSNode parent, String type, VRL vrl)
+    protected InfoRSPathNode(InfoRSPathNode parent, String type, VRL vrl)
     {
         super(parent.resourceSystem, vrl);
         this.resourceType = type;
@@ -102,17 +111,20 @@ public abstract class InfoRSNode extends VPathNode
         return this.attributes.duplicate(true);
     }
 
+    @Override
     public boolean isComposite()
     {
         return true;
     }
 
+    @Override
     public String getMimeType()
     {
         return VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX + "-infors-" + getResourceType();
     }
 
-    public InfoRSNode getParent()
+    @Override
+    public InfoRSPathNode getParent()
     {
         return this.parent;
     }
@@ -128,7 +140,12 @@ public abstract class InfoRSNode extends VPathNode
     }
 
     @Override
-    public List<? extends InfoRSNode> list() throws VrsException
+    public List<? extends InfoRSPathNode> list() throws VrsException
+    {
+        return getSubNodes();
+    }
+
+    public List<? extends InfoRSPathNode> getSubNodes()
     {
         return subNodes;
     }
@@ -144,7 +161,7 @@ public abstract class InfoRSNode extends VPathNode
             return null;
         }
 
-        for (InfoRSNode node : subNodes)
+        for (InfoRSPathNode node : subNodes)
         {
             if (node instanceof InfoResourceNode)
             {
@@ -154,7 +171,7 @@ public abstract class InfoRSNode extends VPathNode
         return filteredNodes;
     }
 
-    final protected void setParent(InfoRSNode newParent) throws VrsException
+    final protected void setParent(InfoRSPathNode newParent) throws VrsException
     {
         if (newParent == null)
         {
@@ -167,7 +184,7 @@ public abstract class InfoRSNode extends VPathNode
         this.parent = newParent;
     }
 
-    final protected void addSubNode(InfoRSNode node) throws VrsException
+    final public void addSubNode(InfoRSPathNode node) throws VrsException
     {
         synchronized (node)
         {
@@ -180,7 +197,31 @@ public abstract class InfoRSNode extends VPathNode
         }
     }
 
-    final protected void delSubNode(InfoRSNode node) throws VrsException
+    final public void setSubNodes(InfoRSPathNode[] nodes)
+    {
+        synchronized (subNodes)
+        {
+            subNodes.clear();
+            for (InfoRSPathNode node : nodes)
+            {
+                subNodes.add(node);
+            }
+        }
+    }
+
+    final public void setSubNodes(List<InfoRSPathNode> nodes)
+    {
+        synchronized (subNodes)
+        {
+            subNodes.clear();
+            for (InfoRSPathNode node : nodes)
+            {
+                subNodes.add(node);
+            }
+        }
+    }
+    
+    final protected void delSubNode(InfoRSPathNode node) throws VrsException
     {
         synchronized (subNodes)
         {
@@ -193,7 +234,7 @@ public abstract class InfoRSNode extends VPathNode
     {
         if (subNodes == null)
         {
-            subNodes = new ArrayList<InfoRSNode>();
+            subNodes = new ArrayList<InfoRSPathNode>();
         }
         else
         {
@@ -208,7 +249,7 @@ public abstract class InfoRSNode extends VPathNode
     /**
      * Performs optional recursive linear search on ArrayList.
      */
-    public InfoRSNode findSubNode(VRL vrl, boolean recursive)
+    public InfoRSPathNode findSubNode(VRL vrl, boolean recursive)
     {
         String subPath = vrl.getPath();
         if (subPath == null)
@@ -216,23 +257,30 @@ public abstract class InfoRSNode extends VPathNode
             return null;
         }
 
-        // unsynchronized access
-        for (InfoRSNode node : subNodes)
+        synchronized (subNodes)
         {
-            if (node.getVRL().equals(vrl))
+            for (InfoRSPathNode node : subNodes)
             {
-                return node;
-            }
-
-            if (recursive && subPath.startsWith(node.getVRL().getPath()))
-            {
-                // recursive search:
-                InfoRSNode subNode = node.findSubNode(vrl, true);
-                if (subNode != null)
+                if (node == this)
                 {
-                    return subNode;
+                    throw new Error("Cycled detected, sub node equals me!");
                 }
-                // continue;
+
+                if (node.getVRL().equals(vrl))
+                {
+                    return node;
+                }
+
+                if (recursive && subPath.startsWith(node.getVRL().getPath()))
+                {
+                    // recursive search:
+                    InfoRSPathNode subNode = node.findSubNode(vrl, true);
+                    if (subNode != null)
+                    {
+                        return subNode;
+                    }
+                    // continue;
+                }
             }
         }
 
@@ -246,10 +294,10 @@ public abstract class InfoRSNode extends VPathNode
      *            logical name or basename of node.
      * @return - InfoRSNode or null.
      */
-    protected InfoRSNode getSubNodeByName(String name)
+    protected InfoRSPathNode getSubNodeByName(String name)
     {
-        // unsynchronized access:
-        for (InfoRSNode node : subNodes)
+        // quick unsynchronized access:
+        for (InfoRSPathNode node : subNodes)
         {
             if (StringUtil.equals(node.getName(), name))
             {
@@ -260,12 +308,12 @@ public abstract class InfoRSNode extends VPathNode
         return null;
     }
 
-    protected VRL createSubPathVRL(String subPath) throws VRLSyntaxException
+    public VRL createSubPathVRL(String subPath) throws VRLSyntaxException
     {
         return getVRL().resolvePath(subPath);
     }
 
-    protected VRL createNewSubNodeVRL() throws VRLSyntaxException
+    public VRL createNewSubNodeVRL() throws VRLSyntaxException
     {
         return getVRL().resolvePath("v" + this.getNumNodes());
     }
@@ -276,11 +324,11 @@ public abstract class InfoRSNode extends VPathNode
     }
 
     /**
-     * Get top level root resource node.
+     * Get top level root resource node. performs a upwards recursive search to get the root node.
      */
     protected InfoRootNode getRootNode()
     {
-        InfoRSNode node = this;
+        InfoRSPathNode node = this;
 
         while (node.parent != null)
         {
@@ -297,7 +345,7 @@ public abstract class InfoRSNode extends VPathNode
         }
         else
         {
-            logger.warnPrintf("Couldn't find rootNode for:%s\n",this);
+            logger.warnPrintf("Couldn't find rootNode for:%s\n", this);
             return null;
         }
     }
@@ -305,6 +353,16 @@ public abstract class InfoRSNode extends VPathNode
     public String toString()
     {
         return "<InfoRSNode:" + this.getResourceType() + ">:" + getVRL();
+    }
+
+    public void setIsEditable(boolean editable)
+    {
+        this.isEditable = editable;
+    }
+
+    public boolean isEditable()
+    {
+        return this.isEditable;
     }
 
 
