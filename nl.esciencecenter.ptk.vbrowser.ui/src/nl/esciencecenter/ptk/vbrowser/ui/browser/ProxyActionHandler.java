@@ -336,7 +336,7 @@ public class ProxyActionHandler
 
     public void fireDeletedNodeEvent(ProxyNode parent, ProxyNode actualNode)
     {
-        parent.getProxyNodeEventNotifier().scheduleEvent(
+        actualNode.getProxyNodeEventNotifier().scheduleEvent(
                 VRSEvent.createChildDeletedEvent(
                         (parent != null) ? parent.getVRL() : null,
                         actualNode.getVRL()));
@@ -344,7 +344,7 @@ public class ProxyActionHandler
 
     public void fireNodeRenamedEvent(ProxyNode parent, ProxyNode oldNode, ProxyNode newNode)
     {
-        parent.getProxyNodeEventNotifier().scheduleEvent(
+        oldNode.getProxyNodeEventNotifier().scheduleEvent(
                 VRSEvent.createNodeRenamedEvent(
                         (parent != null) ? parent.getVRL() : null,
                         oldNode.getVRL(),
