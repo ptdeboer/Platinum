@@ -22,10 +22,10 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerContext;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerFrame;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 
 /** 
  * Manages all the embedded viewers inside and outside the VBrowser. 

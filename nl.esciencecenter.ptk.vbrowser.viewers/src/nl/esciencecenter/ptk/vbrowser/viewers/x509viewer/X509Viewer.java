@@ -33,7 +33,7 @@ import nl.esciencecenter.ptk.ssl.CertUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 

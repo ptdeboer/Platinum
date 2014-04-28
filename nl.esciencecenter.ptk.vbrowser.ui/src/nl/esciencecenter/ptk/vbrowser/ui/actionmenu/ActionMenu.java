@@ -34,9 +34,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry.MimeMenuEntry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry.ViewerEntry;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.MimeMenuEntry;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.ViewerEntry;
 
 public class ActionMenu extends JPopupMenu
 {

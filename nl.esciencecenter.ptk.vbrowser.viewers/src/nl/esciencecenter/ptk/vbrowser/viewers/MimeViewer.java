@@ -18,14 +18,14 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
+package nl.esciencecenter.ptk.vbrowser.viewers;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Interface for content viewers. Viewer Registry binds MimeTypes from getMimeTypes() to this viewer.
- * A list of optional Menu mapping can be supplied by <code> getMimeMenuMethods</code> 
+ * Interface for content viewers. Viewer Registry binds MimeTypes from getMimeTypes() to this viewer. A list of optional
+ * Menu mapping can be supplied by <code> getMimeMenuMethods</code>
  */
 public interface MimeViewer
 {

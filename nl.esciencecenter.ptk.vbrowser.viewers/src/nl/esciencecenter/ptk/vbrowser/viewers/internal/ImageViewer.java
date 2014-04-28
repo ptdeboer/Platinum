@@ -39,7 +39,7 @@ import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.ui.image.ImagePane;
 import nl.esciencecenter.ptk.ui.image.ImagePane.ImageWaiter;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -52,15 +52,23 @@ public class ImageViewer extends EmbeddedViewer
 
     /** The mimetypes I can view */
     private static String mimeTypes[] =
-    { "image/gif", "image/jpeg", "image/bmp", "image/png" };
+    {
+            "image/gif",
+            "image/jpeg",
+            "image/bmp",
+            "image/png"
+    };
 
     private static double zoomOutFactors[] =
-    { 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 };
+    {
+            0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1
+    };
 
     private static double zoomInFactors[] =
     {
             // 100,125,150,200,300,400,500,600,800,1000%
-            1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 4, 5, 6, 7, 8, 9, 10 };
+            1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 4, 5, 6, 7, 8, 9, 10
+    };
 
     // ====================================================================
     //
@@ -130,21 +138,6 @@ public class ImageViewer extends EmbeddedViewer
         initGui();
     }
 
-//    public static void viewStandAlone(VRL loc)
-//    {
-//        ImageViewer tv = new ImageViewer();
-//
-//        try
-//        {
-//            tv.startAsStandAloneApplication(loc);
-//        }
-//        catch (VrsException e)
-//        {
-//            System.out.println("***Error: Exception:" + e);
-//            e.printStackTrace();
-//        }
-//    }
-    
     @Override
     public void doStopViewer()
     {
@@ -155,7 +148,7 @@ public class ImageViewer extends EmbeddedViewer
     @Override
     public void doDisposeViewer()
     {
-        // help the garbage collector, images can be big:
+        // Help the garbage collector, images can be big:
         this.imagePane.dispose();
         this.remove(imagePane);
         this.imagePane = null;
@@ -170,13 +163,13 @@ public class ImageViewer extends EmbeddedViewer
         // remove html color codes:
         return "ImageViewer";
     }
-    
+
     @Override
-    public void doStartViewer(VRL vrl,String optionalMethod)
+    public void doStartViewer(VRL vrl, String optionalMethod)
     {
         doUpdate(vrl);
     }
-    
+
     public void doUpdate(VRL vrl)
     {
         try
@@ -185,15 +178,15 @@ public class ImageViewer extends EmbeddedViewer
         }
         catch (Exception e)
         {
-            notifyException("Failed to load image:"+vrl,e); 
+            notifyException("Failed to load image:" + vrl, e);
         }
     }
 
-    public void loadImage(VRL vrl) throws Exception 
+    public void loadImage(VRL vrl) throws Exception
     {
-        if (vrl==null)
+        if (vrl == null)
         {
-            return; 
+            return;
         }
 
         notifyBusy(true);
@@ -224,74 +217,74 @@ public class ImageViewer extends EmbeddedViewer
 
     public void loadImage(VRL vrl, boolean wait) throws Exception
     {
-        InputStream inps=getResourceHandler().openInputStream(vrl); 
-        
+        InputStream inps = getResourceHandler().openInputStream(vrl);
+
         Image image;
         image = ImageIO.read(inps);
-        
+
         try
         {
             inps.close();
         }
-        catch (Exception e) 
+        catch (Exception e)
         {
             ;
-        } 
-        
-        if (image==null)
-        {
-            throw new IOException("Failed to load image: Image loader returned NULL for:"+vrl.toURI()); 
         }
-        
-        imagePane.setImage(image,wait);
-    }
-    
-//    /**
-//     * // @Overide update&paint methods for speed: public void update(Graphics
-//     * g) { //this.setSize(imagePane.getSize());
-//     * //this.setPreferredSize(imagePane.getSize()); imagePane.paint(g); }
-//     * 
-//     * public void paint(Graphics g) { imagePane.paint(g); }
-//     **/
-//
-//    public Vector<ActionMenuMapping> getActionMappings()
-//    {
-//        ActionMenuMapping mapping = new ActionMenuMapping("viewImage", "View Image");
-//        // '/' is not a RE character
-//        Pattern patterns[] = new Pattern[mimeTypes.length];
-//
-//        for (int i = 0; i < mimeTypes.length; i++)
-//            patterns[i] = Pattern.compile(mimeTypes[i]);
-//
-//        mapping.addMimeTypeMapping(patterns);
-//
-//        Vector<ActionMenuMapping> mappings = new Vector<ActionMenuMapping>();
-//        mappings.add(mapping);
-//        return mappings;
-//    }
 
-//    public void doMethod(String methodName, ActionContext actionContext) throws VrsException
-//    {
-//
-//        if (actionContext.getSource() != null)
-//            this.updateLocation(actionContext.getSource());
-//
-//    }
+        if (image == null)
+        {
+            throw new IOException("Failed to load image: Image loader returned NULL for:" + vrl.toURI());
+        }
+
+        imagePane.setImage(image, wait);
+    }
+
+    // /**
+    // * // @Overide update&paint methods for speed: public void update(Graphics
+    // * g) { //this.setSize(imagePane.getSize());
+    // * //this.setPreferredSize(imagePane.getSize()); imagePane.paint(g); }
+    // *
+    // * public void paint(Graphics g) { imagePane.paint(g); }
+    // **/
+    //
+    // public Vector<ActionMenuMapping> getActionMappings()
+    // {
+    // ActionMenuMapping mapping = new ActionMenuMapping("viewImage", "View Image");
+    // // '/' is not a RE character
+    // Pattern patterns[] = new Pattern[mimeTypes.length];
+    //
+    // for (int i = 0; i < mimeTypes.length; i++)
+    // patterns[i] = Pattern.compile(mimeTypes[i]);
+    //
+    // mapping.addMimeTypeMapping(patterns);
+    //
+    // Vector<ActionMenuMapping> mappings = new Vector<ActionMenuMapping>();
+    // mappings.add(mapping);
+    // return mappings;
+    // }
+
+    // public void doMethod(String methodName, ActionContext actionContext) throws VrsException
+    // {
+    //
+    // if (actionContext.getSource() != null)
+    // this.updateLocation(actionContext.getSource());
+    //
+    // }
 
     public void componentShown(ComponentEvent e)
     {
     }
 
     /**
-     *  I manage my own scrollpane for panning/autoscrolling 
+     * I manage my own scrollpane for panning/autoscrolling
      */
     public boolean haveOwnScrollPane()
     {
         return true;
     }
 
-    /** 
-     * Get ScrollPane ViewPosition 
+    /**
+     * Get ScrollPane ViewPosition
      */
     public Point getViewPosition()
     {
@@ -300,7 +293,7 @@ public class ImageViewer extends EmbeddedViewer
     }
 
     /**
-     *  Set ScrollPane ViewPosition 
+     * Set ScrollPane ViewPosition
      */
     public void setViewPosition(int newx, int newy)
     {
@@ -360,7 +353,7 @@ public class ImageViewer extends EmbeddedViewer
     private boolean doMoreZoom = false;
 
     /**
-     * Perform Zoom: Schedule background task to do the zooming 
+     * Perform Zoom: Schedule background task to do the zooming
      */
     protected void doZoom()
     {
@@ -462,7 +455,7 @@ public class ImageViewer extends EmbeddedViewer
                     }
                     catch (Exception e)
                     {
-                        notifyException("Failed to zoom",e);
+                        notifyException("Failed to zoom", e);
                     }
 
                     //
@@ -529,16 +522,19 @@ public class ImageViewer extends EmbeddedViewer
     public Map<String, List<String>> getMimeMenuMethods()
     {
         // Use HashMapList to keep order of menu entries: first is default(!)
-        
-        Map<String,List<String>> mappings=new HashMapList<String,List<String>>(); 
-        
-        for (int i=0;i<mimeTypes.length;i++)
+
+        Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
+
+        for (int i = 0; i < mimeTypes.length; i++)
         {
-            List<String> list=new StringList(new String[]{"view:View Image"}); 
-            mappings.put(mimeTypes[i],list); 
+            List<String> list = new StringList(new String[]
+            {
+                    "view:View Image"
+            });
+            mappings.put(mimeTypes[i], list);
         }
-        
-        return mappings; 
+
+        return mappings;
     }
-   
+
 }

@@ -57,8 +57,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
+import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 
 /**
  * Master Browser frame.

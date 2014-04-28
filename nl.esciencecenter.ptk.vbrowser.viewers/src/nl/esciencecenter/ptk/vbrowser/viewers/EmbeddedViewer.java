@@ -18,7 +18,7 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
+package nl.esciencecenter.ptk.vbrowser.viewers;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -47,16 +47,16 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Embedded Viewer Panel and (abstract) ViewerPlugin adaptor for VBrowser viewers (and Tools).
- *  
+ * 
  * @author Piter T. de Boer
  */
-public abstract class EmbeddedViewer extends JPanel implements Disposable, ViewerPlugin,MimeViewer 
+public abstract class EmbeddedViewer extends JPanel implements Disposable, ViewerPlugin, MimeViewer
 {
     private static final long serialVersionUID = 7872709733522871820L;
 
-    private static ClassLogger logger=ClassLogger.getLogger(EmbeddedViewer.class);
-    
-    // ===  
+    private static ClassLogger logger = ClassLogger.getLogger(EmbeddedViewer.class);
+
+    // ===
 
     private JPanel innerPanel;
 
@@ -65,6 +65,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     private boolean isBusy;
 
     private List<ViewerListener> listeners = new ArrayList<ViewerListener>();
+
     private ViewerContext viewerContext;
 
     protected EmbeddedViewer()
@@ -74,12 +75,12 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
 
     protected PluginRegistry getViewerRegistry()
     {
-        if (viewerContext!=null)
+        if (viewerContext != null)
         {
             return viewerContext.getPluginRegistry();
         }
-        
-        return null; 
+
+        return null;
     }
 
     /**
@@ -113,7 +114,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     final public void startViewerFor(VRL newVRL, String optMenuMethod)
     {
         this.setVrl(newVRL);
-        startViewer(newVRL,optMenuMethod);
+        startViewer(newVRL, optMenuMethod);
         // doUpdateURI(newUri);
     }
 
@@ -139,8 +140,8 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     }
 
     /**
-     * Whether to start this viewer always in a StandAlone Dialog/Frame. Some Viewers are not embedded viewers and must be
-     * started in a seperate Window.
+     * Whether to start this viewer always in a StandAlone Dialog/Frame. Some Viewers are not embedded viewers and must
+     * be started in a seperate Window.
      * 
      * @return whether viewer is a stand-alone viewer which must be started in its own window (frame).
      */
@@ -169,8 +170,8 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     }
 
     /**
-     * Returns parent ViewerFrame (JFrame) if contained in one. Might return NULL if parent is not a JFrame. 
-     * Uses getTopLevelAncestor() to get the (AWT) toplevel component.
+     * Returns parent ViewerFrame (JFrame) if contained in one. Might return NULL if parent is not a JFrame. Uses
+     * getTopLevelAncestor() to get the (AWT) toplevel component.
      * 
      * @see javax.swing.JComponent#getTopLevelAncestor()
      * @return the containing JFrame or null.
@@ -179,7 +180,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     {
         Container topcomp = this.getTopLevelAncestor();
 
-        // stand-alone viewer must be embedded in a ViewerFrame. 
+        // stand-alone viewer must be embedded in a ViewerFrame.
         if (topcomp instanceof ViewerFrame)
         {
             return ((ViewerFrame) topcomp);
@@ -194,9 +195,9 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     }
 
     /**
-     * If this panel is embedded in a (J)Frame, request that the parent JFrame performs a pack() and resizes the Frame to
-     * the preferred size. If this viewer is embedded in another panel, the method will not perform a resize and return
-     * false.
+     * If this panel is embedded in a (J)Frame, request that the parent JFrame performs a pack() and resizes the Frame
+     * to the preferred size. If this viewer is embedded in another panel, the method will not perform a resize and
+     * return false.
      * 
      * @return true if frame could perform pack, athough the actual pack() might be delayed.
      */
@@ -204,8 +205,8 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     {
         JFrame frame = getJFrame();
 
-        // only pack stand alone viewers embeeded in ViewerFrames. 
-        if ((frame == null) || ((frame instanceof ViewerFrame)==false))
+        // only pack stand alone viewers embeeded in ViewerFrames.
+        if ((frame == null) || ((frame instanceof ViewerFrame) == false))
         {
             return false;
         }
@@ -223,7 +224,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
         {
             return false;
         }
-        
+
         JFrame frame = this.getJFrame();
 
         if (frame != null)
@@ -243,29 +244,29 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     @Override
     final public void initViewer(ViewerContext viewerContext)
     {
-        this.viewerContext=viewerContext; 
+        this.viewerContext = viewerContext;
         doInitViewer();
     }
-    
-    final public ViewerContext getViewerContext() 
+
+    final public ViewerContext getViewerContext()
     {
-        return viewerContext; 
+        return viewerContext;
     }
-    
+
     @Override
     final public void startViewer(VRL vrl, String optMenuMethod)
     {
         doStartViewer(vrl, optMenuMethod);
         // fireStarted();
     }
-    
+
     @Override
     final public void stopViewer()
     {
         doStopViewer();
         // fireStopped();
     }
-    
+
     @Override
     final public void disposeViewer()
     {
@@ -282,7 +283,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     {
         this.listeners.add(listener);
     }
-    
+
     @Override
     public void removeViewerListener(ViewerListener listener)
     {
@@ -310,38 +311,13 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
         ExceptionDialog.show(this, message, ex, false);
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    protected IconProvider iconProvider=null;
-    
+    protected IconProvider iconProvider = null;
+
     protected String textEncoding = "UTF-8";
 
     protected Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
-    
+
     protected Properties properties;
-
-    
-    
-
 
     public Cursor getBusyCursor()
     {
@@ -364,154 +340,153 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     }
 
     protected Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-    
+
     public ViewerResourceLoader getResourceHandler()
     {
-        PluginRegistry reg=getViewerRegistry(); 
-        
-        if (reg==null)
-            return null; 
-        
-        return reg.getResourceHandler(); 
+        PluginRegistry reg = getViewerRegistry();
+
+        if (reg == null)
+            return null;
+
+        return reg.getResourceHandler();
     }
 
     public String getURIBasename()
     {
-        return getVRL().getBasename(); 
+        return getVRL().getBasename();
     }
-    
+
     protected ResourceLoader getResourceLoader()
     {
         return this.getResourceHandler().getResourceLoader();
     }
-    
+
     protected IconProvider getIconProvider()
     {
-        if (this.iconProvider==null)
+        if (this.iconProvider == null)
         {
-            iconProvider=new IconProvider(this, getResourceLoader()); 
+            iconProvider = new IconProvider(this, getResourceLoader());
         }
-        
+
         return iconProvider;
     }
-    
+
     protected Icon getIconOrBroken(String iconUrl)
     {
-        return getIconProvider().getIconOrBroken(iconUrl); 
+        return getIconProvider().getIconOrBroken(iconUrl);
     }
-    
+
     public String getTextEncoding()
     {
         return this.textEncoding;
     }
-    
+
     public void setTextEncoding(String charSet)
     {
-        this.textEncoding=charSet;
+        this.textEncoding = charSet;
     }
-    
-    /** 
+
+    /**
      * Returns most significant Class Name
      */
     public String getViewerClass()
     {
-        return this.getClass().getCanonicalName(); 
+        return this.getClass().getCanonicalName();
     }
-    
+
     /**
      * Embedded viewer is actual ViewerPanel
-     */ 
+     */
     @Override
     public EmbeddedViewer getViewerPanel()
     {
-        return this; 
+        return this;
     }
-    
+
     public boolean canView(String mimeType)
     {
-       return  new StringList(getMimeTypes()).contains(mimeType); 
+        return new StringList(getMimeTypes()).contains(mimeType);
     }
-    
+
     public VRL getConfigPropertiesURI(String configPropsName) throws URISyntaxException
     {
-        VRL confVrl=this.getResourceHandler().getViewerConfigDir();
-        if (confVrl==null)
+        VRL confVrl = this.getResourceHandler().getViewerConfigDir();
+        if (confVrl == null)
         {
             logger.warnPrintf("No viewer configuration directory configured\n");
             return null;
         }
-        
-        VRL vrl=confVrl.appendPath("/viewers/"+configPropsName);
+
+        VRL vrl = confVrl.appendPath("/viewers/" + configPropsName);
         return vrl;
     }
-    
+
     protected Properties loadConfigProperties(String configPropsName) throws IOException
-    {   
-        if (properties==null)
+    {
+        if (properties == null)
         {
             try
             {
-                properties=getResourceHandler().loadProperties(getConfigPropertiesURI(configPropsName));
+                properties = getResourceHandler().loadProperties(getConfigPropertiesURI(configPropsName));
             }
             catch (URISyntaxException e)
             {
-                throw new IOException("Invalid properties location:"+e.getReason(),e);
+                throw new IOException("Invalid properties location:" + e.getReason(), e);
             }
             catch (Exception e)
             {
-                throw new IOException(e.getMessage(),e);
+                throw new IOException(e.getMessage(), e);
             }
         }
-        return properties; 
+        return properties;
     }
-    
-    protected void saveConfigProperties(Properties configProps,String optName) throws IOException
+
+    protected void saveConfigProperties(Properties configProps, String optName) throws IOException
     {
         try
         {
-            getResourceHandler().saveProperties(getConfigPropertiesURI(optName),configProps);
+            getResourceHandler().saveProperties(getConfigPropertiesURI(optName), configProps);
         }
         catch (URISyntaxException e)
         {
-            throw new IOException("Invalid properties location:"+e.getReason(),e);
+            throw new IOException("Invalid properties location:" + e.getReason(), e);
         }
         catch (Exception e)
         {
-            throw new IOException(e.getMessage(),e);
+            throw new IOException(e.getMessage(), e);
         }
     }
-            
-    public void errorPrintf(String format,Object... args)
+
+    public void errorPrintf(String format, Object... args)
     {
-        logger.errorPrintf(format,args); 
+        logger.errorPrintf(format, args);
     }
 
-    protected void warnPrintf(String format,Object... args)
+    protected void warnPrintf(String format, Object... args)
     {
-        logger.warnPrintf(format,args); 
+        logger.warnPrintf(format, args);
     }
 
-    protected void infoPrintf(String format,Object... args)
+    protected void infoPrintf(String format, Object... args)
     {
-        logger.infoPrintf(format,args); 
+        logger.infoPrintf(format, args);
     }
 
-    protected void debugPrintf(String format,Object... args)
+    protected void debugPrintf(String format, Object... args)
     {
-        logger.debugPrintf("DEBUG:"+format,args); 
+        logger.debugPrintf("DEBUG:" + format, args);
     }
 
     public void showMessage(String format, Object... args)
     {
-        //redirect to master browser: 
-        logger.errorPrintf("MESSAGE:"+format,args); 
+        // redirect to master browser:
+        logger.errorPrintf("MESSAGE:" + format, args);
     }
 
-    protected void handle(String messageString,Throwable ex)
+    protected void handle(String messageString, Throwable ex)
     {
         ExceptionDialog.show(this, messageString, ex, false);
     }
-
 
     // =========================================================================
     // Abstract Interface
@@ -521,28 +496,30 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
      * Initialize GUI Component of viewer. Do not start loading resource. Typically this method is called during The
      * Swing Event Thread.
      * 
-     * @param viewerContext - Contains setting from VBrowser   
+     * @param viewerContext
+     *            - Contains setting from VBrowser
      */
 
     abstract protected void doInitViewer();
 
     /**
      * Start the viewer, load resources if necessary.
+     * 
      * @param vrl
-     * @param optionalMethod   
+     * @param optionalMethod
      */
     abstract protected void doStartViewer(VRL vrl, String optionalMethod);
 
     /**
      * Update content.
      */
-    
+
     abstract protected void doUpdate(VRL vrl);
 
     /**
      * Stop/suspend viewer. All background activity must stop. After a stopViewer() a startViewer() may occur to notify
      * the viewer can be activateed again.
-     */    
+     */
 
     abstract protected void doStopViewer();
 
@@ -550,13 +527,13 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
      * Stop viewer and dispose resources. After a disposeViewer() a viewer will never be started but multiple
      * disposeViewers() might ocure.
      */
-    
+
     abstract protected void doDisposeViewer();
-    
+
     // =====================================
-    // Explicit inheritance from MimeViewer 
+    // Explicit inheritance from MimeViewer
     // =====================================
-    
+
     @Override
     abstract public String[] getMimeTypes();
 

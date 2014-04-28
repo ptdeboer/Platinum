@@ -32,7 +32,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;

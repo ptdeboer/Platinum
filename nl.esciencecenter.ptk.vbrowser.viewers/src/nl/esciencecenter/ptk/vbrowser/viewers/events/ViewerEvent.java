@@ -21,20 +21,31 @@
 package nl.esciencecenter.ptk.vbrowser.viewers.events;
 
 import nl.esciencecenter.ptk.events.IEvent;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 
-public class ViewerEvent implements IEvent<EmbeddedViewer>
+public class ViewerEvent implements IEvent<EmbeddedViewer,ViewerEventType>
 {
-    protected EmbeddedViewer source; 
     
-    public ViewerEvent(EmbeddedViewer source)
+    protected EmbeddedViewer eventSource;
+    
+    protected ViewerEventType eventType; 
+    
+    public ViewerEvent(EmbeddedViewer source, ViewerEventType type)
     {
-        this.source=source;
+        this.eventSource=source;
+        this.eventType=type;  
     }
     
-    public EmbeddedViewer getSource()
+    @Override
+    public EmbeddedViewer getEventSource()
     {
-        return this.source;
+        return this.eventSource;
+    }
+
+    @Override
+    public ViewerEventType getEventType()
+    {
+        return this.eventType;
     }
 
 }

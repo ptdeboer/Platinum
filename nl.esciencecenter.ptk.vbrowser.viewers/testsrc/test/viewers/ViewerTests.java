@@ -1,9 +1,9 @@
 package test.viewers;
 
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerContext;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerFrame;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;

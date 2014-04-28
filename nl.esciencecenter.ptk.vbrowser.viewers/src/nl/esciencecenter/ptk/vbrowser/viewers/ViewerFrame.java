@@ -18,49 +18,49 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
+package nl.esciencecenter.ptk.vbrowser.viewers;
 
 import java.awt.Component;
 
 import javax.swing.JFrame;
 
-/** 
- * Viewer Frame for stand alone Viewer Panel. 
+/**
+ * Viewer Frame for stand alone Viewer Panels.
  */
 public class ViewerFrame extends JFrame
 {
     private static final long serialVersionUID = 3613838609500660102L;
-    
-    protected ViewerPlugin viewerPlugin; 
-    
+
+    protected ViewerPlugin viewerPlugin;
+
     public ViewerFrame(ViewerPlugin viewer)
     {
-        this.viewerPlugin=viewer;
-        initGui(); 
+        this.viewerPlugin = viewer;
+        initGui();
     }
 
     protected void initGui()
     {
-        Component viewerComponent=viewerPlugin.getViewerPanel();
+        Component viewerComponent = viewerPlugin.getViewerPanel();
         this.add(viewerComponent);
     }
-    
+
     public ViewerPlugin getViewer()
     {
-        return viewerPlugin; 
+        return viewerPlugin;
     }
 
     public static ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context, boolean initViewer)
     {
-        ViewerFrame frame=new ViewerFrame(viewer); 
+        ViewerFrame frame = new ViewerFrame(viewer);
         if (initViewer)
         {
-            viewer.initViewer(context);  
+            viewer.initViewer(context);
         }
-        frame.pack(); 
-        frame.setSize(frame.getPreferredSize()); 
-        //frame.setSize(800,600); 
-        
-        return frame; 
+        frame.pack();
+        frame.setSize(frame.getPreferredSize());
+        // frame.setSize(800,600);
+
+        return frame;
     }
 }

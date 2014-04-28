@@ -36,9 +36,9 @@ import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.exec.LocalExec;
 import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.MimeViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
+import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.MimeViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import com.jgoodies.forms.layout.CellConstraints;

@@ -18,7 +18,7 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
+package nl.esciencecenter.ptk.vbrowser.viewers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
 
 /**
- * Viewer and Tool Plugin Registry for the VBrowser. 
+ * Viewer and Tool Plugin Registry for the VBrowser.
  */
 public class PluginRegistry
 {

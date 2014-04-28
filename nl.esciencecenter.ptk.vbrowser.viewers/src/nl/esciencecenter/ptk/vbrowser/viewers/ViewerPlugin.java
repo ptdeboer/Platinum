@@ -18,7 +18,7 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
+package nl.esciencecenter.ptk.vbrowser.viewers;
 
 import javax.swing.JComponent;
 
@@ -91,6 +91,16 @@ public interface ViewerPlugin
      * gui elements might hold (native) resources, please cleanup those resources.
      */
     public void disposeViewer();
+
+    // ==================================
+    // Attribute/Configuration interface.
+    // ==================================
+
+    /**
+     * 
+     * @return true if, the viewer will manage it's own scrolling and panning.
+     */
+    public boolean haveOwnScrollPane();
 
     /**
      * @return whether this viewer always must be started in stand-alone (=not embedded) mode. true means do not embed
