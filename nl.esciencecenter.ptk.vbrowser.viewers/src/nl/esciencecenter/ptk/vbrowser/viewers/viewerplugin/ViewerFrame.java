@@ -20,6 +20,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 
+import java.awt.Component;
+
 import javax.swing.JFrame;
 
 /** 
@@ -29,30 +31,31 @@ public class ViewerFrame extends JFrame
 {
     private static final long serialVersionUID = 3613838609500660102L;
     
-    protected ViewerPanel viewer; 
+    protected ViewerPlugin viewerPlugin; 
     
-    public ViewerFrame(ViewerPanel viewer)
+    public ViewerFrame(ViewerPlugin viewer)
     {
-        this.viewer=viewer;
+        this.viewerPlugin=viewer;
         initGui(); 
     }
 
     protected void initGui()
     {
-        this.add(viewer);
+        Component viewerComponent=viewerPlugin.getViewerPanel();
+        this.add(viewerComponent);
     }
     
-    public ViewerPanel getViewer()
+    public ViewerPlugin getViewer()
     {
-        return viewer; 
+        return viewerPlugin; 
     }
 
-    public static ViewerFrame createViewerFrame(ViewerPanel newViewer, boolean initViewer)
+    public static ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context, boolean initViewer)
     {
-        ViewerFrame frame=new ViewerFrame(newViewer); 
+        ViewerFrame frame=new ViewerFrame(viewer); 
         if (initViewer)
         {
-            newViewer.initViewer();  
+            viewer.initViewer(context);  
         }
         frame.pack(); 
         frame.setSize(frame.getPreferredSize()); 

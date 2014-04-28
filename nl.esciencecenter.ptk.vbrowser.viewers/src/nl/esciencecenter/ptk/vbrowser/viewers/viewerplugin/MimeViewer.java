@@ -23,28 +23,31 @@ package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 import java.util.List;
 import java.util.Map;
 
-/** 
- * Interface for content viewers.
- * Viewer registry binds MimeTypes from getMimeTypes() to this viewer. 
+/**
+ * Interface for content viewers. Viewer Registry binds MimeTypes from getMimeTypes() to this viewer.
+ * A list of optional Menu mapping can be supplied by <code> getMimeMenuMethods</code> 
  */
 public interface MimeViewer
 {
-    
-    public String getViewerName(); 
-    
+
+    public String getViewerName();
+
     /**
-     * Supported mime types. One viewer may support multiple mime types. 
-     * For example { "text/plain", "text/html" } 
+     * Supported mime types. One viewer may support multiple mime types. For example { "text/plain", "text/html" }. The
+     * order is preferred first.
+     * 
      * @return
      */
     public String[] getMimeTypes();
 
     /**
-     *  Returns menu mapping per MimeType to a list of menu methods.<br>
-     *  Map structure ::= <code> Map&lt;MimeType, List&lt;MenuMethod&gt;&gt; </code>  
-     *  <br>
-     *  For example: { "text/plain" , {"View Text","Edit Text"}} 
-     */ 
-    public Map<String,List<String>> getMimeMenuMethods(); 
-    
+     * Returns the mapping of a menu entry per MimeType to a list of menu methods.<br>
+     * Mapping is ::= <code> Map&lt;MimeType, List&lt;MenuMethod&gt;&gt; </code> <br>
+     * For example: { "text/plain" , {"View Text:viewText","Edit Text:editText"}}<br>
+     * Menu methods should be human readable, the actual method name after the colon may be omitted. In that case the
+     * plain text menu name will be used as Method Name. This is the optional method name when startViewer(...) is
+     * invoked.
+     */
+    public Map<String, List<String>> getMimeMenuMethods();
+
 }

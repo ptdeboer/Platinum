@@ -57,7 +57,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 
 /**
  * Master Browser frame.
@@ -375,11 +376,11 @@ public class BrowserFrame extends JFrame
         tbl.setDataSource(node, true);
     }
 
-    protected void addViewerPanel(ViewerPanel viewer, boolean setFocus)
+    protected void addViewerPanel(ViewerPlugin viewer, boolean setFocus)
     {
         // TabContentPanel currentTab = this.getCurrentTab();
-        TabContentPanel tab = this.addTab(viewer.getName() + ":", null, setFocus);
-        tab.setContent(viewer);
+        TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus);
+        tab.setContent(viewer.getViewerPanel());
         return;
     }
 

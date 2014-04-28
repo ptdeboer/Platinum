@@ -56,7 +56,7 @@ public interface ToolPlugin
 
     /**
      * Default method name to use when the viewer is started from the Tool Menu.
-     * see {@link ViewerPanel#startViewerFor(VRL, String)}
+     * see {@link EmbeddedViewer#startViewerFor(VRL, String)}
      * 
      * @return
      */

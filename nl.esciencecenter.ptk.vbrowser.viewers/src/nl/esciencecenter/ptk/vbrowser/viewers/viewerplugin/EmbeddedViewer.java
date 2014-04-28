@@ -20,29 +20,316 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.FlowLayout;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.Icon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin,MimeViewer
+/**
+ * Embedded Viewer Panel and (abstract) ViewerPlugin adaptor for VBrowser viewers (and Tools).
+ *  
+ * @author Piter T. de Boer
+ */
+public abstract class EmbeddedViewer extends JPanel implements Disposable, ViewerPlugin,MimeViewer 
 {
-    private static final long serialVersionUID = -873655384459474749L;
-        
+    private static final long serialVersionUID = 7872709733522871820L;
+
     private static ClassLogger logger=ClassLogger.getLogger(EmbeddedViewer.class);
+    
     // ===  
+
+    private JPanel innerPanel;
+
+    private VRL viewedUri;
+
+    private boolean isBusy;
+
+    private List<ViewerListener> listeners = new ArrayList<ViewerListener>();
+    private ViewerContext viewerContext;
+
+    protected EmbeddedViewer()
+    {
+        this.setLayout(new BorderLayout());
+    }
+
+    protected PluginRegistry getViewerRegistry()
+    {
+        if (viewerContext!=null)
+        {
+            return viewerContext.getPluginRegistry();
+        }
+        
+        return null; 
+    }
+
+    /**
+     * Add custom content to this panel.
+     * 
+     * @return
+     */
+    public JPanel getContentPanel()
+    {
+        return this;
+    }
+
+    public JPanel initInnerPanel()
+    {
+        this.innerPanel = new JPanel();
+        this.add(innerPanel, BorderLayout.CENTER);
+        this.innerPanel.setLayout(new FlowLayout());
+        return innerPanel;
+    }
+
+    final public VRL getVRL()
+    {
+        return viewedUri;
+    }
+
+    final protected void setVrl(VRL vrl)
+    {
+        this.viewedUri = vrl;
+    }
+
+    final public void startViewerFor(VRL newVRL, String optMenuMethod)
+    {
+        this.setVrl(newVRL);
+        startViewer(newVRL,optMenuMethod);
+        // doUpdateURI(newUri);
+    }
+
+    /**
+     * Update the Viewed Location.
+     * 
+     * @param newUri
+     */
+    final public void updateVRL(VRL vrl)
+    {
+        setVrl(vrl);
+        doUpdate(vrl);
+    }
+
+    /**
+     * Whether Viewer has it own ScrollPane. If not the parent Component might embedd the viewer into a ScrollPanel.
+     * 
+     * @return
+     */
+    public boolean haveOwnScrollPane()
+    {
+        return false;
+    }
+
+    /**
+     * Whether to start this viewer always in a StandAlone Dialog/Frame. Some Viewers are not embedded viewers and must be
+     * started in a seperate Window.
+     * 
+     * @return whether viewer is a stand-alone viewer which must be started in its own window (frame).
+     */
+    public boolean isStandaloneViewer()
+    {
+        return false;
+    }
+
+    /**
+     * Set title of master frame or Viewer tab
+     */
+    public void setViewerTitle(final String name)
+    {
+        this.setName(name);
+
+        // also update JFrame
+        if (isStandaloneViewer())
+        {
+            JFrame frame = getJFrame();
+            if (frame != null)
+            {
+                getJFrame().setTitle(name);
+            }
+        }
+
+    }
+
+    /**
+     * Returns parent ViewerFrame (JFrame) if contained in one. Might return NULL if parent is not a JFrame. 
+     * Uses getTopLevelAncestor() to get the (AWT) toplevel component.
+     * 
+     * @see javax.swing.JComponent#getTopLevelAncestor()
+     * @return the containing JFrame or null.
+     */
+    final public ViewerFrame getJFrame()
+    {
+        Container topcomp = this.getTopLevelAncestor();
+
+        // stand-alone viewer must be embedded in a ViewerFrame. 
+        if (topcomp instanceof ViewerFrame)
+        {
+            return ((ViewerFrame) topcomp);
+        }
+
+        return null;
+    }
+
+    final protected boolean hasJFrame()
+    {
+        return (this.getJFrame() != null);
+    }
+
+    /**
+     * If this panel is embedded in a (J)Frame, request that the parent JFrame performs a pack() and resizes the Frame to
+     * the preferred size. If this viewer is embedded in another panel, the method will not perform a resize and return
+     * false.
+     * 
+     * @return true if frame could perform pack, athough the actual pack() might be delayed.
+     */
+    final public boolean requestFramePack()
+    {
+        JFrame frame = getJFrame();
+
+        // only pack stand alone viewers embeeded in ViewerFrames. 
+        if ((frame == null) || ((frame instanceof ViewerFrame)==false))
+        {
+            return false;
+        }
+
+        frame.pack();
+        return true;
+    }
+
+    final protected boolean closeViewer()
+    {
+        stopViewer();
+        disposeViewer();
+
+        if (isStandaloneViewer() == false)
+        {
+            return false;
+        }
+        
+        JFrame frame = this.getJFrame();
+
+        if (frame != null)
+        {
+            frame.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    final public void dispose()
+    {
+        stopViewer();
+        disposeViewer();
+    }
+
+    @Override
+    final public void initViewer(ViewerContext viewerContext)
+    {
+        this.viewerContext=viewerContext; 
+        doInitViewer();
+    }
+    
+    final public ViewerContext getViewerContext() 
+    {
+        return viewerContext; 
+    }
+    
+    @Override
+    final public void startViewer(VRL vrl, String optMenuMethod)
+    {
+        doStartViewer(vrl, optMenuMethod);
+        // fireStarted();
+    }
+    
+    @Override
+    final public void stopViewer()
+    {
+        doStopViewer();
+        // fireStopped();
+    }
+    
+    @Override
+    final public void disposeViewer()
+    {
+        doDisposeViewer();
+        // fireDisposed();
+    }
+
+    // =========================================================================
+    // Events
+    // =========================================================================
+
+    @Override
+    public void addViewerListener(ViewerListener listener)
+    {
+        this.listeners.add(listener);
+    }
+    
+    @Override
+    public void removeViewerListener(ViewerListener listener)
+    {
+        this.listeners.remove(listener);
+    }
+
+    public void notifyBusy(boolean isBusy)
+    {
+        this.isBusy = isBusy;
+    }
+
+    public boolean isBusy()
+    {
+        return this.isBusy;
+    }
+
+    /**
+     * Notify Viewer Manager or other Listeners that an Exception has occured.
+     * 
+     * @param message
+     * @param e
+     */
+    protected void notifyException(String message, Throwable ex)
+    {
+        ExceptionDialog.show(this, message, ex, false);
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     protected IconProvider iconProvider=null;
     
@@ -51,11 +338,10 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
     protected Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
     
     protected Properties properties;
-        
-    public EmbeddedViewer()
-    {
-        super();
-    }
+
+    
+    
+
 
     public Cursor getBusyCursor()
     {
@@ -136,7 +422,7 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
      * Embedded viewer is actual ViewerPanel
      */ 
     @Override
-    public ViewerPanel getViewerPanel()
+    public EmbeddedViewer getViewerPanel()
     {
         return this; 
     }
@@ -194,12 +480,7 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
             throw new IOException(e.getMessage(),e);
         }
     }
-    
-    public boolean isStandaloneViewer()
-    {
-        return false;
-    }
-        
+            
     public void errorPrintf(String format,Object... args)
     {
         logger.errorPrintf(format,args); 
@@ -230,4 +511,59 @@ public abstract class EmbeddedViewer extends ViewerPanel implements ViewerPlugin
     {
         ExceptionDialog.show(this, messageString, ex, false);
     }
+
+
+    // =========================================================================
+    // Abstract Interface
+    // =========================================================================
+
+    /**
+     * Initialize GUI Component of viewer. Do not start loading resource. Typically this method is called during The
+     * Swing Event Thread.
+     * 
+     * @param viewerContext - Contains setting from VBrowser   
+     */
+
+    abstract protected void doInitViewer();
+
+    /**
+     * Start the viewer, load resources if necessary.
+     * @param vrl
+     * @param optionalMethod   
+     */
+    abstract protected void doStartViewer(VRL vrl, String optionalMethod);
+
+    /**
+     * Update content.
+     */
+    
+    abstract protected void doUpdate(VRL vrl);
+
+    /**
+     * Stop/suspend viewer. All background activity must stop. After a stopViewer() a startViewer() may occur to notify
+     * the viewer can be activateed again.
+     */    
+
+    abstract protected void doStopViewer();
+
+    /**
+     * Stop viewer and dispose resources. After a disposeViewer() a viewer will never be started but multiple
+     * disposeViewers() might ocure.
+     */
+    
+    abstract protected void doDisposeViewer();
+    
+    // =====================================
+    // Explicit inheritance from MimeViewer 
+    // =====================================
+    
+    @Override
+    abstract public String[] getMimeTypes();
+
+    @Override
+    abstract public Map<String, List<String>> getMimeMenuMethods();
+
+    @Override
+    abstract public String getViewerName();
+
 }

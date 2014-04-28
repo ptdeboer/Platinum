@@ -21,72 +21,68 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerContext;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 
+/** 
+ * Manages all the embedded viewers inside and outside the VBrowser. 
+ */
 public class ViewerManager
 {
     private ProxyBrowserController browser;
 
-    protected boolean filterOctetStreamMimeType=true; 
-    
+    protected boolean filterOctetStreamMimeType = true;
+
     public ViewerManager(ProxyBrowserController proxyBrowser)
     {
-        browser=proxyBrowser;
+        browser = proxyBrowser;
     }
 
-    public ViewerPanel createViewerFor(ViewNode node,String optViewerClass) throws ProxyException
+    public PluginRegistry getViewerRegistry()
     {
-        String resourceType = node.getResourceType();
-        // String resourceStatus = node.getResourceStatus();
-        String mimeType = node.getMimeType();
-
-        
-        return createViewerFor(resourceType,mimeType,optViewerClass); 
+        return browser.getPlatform().getViewerRegistry();
     }
     
-    public ViewerPanel createViewerFor(String resourceType,String mimeType,String optViewerClass) throws ProxyException
+    public ViewerPlugin createViewerFor(String resourceType, String mimeType, String optViewerClass) throws ProxyException
     {
-        PluginRegistry registry = browser.getPlatform().getViewerRegistry();
+        PluginRegistry registry = getViewerRegistry(); 
 
-        Class<?> clazz=null; 
-        
-        if (optViewerClass!=null)
+        Class<?> clazz = null;
+
+        if (optViewerClass != null)
         {
-            clazz = loadViewerClass(optViewerClass); 
+            clazz = loadViewerClass(optViewerClass);
         }
-        
-        if ((clazz==null) && (mimeType!=null))
+
+        if ((clazz == null) && (mimeType != null))
         {
-            if (clazz==null)
+            if (clazz == null)
             {
-                clazz=registry.getMimeTypeViewerClass(mimeType);
+                clazz = registry.getMimeTypeViewerClass(mimeType);
             }
         }
-        
-        if (clazz==null)
-            return null; 
-        
-        if (ViewerPlugin.class.isAssignableFrom(clazz)==false)
+
+        if (clazz == null)
+            return null;
+
+        if (ViewerPlugin.class.isAssignableFrom(clazz) == false)
         {
-            throw new ProxyException("Viewer Class is not a ViewerPlugin class:"+clazz); 
-        }
-        
-        if (ProxyViewer.class.isAssignableFrom(clazz))
-        {
-            // skip internal viewers for now, need different constructor. 
-            return null; 
+            throw new ProxyException("Viewer Class is not a ViewerPlugin class:" + clazz);
         }
 
-        
-        ViewerPanel viewer = registry.createViewer((Class<? extends ViewerPlugin>) clazz);
+        if (ProxyViewer.class.isAssignableFrom(clazz))
+        {
+            // skip internal viewers for now, need different constructor.
+            return null;
+        }
+
+        ViewerPlugin viewer = registry.createViewer((Class<? extends ViewerPlugin>) clazz);
         return viewer;
     }
-    
+
     private Class<?> loadViewerClass(String optViewerClass)
     {
         try
@@ -96,12 +92,12 @@ public class ViewerManager
         catch (ClassNotFoundException e)
         {
             e.printStackTrace();
-            return null; 
-        } 
+            return null;
+        }
     }
 
-    public ViewerFrame createViewerFrame(ViewerPanel viewerClass, boolean initViewer)
+    public ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context, boolean initViewer)
     {
-        return ViewerFrame.createViewerFrame(viewerClass,initViewer);
+        return ViewerFrame.createViewerFrame(viewer, context, initViewer);
     }
 }

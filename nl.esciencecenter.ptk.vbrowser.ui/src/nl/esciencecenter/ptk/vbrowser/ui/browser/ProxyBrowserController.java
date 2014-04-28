@@ -57,8 +57,10 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerContext;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerFrame;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
@@ -421,12 +423,12 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     private void doOpenViewer(final ViewNode node, String optViewerClass, final String optMenuMethod, boolean standaloneWindow)
     {
-        boolean filterOctetStreamMimeType=true; 
-        
         logger.infoPrintf("doOpenViewer:%s\n", node);
+        boolean filterOctetStreamMimeType=true;
+        
         try
         {
-            ViewerPanel viewer; 
+            ViewerPlugin viewer; 
             
             if ((filterOctetStreamMimeType) && (StringUtil.equals(node.getMimeType(),MimeTypes.MIME_BINARY)) && (optViewerClass==null)) 
             {
@@ -434,7 +436,11 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             }
             else
             {
-                viewer= viewerManager.createViewerFor(node, optViewerClass);
+                String resourceType = node.getResourceType();
+                // String resourceStatus = node.getResourceStatus();
+                String mimeType = node.getMimeType();
+                // create Viewer
+                viewer=viewerManager.createViewerFor(resourceType,mimeType,optViewerClass); 
             }
             
             // -------------------------------------------------
@@ -461,7 +467,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         try
         {
 
-            ViewerPanel viewer = viewerManager.createViewerFor(resourceType, mimeType, optViewerClass);
+            ViewerPlugin viewer = viewerManager.createViewerFor(resourceType, mimeType, optViewerClass);
             if (viewer == null)
             {
                 this.handleException("Couldn't create Viewer for:resourceType/mimeType :" + resourceType + "/" + mimeType, null);
@@ -479,22 +485,24 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     }
 
-    private void doStartViewer(final VRL vrl, ViewerPanel viewer, final String optMenuMethod, boolean standaloneWindow)
+    private void doStartViewer(final VRL vrl, ViewerPlugin viewer, final String optMenuMethod, boolean standaloneWindow)
     {
+        ViewerContext context=createViewerContext(optMenuMethod,vrl, standaloneWindow); 
+        
         if (standaloneWindow || viewer.isStandaloneViewer())
         {
-            ViewerFrame frame = viewerManager.createViewerFrame(viewer, true);
+            ViewerFrame frame = viewerManager.createViewerFrame(viewer, context,true);
             frame.setLocationRelativeTo(this.getJFrame());
             frame.setVisible(true);
         }
         else
         {
             browserFrame.addViewerPanel(viewer, true);
-            viewer.initViewer();
+            viewer.initViewer(context);
         }
 
-        final ViewerPanel finalViewer = viewer;
-
+        final ViewerPlugin finalViewer = viewer;
+        
         BrowserTask task = new BrowserTask(this, "startViewerFor" + vrl)
         {
             @Override
@@ -502,7 +510,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             {
                 try
                 {
-                    finalViewer.startViewerFor(vrl, optMenuMethod);
+                    finalViewer.startViewer(vrl, optMenuMethod);
                 }
                 catch (Throwable e)
                 {
@@ -512,6 +520,12 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         };
 
         task.startTask();
+    }
+
+    protected ViewerContext createViewerContext(String optMenuMethod, VRL vrl, boolean standaloneWindow)
+    {
+        ViewerContext context=new ViewerContext(viewerManager.getViewerRegistry(),optMenuMethod,vrl,standaloneWindow);
+        return context; 
     }
 
     private void doViewAsIcons()

@@ -21,18 +21,18 @@
 package nl.esciencecenter.ptk.vbrowser.viewers.events;
 
 import nl.esciencecenter.ptk.events.IEvent;
-import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPanel;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
 
-public class ViewerEvent implements IEvent<ViewerPanel>
+public class ViewerEvent implements IEvent<EmbeddedViewer>
 {
-    protected ViewerPanel source; 
+    protected EmbeddedViewer source; 
     
-    public ViewerEvent(ViewerPanel source)
+    public ViewerEvent(EmbeddedViewer source)
     {
         this.source=source;
     }
     
-    public ViewerPanel getSource()
+    public EmbeddedViewer getSource()
     {
         return this.source;
     }

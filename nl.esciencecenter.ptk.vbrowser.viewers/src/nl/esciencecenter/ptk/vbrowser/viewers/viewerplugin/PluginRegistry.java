@@ -33,6 +33,9 @@ import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
 
+/**
+ * Viewer and Tool Plugin Registry for the VBrowser. 
+ */
 public class PluginRegistry
 {
     private static ClassLogger logger = ClassLogger.getLogger(PluginRegistry.class);
@@ -102,7 +105,7 @@ public class PluginRegistry
     private Map<String, List<MimeMenuEntry>> mimeMenuMappings = new HashMap<String, List<MimeMenuEntry>>();
 
     private ArrayList<ViewerEntry> toolPlugins = new ArrayList<ViewerEntry>();
-    
+
     private ViewerResourceLoader resourceHandler = null;
 
     public PluginRegistry(ViewerResourceLoader resourceHandler)
@@ -136,12 +139,11 @@ public class PluginRegistry
                 registerMimeTypes(mimeViewer.getMimeTypes(), entry);
                 registerMimeMenuMappings(mimeViewer.getMimeMenuMethods(), entry);
             }
-            
+
             if (viewer instanceof ToolPlugin)
             {
-                registerTool((ToolPlugin)viewer,entry);
+                registerTool((ToolPlugin) viewer, entry);
             }
-            
 
         }
         catch (InstantiationException | IllegalAccessException e)
@@ -152,19 +154,19 @@ public class PluginRegistry
 
     private void registerTool(ToolPlugin viewer, ViewerEntry entry)
     {
-        toolPlugins.add(entry);  
-        
+        toolPlugins.add(entry);
+
         if (viewer.addToToolMenu())
         {
-            String menuPath[]=viewer.getToolMenuPath();
-            updateToolMenu(menuPath,viewer.getToolName()); 
+            String menuPath[] = viewer.getToolMenuPath();
+            updateToolMenu(menuPath, viewer.getToolName());
         }
-        
+
     }
-    
+
     protected void updateToolMenu(String[] menuPath, String toolName)
     {
-        
+
     }
 
     protected void registerMimeTypes(String[] mimeTypes, ViewerEntry entry)
@@ -242,22 +244,20 @@ public class PluginRegistry
 
     }
 
-    public ViewerPanel createViewer(Class<? extends ViewerPlugin> viewerClass)
+    public ViewerPlugin createViewer(Class<? extends ViewerPlugin> viewerClass)
     {
-        ViewerPanel viewer = null;
+        ViewerPlugin viewerPlugin = null;
 
         try
         {
-            ViewerPlugin viewerPlugin = viewerClass.newInstance();
-            viewer=viewerPlugin.getViewerPanel(); 
-            viewer.setViewerRegistry(this);
+            viewerPlugin = viewerClass.newInstance();
         }
         catch (Exception e)
         {
             logger.logException(ClassLogger.ERROR, e, "Could not instanciate:%s\n", viewerClass);
         }
 
-        return viewer;
+        return viewerPlugin;
     }
 
     public ViewerResourceLoader getResourceHandler()

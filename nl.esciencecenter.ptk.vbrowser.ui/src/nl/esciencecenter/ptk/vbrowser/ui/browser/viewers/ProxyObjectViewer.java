@@ -42,6 +42,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.ViewerPlugin;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -171,8 +172,12 @@ public class ProxyObjectViewer extends EmbeddedViewer implements ProxyViewer
     }
 
     @Override
-    public void doStartViewer(String optMethodName)
+    public void doStartViewer(VRL vrl,String optMethodName)
     {
+        if (vrl.equals(viewNode.getVRL())==false)
+        {
+            this.handle("Refresh not supported (for different VRL then current ViewNode)",null);  
+        }
         try
         {
             update(viewNode);

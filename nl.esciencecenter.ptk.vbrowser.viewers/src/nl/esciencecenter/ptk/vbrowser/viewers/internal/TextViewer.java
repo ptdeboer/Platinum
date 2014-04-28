@@ -27,7 +27,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -51,7 +50,6 @@ import javax.swing.border.BevelBorder;
 
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.ui.fonts.FontInfo;
 import nl.esciencecenter.ptk.ui.fonts.FontToolBar;
@@ -385,9 +383,9 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
      * @param location
      * @throws VrsException
      */
-    public void doStartViewer(String optionalMethod)
+    public void doStartViewer(VRL vrl,String optionalMethod)
     {
-        doUpdate(getVRL());
+        doUpdate(vrl);
     }
 
     protected void doUpdate(final VRL location)

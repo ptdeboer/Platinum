@@ -23,12 +23,9 @@ package nl.esciencecenter.ptk.vbrowser.viewers.x509viewer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.IOException;
-import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JFrame;
 
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
@@ -40,29 +37,28 @@ import nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-
 public class X509Viewer extends EmbeddedViewer implements CertPanelListener
 {
     private static final long serialVersionUID = 5397354476414010762L;
-    
-    public static final String ADD_METHOD="addCert";
-    
-    public static final String VIEW_METHOD="viewCert"; 
-    
-    private static String mimeTypes[] = 
-            {
-                    "application/x-x509-ca-cert",
-                    // .crt and .pem can be both user AND CA
-                    "application/x-pem-file", 
-                    "application/x-x509-pem-file", 
-                    "application/x-x509-crt-file", 
-                    // "application/x-x509-user-cert" = user cert! (not CA) 
-            };
-    
+
+    public static final String ADD_METHOD = "addCert";
+
+    public static final String VIEW_METHOD = "viewCert";
+
+    private static String mimeTypes[] =
+    {
+            "application/x-x509-ca-cert",
+            // .crt and .pem can be both user AND CA
+            "application/x-pem-file",
+            "application/x-x509-pem-file",
+            "application/x-x509-crt-file",
+            // "application/x-x509-user-cert" = user cert! (not CA)
+    };
+
     // ========================================================================
     //
     // ========================================================================
-    
+
     private X509Certificate cert;
 
     private CertPanel caPanel;
@@ -77,7 +73,6 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     @Override
     public void doDisposeViewer()
     {
-
     }
 
     @Override
@@ -101,90 +96,90 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     public void initGUI()
     {
         this.setLayout(new BorderLayout());
-        
-        this.caPanel = new CertPanel();        
+
+        this.caPanel = new CertPanel();
         this.caPanel.setCertPanelListener(this);
-        this.add(caPanel,BorderLayout.CENTER);
+        this.add(caPanel, BorderLayout.CENTER);
         Dimension preferredSize = new Dimension(800, 350);
         this.setPreferredSize(preferredSize);
     }
 
     protected void installCertificate(X509Certificate cert, boolean save) throws Exception
     {
-        getCertUtil().addCACertificate(cert,save); 
+        getCertUtil().addCACertificate(cert, save);
     }
 
     protected CertificateStore getCertUtil() throws CertificateStoreException
     {
-        return this.getResourceHandler().getCertificateStore(); 
+        return this.getResourceHandler().getCertificateStore();
     }
-    
+
     @Override
     public void doStopViewer()
     {
 
     }
-//    
-//    public Vector<ActionMenuMapping> getActionMappings()
-//    {
-//        ActionMenuMapping addMapping=new ActionMenuMapping(ADD_METHOD, "Add Certificate","certs");
-//        ActionMenuMapping viewMapping=new ActionMenuMapping(VIEW_METHOD, "View Certificate","certs");
-//
-//        // '/' is not a RE character
-//        
-//        Pattern txtPatterns[]=new Pattern[mimeTypes.length];
-//        
-//        for (int i=0;i<mimeTypes.length;i++)
-//        {
-//            txtPatterns[i]=Pattern.compile(mimeTypes[i]); 
-//        }
-//        
-//        addMapping.addMimeTypeMapping(txtPatterns);
-//        viewMapping.addMimeTypeMapping(txtPatterns);
-//
-//        Vector<ActionMenuMapping> mappings=new Vector<ActionMenuMapping>(); 
-//        mappings.add(addMapping);
-//        mappings.add(viewMapping);
-//        
-//        return mappings; 
-//    }
-    
-    
+
+    //
+    // public Vector<ActionMenuMapping> getActionMappings()
+    // {
+    // ActionMenuMapping addMapping=new ActionMenuMapping(ADD_METHOD, "Add Certificate","certs");
+    // ActionMenuMapping viewMapping=new ActionMenuMapping(VIEW_METHOD, "View Certificate","certs");
+    //
+    // // '/' is not a RE character
+    //
+    // Pattern txtPatterns[]=new Pattern[mimeTypes.length];
+    //
+    // for (int i=0;i<mimeTypes.length;i++)
+    // {
+    // txtPatterns[i]=Pattern.compile(mimeTypes[i]);
+    // }
+    //
+    // addMapping.addMimeTypeMapping(txtPatterns);
+    // viewMapping.addMimeTypeMapping(txtPatterns);
+    //
+    // Vector<ActionMenuMapping> mappings=new Vector<ActionMenuMapping>();
+    // mappings.add(addMapping);
+    // mappings.add(viewMapping);
+    //
+    // return mappings;
+    // }
+
     @Override
-    public void doStartViewer(String optionalMethod)
+    public void doStartViewer(VRL vrl, String optionalMethod)
     {
-        doUpdate(getVRL(),optionalMethod);
+        doUpdate(vrl, optionalMethod);
     }
 
     @Override
-    public void doUpdate(VRL vrl) 
+    public void doUpdate(VRL vrl)
     {
-        doUpdate(vrl,null); 
+        doUpdate(vrl, null);
     }
 
     public void doUpdate(VRL location, String optMethodName)
     {
-        //default to true ?
-        boolean add=true;
-        
-        if (StringUtil.equals(optMethodName,VIEW_METHOD))
-            add=false;
-        
-        if (StringUtil.equals(optMethodName,ADD_METHOD))
-            add=true; 
-                
-        if (location==null)
-            return; 
-        
-        addCertificate(location,add);  
-    }   
-    
+        // default to true ?
+        boolean add = true;
+
+        if (StringUtil.equals(optMethodName, VIEW_METHOD))
+            add = false;
+
+        if (StringUtil.equals(optMethodName, ADD_METHOD))
+            add = true;
+
+        if (location == null)
+            return;
+
+        addCertificate(location, add);
+    }
+
     public void askCertificate(VRL loc) throws VrsException
     {
-        addCertificate(loc,true);
+        addCertificate(loc, true);
     }
-    
-    public void addCertificate(VRL loc,boolean askToAdd) 
+
+    public void addCertificate(VRL loc, boolean askToAdd)
     {
         try
         {
@@ -217,18 +212,18 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
             }
             else
             {
-                caPanel.setQuestion("Viewing Certificate information."); 
-                caPanel.setViewOnly(true); 
+                caPanel.setQuestion("Viewing Certificate information.");
+                caPanel.setViewOnly(true);
             }
-            
+
             caPanel.setMessageText(message.toString());
 
         }
         catch (Exception e)
         {
             caPanel.setMessageText(e.getMessage());
-            caPanel.setQuestion("Exception occured"); 
-            notifyException("Failed to add certificate:"+loc,e); 
+            caPanel.setQuestion("Exception occured");
+            notifyException("Failed to add certificate:" + loc, e);
         }
     }
 
@@ -241,8 +236,8 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     {
         String txt = getResourceHandler().readText(certUri, textEncoding);
 
-        // Use hardcoded String to find start of certificate. 
-        // Current Pem reader is just as simplistic.  
+        // Use hardcoded String to find start of certificate.
+        // Current Pem reader is just as simplistic.
         int index = txt.indexOf("-----BEGIN CERTIFICATE");
 
         if (index >= 0)
@@ -251,10 +246,10 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
             String derStr = txt.substring(index);
             return CertUtil.createDERCertificateFromString(derStr);
         }
-        int len=txt.length(); 
-        if (len>80)
-            len=80; 
-        throw new IOException("Couldn't find start of (DER) certificate!\n---\nStarting text:\n" +'"' + txt.substring(0,len)+'"' );
+        int len = txt.length();
+        if (len > 80)
+            len = 80;
+        throw new IOException("Couldn't find start of (DER) certificate!\n---\nStarting text:\n" + '"' + txt.substring(0, len) + '"');
 
     }
 
@@ -271,33 +266,34 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
             {
                 installCertificate(cert, false);
             }
-            
-            caPanel.setEnabled(false); 
-            
+
+            caPanel.setEnabled(false);
+
         }
         catch (Exception e)
         {
-            notifyException("Adding Certificate Failed",e); 
+            notifyException("Adding Certificate Failed", e);
         }
-        
-        closeViewer(); 
+
+        closeViewer();
     }
-    
+
     @Override
     public Map<String, List<String>> getMimeMenuMethods()
     {
-        String[] mimeTypes=getMimeTypes(); 
-        
+        String[] mimeTypes = getMimeTypes();
+
         // Use HashMapList to keep order of menu entries: first is default(!)
-        
-        Map<String,List<String>> mappings=new HashMapList<String,List<String>>(); 
-        
-        for (int i=0;i<mimeTypes.length;i++)
+
+        Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
+
+        for (int i = 0; i < mimeTypes.length; i++)
         {
-            List<String> list=new StringList(new String[]{VIEW_METHOD+":View Certificate",ADD_METHOD+":Add Certificate"}); 
-            mappings.put(mimeTypes[i],list); 
+            List<String> list = new StringList(new String[]
+            { VIEW_METHOD + ":View Certificate", ADD_METHOD + ":Add Certificate" });
+            mappings.put(mimeTypes[i], list);
         }
-        
-        return mappings; 
+
+        return mappings;
     }
 }

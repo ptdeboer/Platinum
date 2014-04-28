@@ -308,7 +308,6 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
                 logger.errorPrintf("FIXME:TooManyListenersException:%s\n",e);
             }
         }
-
     }
 
     @Override
@@ -323,9 +322,9 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return "Binary Viewer";
     }
 
-    public void doStartViewer(String optionalMethod)
+    public void doStartViewer(VRL vrl, String optionalMethod)
     {
-        doUpdate(getVRL());
+        doUpdate(vrl);
         this.validate();
     }
 

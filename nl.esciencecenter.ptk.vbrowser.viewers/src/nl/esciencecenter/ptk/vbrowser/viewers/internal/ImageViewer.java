@@ -27,7 +27,6 @@ import java.awt.Point;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -173,9 +172,9 @@ public class ImageViewer extends EmbeddedViewer
     }
     
     @Override
-    public void doStartViewer(String optionalMethod)
+    public void doStartViewer(VRL vrl,String optionalMethod)
     {
-        doUpdate(getVRL());
+        doUpdate(vrl);
     }
     
     public void doUpdate(VRL vrl)

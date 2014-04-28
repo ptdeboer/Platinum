@@ -28,13 +28,6 @@ import java.awt.Dimension;
  */  
 public class UIViewModel
 {
-    public static class SortOptions
-    {
-        public boolean sort=true;
-        public boolean reverseSort=false;
-        public boolean ignoreCase=true; 
-    }
-    
     // ======
     // Class
     // ======
@@ -88,7 +81,9 @@ public class UIViewModel
 	// instance
 	// ======================================================================== 
 	
-	/** Hierarchical UI properties */ 
+	/** 
+	 * Hierarchical UI properties, if an int value is -1 or an object value is null, inherit the value from the parent.  
+	 */ 
     final protected UIViewModel parent; 
     
     /** Icons size. -1 = inherit from parent. */ 
@@ -115,8 +110,6 @@ public class UIViewModel
     private Color fgColorSelected=null;  // null=default; Color.RED;
 
     private Color bgColorSelected=Color.LIGHT_GRAY;
-
-    private SortOptions sortOptions;
     
     public UIViewModel()
     {
@@ -239,21 +232,5 @@ public class UIViewModel
         return bgColorSelected; 
     }
 
-    // ==============================
-    // Sort, Misc. 
-    // ==============================
-
-    public SortOptions getSortOptions()
-    {
-        if ((sortOptions==null) && (parent!=null))
-            return parent.getSortOptions(); 
-        
-        return this.sortOptions; 
-    }
-    
-    public void setSortOptions(SortOptions newOptions)
-    {
-        this.sortOptions=newOptions; 
-    }
 }
 

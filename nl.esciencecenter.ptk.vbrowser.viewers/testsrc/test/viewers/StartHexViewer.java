@@ -13,7 +13,7 @@ public class StartHexViewer
         
         try
         {
-            ViewerTests.testViewer(HexViewer.class,new VRL("file:///boot/vmlinuz"));
+            ViewerTests.testViewer(HexViewer.class,new VRL("file:///boot/vmlinuz-3.13.0-24-generic"));
             // viewStandAlone(null);
         }
         catch (Exception e)

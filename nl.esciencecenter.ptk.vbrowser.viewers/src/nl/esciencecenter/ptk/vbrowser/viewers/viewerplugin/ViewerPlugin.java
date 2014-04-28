@@ -20,24 +20,82 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.viewerplugin;
 
-/** 
- * Default interface for Viewer Plugins. 
- * All Viewer plugins extend this interface. 
+import javax.swing.JComponent;
+
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+/**
+ * Default interface for Viewer Plugins.
+ * <p>
+ * All Browser Viewer plugins implement this interface. <br>
+ * Some optional interfaces may be implemented as well for example the ToolPlugin or MimeViewer plugin.
  */
 public interface ViewerPlugin
 {
-    /** 
-     * Short to be display in menu.
+    /**
+     * Register Viewer Event Listener for this viewer.
+     */
+    public void addViewerListener(ViewerListener listener);
+
+    /**
+     * Removed registered Viewer Event Listener.
+     */
+    public void removeViewerListener(ViewerListener listener);
+
+    /**
+     * Short name to display in Browser menu. Used for "View With ->" Sub Menu.
      */
     public String getViewerName();
 
     /**
-     * Bindings to get Actual ViewerPanel object associated with this ViewerPlugin.  
-     * This means the ViewerPanel should be initialized when this method is called. 
-     * Only one ViewerPanel may be associated with one ViewerPlugin.  
+     * Bindings to get Actual Swing Component Object associated with this ViewerPlugin. A typical Viewer can return
+     * itself, for example if a Swing Container (JPanel).
      * 
-     * @return Actual ViewerPanel component.  
+     * @return Actual Swing Component to be embedded in browser, or StandAlone ViewerFrame.
      */
-    public ViewerPanel getViewerPanel();
+    public JComponent getViewerPanel();
+
+    /**
+     * Init viewer and create UI Components, this method will be called <strong>during</strong> the Swing Event Thread.
+     * <p>
+     * Do not load contents yet. After initViewer(), startViewer() will be called with the actual VRL to view.
+     * 
+     * @param viewerContext
+     *            - Context, is null when viewer is not registered or no browser view context is available.
+     */
+    public void initViewer(ViewerContext viewerContext);
+
+    /**
+     * Start actual viewer.
+     * <p>
+     * This method may be called multiple times to either indicate an update or an method being invoked.
+     * 
+     * @param vrl
+     *            - The VRL to view
+     * @param optMenuMethod
+     *            - Optional method called by user through interactive menu.
+     */
+    public void startViewer(VRL vrl, String optMenuMethod);
+
+    /**
+     * Stop this viewer and suspend all (background) activity.
+     * <p>
+     * Suspend all background processing, but do no dispose viewer. The startViewer() method may be called to start this
+     * viewer again (with an updated VRL).
+     */
+    public void stopViewer();
+
+    /**
+     * Dispose viewer. After this methods <code>startViewer</code> and <code>stopViewer</code> won't be called. Since
+     * gui elements might hold (native) resources, please cleanup those resources.
+     */
+    public void disposeViewer();
+
+    /**
+     * @return whether this viewer always must be started in stand-alone (=not embedded) mode. true means do not embed
+     *         viewer.
+     */
+    public boolean isStandaloneViewer();
 
 }
