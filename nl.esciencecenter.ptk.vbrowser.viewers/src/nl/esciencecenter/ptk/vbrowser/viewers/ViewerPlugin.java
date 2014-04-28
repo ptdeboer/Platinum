@@ -22,6 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.viewers;
 
 import javax.swing.JComponent;
 
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventSource;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -31,7 +32,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * All Browser Viewer plugins implement this interface. <br>
  * Some optional interfaces may be implemented as well for example the ToolPlugin or MimeViewer plugin.
  */
-public interface ViewerPlugin
+public interface ViewerPlugin  
 {
     /**
      * Register Viewer Event Listener for this viewer.

@@ -1,5 +1,6 @@
 package nl.esciencecenter.ptk.vbrowser.viewers;
 
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -15,6 +16,8 @@ public class ViewerContext
 
     protected PluginRegistry pluginRegistry;
 
+    protected ViewerEventDispatcher eventDispatcher; 
+    
     public ViewerContext(PluginRegistry viewerRegistry)
     {
         this.pluginRegistry = viewerRegistry;
@@ -29,6 +32,11 @@ public class ViewerContext
         this.pluginRegistry = viewerRegistry;
     }
 
+    public void setViewerEventDispatcher(ViewerEventDispatcher dispatcher)
+    {
+        this.eventDispatcher=dispatcher; 
+    }
+    
     /**
      * @return the method this viewer was originally started with. Might be null if none was specified.
      */
@@ -56,6 +64,11 @@ public class ViewerContext
     public PluginRegistry getPluginRegistry()
     {
         return pluginRegistry;
+    }
+
+    public ViewerEventDispatcher getViewerEventDispatcher()
+    {
+        return eventDispatcher;
     }
 
 }

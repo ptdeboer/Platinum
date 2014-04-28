@@ -525,6 +525,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     protected ViewerContext createViewerContext(String optMenuMethod, VRL vrl, boolean standaloneWindow)
     {
         ViewerContext context=new ViewerContext(viewerManager.getViewerRegistry(),optMenuMethod,vrl,standaloneWindow);
+        context.setViewerEventDispatcher(platform.getViewerEventDispatcher());
         return context; 
     }
 

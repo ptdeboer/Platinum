@@ -4,6 +4,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -27,7 +28,10 @@ public class ViewerTests
         ViewerPlugin newViewer = getViewerRegistry().createViewer(class1);
         ViewerFrame frame = createViewerFrame(newViewer, true);
 
-        newViewer.initViewer(new ViewerContext(getViewerRegistry(),null, vrl, true));
+        ViewerContext context=new ViewerContext(getViewerRegistry(),null, vrl, true);
+        context.setViewerEventDispatcher(new ViewerEventDispatcher(true));
+        newViewer.initViewer(context);
+        
         newViewer.startViewer(vrl, null);
         frame.setVisible(true);
 

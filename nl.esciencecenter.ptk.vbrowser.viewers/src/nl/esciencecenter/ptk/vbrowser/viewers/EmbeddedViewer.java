@@ -26,7 +26,6 @@ import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -35,12 +34,14 @@ import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEvent;
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventSource;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -50,23 +51,33 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * 
  * @author Piter T. de Boer
  */
-public abstract class EmbeddedViewer extends JPanel implements Disposable, ViewerPlugin, MimeViewer
+public abstract class EmbeddedViewer extends JPanel implements Disposable, ViewerPlugin, MimeViewer, ViewerEventSource
 {
     private static final long serialVersionUID = 7872709733522871820L;
 
     private static ClassLogger logger = ClassLogger.getLogger(EmbeddedViewer.class);
 
-    // ===
-
+    // =======
+    //
+    // =======
+    
     private JPanel innerPanel;
 
     private VRL viewedUri;
 
     private boolean isBusy;
 
-    private List<ViewerListener> listeners = new ArrayList<ViewerListener>();
-
     private ViewerContext viewerContext;
+
+    protected String textEncoding = "UTF-8";
+
+    protected Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
+    
+    protected Properties properties;
+    
+    protected Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+
+    protected IconProvider iconProvider = null;
 
     protected EmbeddedViewer()
     {
@@ -115,7 +126,6 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     {
         this.setVrl(newVRL);
         startViewer(newVRL, optMenuMethod);
-        // doUpdateURI(newUri);
     }
 
     /**
@@ -166,7 +176,6 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
                 getJFrame().setTitle(name);
             }
         }
-
     }
 
     /**
@@ -257,67 +266,45 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     final public void startViewer(VRL vrl, String optMenuMethod)
     {
         doStartViewer(vrl, optMenuMethod);
-        // fireStarted();
+        fireStarted();
     }
 
     @Override
     final public void stopViewer()
     {
         doStopViewer();
-        // fireStopped();
+        fireStopped();
     }
 
     @Override
     final public void disposeViewer()
     {
         doDisposeViewer();
-        // fireDisposed();
-    }
-
-    // =========================================================================
-    // Events
-    // =========================================================================
-
-    @Override
-    public void addViewerListener(ViewerListener listener)
-    {
-        this.listeners.add(listener);
-    }
-
-    @Override
-    public void removeViewerListener(ViewerListener listener)
-    {
-        this.listeners.remove(listener);
-    }
-
-    public void notifyBusy(boolean isBusy)
-    {
-        this.isBusy = isBusy;
-    }
-
-    public boolean isBusy()
-    {
-        return this.isBusy;
+        fireDisposed();
     }
 
     /**
-     * Notify Viewer Manager or other Listeners that an Exception has occured.
-     * 
-     * @param message
-     * @param e
+     * Embedded viewer is actual ViewerPanel
      */
-    protected void notifyException(String message, Throwable ex)
+    @Override
+    public EmbeddedViewer getViewerPanel()
     {
-        ExceptionDialog.show(this, message, ex, false);
+        return this;
     }
 
-    protected IconProvider iconProvider = null;
+    public ViewerResourceLoader getResourceHandler()
+    {
+        PluginRegistry reg = getViewerRegistry();
 
-    protected String textEncoding = "UTF-8";
+        if (reg == null)
+            return null;
 
-    protected Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
-
-    protected Properties properties;
+        return reg.getResourceHandler();
+    }
+    
+    // =========================================================================
+    // Gui
+    // =========================================================================
 
     public Cursor getBusyCursor()
     {
@@ -337,18 +324,6 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     public void setDefaultCursor(Cursor defaultCursor)
     {
         this.defaultCursor = defaultCursor;
-    }
-
-    protected Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-
-    public ViewerResourceLoader getResourceHandler()
-    {
-        PluginRegistry reg = getViewerRegistry();
-
-        if (reg == null)
-            return null;
-
-        return reg.getResourceHandler();
     }
 
     public String getURIBasename()
@@ -392,20 +367,6 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     public String getViewerClass()
     {
         return this.getClass().getCanonicalName();
-    }
-
-    /**
-     * Embedded viewer is actual ViewerPanel
-     */
-    @Override
-    public EmbeddedViewer getViewerPanel()
-    {
-        return this;
-    }
-
-    public boolean canView(String mimeType)
-    {
-        return new StringList(getMimeTypes()).contains(mimeType);
     }
 
     public VRL getConfigPropertiesURI(String configPropsName) throws URISyntaxException
@@ -457,6 +418,33 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
         }
     }
 
+
+    public void notifyBusy(boolean isBusy)
+    {
+        this.isBusy = isBusy;
+    }
+
+    public boolean isBusy()
+    {
+        return this.isBusy;
+    }
+
+
+    /**
+     * Notify Viewer Manager or other Listeners that an Exception has occured.
+     * 
+     * @param message
+     * @param e
+     */
+    protected void notifyException(String message, Throwable ex)
+    {
+        ExceptionDialog.show(this, message, ex, false);
+    }
+    
+    // =========================================================================
+    // Event Interface.
+    // =========================================================================
+    
     public void errorPrintf(String format, Object... args)
     {
         logger.errorPrintf(format, args);
@@ -488,6 +476,59 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
         ExceptionDialog.show(this, messageString, ex, false);
     }
 
+    // =========================================================================
+    // Event Interface.
+    // =========================================================================
+
+    @Override
+    public void addViewerListener(ViewerListener listener)
+    {
+        this.getViewerEventDispatcher().addListener(listener, this);
+    }
+
+    @Override
+    public void removeViewerListener(ViewerListener listener)
+    {
+        this.getViewerEventDispatcher().removeListener(listener);
+    }
+    
+    protected ViewerEventDispatcher getViewerEventDispatcher()
+    {
+        ViewerContext context = this.getViewerContext();
+        if (context == null)
+        {
+            return null;
+        }
+        return context.getViewerEventDispatcher();
+    }
+
+    protected void fireEvent(ViewerEvent event)
+    {
+        ViewerEventDispatcher dispatcher = getViewerEventDispatcher();
+
+        if (dispatcher == null)
+        {
+            return;
+        }
+
+        dispatcher.fireEvent(event);
+    }
+
+    protected void fireStarted()
+    {
+        fireEvent(ViewerEvent.createStartedEvent(this));
+    }
+
+    protected void fireStopped()
+    {
+        fireEvent(ViewerEvent.createStoppedEvent(this)); 
+    }
+
+    protected void fireDisposed()
+    {
+        //fireEvent(ViewerEvent.createDisposedEvent(this));
+    }
+    
     // =========================================================================
     // Abstract Interface
     // =========================================================================

@@ -33,6 +33,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -99,6 +100,8 @@ public class BrowserPlatform
 
     private UIProperties guiSettings;
 
+    private ViewerEventDispatcher viewerEventDispatcher;
+
     protected BrowserPlatform(String id) throws Exception
     {
         init(id);
@@ -130,6 +133,8 @@ public class BrowserPlatform
         // Init Viewers and ViewerPlugins.
         // ===================================
 
+        this.viewerEventDispatcher=new ViewerEventDispatcher(true); 
+        
         initViewers();
     }
 
@@ -146,8 +151,8 @@ public class BrowserPlatform
     }
 
     /**
-     * @return persistant configuration directory where to store properties for example '$HOME/.mypropertiesrc/'. <br>
-     *         Is null for non persistant platforms.
+     * @return persistent configuration directory where to store properties for example '$HOME/.mypropertiesrc/'. <br>
+     *         Is null for non persistent platforms.
      */
     public VRL getPersistantConfigLocation()
     {
@@ -156,7 +161,7 @@ public class BrowserPlatform
 
     protected void initViewers() throws Exception
     {
-        // create custom subdirectory for viewer settings. 
+        // create custom sub-directory for viewer settings. 
         ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient, createCustomConfigDir("viewers"));
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
@@ -257,4 +262,23 @@ public class BrowserPlatform
         return VRSEventNotifier.getInstance();
     }
 
+    /** 
+     * Generic ViewerEvent dispatcher. 
+     */
+    public ViewerEventDispatcher getViewerEventDispatcher() 
+    {
+        return this.viewerEventDispatcher; 
+    }
+    
+    // ==============  
+    // Dispose
+    // ==============
+    
+    public void dispose()
+    {
+        this.viewerEventDispatcher.stop(); 
+        this.viewerEventDispatcher.dispose(); 
+        
+    }
+    
 }
