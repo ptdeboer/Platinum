@@ -327,8 +327,10 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
 
         // walk up tree: 
         VFSPath path=this; 
+        
         while (path.isRoot()==false)
         {
+        	VFSPath prev=path; 
             path=path.getParent();
             if (path==null)
             {
@@ -336,7 +338,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
                 break;
             }
             
-            if (paths.contains(path))
+            if (paths.contains(path) || prev.getVRL().equals(path.getVRL()))
             {
                 ClassLogger.getLogger(this.getClass()).errorPrintf("*** Path Cycle detected, parent path:"+path+" already in path list from:"+this); 
                 break; 

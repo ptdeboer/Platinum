@@ -228,7 +228,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     {
         try
         {
-            String newPath=fsNode.renameTo(other.getVRL().getPath());
+        	String newPath=fsNode.renameTo(other.getVRL().getPath()).getPathname(); 
             return this.resolvePath(newPath);
         }
         catch (IOException e)

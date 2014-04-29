@@ -87,4 +87,9 @@ public class Settings
         return testDir+"/"+subPath;
     } 
     
+    public boolean isWindows()
+    {
+    	return GlobalProperties.isWindows(); 
+    }
+    
 }

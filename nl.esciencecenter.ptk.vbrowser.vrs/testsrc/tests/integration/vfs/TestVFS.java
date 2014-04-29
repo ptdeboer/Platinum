@@ -589,10 +589,11 @@ public class TestVFS extends VTestCase
     @Test
     public void testCreateAndIgnoreExistingFile() throws Exception
     {
+    	String nextFileName=nextFilename("testFileX"); 
         // create, may not exists:
-        VFSPath newFile = createRemoteFile(nextFilename("testFileX"), false);
+        VFSPath newFile = createRemoteFile(nextFileName, false);
         // create, may exists:
-        newFile = createRemoteFile(nextFilename("testFileY"), true);
+        newFile = createRemoteFile(nextFileName, true);
         // cleanup
         newFile.delete();
     }

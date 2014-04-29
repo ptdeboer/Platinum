@@ -51,13 +51,20 @@ public class IntegrationTest_FSUtil_URLResolver
     @Test
     public void test_CreateAndResolve() throws Exception
     {
+    	boolean isWindows=settings.isWindows(); 
+    	
         FSNode baseDir = FSUtil_getCreateTestDir();
 
         testCreateResolve(baseDir, "file1", true, true);
         testCreateResolve(baseDir, "file space", true, true);
         testCreateResolve(baseDir, " prefixSpaced", true, true);
-        testCreateResolve(baseDir, "postfixSpaced ", true, true);
-
+        
+        if (isWindows==false)
+        {
+        	// postfix spaced not allowed under windows... 
+        	testCreateResolve(baseDir, "postfixSpaced ", true, true);
+        }
+        
         FSNode subDir = baseDir.newPath("subDir1").mkdir();
         testCreateResolve(baseDir, "subDir1/subFile1", true, true);
 
