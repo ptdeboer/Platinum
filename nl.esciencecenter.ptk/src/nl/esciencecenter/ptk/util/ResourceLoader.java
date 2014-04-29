@@ -150,7 +150,10 @@ public class ResourceLoader
                 parentLoader = Thread.currentThread().getContextClassLoader();
             }
             
-            classLoader = new URLClassLoader(urls, parentLoader);
+            if (urls!=null)
+            {
+            	classLoader = new URLClassLoader(urls, parentLoader);
+            }
         }
 
         /** 
@@ -306,11 +309,8 @@ public class ResourceLoader
 
     protected void init(ResourceProvider resourceProvider, URL urls[])
     {
-        if (urls != null)
-        {
-            urlResolver = new URLResolver(urls);
-        }
-
+    	urlResolver = new URLResolver(urls);
+        
         this.resourceProvider = resourceProvider;
 
         if (this.resourceProvider == null)
