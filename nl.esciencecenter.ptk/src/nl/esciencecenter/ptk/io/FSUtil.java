@@ -46,8 +46,8 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class FSUtil implements ResourceProvider
 {
-    private static final ClassLogger logger=ClassLogger.getLogger(FSUtil.class);
-    
+    private static final ClassLogger logger = ClassLogger.getLogger(FSUtil.class);
+
     public static final String ENCODING_UTF8 = "UTF8";
 
     public static final String ENCODING_ASCII = "ASCII";
@@ -65,22 +65,23 @@ public class FSUtil implements ResourceProvider
     public static class FSOptions
     {
         /**
-         * Resolve '~' to user home dir. 
-         */ 
+         * Resolve '~' to user home dir.
+         */
         public boolean resolveTilde = true;
-        
+
         /**
-         * Whether to follow links. 
-         * @see LinkOption.NOFOLLOW_LINKS 
-         */ 
+         * Whether to follow links.
+         * 
+         * @see LinkOption.NOFOLLOW_LINKS
+         */
         public boolean defaultFollowLinks = true;
-        
+
     }
 
     // ========================================================================
-    // Class Util methods 
+    // Class Util methods
     // ========================================================================
-    
+
     public static int toUnixFileMode(Set<PosixFilePermission> perms)
     {
         int mode = 0;
@@ -134,7 +135,7 @@ public class FSUtil implements ResourceProvider
 
         return perms;
     }
-    
+
     // ========================================================================
     // Instance
     // ========================================================================
@@ -171,10 +172,8 @@ public class FSUtil implements ResourceProvider
     }
 
     /**
-     * Check syntax and decode optional (relative) URL or path to an absolute
-     * normalized path. If an exception occurs (syntax error) the path is
-     * returned "as is" ! Use resolveURI(path) to resolve to an absolute and
-     * normalized URI.
+     * Check syntax and decode optional (relative) URL or path to an absolute normalized path. If an exception occurs
+     * (syntax error) the path is returned "as is" ! Use resolveURI(path) to resolve to an absolute and normalized URI.
      * 
      * @throws FileURISyntaxException
      *             if the path contains invalid characters.
@@ -191,7 +190,7 @@ public class FSUtil implements ResourceProvider
     {
         try
         {
-            return URIUtil.resolvePath(workingDir,userHome,fsOptions.resolveTilde,path); 
+            return URIUtil.resolvePath(workingDir, userHome, fsOptions.resolveTilde, path);
         }
         catch (URISyntaxException e)
         {
@@ -210,54 +209,18 @@ public class FSUtil implements ResourceProvider
     public void copyFile(URI source, URI destination) throws IOException
     {
         InputStream finput = localFSHandler.createInputStream(newFSNode(source));
-        OutputStream foutput = localFSHandler.createOutputStream(newFSNode(destination),false);
+        OutputStream foutput = localFSHandler.createOutputStream(newFSNode(destination), false);
 
         IOUtil.copyStreams(finput, foutput, false);
 
-        autoClose(finput); 
-        autoClose(foutput); 
+        IOUtil.autoClose(finput);
+        IOUtil.autoClose(foutput);
         return;
     }
 
-    private boolean autoClose(InputStream finput)
-    {
-        if (finput==null)
-        {
-            return false; 
-        }
-        
-        try
-        {
-            finput.close();
-            return true; 
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-    }
-    
-    private boolean autoClose(OutputStream foutput)
-    {
-        if (foutput==null)
-        {
-            return false; 
-        }
-        
-        try
-        {
-            foutput.close();
-            return true; 
-        }
-        catch (Exception e)
-        {
-            return false; 
-        }
-    }
-
     /**
-     * Checks whether paths exists and is a file. If the filePath contains
-     * invalid characters, this method will also return false.
+     * Checks whether paths exists and is a file. If the filePath contains invalid characters, this method will also
+     * return false.
      */
     public boolean existsFile(String filePath, boolean mustBeFileType, LinkOption... linkOptions)
     {
@@ -273,7 +236,7 @@ public class FSUtil implements ResourceProvider
             {
                 return false;
             }
-            
+
             if (mustBeFileType)
             {
                 if (file.isFile(linkOptions))
@@ -301,9 +264,8 @@ public class FSUtil implements ResourceProvider
     }
 
     /**
-     * Checks whether directoryPath paths exists and is a directory. If the
-     * directory path contains invalid characters the method will also return
-     * false.
+     * Checks whether directoryPath paths exists and is a directory. If the directory path contains invalid characters
+     * the method will also return false.
      */
     public boolean existsDir(String directoryPath, LinkOption... linkOptions)
     {
@@ -339,8 +301,7 @@ public class FSUtil implements ResourceProvider
     }
 
     /**
-     * Return new FileSystem Node specified by the URI. Currently only local
-     * files are supported.
+     * Return new FileSystem Node specified by the URI. Currently only local files are supported.
      * 
      * @param uri
      *            - uri of the file.
@@ -355,8 +316,7 @@ public class FSUtil implements ResourceProvider
      * Return new local file node specified by the path.
      * 
      * @param path
-     *            - the relative,logical or absolute path to resolve on the
-     *            local file system.
+     *            - the relative,logical or absolute path to resolve on the local file system.
      */
     public LocalFSNode newLocalFSNode(URI localFileURI)
     {
@@ -382,18 +342,26 @@ public class FSUtil implements ResourceProvider
         FSNode file = newFSNode(resolvePathURI(dirPath));
 
         if (file.exists(linkOptions) == false)
+        {
             return null;
+        }
 
         if (file.isDirectory(linkOptions) == false)
+        {
             return null;
+        }
 
         String strs[] = file.list();
         if ((strs == null) || (strs.length <= 0))
+        {
             return null;
+        }
 
         // sanitize:
         for (int i = 0; i < strs.length; i++)
+        {
             strs[i] = resolvePath(dirPath + "/" + strs[i]);
+        }
 
         return strs;
     }
@@ -410,42 +378,39 @@ public class FSUtil implements ResourceProvider
      * Open local file and return InputStream to read from.
      * 
      * @param filename
-     *            - relative or absolute file path (resolves to absolute path on
-     *            local filesystem)
+     *            - relative or absolute file path (resolves to absolute path on local filesystem)
      * @throws URISyntaxException
      * @throws IOException
      */
     public InputStream createInputStream(String filename) throws IOException, FileURISyntaxException
     {
-        return localFSHandler.createInputStream(newFSNode(filename)); 
+        return localFSHandler.createInputStream(newFSNode(filename));
     }
 
     public InputStream createInputStream(FSNode file) throws IOException, FileURISyntaxException
     {
         return localFSHandler.createInputStream(file);
     }
-    
+
     /**
-     * Open local file and return OutputStream to write to. The default
-     * implementation is to creat a new File if it doesn't exists or replace an
-     * existing file with the new contents if it exists.
+     * Open local file and return OutputStream to write to. The default implementation is to creat a new File if it
+     * doesn't exists or replace an existing file with the new contents if it exists.
      * 
      * @param filename
-     *            - relative or absolute file path (resolves to absolute path on
-     *            local fileystem)
+     *            - relative or absolute file path (resolves to absolute path on local fileystem)
      * @throws URISyntaxException
      * @throws IOException
      */
     public OutputStream createOutputStream(String filename) throws IOException, FileURISyntaxException
     {
-        return localFSHandler.createOutputStream(newFSNode(filename),false); 
+        return localFSHandler.createOutputStream(newFSNode(filename), false);
     }
 
     public OutputStream createOutputStream(FSNode file, boolean append) throws IOException, FileURISyntaxException
     {
-        return localFSHandler.createOutputStream(file,append); 
+        return localFSHandler.createOutputStream(file, append);
     }
-    
+
     public RandomReadable createRandomReader(FSNode node) throws IOException
     {
         return node.getFSHandler().createRandomReader(node);
@@ -474,8 +439,7 @@ public class FSUtil implements ResourceProvider
     }
 
     /**
-     * Read file and return as String. Provide optional encoding (can be null
-     * for default). Limit size to maxSize
+     * Read file and return as String. Provide optional encoding (can be null for default). Limit size to maxSize
      * 
      * @param filename
      *            - absolute of relative filepath
@@ -492,27 +456,27 @@ public class FSUtil implements ResourceProvider
         {
             encoding = ENCODING_UTF8;
         }
-        
+
         FSNode file = newFSNode(filename);
         int len = (int) file.getFileSize();
         if (len > maxSize)
         {
             len = maxSize;
         }
-        
+
         InputStream finps = localFSHandler.createInputStream(file);
         try
         {
             byte buffer[] = new byte[len + 1];
-    
-            int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len,false);
+
+            int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len, false);
             // truncate buffer in the case of a read error:
             buffer[numRead] = 0;
             return new String(buffer, encoding);
         }
         finally
         {
-            autoClose(finps);
+            IOUtil.autoClose(finps);
         }
     }
 
@@ -527,24 +491,24 @@ public class FSUtil implements ResourceProvider
         {
             encoding = ENCODING_UTF8;
         }
-        
+
         FSNode file = newFSNode(filename);
 
-        OutputStream foutps = localFSHandler.createOutputStream(file,false);
-        int len=0; 
-        
+        OutputStream foutps = localFSHandler.createOutputStream(file, false);
+        int len = 0;
+
         try
         {
             byte bytes[] = txt.getBytes(encoding);
             len = bytes.length;
             foutps.write(bytes);
             // close and flush
-            foutps.flush(); 
-            foutps.close(); 
-            foutps=null; // close successful  
-            
+            foutps.flush();
+            foutps.close();
+            foutps = null; // close successful
+
             long fileLen = file.getFileSize();
-            
+
             if (len != fileLen)
             {
                 logger.warnPrintf("File NOT truncated: After writing %d byte to '%s', file length is:%d!\n", filename, len, fileLen);
@@ -552,9 +516,8 @@ public class FSUtil implements ResourceProvider
         }
         finally
         {
-            autoClose(foutps); 
+            IOUtil.autoClose(foutps);
         }
-
 
         return;
     }
@@ -712,7 +675,7 @@ public class FSUtil implements ResourceProvider
     {
         if (isLocalFSUri(uri))
         {
-            return localFSHandler.createOutputStream(newFSNode(uri),false);
+            return localFSHandler.createOutputStream(newFSNode(uri), false);
         }
         else
         {

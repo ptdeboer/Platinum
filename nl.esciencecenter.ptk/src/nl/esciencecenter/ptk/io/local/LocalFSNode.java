@@ -178,19 +178,18 @@ public class LocalFSNode extends FSNode
     }
 
     @Override
-    public boolean mkdir() throws IOException
+    public LocalFSNode mkdir() throws IOException
     {
         Files.createDirectory(_path);
-        return true;
+        return this;
     }
 
     @Override
-    public boolean mkdirs() throws IOException
+    public LocalFSNode mkdirs() throws IOException
     {
         Files.createDirectories(_path);
-        return true;
+        return this;
     }
-
    
     @Override
     public String getPathname()
@@ -210,7 +209,7 @@ public class LocalFSNode extends FSNode
     }
 
     @Override
-    public LocalFSNode newFile(String path) throws FileURISyntaxException
+    public LocalFSNode newPath(String path) throws FileURISyntaxException
     {
         LocalFSNode lfile = new LocalFSNode(getFSHandler(), resolvePathURI(path));
         return lfile;

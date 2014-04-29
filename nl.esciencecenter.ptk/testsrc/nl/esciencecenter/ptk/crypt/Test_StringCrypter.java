@@ -34,10 +34,11 @@ import junit.framework.Assert;
 import nl.esciencecenter.ptk.crypt.CryptScheme;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.crypt.StringCrypter;
-import nl.esciencecenter.ptk.testsettings.Settings;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 import org.junit.Test;
+
+import settings.Settings;
 
 public class Test_StringCrypter
 {

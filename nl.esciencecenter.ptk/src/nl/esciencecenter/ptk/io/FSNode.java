@@ -82,7 +82,7 @@ public abstract class FSNode
 
     public FSNode getNode(String relpath) throws FileURISyntaxException
     {
-        return newFile(resolvePath(relpath));
+        return newPath(resolvePath(relpath));
     }
 
     /**
@@ -195,14 +195,14 @@ public abstract class FSNode
 
     public FSNode createDir(String subdir) throws IOException, FileURISyntaxException
     {
-        FSNode dir = newFile(resolvePath(subdir));
+        FSNode dir = newPath(resolvePath(subdir));
         dir.mkdir();
         return dir;
     }
 
     public FSNode createFile(String filepath) throws IOException, FileURISyntaxException
     {
-        FSNode file = newFile(resolvePath(filepath));
+        FSNode file = newPath(resolvePath(filepath));
         file.create();
         return file;
     }
@@ -231,7 +231,7 @@ public abstract class FSNode
         }
     }
 
-    public boolean create() throws IOException
+    public FSNode create() throws IOException
     {
         byte bytes[] = new byte[0];
 
@@ -240,7 +240,7 @@ public abstract class FSNode
         outps.write(bytes);
         outps.close();
 
-        return true;
+        return this;
     }
 
     public boolean isRoot()
@@ -323,7 +323,7 @@ public abstract class FSNode
     /**
      * FSNode factory method, optionally resolves path against parent FSNode.
      */
-    public abstract FSNode newFile(String path) throws FileURISyntaxException;
+    public abstract FSNode newPath(String path) throws FileURISyntaxException;
 
     public abstract boolean exists(LinkOption... linkOptions);
 
@@ -348,10 +348,10 @@ public abstract class FSNode
     public abstract FSNode[] listNodes() throws IOException;
 
     /** Create last path element as (sub)directory, parent directory must exist. */
-    public abstract boolean mkdir() throws IOException;
+    public abstract FSNode mkdir() throws IOException;
 
     /** Create full directory path. */
-    public abstract boolean mkdirs() throws IOException;
+    public abstract FSNode mkdirs() throws IOException;
 
     public abstract BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException;
 

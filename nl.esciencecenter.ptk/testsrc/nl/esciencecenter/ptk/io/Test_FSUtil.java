@@ -1,5 +1,5 @@
 /*
- * Copyrighted 2012-2013 Netherlands eScience Center.
+ * Copyrighted 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").  
  * You may not use this file except in compliance with the License. 
@@ -24,17 +24,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import nl.esciencecenter.ptk.io.local.LocalFSNode;
+
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nl.esciencecenter.ptk.GlobalProperties;
-import nl.esciencecenter.ptk.io.FSNode;
-import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.local.LocalFSNode;
+import settings.Settings;
 
-public class ITTestFSUtil
+public class Test_FSUtil
 {
+    // =============
+    // Static Field
+    // =============
+
     protected static Object testDirMutex = new Object();
 
     protected static LocalFSNode testDir = null;
@@ -49,18 +53,24 @@ public class ITTestFSUtil
         synchronized (testDirMutex)
         {
             if (testDir != null)
+            {
                 if (testDir.exists())
+                {
                     return testDir;
+                }
+            }
 
             FSUtil fsUtil = getFSUtil();
 
             // setup also tests basic methods !
-            testDir = fsUtil.newLocalFSNode(GlobalProperties.getGlobalTempDir() + "/testfsutil/");
+            testDir = fsUtil.newLocalFSNode(Settings.getInstance().getTestSubdir("testfsutil"));
 
             Assert.assertNotNull("Local test directory is null", testDir);
 
             if (testDir.exists() == false)
+            {
                 testDir.mkdir();
+            }
 
             Assert.assertTrue("Local test directory MUST exist!", testDir.exists());
 
@@ -68,22 +78,31 @@ public class ITTestFSUtil
         }
     }
 
+    // ========================================================================
+    // PRE
+    // ========================================================================
+
     @BeforeClass
     public static void setup() throws Exception
     {
         Assert.assertNotNull("Test Dir must be initialized", getCreateTestDir());
     }
 
-    @Test
-    public void checkTestDir()
+    // ========================================================================
+    // Actual tests
+    // ========================================================================
+
+    public FSNode getTestDir() throws IOException
     {
-        Assert.assertTrue("Local test directory MUST exist!", testDir.exists());
-        Assert.assertTrue("Local test directory MUST is not directory!", testDir.isDirectory());
+        return getCreateTestDir();
     }
 
-    public FSNode getTestDir()
+    @Test
+    public void checkTestDir() throws IOException
     {
-        return testDir;
+        FSNode dir = getTestDir();
+        Assert.assertTrue("Local test directory MUST exist:" + testDir, dir.exists());
+        Assert.assertTrue("Local test directory MUST is not directory!", dir.isDirectory());
     }
 
     public void testCreateDeleteFile(FSNode parent, String fileName) throws Exception
@@ -147,7 +166,9 @@ public class ITTestFSUtil
         OutputStream outps = file.createOutputStream(false);
 
         byte buffer[] =
-        { 1, 2, 3, 4 };
+        {
+                1, 2, 3, 4
+        };
         outps.write(buffer, 0, 4);
         outps.close();
 
@@ -176,12 +197,12 @@ public class ITTestFSUtil
     // Finalize Test Suite: cleanup test dir!
     // ========================================================================
 
-    @Test
-    public void removeTestDir() throws IOException
+    @AfterClass
+    public static void removeTestDir() throws IOException
     {
         try
         {
-            FSNode tDir = getTestDir();
+            FSNode tDir = getCreateTestDir();
             getFSUtil().delete(tDir, true);
             Assert.assertFalse("Test directory must be deleted after testSuite", tDir.exists());
         }

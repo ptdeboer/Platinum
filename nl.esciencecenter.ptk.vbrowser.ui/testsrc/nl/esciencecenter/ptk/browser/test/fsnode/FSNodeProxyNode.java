@@ -247,7 +247,7 @@ public class FSNodeProxyNode extends ProxyNode
     {
         try
         {
-            FSNode newPath=file.newFile(optNewName); 
+            FSNode newPath=file.newPath(optNewName); 
             if (StringUtil.equals(type,FSNode.FILE_TYPE))
             {
                 newPath.create();

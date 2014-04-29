@@ -51,6 +51,9 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class ResourceLoader
 {
+    private static ClassLogger logger;
+
+    
     /** Default UTF-8 */
     public static final String CHARSET_UTF8 = "UTF-8";
 
@@ -91,7 +94,152 @@ public class ResourceLoader
 
     private static ResourceLoader instance;
 
-    private static ClassLogger logger;
+    // =================================================================
+    //
+    // =================================================================
+
+    /**
+     * Util class for all the URL resolve methods.
+     */
+    public static class URLResolver
+    {
+        /**
+         * URL ClassLoaders needs DIR style URLs where directory paths must end with a slash '/'.
+         * Also URL paths must contain forward slashes.   
+         * 
+         * @throws MalformedURLException 
+         */
+        public static URL[] toDirUrls(URL urls[]) throws MalformedURLException 
+        {
+            URL dirUrls[]=new URL[urls.length]; 
+            for (int i=0;i<urls.length;i++)
+            {
+               URL url=urls[i];
+               if (url.getPath().endsWith("/")==false)
+               {
+                   dirUrls[i]=new URL(url.toString()+"/");     
+               }
+               else
+               {
+                   dirUrls[i]=url; // keep as-is. 
+               }
+            }
+            
+            return dirUrls; 
+        }
+        
+        protected URLClassLoader classLoader = null;
+        
+        public URLResolver(URLClassLoader parentClassLoader, URL[] urls) throws MalformedURLException
+        {
+            init(parentClassLoader,toDirUrls(urls));
+        }
+
+        public URLResolver(URL[] urls)
+        {
+            init(null,urls);
+        }
+        
+        protected void init(ClassLoader parentLoader,URL urls[])
+        {
+            logger.setLevelToDebug();
+            
+            if (parentLoader==null)
+            {
+                // context class loader including extra search path:
+                parentLoader = Thread.currentThread().getContextClassLoader();
+            }
+            
+            classLoader = new URLClassLoader(urls, parentLoader);
+        }
+
+        /** 
+         * Resolve relative path and return URL to existing resource. 
+         */
+        public URL resolveUrlPath(String relativePath)
+        {
+            return resolveUrlPath(null,relativePath); 
+        }
+        
+        /** 
+         * Resolve relative path and return URL to existing resource. 
+         */
+        public java.net.URL resolveUrlPath(ClassLoader optClassLoader, String url)
+        {
+            URL resolvedUrl = null;
+
+            logger.debugPrintf("resolveUrl():%s\n", url);
+
+            if (url == null)
+            {
+                throw new NullPointerException("URL String can not be null");
+            }
+
+            // (I) First optional Class Loader !
+            if (optClassLoader != null)
+            {
+                resolvedUrl = optClassLoader.getResource(url);
+
+                if (resolvedUrl != null)
+                {
+                    logger.debugPrintf("resolveUrl() I: Resolved URL by using extra class loader:%s\n", resolvedUrl);
+                }
+            }
+
+            // (II) Use Resource Classloader
+            if ((resolvedUrl == null) && (this.classLoader != null))
+            {
+                resolvedUrl = this.classLoader.getResource(url);
+
+                if (resolvedUrl != null)
+                {
+                    logger.debugPrintf("resolveURL() II:Resolved URL by using resource classloader:%s\n", resolvedUrl);
+                }
+            }
+
+            // (III) Check default (global) classloader for icons which are on the
+            // classpath
+            if (resolvedUrl == null)
+            {
+                resolvedUrl = this.getClass().getClassLoader().getResource(url);
+
+                if (resolvedUrl != null)
+                {
+                    logger.debugPrintf("resolveURL() III:Resolved URL by using global classloader:%s\n", resolvedUrl);
+                }
+            }
+
+            // keep as is:
+            if (resolvedUrl == null)
+            {
+                try
+                {
+                    URL url2 = new URL(url);
+                    resolvedUrl = url2;
+                }
+                catch (MalformedURLException e)
+                {
+                    logger.warnPrintf("resolveURL() IV: Not an absolute url:%s\n", url);
+                }
+            }
+
+            logger.debugPrintf("resolveURL(): '%s' -> '%s' \n", url, resolvedUrl);
+
+            return resolvedUrl;
+        }
+
+        public URL[] getURLs()
+        {
+            URL urls[] = null;
+
+            if (this.classLoader != null)
+            {
+                urls = this.classLoader.getURLs();
+            }
+            
+            return urls;
+        }
+    }
 
     // =================================================================
     // Static methods
@@ -121,7 +269,7 @@ public class ResourceLoader
 
     protected String charEncoding = DEFAULT_CHARSET;
 
-    protected URLClassLoader classLoader = null;
+    protected URLResolver urlResolver = null;
 
     protected ResourceProvider resourceProvider;
 
@@ -160,9 +308,7 @@ public class ResourceLoader
     {
         if (urls != null)
         {
-            // context class loader including extra search path:
-            ClassLoader parent = Thread.currentThread().getContextClassLoader();
-            classLoader = new URLClassLoader(urls, parent);
+            urlResolver = new URLResolver(urls);
         }
 
         this.resourceProvider = resourceProvider;
@@ -218,66 +364,8 @@ public class ResourceLoader
      */
     public URL resolveUrl(ClassLoader optClassLoader, String url)
     {
-        URL resolvedUrl = null;
-
-        logger.debugPrintf("resolveUrl():%s\n", url);
-
-        if (url == null)
-        {
-            throw new NullPointerException("URL String can not be null");
-        }
-
-        // (I) First optional Class Loader !
-        if (optClassLoader != null)
-        {
-            resolvedUrl = optClassLoader.getResource(url);
-
-            if (resolvedUrl != null)
-            {
-                logger.debugPrintf("resolveUrl() I: Resolved URL by using extra class loader:%s\n", resolvedUrl);
-            }
-        }
-
-        // (II) Use Reource Classloader
-        if ((resolvedUrl == null) && (this.classLoader != null))
-        {
-            resolvedUrl = this.classLoader.getResource(url);
-
-            if (resolvedUrl != null)
-            {
-                logger.debugPrintf("resolveURL() II:Resolved URL by using resource classloader:%s\n", resolvedUrl);
-            }
-        }
-
-        // (III) Check default (global) classloader for icons which are on the
-        // classpath
-        if (resolvedUrl == null)
-        {
-            resolvedUrl = this.getClass().getClassLoader().getResource(url);
-
-            if (resolvedUrl != null)
-            {
-                logger.debugPrintf("resolveURL() III:Resolved URL by using global classloader:%s\n", resolvedUrl);
-            }
-        }
-
-        // keep as is:
-        if (resolvedUrl == null)
-        {
-            try
-            {
-                URL url2 = new URL(url);
-                resolvedUrl = url2;
-            }
-            catch (MalformedURLException e)
-            {
-                logger.debugPrintf("resolveURL() IV: Not an absolute url:%s\n", url);
-            }
-        }
-
-        logger.debugPrintf("resolveURL(): '%s' -> '%s' \n", url, resolvedUrl);
-
-        return resolvedUrl;
+        // delegate: 
+        return urlResolver.resolveUrlPath(optClassLoader, url);
     }
 
     /**
@@ -285,12 +373,7 @@ public class ResourceLoader
      */
     public URL[] getSearchPath()
     {
-        URL urls[] = null;
-
-        if (this.classLoader != null)
-            urls = this.classLoader.getURLs();
-
-        return urls;
+        return urlResolver.getURLs(); 
     }
 
     // =================================================================
@@ -483,14 +566,6 @@ public class ResourceLoader
         {
             IOUtil.autoClose(inps);
         }
-    }
-
-    public byte[] readBytes(URL loc) throws IOException
-    {
-        InputStream inps = createInputStream(loc);
-        byte bytes[] = readBytes(inps);
-        IOUtil.autoClose(inps);
-        return bytes;
     }
 
     public byte[] readBytes(String pathOrUrl) throws IOException
