@@ -265,6 +265,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     @Override
     final public void startViewer(VRL vrl, String optMenuMethod)
     {
+        setVrl(vrl); 
         doStartViewer(vrl, optMenuMethod);
         fireStarted();
     }

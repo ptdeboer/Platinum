@@ -519,9 +519,13 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     protected void updateTitle()
     {
         if (this.editable == false)
+        {
             setViewerTitle("Viewing:" + getVRL().getBasename());
+        }
         else
+        {
             setViewerTitle("Editing:" + getVRL().getBasename());
+        }
     }
 
     protected void requestFocusOnText()
