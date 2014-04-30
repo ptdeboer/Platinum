@@ -144,8 +144,6 @@ public class ResourceLoader
         
         protected void init(ClassLoader parentLoader,URL urls[])
         {
-            logger.setLevelToDebug();
-            
             if (parentLoader==null)
             {
                 // context class loader including extra search path:
