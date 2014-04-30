@@ -95,7 +95,7 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
 
                 if (hasEvents())
                 {
-                    logger.infoPrintf("hasEvents(): Nr of events=%d", events.size());
+                    logger.infoPrintf("hasEvents(): Nr of events=%d\n", events.size());
                     handleEvent();
                 }
                 else
