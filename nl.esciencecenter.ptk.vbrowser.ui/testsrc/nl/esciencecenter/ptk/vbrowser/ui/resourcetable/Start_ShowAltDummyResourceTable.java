@@ -13,7 +13,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 
-public class AltDummyResourceTable
+public class Start_ShowAltDummyResourceTable
 {
     public static void main(String args[])
     {

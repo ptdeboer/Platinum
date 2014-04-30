@@ -1,11 +1,9 @@
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
-import java.util.List;
-
-import junit.framework.Assert;
 
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowData;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class Test_ResourceTableModel
@@ -27,16 +25,16 @@ public class Test_ResourceTableModel
             Assert.assertEquals("Header list entry #" + i + "doesn't match", headers[i], actualHeaders[i]);
         }
     }
-    
+
     static String createRowKey(int rowIndex)
     {
         return  "key"+rowIndex;  
     }
-    
+
     // ================ 
     // Tests 
     // ================
-    
+
     @Test
     public void test_CreateNew()
     {
@@ -45,7 +43,7 @@ public class Test_ResourceTableModel
         // nill table(!) 
         testNewTable(new String[]{""}); 
     }
-    
+
     public void testNewTable(String headers[])
     {
         ResourceTableModel model = new ResourceTableModel(headers);
@@ -67,7 +65,7 @@ public class Test_ResourceTableModel
         Assert.assertEquals("Empty model should have 0 rows.", 1, nillModel.getRowCount());
         Assert.assertEquals("Number of header doesn't match.", numHeaders, nillModel.getColumnCount());
     }
-        
+
     @Test
     public void test_AddRows()
     {
@@ -87,14 +85,14 @@ public class Test_ResourceTableModel
         testTableRows(new String[]{"headerA","headerB"},new String[][]{{"1","2"},{"4","5"}});
         testTableRows(new String[]{"headerA","headerB","headerC"},new String[][]{{"1","2","3"},{"4","5","6"}});
     }
-    
+
     public void testTableRows(String headers[], String rowData[][])
     {
         ResourceTableModel tableModel=testAddTableRows(headers,rowData); 
-        
+
         testDeleteTableRows(tableModel,headers,rowData);
     }
-    
+
     protected ResourceTableModel testAddTableRows(String headers[], String rowData[][])
     {
         int numRows = rowData.length;
@@ -108,7 +106,7 @@ public class Test_ResourceTableModel
             // assert non existing row 
             Assert.assertNull("New rowkey already defined!",model.getRow(key));  
             Assert.assertEquals("Non existant rowkey must return -1 as index number", -1,model.getRowIndex(key)); 
-            
+
             // create row. 
             int rowIndex = model.createRow(key);
             int rowKeyIndex = model.getRowIndex(key);
@@ -125,10 +123,10 @@ public class Test_ResourceTableModel
                 Assert.assertEquals("Cell data doesn't match, [row,col]=[" + i + "," + j + "]", rowValues[j], newValue);
             }
         }
-        
+
         return model; 
     }
-    
+
     protected void testDeleteTableRows(ResourceTableModel tableModel, String headers[], String rowData[][])
     {
         int numRows=rowData.length; 
@@ -138,7 +136,7 @@ public class Test_ResourceTableModel
         Assert.assertEquals("Number of rows to delete must match actual number of rows", numRows, numToDeleted);
         Assert.assertEquals("Number of header doesn't match.", headers.length, tableModel.getColumnCount());
 
-       
+
         for (int i=0;i<numRows;i++)
         {
             // PRE: 
@@ -152,7 +150,7 @@ public class Test_ResourceTableModel
             rowObj = tableModel.getRow(key); 
             Assert.assertNull("After row deletion, getRow(key) must return null",rowObj);
         }
-        
+
     }
-    
+
 }
