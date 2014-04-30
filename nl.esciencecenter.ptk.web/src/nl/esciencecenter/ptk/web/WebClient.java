@@ -329,7 +329,7 @@ public class WebClient
         }
         catch (javax.net.ssl.SSLPeerUnverifiedException e)
         {
-            throw new WebException(WebException.Reason.HTTPS_SSLEXCEPTION, e.getMessage(), e);
+            throw new WebException(WebException.Reason.HTTPS_SSLEXCEPTION, "SSL Verification Error:"+e.getMessage(), e);
         }
         catch (WebException e)
         {
