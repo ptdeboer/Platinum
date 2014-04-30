@@ -45,11 +45,16 @@ public class StartVBrowser
         }
     }
 
-    public static ProxyBrowserController startVBrowser(String args[]) throws Exception
+    public static BrowserPlatform getPlatform()
     {
         // vbrowser
-        BrowserPlatform platform = BrowserPlatform.getInstance("vbrowser");
-
+        return BrowserPlatform.getInstance("vbrowser");
+    }
+    
+    public static ProxyBrowserController startVBrowser(String args[]) throws Exception
+    {
+        BrowserPlatform platform=getPlatform(); 
+        
         // VRSContext 
         VRSContext context = platform.getVRSContext();
         VRL config = context.getHomeVRL().resolvePath(".vrsrc");
