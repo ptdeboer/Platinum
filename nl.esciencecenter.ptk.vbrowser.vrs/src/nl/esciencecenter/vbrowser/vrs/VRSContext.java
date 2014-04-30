@@ -23,6 +23,7 @@ package nl.esciencecenter.vbrowser.vrs;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.GlobalProperties;
+import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
@@ -110,7 +111,24 @@ public class VRSContext
     {
         try
         {
-            return CertificateStore.getDefault(true);
+            VRL caCertsLoc=null; 
+            
+            if (hasPersistantConfig())
+            {
+                // load existing or create new
+                VRL loc = this.getPersistantConfigLocation(); 
+                caCertsLoc=loc.appendPath("cacerts"); 
+                
+                CertificateStore certificateStore=CertificateStore.loadCertificateStore(caCertsLoc.getPath(), 
+                        new Secret(CertificateStore.DEFAULT_PASSPHRASE.toCharArray()), 
+                        true,
+                        true); 
+                return certificateStore; 
+            }
+            else
+            {
+                return CertificateStore.getDefault(true);
+            }
         }
         catch (CertificateStoreException e)
         {

@@ -20,6 +20,8 @@
 
 package nl.esciencecenter.ptk.ssl;
 
+import java.net.URLStreamHandler;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -74,5 +76,34 @@ public class SslUtil
         }
         
         return socket;
+    }
+    
+    public static void setStaticHttpsSslContext(SSLContext context)
+    {
+        // Might not work in custom http/https context: 
+        // Check web service compatibility here: 
+        try
+        {
+            SSLSocketFactory factory = context.getSocketFactory();
+            sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultSSLSocketFactory(factory); 
+            // sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultSSLSocketFactory(context.getSocketFactory());
+            // sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultAllowUserInteraction(true);
+        }
+        catch (Throwable e)
+        {
+            logger.logException(ClassLogger.ERROR,e,"Failed to initialize SSLSocketFactory\n");
+        }
+    }
+
+    // com.sun.net.ssl.internal.www.protocol.https.HttpsURLConnectionImpl.setDefaultHostnameVerifier(hv);
+
+    /**
+     * Create HttpsHandler which conforms to the classes used in the above
+     * methods
+     */
+    public static URLStreamHandler createHttpsHandler()
+    {
+        // return class same as initialized above!
+        return new sun.net.www.protocol.https.Handler();
     }
 }

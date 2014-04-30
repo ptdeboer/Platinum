@@ -29,14 +29,9 @@ import javax.net.ssl.SSLSocket;
 import nl.esciencecenter.ptk.ssl.CertificateStore.CaCertOptions;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
-public class ImportCertificates
+public class CertUI
 {
-    private static ClassLogger logger;
-
-    static
-    {
-        logger = ClassLogger.getLogger(ImportCertificates.class);
-    }
+    private static ClassLogger logger=  ClassLogger.getLogger(CertUI.class);
 
     /**
      * Check whether Exception was caused by a certificate error. 
@@ -58,10 +53,10 @@ public class ImportCertificates
         return null;
     }
 
-    public static boolean interactiveImportCertificate(CertificateStore cacerts, String hostname, int port)
+    public static boolean interactiveImportCertificate(CertificateStore cacerts, String hostname, int port,CaCertOptions options)
             throws Exception
     {
-        boolean result = interactiveImportCertificate(cacerts, hostname, port, null, null);
+        boolean result = interactiveImportCertificate(cacerts, hostname, port, null, options);
         return result;
     }
 
@@ -189,14 +184,14 @@ public class ImportCertificates
             {
                 logger.infoPrintf("Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n",
                         host);
-                certStore.autoSaveKeystore();
+                certStore.saveKeystore();
             }
         }
         // not interactive:
         else if (options.storeAccepted == true)
         {
             logger.infoPrintf("Saving keystore after (default) accepting certificate from host:%s\n", host);
-            certStore.autoSaveKeystore();
+            certStore.saveKeystore();
         }
 
         // ===
