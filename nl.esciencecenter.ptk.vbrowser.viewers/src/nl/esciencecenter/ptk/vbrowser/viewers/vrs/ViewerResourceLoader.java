@@ -32,6 +32,7 @@ import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -165,6 +166,11 @@ public class ViewerResourceLoader
     public RandomWritable createRandomWriter(VRL loc) throws Exception
     {
         return vrsClient.createRandomWriter(vrsClient.openPath(loc));
+    }
+
+    public String getMimeTypeOf(VRL vrl) throws VrsException
+    {
+        return this.vrsClient.openPath(vrl).getMimeType(); 
     }
 
 

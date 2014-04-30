@@ -184,7 +184,8 @@ public class PluginRegistry
                 mimeTypeViewers.put(type, list);
             }
 
-            list.add(entry);
+            // Insert first so that later registered custom viewrs have higher priority. 
+            list.add(0,entry);
         }
     }
 

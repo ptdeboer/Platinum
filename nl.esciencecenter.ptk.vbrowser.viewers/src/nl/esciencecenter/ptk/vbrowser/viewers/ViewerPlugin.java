@@ -23,6 +23,7 @@ package nl.esciencecenter.ptk.vbrowser.viewers;
 import javax.swing.JComponent;
 
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -75,8 +76,9 @@ public interface ViewerPlugin
      *            - The VRL to view
      * @param optMenuMethod
      *            - Optional method called by user through interactive menu.
+     * @throws VrsException 
      */
-    public void startViewer(VRL vrl, String optMenuMethod);
+    public void startViewer(VRL vrl, String optMenuMethod) throws VrsException;
 
     /**
      * Stop this viewer and suspend all (background) activity.

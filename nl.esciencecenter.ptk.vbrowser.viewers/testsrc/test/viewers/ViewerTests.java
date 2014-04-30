@@ -7,6 +7,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRS;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ViewerTests
@@ -23,7 +24,7 @@ public class ViewerTests
         return viewerRegistry;
     }
 
-    public static ViewerFrame startViewer(Class<? extends ViewerPlugin> class1, VRL vrl)
+    public static ViewerFrame startViewer(Class<? extends ViewerPlugin> class1, VRL vrl) throws VrsException
     {
         ViewerPlugin newViewer = getViewerRegistry().createViewer(class1);
         ViewerFrame frame = createViewerFrame(newViewer, true);
@@ -53,7 +54,7 @@ public class ViewerTests
         return frame;
     }
 
-    public static void testViewer(Class<? extends ViewerPlugin> class1, VRL vrl)
+    public static void testViewer(Class<? extends ViewerPlugin> class1, VRL vrl) throws VrsException
     {
         ViewerFrame frame = startViewer(class1, vrl);
         System.out.printf("ViewerFrame is visible:%s\n",frame.isVisible());
