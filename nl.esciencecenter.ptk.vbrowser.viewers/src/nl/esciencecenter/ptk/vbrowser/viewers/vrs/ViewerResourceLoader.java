@@ -22,7 +22,6 @@ package nl.esciencecenter.ptk.vbrowser.viewers.vrs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.io.IOUtil;
@@ -158,11 +157,6 @@ public class ViewerResourceLoader
         return MimeTypes.getDefault().getMimeType(path);
     }
     
-    public String getMimeType(URI uri)
-    {
-        return MimeTypes.getDefault().getMimeType(uri.getPath());
-    }
-
     public RandomReadable createRandomReader(VRL loc) throws Exception
     {
         return vrsClient.createRandomReader(vrsClient.openPath(loc));

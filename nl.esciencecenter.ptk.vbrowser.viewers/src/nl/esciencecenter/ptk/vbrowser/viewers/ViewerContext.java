@@ -16,8 +16,8 @@ public class ViewerContext
 
     protected PluginRegistry pluginRegistry;
 
-    protected ViewerEventDispatcher eventDispatcher; 
-    
+    protected ViewerEventDispatcher eventDispatcher;
+
     public ViewerContext(PluginRegistry viewerRegistry)
     {
         this.pluginRegistry = viewerRegistry;
@@ -34,9 +34,9 @@ public class ViewerContext
 
     public void setViewerEventDispatcher(ViewerEventDispatcher dispatcher)
     {
-        this.eventDispatcher=dispatcher; 
+        this.eventDispatcher = dispatcher;
     }
-    
+
     /**
      * @return the method this viewer was originally started with. Might be null if none was specified.
      */

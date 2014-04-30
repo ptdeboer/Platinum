@@ -22,7 +22,6 @@ package nl.esciencecenter.ptk.vbrowser.viewers;
 
 import javax.swing.JComponent;
 
-import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventSource;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -32,7 +31,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * All Browser Viewer plugins implement this interface. <br>
  * Some optional interfaces may be implemented as well for example the ToolPlugin or MimeViewer plugin.
  */
-public interface ViewerPlugin  
+public interface ViewerPlugin
 {
     /**
      * Register Viewer Event Listener for this viewer.
@@ -40,7 +39,7 @@ public interface ViewerPlugin
     public void addViewerListener(ViewerListener listener);
 
     /**
-     * Removed registered Viewer Event Listener.
+     * Remove registered Viewer Event Listener.
      */
     public void removeViewerListener(ViewerListener listener);
 
@@ -68,10 +67,10 @@ public interface ViewerPlugin
     public void initViewer(ViewerContext viewerContext);
 
     /**
-     * Start actual viewer.
+     * Start actual viewer or update with new VRL and resume the viewer. 
      * <p>
      * This method may be called multiple times to either indicate an update or an method being invoked.
-     * 
+     * If called after a <code>stopViewer()</code> call, this viewer is expected to resume. 
      * @param vrl
      *            - The VRL to view
      * @param optMenuMethod

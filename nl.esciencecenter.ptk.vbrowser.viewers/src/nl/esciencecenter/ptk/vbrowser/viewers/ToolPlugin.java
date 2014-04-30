@@ -31,38 +31,35 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public interface ToolPlugin
 {
 
+    /** 
+     * @return Tool Name to use in menus. Might be different then ViewerName.
+     */
     public String getToolName();
 
     /**
-     * Whether to add tool under "Tools" menu.
+     * @return Whether to add tool under "Tools" menu.
      */
     public boolean addToToolMenu();
 
     /**
-     * Menu path to appear under "Tools" menu of the browser. For example {"util","binary viewers"}.
-     * 
-     * @return array of menu path names.
+     * @return Menu path to appear under "Tools" menu of the browser. For example {"util","binary viewers"}.
      */
     public String[] getToolMenuPath();
 
     /**
-     * Toolbar name to group other tools to the same ToolBar if createToolBar() is true. If null, no toolbar will be
+     * @return Toolbar name to group other tools to the same ToolBar if createToolBar() is true. If null, no toolbar will be
      * created.
-     * 
-     * @return
      */
     public String toolBarName();
 
     /**
-     * Default method name to use when the viewer is started from the Tool Menu. see
+     * @return Default method name to use when the viewer is started from the Tool Menu. see
      * {@link EmbeddedViewer#startViewerFor(VRL, String)}
-     * 
-     * @return
      */
     public String defaultToolMethod();
 
     /**
-     * Return custom tool Icon. Parameter size indicates minimum size of icon. Icons are automatically resized to fit
+     * @return Return custom tool Icon. Parameter size indicates minimum size of icon. Icons are automatically resized to fit
      * the menu or Toolbar.<br>
      * To avoid upscaling of the icon return at least an icon with a Height &gt; size and Width &gt; size.
      */

@@ -60,23 +60,16 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     // =======
     //
     // =======
-    
+
     private JPanel innerPanel;
-
     private VRL viewedUri;
-
     private boolean isBusy;
-
     private ViewerContext viewerContext;
 
     protected String textEncoding = "UTF-8";
-
     protected Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
-    
     protected Properties properties;
-    
     protected Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-
     protected IconProvider iconProvider = null;
 
     protected EmbeddedViewer()
@@ -120,23 +113,6 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     final protected void setVrl(VRL vrl)
     {
         this.viewedUri = vrl;
-    }
-
-    final public void startViewerFor(VRL newVRL, String optMenuMethod)
-    {
-        this.setVrl(newVRL);
-        startViewer(newVRL, optMenuMethod);
-    }
-
-    /**
-     * Update the Viewed Location.
-     * 
-     * @param newUri
-     */
-    final public void updateVRL(VRL vrl)
-    {
-        setVrl(vrl);
-        doUpdate(vrl);
     }
 
     /**
@@ -265,7 +241,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     @Override
     final public void startViewer(VRL vrl, String optMenuMethod)
     {
-        setVrl(vrl); 
+        setVrl(vrl);
         doStartViewer(vrl, optMenuMethod);
         fireStarted();
     }
@@ -302,7 +278,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
 
         return reg.getResourceHandler();
     }
-    
+
     // =========================================================================
     // Gui
     // =========================================================================
@@ -419,7 +395,6 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
         }
     }
 
-
     public void notifyBusy(boolean isBusy)
     {
         this.isBusy = isBusy;
@@ -429,7 +404,6 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     {
         return this.isBusy;
     }
-
 
     /**
      * Notify Viewer Manager or other Listeners that an Exception has occured.
@@ -441,11 +415,11 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     {
         ExceptionDialog.show(this, message, ex, false);
     }
-    
+
     // =========================================================================
     // Event Interface.
     // =========================================================================
-    
+
     public void errorPrintf(String format, Object... args)
     {
         logger.errorPrintf(format, args);
@@ -492,7 +466,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
     {
         this.getViewerEventDispatcher().removeListener(listener);
     }
-    
+
     protected ViewerEventDispatcher getViewerEventDispatcher()
     {
         ViewerContext context = this.getViewerContext();
@@ -522,14 +496,14 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
 
     protected void fireStopped()
     {
-        fireEvent(ViewerEvent.createStoppedEvent(this)); 
+        fireEvent(ViewerEvent.createStoppedEvent(this));
     }
 
     protected void fireDisposed()
     {
-        //fireEvent(ViewerEvent.createDisposedEvent(this));
+        // fireEvent(ViewerEvent.createDisposedEvent(this));
     }
-    
+
     // =========================================================================
     // Abstract Interface
     // =========================================================================

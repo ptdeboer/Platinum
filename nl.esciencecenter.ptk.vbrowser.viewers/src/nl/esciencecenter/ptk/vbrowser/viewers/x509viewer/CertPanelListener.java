@@ -20,7 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.x509viewer;
 
-public interface CertPanelListener 
+public interface CertPanelListener
 {
     public void optionSelected();
 

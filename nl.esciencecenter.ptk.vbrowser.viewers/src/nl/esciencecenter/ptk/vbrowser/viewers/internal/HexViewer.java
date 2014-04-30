@@ -98,7 +98,9 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     private static final long serialVersionUID = 4959020834564707156L;
 
     /** The mimetypes I can view */
-    private static String mimeTypes[] = { "application/octet-stream", };
+    private static String mimeTypes[] = {
+        "application/octet-stream",
+    };
 
     static private boolean default_show_font_toolbar = false;
 
@@ -136,7 +138,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
     /** Actual bytes per line (nrBytesPerLine) is nrWordPerLine*wordSize */
     private int minimumBytesPerLine = 32;
-    
+
     // ================================
     // Derived/Secondary fields:
     // ================================
@@ -154,30 +156,42 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     protected RandomReadable reader = null;
 
     // === pacakge protected GUI components ===
-    
+
     protected JTextField offsetField;
 
     // === GUI components === //
 
     private HexViewController hexViewController;
+
     private FontToolBar fontToolBar;
 
     // === fiels === //
     private JTextArea textArea = null;
+
     private JToolBar toolBar;
+
     private JPanel mainPanel;
+
     private JScrollBar scrollbar;
+
     private JLabel offsetLabel;
+
     private JLabel lengthLabel;
+
     private JTextField lengthField;
+
     private JLabel magicLabel;
+
     private JTextField magicField;
+
     private JPanel toolPanel;
+
     private JLabel encodingLabel;
+
     private JTextField encodingField;
 
-    // tasks // 
-    
+    // tasks //
+
     private ActionTask updateTask;
 
     public void initGui()
@@ -305,7 +319,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
             }
             catch (TooManyListenersException e)
             {
-                logger.errorPrintf("FIXME:TooManyListenersException:%s\n",e);
+                logger.errorPrintf("FIXME:TooManyListenersException:%s\n", e);
             }
         }
     }
@@ -364,9 +378,9 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     @Override
     public void doStopViewer()
     {
-        if (this.updateTask!=null)
+        if (this.updateTask != null)
         {
-            updateTask.signalTerminate(); 
+            updateTask.signalTerminate();
         }
     }
 
@@ -391,7 +405,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
             reader = null;
         }
     }
-        
+
     @Override
     public String[] getMimeTypes()
     {
@@ -408,8 +422,8 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return textArea.getText();
     }
 
-    /** 
-     * For binary dropped content. 
+    /**
+     * For binary dropped content.
      */
     public void setContents(byte[] bytes)
     {
@@ -435,25 +449,26 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     {
         return true;
     }
-    
+
     void redrawContents()
     {
-        uiRedrawContents(); 
+        uiRedrawContents();
     }
-    
+
     void uiRedrawContents()
     {
-        if (SwingUtilities.isEventDispatchThread()==false)
+        if (SwingUtilities.isEventDispatchThread() == false)
         {
-            Runnable runner=new Runnable() {
-                public void run() {
-                    uiRedrawContents(); 
+            Runnable runner = new Runnable() {
+                public void run()
+                {
+                    uiRedrawContents();
                 }
             };
-            
+
             SwingUtilities.invokeLater(runner);
         }
-        
+
         // ASSERT
         if (buffer == null)
         {
@@ -544,7 +559,9 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         Dimension targetSize = textArea.getSize();
         FontMetrics metrics = textArea.getFontMetrics(textArea.getFont());
         char chars[] =
-        { 'w' };
+        {
+            'w'
+        };
         int charWidth = metrics.charsWidth(chars, 0, 1);
         int charHeight = metrics.getHeight();
         int maxLineChars = targetSize.width / (charWidth);
@@ -595,10 +612,10 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     {
         // Bug: Fix disappearing ScrollBar if offset
         // note: if scrolbar value is exactly Integer.MIN_VALUE the scrollbar is not visible.
-        
+
         if (value >= Integer.MAX_VALUE)
         {
-            logger.errorPrintf("Offset exceeds Integer.MAX_VALUE:%d\n",value);
+            logger.errorPrintf("Offset exceeds Integer.MAX_VALUE:%d\n", value);
         }
         else if (value <= Integer.MIN_VALUE)
         {
@@ -751,7 +768,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         }
         return str;
     }
-    
+
     public void moveToOffset(final long offset)
     {
         if (this.offset == offset)
@@ -829,15 +846,10 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
     /*
      * public Vector<ActionMenuMapping> getActionMappings() { ActionMenuMapping mapping=new
-     * ActionMenuMapping("viewBinary", "View Binary (Hex Viewer)","binary");
-     * 
-     * // '/' is not a RE character Pattern patterns[]=new Pattern[mimeTypes.length];
-     * 
-     * for (int i=0;i<mimeTypes.length;i++) patterns[i]=Pattern.compile(mimeTypes[i]);
-     * 
-     * mapping.addMimeTypeMapping(patterns);
-     * 
-     * Vector<ActionMenuMapping> mappings=new Vector<ActionMenuMapping>(); mappings.add(mapping); return mappings; }
+     * ActionMenuMapping("viewBinary", "View Binary (Hex Viewer)","binary"); // '/' is not a RE character Pattern
+     * patterns[]=new Pattern[mimeTypes.length]; for (int i=0;i<mimeTypes.length;i++)
+     * patterns[i]=Pattern.compile(mimeTypes[i]); mapping.addMimeTypeMapping(patterns); Vector<ActionMenuMapping>
+     * mappings=new Vector<ActionMenuMapping>(); mappings.add(mapping); return mappings; }
      */
 
     public long getOffset()
@@ -880,7 +892,9 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         for (int i = 0; i < mimeTypes.length; i++)
         {
             List<String> list = new StringList(new String[]
-            { "view:View Binary" });
+            {
+                "view:View Binary"
+            });
             mappings.put(mimeTypes[i], list);
         }
 
@@ -1023,7 +1037,6 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         }
     }
 
-
     public void _updateMagic()
     {
         try
@@ -1043,5 +1056,5 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         }
 
     }
-    
+
 }

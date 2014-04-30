@@ -36,16 +36,16 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class HexViewController implements AdjustmentListener, KeyListener, ActionListener, URIDropTargetLister
 {
-    private static final ClassLogger logger=ClassLogger.getLogger(HexViewController.class); 
-    
-	private HexViewer hexViewer;
+    private static final ClassLogger logger = ClassLogger.getLogger(HexViewController.class);
 
-	public HexViewController(HexViewer viewer) 
-	{
-		this.hexViewer=viewer; 
-	}
+    private HexViewer hexViewer;
 
-	public void setContents(String txt)
+    public HexViewController(HexViewer viewer)
+    {
+        this.hexViewer = viewer;
+    }
+
+    public void setContents(String txt)
     {
         try
         {
@@ -53,141 +53,140 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
         }
         catch (UnsupportedEncodingException e)
         {
-            hexViewer.setContents(txt.getBytes()); 
-        } 
+            hexViewer.setContents(txt.getBytes());
+        }
     }
 
     public void handleDrop(URI uri)
     {
-	    this.hexViewer.doUpdate(new VRL(uri)); 
+        this.hexViewer.doUpdate(new VRL(uri));
     }
 
     public void adjustmentValueChanged(AdjustmentEvent e)
-	{
-		logger.debugPrintf("adjustmentValueChanged(): %s\n",e); 
-		logger.debugPrintf(" - new value=%d\n",+e.getValue());
-		
-		int val=e.getValue(); 
- 		this.hexViewer.moveToOffset(val); 
-	}
+    {
+        logger.debugPrintf("adjustmentValueChanged(): %s\n", e);
+        logger.debugPrintf(" - new value=%d\n", +e.getValue());
 
-	public void keyTyped(KeyEvent e) 
-	{		
-	    
-	}
-	
-	public void keyPressed(KeyEvent e)
-	{
-		int kchar=e.getKeyChar(); 
-		int kcode=e.getKeyCode();
-		int mods=e.getModifiers(); 
-		
-		String kstr=KeyEvent.getKeyText(kcode);
-		//logger.debugPrintf("key pressed (Char,str)='%s' => '%s'\n",kchar,kstr); 
-		
+        int val = e.getValue();
+        this.hexViewer.moveToOffset(val);
+    }
 
-		if ((mods & KeyEvent.CTRL_MASK) >0)
-		{
-			if (kstr.compareToIgnoreCase("B")==0)
-			{
-				hexViewer.setWordSize(1); 
-				hexViewer.redrawContents(); 
-			}
-			// [T]oolbar  (CTRL-F) = find
-			else if (kstr.compareToIgnoreCase("T")==0)
-			{
-				hexViewer.toggleFontToolBar(); 
-			}
-			else if (kstr.compareToIgnoreCase("B")==0)
-			{
-				hexViewer.setWordSize(1); 
-				hexViewer.redrawContents(); 
-			}
-			else if (kstr.compareTo("1")>=0  && (kstr.compareTo("8")<=0)) 
-			{
-				hexViewer.setWordSize(new Integer(kstr)); 
-				System.err.println("wordSize="+hexViewer.getWordSize());
-				hexViewer.redrawContents(); 
-			}
-			if (kstr.compareToIgnoreCase("Right")==0)
-			{
-				hexViewer.setMinimumBytesPerLine(hexViewer.getMinimumBytesPerLine()
-						+ hexViewer.getWordSize()); 
-				
-				hexViewer.redrawContents(); 
-			}
-			else if (kstr.compareToIgnoreCase("Left")==0)
-			{
-				hexViewer.setMinimumBytesPerLine(hexViewer.getMinimumBytesPerLine()
-						- hexViewer.getWordSize()); 
-							
-				hexViewer.redrawContents(); 
-			}
-			
-		}
-		else if (kstr.compareToIgnoreCase("Page Down")==0)
-		{
-			hexViewer.addOffset(hexViewer.nrBytesPerView);			
-			hexViewer.redrawContents(); 
-		}
-		else if (kstr.compareToIgnoreCase("Page Up")==0)
-		{
-			hexViewer.addOffset(-hexViewer.nrBytesPerView);			
-			hexViewer.redrawContents(); 
-		}
-		else if (kstr.compareToIgnoreCase("Right")==0)
-		{
-			hexViewer.addOffset(1); 			
-			hexViewer.redrawContents(); 
-		}
-		else if (kstr.compareToIgnoreCase("Left")==0)
-		{
-			hexViewer.addOffset(-1);			
-			hexViewer.redrawContents(); 
-		}
-		else if (kstr.compareToIgnoreCase("Up")==0)
-		{
-			hexViewer.addOffset(-hexViewer.nrBytesPerLine);  			
-			hexViewer.redrawContents(); 
-		}
-		else if (kstr.compareToIgnoreCase("Down")==0)
-		{
-			hexViewer.addOffset(hexViewer.nrBytesPerLine);  			
-			hexViewer.redrawContents(); 
-		}
-		else if (kstr.compareToIgnoreCase("F5")==0)
-		{
-		    hexViewer.redrawContents(); 
-		}
-	}
-	
-	public void keyReleased(KeyEvent e) 
-	{
-	}
-	
-	void debug(String msg) 
-	{
-	    logger.debugPrintf("%s\n",msg); 
-	}
+    public void keyTyped(KeyEvent e)
+    {
 
-	public void actionPerformed(ActionEvent e) 
-	{
-		Object source=e.getSource(); 
-		
-		if (source==this.hexViewer.offsetField)
-		{
-			String txt=this.hexViewer.offsetField.getText();
-			hexViewer.moveToOffset(Long.decode(txt));
-		}
-	}
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        int kchar = e.getKeyChar();
+        int kcode = e.getKeyCode();
+        int mods = e.getModifiers();
+
+        String kstr = KeyEvent.getKeyText(kcode);
+        // logger.debugPrintf("key pressed (Char,str)='%s' => '%s'\n",kchar,kstr);
+
+        if ((mods & KeyEvent.CTRL_MASK) > 0)
+        {
+            if (kstr.compareToIgnoreCase("B") == 0)
+            {
+                hexViewer.setWordSize(1);
+                hexViewer.redrawContents();
+            }
+            // [T]oolbar (CTRL-F) = find
+            else if (kstr.compareToIgnoreCase("T") == 0)
+            {
+                hexViewer.toggleFontToolBar();
+            }
+            else if (kstr.compareToIgnoreCase("B") == 0)
+            {
+                hexViewer.setWordSize(1);
+                hexViewer.redrawContents();
+            }
+            else if (kstr.compareTo("1") >= 0 && (kstr.compareTo("8") <= 0))
+            {
+                hexViewer.setWordSize(new Integer(kstr));
+                System.err.println("wordSize=" + hexViewer.getWordSize());
+                hexViewer.redrawContents();
+            }
+            if (kstr.compareToIgnoreCase("Right") == 0)
+            {
+                hexViewer.setMinimumBytesPerLine(hexViewer.getMinimumBytesPerLine()
+                        + hexViewer.getWordSize());
+
+                hexViewer.redrawContents();
+            }
+            else if (kstr.compareToIgnoreCase("Left") == 0)
+            {
+                hexViewer.setMinimumBytesPerLine(hexViewer.getMinimumBytesPerLine()
+                        - hexViewer.getWordSize());
+
+                hexViewer.redrawContents();
+            }
+
+        }
+        else if (kstr.compareToIgnoreCase("Page Down") == 0)
+        {
+            hexViewer.addOffset(hexViewer.nrBytesPerView);
+            hexViewer.redrawContents();
+        }
+        else if (kstr.compareToIgnoreCase("Page Up") == 0)
+        {
+            hexViewer.addOffset(-hexViewer.nrBytesPerView);
+            hexViewer.redrawContents();
+        }
+        else if (kstr.compareToIgnoreCase("Right") == 0)
+        {
+            hexViewer.addOffset(1);
+            hexViewer.redrawContents();
+        }
+        else if (kstr.compareToIgnoreCase("Left") == 0)
+        {
+            hexViewer.addOffset(-1);
+            hexViewer.redrawContents();
+        }
+        else if (kstr.compareToIgnoreCase("Up") == 0)
+        {
+            hexViewer.addOffset(-hexViewer.nrBytesPerLine);
+            hexViewer.redrawContents();
+        }
+        else if (kstr.compareToIgnoreCase("Down") == 0)
+        {
+            hexViewer.addOffset(hexViewer.nrBytesPerLine);
+            hexViewer.redrawContents();
+        }
+        else if (kstr.compareToIgnoreCase("F5") == 0)
+        {
+            hexViewer.redrawContents();
+        }
+    }
+
+    public void keyReleased(KeyEvent e)
+    {
+    }
+
+    void debug(String msg)
+    {
+        logger.debugPrintf("%s\n", msg);
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        Object source = e.getSource();
+
+        if (source == this.hexViewer.offsetField)
+        {
+            String txt = this.hexViewer.offsetField.getText();
+            hexViewer.moveToOffset(Long.decode(txt));
+        }
+    }
 
     @Override
     public void notifyUriDrop(List<URI> uriList)
     {
-        if (uriList.size()>0)
+        if (uriList.size() > 0)
         {
             hexViewer.doUpdate(new VRL(uriList.get(0)));
         }
     }
-	
+
 }

@@ -35,208 +35,197 @@ import javax.swing.JViewport;
 
 public class ImageViewerController implements ComponentListener
 {
-	// simple mouse and key navigator: 
-	public class KeyMouseMapper implements KeyListener, MouseMotionListener, MouseWheelListener, MouseListener
-	{
-		private Point dragStart;
-		private Point dragOffsetStart;
+    // simple mouse and key navigator:
+    public class KeyMouseMapper implements KeyListener, MouseMotionListener, MouseWheelListener, MouseListener
+    {
+        private Point dragStart;
 
-		public KeyMouseMapper(ImageViewerController imageController)
-		{
-		}
+        private Point dragOffsetStart;
 
-		public void keyPressed(KeyEvent e)
-		{
-		}
+        public KeyMouseMapper(ImageViewerController imageController)
+        {
+        }
 
-		public void keyReleased(KeyEvent e)
-		{
-		}
+        public void keyPressed(KeyEvent e)
+        {
+        }
 
-		public void keyTyped(KeyEvent e)
-		{
-		}
+        public void keyReleased(KeyEvent e)
+        {
+        }
 
-		public void mouseDragged(MouseEvent e)
-		{
-			//Debug("drag:"+e); 
-			//if (e.getSource()!=imageViewer.getImagePane()) 
-			//	return; 
-			
-			Point newP=e.getPoint();
-			
-			// get.getLocationOnScreen(); 
-			//Debug("drag p:"+e.getPoint()); 
+        public void keyTyped(KeyEvent e)
+        {
+        }
 
-			if (this.dragStart==null)
-				return; 
+        public void mouseDragged(MouseEvent e)
+        {
+            // Debug("drag:"+e);
+            // if (e.getSource()!=imageViewer.getImagePane())
+            // return;
 
-			// diff between starting point 
-			int dx=newP.x-this.dragStart.x; 
-			int dy=newP.y-this.dragStart.y;
-			
-			int offsetx=dragOffsetStart.x-dx;  
-			int offsety=dragOffsetStart.y-dy;
+            Point newP = e.getPoint();
 
-			if (offsetx<0) 
-				offsetx=0;
+            // get.getLocationOnScreen();
+            // Debug("drag p:"+e.getPoint());
 
-			if (offsety<0) 
-				offsety=0; 
+            if (this.dragStart == null)
+                return;
 
-			imageViewer.setViewPosition(offsetx,offsety); 
-		}
+            // diff between starting point
+            int dx = newP.x - this.dragStart.x;
+            int dy = newP.y - this.dragStart.y;
 
-		public void mouseMoved(MouseEvent e)
-		{
+            int offsetx = dragOffsetStart.x - dx;
+            int offsety = dragOffsetStart.y - dy;
 
-		}
+            if (offsetx < 0)
+                offsetx = 0;
 
-		public void mouseWheelMoved(MouseWheelEvent e)
-		{
-			boolean ctrl= ((e.getModifiersEx() & MouseWheelEvent.CTRL_DOWN_MASK)>0); 
+            if (offsety < 0)
+                offsety = 0;
 
-			int rotClicks=e.getWheelRotation();
-			int nrClicks=e.getClickCount();
+            imageViewer.setViewPosition(offsetx, offsety);
+        }
 
-			// nr of clicks doesn't return direction 
-			if ((rotClicks<0) && (nrClicks>0))  	
-				nrClicks=-nrClicks; 
+        public void mouseMoved(MouseEvent e)
+        {
 
-			if (ctrl)
-			{
-				if (nrClicks<0) 
-					imageViewer.zoomIn();
+        }
 
-				if (nrClicks>0) 
-					imageViewer.zoomOut();
-			}
+        public void mouseWheelMoved(MouseWheelEvent e)
+        {
+            boolean ctrl = ((e.getModifiersEx() & MouseWheelEvent.CTRL_DOWN_MASK) > 0);
 
-			//Debug("Wheel clicks = "+nrClicks+(ctrl?" +CTRL":"")); 
+            int rotClicks = e.getWheelRotation();
+            int nrClicks = e.getClickCount();
 
-		}
+            // nr of clicks doesn't return direction
+            if ((rotClicks < 0) && (nrClicks > 0))
+                nrClicks = -nrClicks;
 
-	
-		public void mouseClicked(MouseEvent e)
-		{
-		    imageViewer.errorPrintf("MouseClicked:%s\n",e); 
-		    
-//			if (GuiSettings.isAltMouseButton(e))
-//			{
-//				imageViewer.reset();
-//				return; 
-//			}
-			
-			
-			// reset or switch to custom settings 
-			if (e.getClickCount()==2)
-			{
-				imageViewer.toggleFitToScreen(); 
-			}
-		}
+            if (ctrl)
+            {
+                if (nrClicks < 0)
+                    imageViewer.zoomIn();
 
-		public void mouseEntered(MouseEvent e)
-		{
-		}
+                if (nrClicks > 0)
+                    imageViewer.zoomOut();
+            }
 
-		public void mouseExited(MouseEvent e)
-		{
-		}
+            // Debug("Wheel clicks = "+nrClicks+(ctrl?" +CTRL":""));
 
-		public void mousePressed(MouseEvent e)
-		{
-			this.dragStart=e.getPoint(); 
-			// keep current offset: 
-			this.dragOffsetStart=imageViewer.getViewPosition(); 
-			 
-		} 
+        }
 
-		public void mouseReleased(MouseEvent e)
-		{
-			this.dragStart=null; 
-		}		
-	}
-	
-	// ===
-	//
-	// ===
-	
-	private KeyMouseMapper keyMouseMapper;
-	private ImageViewer imageViewer;
+        public void mouseClicked(MouseEvent e)
+        {
+            imageViewer.errorPrintf("MouseClicked:%s\n", e);
 
-	
-	public ImageViewerController(ImageViewer imageVwr)
-	{
-		this.imageViewer=imageVwr; 
-    	this.keyMouseMapper=new KeyMouseMapper(this);
-    	
-    	//ImagePane pane = imageViewer.getImagePane(); 
-    	JViewport viewPort = imageViewer.scrollPane.getViewport(); 
-    	
-    	viewPort.addKeyListener(keyMouseMapper); 
-    	viewPort.addMouseMotionListener(keyMouseMapper);
-    	viewPort.addMouseWheelListener(keyMouseMapper); 
-    	viewPort.addMouseListener(keyMouseMapper);
+            // if (GuiSettings.isAltMouseButton(e))
+            // {
+            // imageViewer.reset();
+            // return;
+            // }
 
-    	// observer both scrollPane and ViewPort: 
-    	imageViewer.scrollPane.addComponentListener(this); 
-    	viewPort.addComponentListener(this);
-	}
+            // reset or switch to custom settings
+            if (e.getClickCount() == 2)
+            {
+                imageViewer.toggleFitToScreen();
+            }
+        }
 
-	//
-	// ImagePane Component Observer 
-	//
+        public void mouseEntered(MouseEvent e)
+        {
+        }
 
-	public void componentHidden(ComponentEvent e)
-	{
-	}
+        public void mouseExited(MouseEvent e)
+        {
+        }
 
-	public void componentMoved(ComponentEvent e)
-	{
-	}
+        public void mousePressed(MouseEvent e)
+        {
+            this.dragStart = e.getPoint();
+            // keep current offset:
+            this.dragOffsetStart = imageViewer.getViewPosition();
 
-	public void componentResized(ComponentEvent e)
-	{
-		//
-		// After zoom/image update, size is set 
-		// Check Image size ! 
-		// 
-//		debug("ImagePane image size  = "+imageViewer.imagePane.getImageSize());
-//		debug("ImagePane comp  size  = "+imageViewer.imagePane.getSize());
-//		debug("scrollPane size       = "+imageViewer.scrollPane.getSize());
-//		// part which is actually shown 
-//
-//		debug("ViewPort size         = "+imageViewer.scrollPane.getViewport().getSize()); 
-//		debug("ViewPort position     = "+imageViewer.scrollPane.getViewport().getViewPosition());
+        }
 
-		if (e.getSource()==imageViewer.scrollPane)
-		{
-			// rezoom 
-			if (imageViewer.fitToScreen==true)
-				imageViewer.doZoom(); 
-		}
-		
-		//scrollPane.revalidate(); 
-		
-		/*if (e.getSource()==this.imagePane)
-		{
-			Debug("ImagePane resized:"+imagePane.getSize());
-			Debug("this.getSize():"+this.getSize());
-			this.revalidate(); 
-			 
-			Container parent=this.getParent(); 
-			
-			if (parent instanceof JScrollPane)
-			{
-				((JScrollPane) parent).revalidate(); 
-			}
-			
-		}*/
-	}
-	
+        public void mouseReleased(MouseEvent e)
+        {
+            this.dragStart = null;
+        }
+    }
 
-	public void componentShown(ComponentEvent e) 
-	{
-	}
-	
+    // ===
+    //
+    // ===
+
+    private KeyMouseMapper keyMouseMapper;
+
+    private ImageViewer imageViewer;
+
+    public ImageViewerController(ImageViewer imageVwr)
+    {
+        this.imageViewer = imageVwr;
+        this.keyMouseMapper = new KeyMouseMapper(this);
+
+        // ImagePane pane = imageViewer.getImagePane();
+        JViewport viewPort = imageViewer.scrollPane.getViewport();
+
+        viewPort.addKeyListener(keyMouseMapper);
+        viewPort.addMouseMotionListener(keyMouseMapper);
+        viewPort.addMouseWheelListener(keyMouseMapper);
+        viewPort.addMouseListener(keyMouseMapper);
+
+        // observer both scrollPane and ViewPort:
+        imageViewer.scrollPane.addComponentListener(this);
+        viewPort.addComponentListener(this);
+    }
+
+    //
+    // ImagePane Component Observer
+    //
+
+    public void componentHidden(ComponentEvent e)
+    {
+    }
+
+    public void componentMoved(ComponentEvent e)
+    {
+    }
+
+    public void componentResized(ComponentEvent e)
+    {
+        //
+        // After zoom/image update, size is set
+        // Check Image size !
+        //
+        // debug("ImagePane image size  = "+imageViewer.imagePane.getImageSize());
+        // debug("ImagePane comp  size  = "+imageViewer.imagePane.getSize());
+        // debug("scrollPane size       = "+imageViewer.scrollPane.getSize());
+        // // part which is actually shown
+        //
+        // debug("ViewPort size         = "+imageViewer.scrollPane.getViewport().getSize());
+        // debug("ViewPort position     = "+imageViewer.scrollPane.getViewport().getViewPosition());
+
+        if (e.getSource() == imageViewer.scrollPane)
+        {
+            // rezoom
+            if (imageViewer.fitToScreen == true)
+                imageViewer.doZoom();
+        }
+
+        // scrollPane.revalidate();
+
+        /*
+         * if (e.getSource()==this.imagePane) { Debug("ImagePane resized:"+imagePane.getSize());
+         * Debug("this.getSize():"+this.getSize()); this.revalidate(); Container parent=this.getParent(); if (parent
+         * instanceof JScrollPane) { ((JScrollPane) parent).revalidate(); } }
+         */
+    }
+
+    public void componentShown(ComponentEvent e)
+    {
+    }
+
 }

@@ -74,31 +74,34 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
     private static final String CONFIG_LINE_WRAP = "textviewer.linewrap";
 
-    private static final String configPropertyNames[] = { CONFIG_LINE_WRAP };
+    private static final String configPropertyNames[] =
+    {
+            CONFIG_LINE_WRAP
+    };
 
-    public static final String ACTION_VIEW="View";
-    
-    public static final String ACTION_EDIT="Edit"; 
-    
+    public static final String ACTION_VIEW = "View";
+
+    public static final String ACTION_EDIT = "Edit";
+
     /**
-     *  The mimetypes i can view
+     * The mimetypes i can view
      */
     private static String mimeTypes[] =
-        { 
-            MimeTypes.MIME_TEXT_PLAIN, 
+    {
+            MimeTypes.MIME_TEXT_PLAIN,
             MimeTypes.MIME_TEXT_HTML,
-            "text/x-c", 
-            "text/x-cpp", 
-            "text/x-java", 
-            "application/x-sh", 
-            "application/x-csh", 
+            "text/x-c",
+            "text/x-cpp",
+            "text/x-java",
+            "application/x-sh",
+            "application/x-csh",
             "application/x-shellscript",
             // MimeTypes.MIME_BINARY, -> Now handled by MimeType mapping!
-            "application/vlet-type-definition", 
+            "application/vlet-type-definition",
             // nfo files: uses CP437 Encoding (US Extended ASCII)!
-            "text/x-nfo" 
-        };
-    
+            "text/x-nfo"
+    };
+
     // ===
     // Instance
     // ===
@@ -120,31 +123,49 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     // ---
 
     private JToolBar toolbar;
+
     private JButton refreshButton;
+
     private JScrollPane textScrollPane;
+
     private FontToolBar fontToolbar;
+
     private JPanel toolPanel;
+
     private JToolBar optionsToolbar;
+
     private JButton saveConfigButton;
+
     private JToggleButton enableEditButton;
+
     private JButton saveButton;
+
     private JMenuBar menuBar;
+
     private JMenuItem refreshMenuItem;
+
     private JMenuItem saveMenuItem;
+
     private JPanel topPanel;
+
     private JCheckBoxMenuItem editMenuItem;
+
     private JMenuItem saveConfigMenuItem;
+
     private JCheckBoxMenuItem wrapMenuItem;
+
     private JMenuItem loadConfigMenuItem;
+
     private Vector<JRadioButton> encodingButtons;
+
     private JMenuItem enableEncodingMenuitem;
+
     private boolean _showWarningEncoding = true;
 
     // tasks
-    
+
     private ActionTask loadTask;
 
-    
     public TextViewer()
     {
         ; // initialization is done in initViewer() !
@@ -325,8 +346,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                 // java 1.5 anti aliasing:
 
                 /*
-                 * textArea.putClientProperty(
-                 * com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+                 * textArea.putClientProperty( com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY,
                  * this.fontToolbar.getAntiAliasing());
                  */
 
@@ -375,22 +395,22 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     public void updateFont(Font font, Map<?, ?> renderingHints)
     {
         textArea.setFont(font);
-        FontUtil.updateRenderingHints(textArea,renderingHints);// doesn't work. 
+        FontUtil.updateRenderingHints(textArea, renderingHints);// doesn't work.
         textArea.repaint();
     }
-    
+
     /**
      * @param location
      * @throws VrsException
      */
-    public void doStartViewer(VRL vrl,String optionalMethod)
+    public void doStartViewer(VRL vrl, String optionalMethod)
     {
         doUpdate(vrl);
     }
 
     protected void doUpdate(final VRL location)
     {
-        
+
         try
         {
 
@@ -855,16 +875,18 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     public Map<String, List<String>> getMimeMenuMethods()
     {
         // Use HashMapList to keep order of menu entries: first is default(!)
-        
-        Map<String,List<String>> mappings=new HashMapList<String,List<String>>(); 
-        
-        for (int i=0;i<mimeTypes.length;i++)
+
+        Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
+
+        for (int i = 0; i < mimeTypes.length; i++)
         {
-            List<String> list=new StringList(new String[]{ACTION_VIEW+":View Text",ACTION_EDIT+":Edit Text"}); 
-            mappings.put(mimeTypes[i],list); 
+            List<String> list = new StringList(new String[] {
+                    ACTION_VIEW + ":View Text", ACTION_EDIT + ":Edit Text"
+            });
+            mappings.put(mimeTypes[i], list);
         }
-        
-        return mappings; 
+
+        return mappings;
     }
 
     // public Vector<ActionMenuMapping> getActionMappings()

@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * Interface for content viewers. Viewer Registry binds MimeTypes from getMimeTypes() to this viewer. A list of optional
- * Menu mapping can be supplied by <code> getMimeMenuMethods</code>
+ * Menu mapping can be supplied by <code>getMimeMenuMethods</code>.
  */
 public interface MimeViewer
 {
@@ -33,15 +33,13 @@ public interface MimeViewer
     public String getViewerName();
 
     /**
-     * Supported mime types. One viewer may support multiple mime types. For example { "text/plain", "text/html" }. The
+     * @return Supported mime types. One viewer may support multiple mime types. For example { "text/plain", "text/html" }. The
      * order is preferred first.
-     * 
-     * @return
      */
     public String[] getMimeTypes();
 
     /**
-     * Returns the mapping of a menu entry per MimeType to a list of menu methods.<br>
+     * @return Returns the mapping of a menu entry per MimeType to a list of menu methods.<br>
      * Mapping is ::= <code> Map&lt;MimeType, List&lt;MenuMethod&gt;&gt; </code> <br>
      * For example: { "text/plain" , {"View Text:viewText","Edit Text:editText"}}<br>
      * Menu methods should be human readable, the actual method name after the colon may be omitted. In that case the

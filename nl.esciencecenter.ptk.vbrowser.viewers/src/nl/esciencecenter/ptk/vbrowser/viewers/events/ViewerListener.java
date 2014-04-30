@@ -22,7 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.viewers.events;
 
 import nl.esciencecenter.ptk.events.IEventListener;
 
-public interface ViewerListener extends IEventListener<ViewerEvent> 
+public interface ViewerListener extends IEventListener<ViewerEvent>
 {
-    
+
 }
