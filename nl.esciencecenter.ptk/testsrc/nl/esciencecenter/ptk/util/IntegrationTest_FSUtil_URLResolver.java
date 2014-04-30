@@ -3,12 +3,12 @@ package nl.esciencecenter.ptk.util;
 import java.net.URI;
 import java.net.URL;
 
-import junit.framework.Assert;
 import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import settings.Settings;
@@ -56,22 +56,28 @@ public class IntegrationTest_FSUtil_URLResolver
         FSNode baseDir = FSUtil_getCreateTestDir();
 
         testCreateResolve(baseDir, "file1", true, true);
-        testCreateResolve(baseDir, "file space", true, true);
-        testCreateResolve(baseDir, " prefixSpaced", true, true);
+        testCreateResolve(baseDir, "file2 space", true, true);
+        testCreateResolve(baseDir, " prefixSpaced3", true, true);
         
         if (isWindows==false)
         {
         	// postfix spaced not allowed under windows... 
-        	testCreateResolve(baseDir, "postfixSpaced ", true, true);
+        	testCreateResolve(baseDir, "postfixSpaced4 ", true, true);
         }
         
         FSNode subDir = baseDir.newPath("subDir1").mkdir();
-        testCreateResolve(baseDir, "subDir1/subFile1", true, true);
+        testCreateResolve(baseDir, "subDir1/subFile5", true, true);
 
-        FSNode subDirSpaced = baseDir.newPath("subDir Spaced1").mkdir();
-        testCreateResolve(baseDir, "subDir Spaced1/subFile1", true, true);
-        testCreateResolve(baseDir, "subDir Spaced1/subFile Spaced1", true, true);
-
+        FSNode subDirSpaced = baseDir.newPath("subDir Spaced6").mkdir();
+        testCreateResolve(baseDir, "subDir Spaced6/subFile7", true, true);
+        testCreateResolve(baseDir, "subDir Spaced6/subFile Spaced8", true, true);
+        if (isWindows)
+        {
+            // check backslash here. Backslashes should be auto converted to URL/URI forward slash. 
+            testCreateResolve(baseDir, "subDir Spaced6\\File9", true, true);
+            testCreateResolve(baseDir, "subDir Spaced6\\Spaced File10", true, true);
+        }
+        
         subDir.delete();
         subDirSpaced.delete();
 
@@ -84,6 +90,12 @@ public class IntegrationTest_FSUtil_URLResolver
         testCreateResolve(baseDir, "postfixSpecial3~", true, true);
         testCreateResolve(baseDir, "postfixSpecial4~1", true, true);
 
+        // -------------------
+        // Windows shares and paths 
+        // -------------------
+
+        testCreateResolve(baseDir, "WindowsShare$", false, true);
+
     }
 
     protected void testCreateResolve(FSNode baseDir, String relativePath, boolean isFilePath, boolean create) throws Exception
@@ -92,7 +104,14 @@ public class IntegrationTest_FSUtil_URLResolver
         FSNode filePath = baseDir.newPath(relativePath);
         if (filePath.exists() == false)
         {
-            filePath.create();
+            if (isFilePath)
+            {
+                filePath.create();
+            }
+            else
+            {
+                filePath.mkdir(); 
+            }
         }
 
         // Uses URI as reference here and not URL.

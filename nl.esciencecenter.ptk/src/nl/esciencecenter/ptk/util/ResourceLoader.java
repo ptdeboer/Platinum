@@ -21,6 +21,7 @@
 package nl.esciencecenter.ptk.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,7 @@ import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.ResourceProvider;
+import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
@@ -167,13 +169,15 @@ public class ResourceLoader
         /** 
          * Resolve relative path and return URL to existing resource. 
          */
-        public java.net.URL resolveUrlPath(ClassLoader optClassLoader, String url)
+        public java.net.URL resolveUrlPath(ClassLoader optClassLoader, String relativeUrl)
         {
+            logger.debugPrintf("resolveUrl():%s\n", relativeUrl);
+
             URL resolvedUrl = null;
+            // Normalize to URI style path:
+            String urlStr = URIFactory.uripath(relativeUrl, false, File.separatorChar);
 
-            logger.debugPrintf("resolveUrl():%s\n", url);
-
-            if (url == null)
+            if (urlStr == null)
             {
                 throw new NullPointerException("URL String can not be null");
             }
@@ -181,7 +185,7 @@ public class ResourceLoader
             // (I) First optional Class Loader !
             if (optClassLoader != null)
             {
-                resolvedUrl = optClassLoader.getResource(url);
+                resolvedUrl = optClassLoader.getResource(urlStr);
 
                 if (resolvedUrl != null)
                 {
@@ -192,7 +196,7 @@ public class ResourceLoader
             // (II) Use Resource Classloader
             if ((resolvedUrl == null) && (this.classLoader != null))
             {
-                resolvedUrl = this.classLoader.getResource(url);
+                resolvedUrl = this.classLoader.getResource(urlStr);
 
                 if (resolvedUrl != null)
                 {
@@ -204,7 +208,7 @@ public class ResourceLoader
             // classpath
             if (resolvedUrl == null)
             {
-                resolvedUrl = this.getClass().getClassLoader().getResource(url);
+                resolvedUrl = this.getClass().getClassLoader().getResource(urlStr);
 
                 if (resolvedUrl != null)
                 {
@@ -217,16 +221,16 @@ public class ResourceLoader
             {
                 try
                 {
-                    URL url2 = new URL(url);
+                    URL url2 = new URL(urlStr);
                     resolvedUrl = url2;
                 }
                 catch (MalformedURLException e)
                 {
-                    logger.warnPrintf("resolveURL() IV: Not an absolute url:%s\n", url);
+                    logger.warnPrintf("resolveURL() IV: Not an absolute url:%s\n", urlStr);
                 }
             }
 
-            logger.debugPrintf("resolveURL(): '%s' -> '%s' \n", url, resolvedUrl);
+            logger.debugPrintf("resolveURL(): '%s' -> '%s' \n", urlStr, resolvedUrl);
 
             return resolvedUrl;
         }
