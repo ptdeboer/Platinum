@@ -156,7 +156,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
                 throw new ResourceCreationException(this,"File already exists:"+getVRL(),null); 
             }
             
-            fsNode.create();
+            fsNode=fsNode.create();
         }
         catch (IOException e)
         {

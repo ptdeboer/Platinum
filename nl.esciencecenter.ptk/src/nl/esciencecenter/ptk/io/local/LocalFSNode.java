@@ -347,4 +347,10 @@ public class LocalFSNode extends FSNode
         return actualPath.toAbsolutePath().toString();
     }
 
+    public LocalFSNode create() throws IOException
+    {
+        super.create();
+        return this;
+    }
+    
 }
