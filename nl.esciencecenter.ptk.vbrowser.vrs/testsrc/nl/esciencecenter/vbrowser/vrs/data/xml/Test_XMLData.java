@@ -14,7 +14,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestXMLData
+public class Test_XMLData
 {
     
     @Test 

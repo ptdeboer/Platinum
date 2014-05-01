@@ -31,28 +31,30 @@ import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PORT;
 import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_TYPE;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.data.StringList;
+import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.web.ResponseInputStream;
 import nl.esciencecenter.ptk.web.ResponseOutputStream;
 import nl.esciencecenter.ptk.web.WebClient;
+import nl.esciencecenter.ptk.web.WebException;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
+import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.node.VPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  *  Class represents a HTTP reference  
  */ 
-public class WebNode extends VPathNode // implements VStreamAccessable
+public class WebNode extends VPathNode implements VStreamAccessable
 {
     // =====
     // Class
@@ -102,16 +104,15 @@ public class WebNode extends VPathNode // implements VStreamAccessable
         return VRS.HTTP_SCHEME; 
     }
 
-    public ResponseInputStream createInputStream() throws IOException
+    public ResponseInputStream createInputStream() throws VrsException
     {
-        
         try
         {
             return getWebClient().doGetInputStream(getVRL().toURI());
         }
-        catch (URISyntaxException e)
+        catch (Exception e)
         {
-           throw new IOException(e.getMessage(),e);
+           throw new VrsIOException(e.getMessage(),e);
         }
 
     }
@@ -132,20 +133,12 @@ public class WebNode extends VPathNode // implements VStreamAccessable
         try
         {
             ResponseInputStream inps=createInputStream();
-            
             str=inps.getMimeType(); 
-            try
-            {
-                inps.close();
-            }
-            catch (IOException e)
-            {
-                
-            }
+            IOUtil.autoClose(inps); 
         }
-        catch (IOException e)
+        catch (VrsIOException e)
         {
-            throw new VrsIOException(e);
+            throw e;
         }
 
         if (str==null) 
@@ -222,8 +215,13 @@ public class WebNode extends VPathNode // implements VStreamAccessable
         return null;   // no icon
     }
 
-    public ResponseOutputStream createOutputStream() throws IOException
+    public ResponseOutputStream createOutputStream(boolean append) throws VrsException
     {
+        if (append==true)
+        {
+            throw new VrsException("Appending OutputStream not supported!"); 
+        }
+        
         VRL vrl=getVRL();
         String queryStr=vrl.getPath();
 
@@ -238,7 +236,14 @@ public class WebNode extends VPathNode // implements VStreamAccessable
         }
         
         StringHolder statusH=new StringHolder();  
-        return getWebClient().doPutOutputStream(queryStr,statusH);
+        try
+        {
+            return getWebClient().doPutOutputStream(queryStr,statusH);
+        }
+        catch (WebException e)
+        {
+            throw new VrsIOException(e.getMessage(),e); 
+        }
     }
 
     public WebResourceSystem getHTTPRS()

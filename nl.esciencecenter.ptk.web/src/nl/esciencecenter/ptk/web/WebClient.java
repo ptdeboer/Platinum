@@ -329,7 +329,7 @@ public class WebClient
         }
         catch (javax.net.ssl.SSLPeerUnverifiedException e)
         {
-            throw new WebException(WebException.Reason.HTTPS_SSLEXCEPTION, e.getMessage(), e);
+            throw new WebException(WebException.Reason.HTTPS_SSLEXCEPTION, "SSL Verification Error:"+e.getMessage(), e);
         }
         catch (WebException e)
         {
@@ -605,7 +605,19 @@ public class WebClient
         }
         catch (ClientProtocolException e)
         {
-            throw new WebException(WebException.Reason.HTTP_CLIENTEXCEPTION, e.getMessage(), e);
+            if ((config.getPort()==443) && config.isHTTP())
+            {
+                throw new WebException(WebException.Reason.HTTP_CLIENTEXCEPTION, "HTTP Protocol error: Trying to speak plain http to (SSL) port 443?\n"+e.getMessage(), e);
+            }
+            else if (config.isHTTPS())
+            {
+                throw new WebException(WebException.Reason.HTTP_CLIENTEXCEPTION, "HTTPS Protocol error:"+e.getMessage(), e);
+            }
+            else
+            {
+                throw new WebException(WebException.Reason.HTTP_CLIENTEXCEPTION, "HTTP Protocol error:"+e.getMessage(), e);
+            }
+            
         }
         catch (javax.net.ssl.SSLPeerUnverifiedException e)
         {

@@ -39,8 +39,11 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
 {
     private static ClassLogger logger = ClassLogger.getLogger(EventDispatcher.class);
 
-    // === instance ===
-    protected int eventIdleWaitTime = 1000;
+    // ========================================================================
+    //
+    // ========================================================================
+
+    protected int eventIdleWaitTime = 10 * 1000;
 
     protected Object waitMutex = new Object();
 
@@ -75,7 +78,7 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
             }
 
             thread = new Thread(this);
-            thread.setDaemon(true); 
+            thread.setDaemon(true);
             thread.start();
         }
 
@@ -92,7 +95,7 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
 
                 if (hasEvents())
                 {
-                    logger.infoPrintf("hasEvents(): Nr of events=%d", events.size());
+                    logger.infoPrintf("hasEvents(): Nr of events=%d\n", events.size());
                     handleEvent();
                 }
                 else
@@ -142,7 +145,7 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
             {
                 return false;
             }
-            
+
             if (thread.isAlive())
             {
                 return true;
@@ -165,6 +168,10 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
         }
     }
 
+    // ========================================================================
+    //
+    // ========================================================================
+
     protected Vector<EventT> events = new Vector<EventT>();
 
     protected Vector<EventListenerEntry> listeners = new Vector<EventListenerEntry>();
@@ -183,7 +190,7 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
         {
             dispatcher.start();
         }
-        
+
         logger.setLevelToDebug();
     }
 
@@ -274,21 +281,21 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
     {
         EventT event = this.popEvent();
 
-        if (event==null)
+        if (event == null)
         {
             logger.infoPrintf("No Event\n");
-            return; 
+            return;
         }
-        
-        if (listeners.size()<=0)
+
+        if (listeners.size() <= 0)
         {
-            logger.infoPrintf("No Event Listeners registered for event:%s\n",event);
-            return; 
+            logger.infoPrintf("No Event Listeners registered for event:%s\n", event);
+            return;
         }
-        
+
         // Use iterator
         ListIterator<EventListenerEntry> iterator = listeners.listIterator();
-        
+
         while (iterator.hasNext())
         {
             EventListenerEntry entry = iterator.next();

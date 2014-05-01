@@ -5,7 +5,7 @@ import nl.esciencecenter.ptk.data.SecretHolder;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class InteractiveRun_SImpelUI
+public class InteractiveRun_SimpelUI
 {
 
       @Test

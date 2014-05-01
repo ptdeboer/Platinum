@@ -271,10 +271,6 @@ public class ImageViewer extends EmbeddedViewer
     //
     // }
 
-    public void componentShown(ComponentEvent e)
-    {
-    }
-
     /**
      * I manage my own scrollpane for panning/autoscrolling
      */

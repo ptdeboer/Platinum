@@ -316,6 +316,11 @@ public abstract class FSNode
         return fsHandler.createOutputStream(this,append);
     }
     
+    boolean isPosix()
+    {
+    	return false;   
+    }
+    
     // =======================================================================
     // Abstract Interface
     // =======================================================================

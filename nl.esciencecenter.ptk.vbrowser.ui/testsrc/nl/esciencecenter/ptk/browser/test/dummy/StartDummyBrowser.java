@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.browser.test.dummy;
 
+import test.viewers.DummyViewer;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -39,6 +40,9 @@ public class StartDummyBrowser
             ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);
 
             platform.registerProxyFactory(dummyFac);
+            
+            platform.getViewerRegistry().registerViewer(DummyViewer.class);
+            
         }
         return platform;
 

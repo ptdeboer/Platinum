@@ -52,11 +52,11 @@ public class ViewerFrame extends JFrame
 
     public static ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context, boolean initViewer)
     {
-        ViewerFrame frame = new ViewerFrame(viewer);
         if (initViewer)
         {
             viewer.initViewer(context);
         }
+        ViewerFrame frame = new ViewerFrame(viewer);
         frame.pack();
         frame.setSize(frame.getPreferredSize());
         // frame.setSize(800,600);

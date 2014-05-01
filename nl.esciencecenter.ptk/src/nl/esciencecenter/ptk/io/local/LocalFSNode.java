@@ -339,18 +339,37 @@ public class LocalFSNode extends FSNode
         return attrs.group().getName();
     }
 
-    public String renameTo(String relativeOrAbsolutePath) throws IOException
+    public LocalFSNode renameTo(String relativeOrAbsolutePath) throws IOException
     {
-        Path targetPath = _path.resolve(relativeOrAbsolutePath);
+    	LocalFSNode other=this.newPath(relativeOrAbsolutePath);
+    	
+        Path targetPath = other._path; 
         Path actualPath = Files.move(this._path, targetPath);
         // no errrors, assume path is renamed.
-        return actualPath.toAbsolutePath().toString();
+        return other;
     }
 
     public LocalFSNode create() throws IOException
     {
         super.create();
         return this;
+    }
+    
+    public boolean isRoot()
+    {
+    	if (isWindowsRoot()) 
+    	{
+    		return true; 
+    	}
+    	
+    	//default to posix root:
+    	return super.isRoot(); 
+    }
+    
+    public boolean isWindowsRoot()
+    {
+    	String str=this.getPathname(); 
+    	return false; 
     }
     
 }

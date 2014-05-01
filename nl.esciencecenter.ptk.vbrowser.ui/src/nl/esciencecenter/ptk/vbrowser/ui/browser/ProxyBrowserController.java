@@ -503,7 +503,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
         final ViewerPlugin finalViewer = viewer;
         
-        BrowserTask task = new BrowserTask(this, "startViewerFor" + vrl)
+        BrowserTask task = new BrowserTask(this, "startViewerFor:" + vrl)
         {
             @Override
             protected void doTask()

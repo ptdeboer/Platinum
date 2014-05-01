@@ -22,8 +22,12 @@ package nl.esciencecenter.vbrowser.vrs.webrs;
 
 import java.net.URISyntaxException;
 
+import nl.esciencecenter.ptk.ssl.CertUI;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
+import nl.esciencecenter.ptk.ssl.CertificateStore.CaCertOptions;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
+import nl.esciencecenter.ptk.ui.UI;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.web.WebClient;
 import nl.esciencecenter.ptk.web.WebConfig.AuthenticationType;
 import nl.esciencecenter.ptk.web.WebException;
@@ -32,6 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.node.VResourceSystemNode;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -40,6 +45,8 @@ public class WebResourceSystem extends VResourceSystemNode
 {
     public static final String DEFAULT_HTTPRS_SERVERID = "webrs";
    
+    private final static ClassLogger logger=ClassLogger.getLogger(WebResourceSystem.class); 
+
     // ========================================================================
     //
     // ========================================================================
@@ -117,6 +124,9 @@ public class WebResourceSystem extends VResourceSystemNode
         int numTries=3;
         WebException lastException=null;
         
+        boolean doImport=false; 
+        boolean asked=false; 
+        
         for (int i=0;i<numTries;i++)
         {   
             try
@@ -127,25 +137,67 @@ public class WebResourceSystem extends VResourceSystemNode
             catch (WebException e)
             {
                 lastException=e; 
-                if (e.getReason()==Reason.HTTPS_SSLEXCEPTION)
+            }
+            
+            if ((lastException!=null) && (lastException.getReason()==Reason.HTTPS_SSLEXCEPTION))
+            {
+                try
                 {
-                    addCertificate();    
+                    if (asked==false)
+                    {
+                        UI ui = this.getVRSContext().getUI(); 
+                        doImport=ui.askYesNo("Invalid Certificate", "Invalid Certificate or server Certificate not recognized\n Import Certificate ?", false); 
+                        asked=true;
+                    }
+                    
+                    if (doImport==true)
+                    {
+                        addCertificate(getServerVRL());
+                    }
+                    else
+                    {
+                        break; 
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    break; 
-                }
+                    throw new VrsIOException("Failed to authenticate server ssl connection.\n"+e.getMessage(),e); 
+                }    
+            }
+            else
+            {
+                break; 
             }
         } 
 
         throw new VrsException(lastException.getMessage(),lastException);
     }
 
-    private void addCertificate()
+    protected boolean addCertificate(VRL vrl) throws Exception
     {
-        VRL vrl=this.getServerVRL(); 
+        UI ui = this.getVRSContext().getUI(); 
         
-        System.err.printf("FIXME:AddCertificate:%s\n",vrl); 
+        if ((ui==null) || ui.isEnabled()==false)
+        {
+            ClassLogger.getLogger(WebResourceSystem.class).warnPrintf("Non interactive invironment. Cannot add certificate for:%s\n",vrl); 
+            return false;
+        }
+        
+        CertificateStore caCerts = getVRSContext().getCertificateStore(); 
+        CaCertOptions options=new CaCertOptions(); 
+        options.storeAccepted=true; 
+        options.interactive=true; 
+        
+        if (caCerts==null)
+        {
+            logger.warnPrintf("Invalid Certicifate or not recognized cert for:%s\n",vrl); 
+            return false; 
+        }
+        else
+        {
+            boolean succeeded=CertUI.interactiveImportCertificate(caCerts,vrl.getHostname(),vrl.getPort(),options); 
+            return succeeded;
+        }
     }
 
     //@Override

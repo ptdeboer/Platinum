@@ -20,7 +20,7 @@
 
 package nl.esciencecenter.ptk.events;
 
-public interface IEventSource
+public interface IEventSource<EventType>
 {
 
 }

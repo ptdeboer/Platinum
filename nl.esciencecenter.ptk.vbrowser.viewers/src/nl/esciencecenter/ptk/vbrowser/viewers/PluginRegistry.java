@@ -65,11 +65,11 @@ public class PluginRegistry
 
     public class MimeMenuEntry
     {
-        String methodName;
+        protected String methodName;
 
-        String menuName;
+        protected String menuName;
 
-        ViewerEntry viewerEntry;
+        protected ViewerEntry viewerEntry;
 
         public MimeMenuEntry(String method, String menuNameValue, ViewerEntry entry)
         {
@@ -125,7 +125,6 @@ public class PluginRegistry
 
     public void registerViewer(Class<? extends ViewerPlugin> viewerClass)
     {
-
         try
         {
             ViewerPlugin viewer = viewerClass.newInstance();
@@ -161,16 +160,20 @@ public class PluginRegistry
             String menuPath[] = viewer.getToolMenuPath();
             updateToolMenu(menuPath, viewer.getToolName());
         }
-
     }
 
     protected void updateToolMenu(String[] menuPath, String toolName)
     {
-
+        logger.errorPrintf("FIXME:updateToolMenu() for toolName=%s\n",toolName);
     }
 
     protected void registerMimeTypes(String[] mimeTypes, ViewerEntry entry)
     {
+        if (mimeTypes==null)
+        {
+            logger.warnPrintf("No mime types for Viewer:<%s:>%s\n",entry.viewerClass,entry.viewerName); 
+            return; 
+        }
         for (String type : mimeTypes)
         {
             List<ViewerEntry> list = this.mimeTypeViewers.get(type);
@@ -181,7 +184,8 @@ public class PluginRegistry
                 mimeTypeViewers.put(type, list);
             }
 
-            list.add(entry);
+            // Insert first so that later registered custom viewrs have higher priority. 
+            list.add(0,entry);
         }
     }
 
@@ -227,7 +231,6 @@ public class PluginRegistry
                 // Merge ?
                 combinedList.add(menuEntry);
             }
-
         }
     }
 
@@ -241,7 +244,6 @@ public class PluginRegistry
         }
 
         return list.get(0).getViewerClass();
-
     }
 
     public ViewerPlugin createViewer(Class<? extends ViewerPlugin> viewerClass)

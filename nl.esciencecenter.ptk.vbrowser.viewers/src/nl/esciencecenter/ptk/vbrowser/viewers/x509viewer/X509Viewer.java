@@ -56,7 +56,7 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     };
 
     // ========================================================================
-    //
+    // Instance 
     // ========================================================================
 
     private X509Certificate cert;
@@ -290,7 +290,9 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
         for (int i = 0; i < mimeTypes.length; i++)
         {
             List<String> list = new StringList(new String[]
-            { VIEW_METHOD + ":View Certificate", ADD_METHOD + ":Add Certificate" });
+            {
+                    VIEW_METHOD + ":View Certificate", ADD_METHOD + ":Add Certificate"
+            });
             mappings.put(mimeTypes[i], list);
         }
 

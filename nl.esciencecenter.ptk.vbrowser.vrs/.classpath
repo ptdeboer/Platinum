@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="lib/jackson/jackson-databind-2.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmimemagic/jakarta-oro-2.0.8.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/nl.esciencecenter.ptk.web"/>
+	<classpathentry kind="src" path="/nl.esciencecenter.ptk.ui"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -40,12 +40,15 @@ public class TabContentPanel extends JPanel
 
     public static final String CLOSE_TAB_ACTION = "closeTab";
 
-    public static TabContentPanel createTab(String name, JComponent comp)
+    public static TabContentPanel createTab(String name, JComponent comp, boolean withScrollPane)
     {
-        TabContentPanel tabP = new TabContentPanel();
+        TabContentPanel tabP = new TabContentPanel(withScrollPane);
         tabP.setContent(comp);
         tabP.setName(name);
-        tabP.scrollPane.setName(name);
+        if (withScrollPane)
+        {
+            tabP.scrollPane.setName(name);
+        }
         tabP.setToolTipText(name);
 
         return tabP;
@@ -63,13 +66,13 @@ public class TabContentPanel extends JPanel
 
     private JPanel tabNavBar;
 
-    public TabContentPanel()
+    public TabContentPanel(boolean withScrollPane)
     {
         super();
-        initGui();
+        initGui(withScrollPane);
     }
 
-    protected void initGui()
+    protected void initGui(boolean withScrollPane)
     {
 
         {
@@ -83,9 +86,11 @@ public class TabContentPanel extends JPanel
                     topPanel.add(tabNavBar);
                 }
             }
+            
+            if (withScrollPane)
             {
                 this.scrollPane = new JScrollPane();
-                this.add(scrollPane);
+                this.add(scrollPane,BorderLayout.CENTER);
                 scrollPane.getVerticalScrollBar().setUnitIncrement(48 / 2);
             }
         }
@@ -96,10 +101,26 @@ public class TabContentPanel extends JPanel
         if (this.content != null)
         {
             if (content instanceof UIDisposable)
+            {
                 ((UIDisposable) content).dispose();
+            }
         }
 
-        this.scrollPane.setViewportView(comp);
+        if (this.scrollPane!=null)
+        {
+            this.scrollPane.setViewportView(comp);
+        }
+        else
+        {
+            if (content!=null)
+            {
+                this.remove(content); 
+            }
+            if (comp!=null)
+            {
+                this.add(comp,BorderLayout.CENTER); 
+            }
+        }
         this.content = comp;
     }
 
@@ -130,8 +151,11 @@ public class TabContentPanel extends JPanel
 
     public void setScrollBarUnitIncrement(int size)
     {
-        scrollPane.getVerticalScrollBar().setUnitIncrement(size);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(size);
+        if (scrollPane!=null)
+        {
+            scrollPane.getVerticalScrollBar().setUnitIncrement(size);
+            scrollPane.getHorizontalScrollBar().setUnitIncrement(size);
+        }
     }
 
 }

@@ -44,6 +44,7 @@ import javax.net.ssl.X509TrustManager;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSUtil;
+import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.io.local.LocalFSNode;
 import nl.esciencecenter.ptk.net.URIFactory;
@@ -101,6 +102,7 @@ public class CertificateStore
     static
     {
         logger = ClassLogger.getLogger(CertificateStore.class);
+        logger.setLevelToDebug(); 
     }
 
     /**
@@ -489,25 +491,26 @@ public class CertificateStore
         return this.keystorePassword;
     }
 
-    public boolean loadKeystore(String keystoreLocation, 
+    public boolean loadKeystore(String location, 
             Secret secret, 
             boolean autoInitialize)
             throws CertificateStoreException
     {
+        logger.infoPrintf("[%d]:loadKeystore() from:%s\n",Thread.currentThread().getId(),location);
+        
         if ((secret == null) || (secret.isEmpty()))
         {
             throw new NullPointerException("Password can not be null.");
         }
         
-        this.keystorePassword = secret;
-        this.keyStoreLocation = keystoreLocation;
 
         FSUtil fsUtil = FSUtil.getDefault();
 
         // thread save!
         synchronized (keyStoreMutex)
         {
-            this.keyStoreLocation = keystoreLocation;
+            this.keystorePassword = secret;
+            this.keyStoreLocation = location;
 
             char[] passphrase = secret.getChars();
 
@@ -515,9 +518,9 @@ public class CertificateStore
 
             try
             {
-                if (keystoreLocation != null)
+                if (keyStoreLocation != null)
                 {
-                    keyStoreFile = FSUtil.getDefault().newLocalFSNode(keystoreLocation);
+                    keyStoreFile = FSUtil.getDefault().newLocalFSNode(keyStoreLocation);
                 }
                 
                 // check user copy of cacerts
@@ -537,7 +540,7 @@ public class CertificateStore
     
                             in = fsUtil.createInputStream(keyStoreLocation);
                             _keyStore.load(in, passphrase);
-                            in.close();
+                            IOUtil.autoClose(in); 
                         }
                         catch (Exception e1)
                         {
@@ -548,7 +551,7 @@ public class CertificateStore
                             if (isPasswordException(e1))
                             {
                                 throw new CertificateStoreException("Invalid password for keystore."
-                                        + "please update password or remove keystore file:" + keystoreLocation, e1);
+                                        + "please update password or remove keystore file:" + keyStoreLocation, e1);
                             }
                         }
                     }
@@ -556,7 +559,7 @@ public class CertificateStore
             }
             catch (FileURISyntaxException e)
             {
-                throw new CertificateStoreException("Syntax Error: Invalid keyStore location:"+keystoreLocation, e);
+                throw new CertificateStoreException("Syntax Error: Invalid keyStore location:"+keyStoreLocation, e);
             }
             
             // pass CertificateStoreExceptions
@@ -578,8 +581,8 @@ public class CertificateStore
         } // END sychronized(keyStoreMutex) //
 
         reloadCustomCertificates();
-
         checkKeyStore();
+        
         return true;
     }
 
@@ -758,11 +761,18 @@ public class CertificateStore
         }
     }
 
+    public void saveKeystore() throws CertificateStoreException
+    {
+        autoSaveKeystore();
+    }
+    
     /** 
      * Save keystore if this keystore is persistent and there is a keyStoreLocation. 
      */
     protected void autoSaveKeystore() throws CertificateStoreException
     {
+        logger.debugPrintf("autoSaveKeystore() (persistant=%s):%s\n",isPersistent,keyStoreLocation);
+        
         if ((isPersistent == true) && (this.keyStoreLocation!=null)) 
         {
             saveKeystoreTo(keyStoreLocation, keystorePassword);
@@ -943,7 +953,7 @@ public class CertificateStore
             this.defaultTrustManager = null;
             this.getTrustManager(true);
     
-            // only autosav when this is a persistant keystore 
+            // only autosave when this is a persistant keystore 
             if (autoSave && this.isPersistent)
             {
                 autoSaveKeystore();

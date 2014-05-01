@@ -251,7 +251,7 @@ public class BrowserFrame extends JFrame
                     // ... iconsPanel
                     {
                         IconsPanel iconsPanel = new IconsPanel(this.browserController, null);
-                        addTab("Icons", iconsPanel, false);
+                        addTab("Icons", iconsPanel, false,true);
                     }
                     // default table panel
                     // {
@@ -268,9 +268,9 @@ public class BrowserFrame extends JFrame
         this.setSize(1000, 600);
     }
     
-    protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus)
+    protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus, boolean withScrollPane)
     {
-        TabContentPanel tabPanel = TabContentPanel.createTab(name, comp);
+        TabContentPanel tabPanel = TabContentPanel.createTab(name, comp,withScrollPane);
  
         int newIndex = uiRightTabPane.getTabCount();
         uiRightTabPane.add(tabPanel, newIndex);
@@ -312,7 +312,7 @@ public class BrowserFrame extends JFrame
                 return null;
             }
             
-            currentTab = this.addTab("Icons", null, false);
+            currentTab = this.addTab("Icons", null, false,true);
         }
 
         JComponent comp = currentTab.getContent();
@@ -336,7 +336,7 @@ public class BrowserFrame extends JFrame
 
     protected TabContentPanel createIconsPanelTab(ProxyNode node, boolean setFocus)
     {
-        TabContentPanel tab = this.addTab("Icons", null, setFocus);
+        TabContentPanel tab = this.addTab("Icons", null, setFocus,true);
         IconsPanel pnl = new IconsPanel(this.browserController, null);
         pnl.setDataSource(node, true);
         tab.setContent(pnl);
@@ -352,7 +352,7 @@ public class BrowserFrame extends JFrame
             if (autoCreate == false)
                 return;
 
-            tab = this.addTab("Table", null, true);
+            tab = this.addTab("Table", null, true,true);
         }
 
         JComponent comp = tab.getContent();
@@ -379,7 +379,7 @@ public class BrowserFrame extends JFrame
     protected void addViewerPanel(ViewerPlugin viewer, boolean setFocus)
     {
         // TabContentPanel currentTab = this.getCurrentTab();
-        TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus);
+        TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus,(viewer.haveOwnScrollPane()==false));
         tab.setContent(viewer.getViewerPanel());
         return;
     }
