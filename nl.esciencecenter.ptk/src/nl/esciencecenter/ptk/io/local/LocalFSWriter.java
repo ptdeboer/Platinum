@@ -23,16 +23,17 @@ package nl.esciencecenter.ptk.io.local;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomWritable;
 
 public class LocalFSWriter implements RandomWritable
 {
-    protected LocalFSNode fsNode;
+    protected FSNode fsNode;
 
     protected RandomAccessFile randomFile = null;
 
-    public LocalFSWriter(LocalFSNode node)
+    public LocalFSWriter(FSNode node)
     {
         fsNode = node;
     }

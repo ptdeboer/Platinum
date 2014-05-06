@@ -29,7 +29,7 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
-import nl.esciencecenter.ptk.io.local.LocalFSNode;
+import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
@@ -48,9 +48,9 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     
     private LocalFileSystem localfs;
     
-    LocalFSNode fsNode;
+    FSNode fsNode;
 
-    protected LocalFSPathNode(LocalFileSystem fileSystem, LocalFSNode node)
+    protected LocalFSPathNode(LocalFileSystem fileSystem, FSNode node)
     {
         super(fileSystem,new VRL(node.getURI()));
         this.localfs=fileSystem;
@@ -87,10 +87,10 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
         
         try
         {
-            LocalFSNode nodes[];
+            FSNode nodes[];
             nodes = fsNode.listNodes();
             ArrayList<VFSPath> pathNodes=new ArrayList<VFSPath>(); 
-            for (LocalFSNode node:nodes)
+            for (FSNode node:nodes)
             {
                 logger.debugPrintf(" - adding:%s\n",node);
                 pathNodes.add(new LocalFSPathNode(localfs,node));

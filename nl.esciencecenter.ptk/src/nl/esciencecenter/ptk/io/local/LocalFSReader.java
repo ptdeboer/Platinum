@@ -23,16 +23,17 @@ package nl.esciencecenter.ptk.io.local;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 
 public class LocalFSReader implements RandomReadable
 {
-    protected LocalFSNode fsNode;
+    protected FSNode fsNode;
 
     protected RandomAccessFile randomFile = null;
 
-    public LocalFSReader(LocalFSNode node) throws IOException
+    public LocalFSReader(FSNode node) throws IOException
     {
         this.fsNode = node;
         this.randomFile = new RandomAccessFile(fsNode.toJavaFile(), "r");

@@ -27,37 +27,58 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
+import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
 
 /**
- * Abstract FileSystem Node of local or remote Filesystem. Can be File or
- * Directory. Uses URI based location.
+ * Wrapper around nio.file.path interface.
  */
-public abstract class FSNode
+public class FSNode
 {
-    public static final String FILE_TYPE = "File";
-
     public static final String DIR_TYPE = "Dir";
 
     public static final String FILE_SCHEME = "file";
 
-    // ===
-    //
-    // ===
+    public static final String FILE_TYPE = "File";
 
-    private URI uri = null;
+    // =========
+    // Instance
+    // =========
 
-    private FSNodeProvider fsHandler = null;
+    // nio !
+    protected Path _path;
 
-    protected FSNode(FSNodeProvider fsHandler, URI uri)
+    protected BasicFileAttributes basicAttrs;
+
+    protected FSNodeProvider fsHandler = null;
+
+    protected PosixFileAttributes posixAttrs;
+
+    protected FSNode(FSNodeProvider fsHandler, Path path)
     {
-        this.uri = uri;
         this.fsHandler = fsHandler;
+        init(path);
+    }
+    
+    private void init(Path path)
+    {
+        this._path = path;
     }
 
     protected FSNodeProvider getFSHandler()
@@ -65,133 +86,21 @@ public abstract class FSNode
         return fsHandler;
     }
 
-    protected void setURI(URI URI)
+    // =====
+    //
+    // =====
+
+    public FSNode create() throws IOException
     {
-        this.uri = URI;
+        byte bytes[] = new byte[0];
+
+        // Default way to create a file is by writing zero bytes:
+        OutputStream outps = this.fsHandler.createOutputStream(this, false);
+        outps.write(bytes);
+        outps.close();
+
+        return this;
     }
-
-    public URI getURI()
-    {
-        return uri;
-    }
-
-    public URL getURL() throws MalformedURLException
-    {
-        return uri.toURL();
-    }
-
-    public FSNode getNode(String relpath) throws FileURISyntaxException
-    {
-        return newPath(resolvePath(relpath));
-    }
-
-    /**
-     * Whether this file points to a local file.
-     */
-    public boolean isLocal()
-    {
-        return false;
-    }
-
-    /**
-     * Returns absolute and normalized URI path as String.
-     */
-    public String getPathname()
-    {
-        return uri.getPath();
-    }
-
-    /**
-     * Returns last part of the path inlcuding extension.
-     */
-    public String getBasename()
-    {
-        return URIFactory.basename(uri.getPath());
-    }
-
-    public String getBasename(boolean includeExtension)
-    {
-        String fileName = URIFactory.basename(uri.getPath());
-
-        if (includeExtension)
-        {
-            return fileName;
-        }
-        else
-        {
-            return URIFactory.stripExtension(fileName);
-        }
-    }
-
-    public String getExtension()
-    {
-        return URIFactory.extension(uri.getPath());
-    }
-
-    public String getDirname()
-    {
-        return URIFactory.dirname(uri.getPath());
-    }
-
-    public String getHostname()
-    {
-        return uri.getHost();
-    }
-
-    public int getPort()
-    {
-        return uri.getPort();
-    }
-
-    public String toString()
-    {
-        return "(FSNode)" + this.getURI().toString();
-    }
-
-    public boolean sync()
-    {
-        return false;
-    }
-
-    /**
-     * Returns creation time in millis since EPOCH, if supported. Returns -1
-     * otherwise.
-     */
-    public FileTime getAccessTime() throws IOException
-    {
-        BasicFileAttributes attrs = this.getBasicAttributes();
-        
-        if (attrs==null)
-        {
-            return null; 
-        }
-            
-        return attrs.lastAccessTime();
-    }
-
-    public boolean isHidden()
-    {
-        // Windows has a different way to hide files.
-        // Use default UNIX way to indicate hidden files.
-        return this.getBasename().startsWith(".");
-    }
-
-    /**
-     * Is a unix style soft- or symbolic link
-     * @throws IOException 
-     */
-    public boolean isSymbolicLink() throws IOException
-    {
-        BasicFileAttributes attrs = this.getBasicAttributes();
-        if (attrs==null)
-            return false; 
-        
-        return attrs.isSymbolicLink(); 
-    }
-
-    // =======================================================================
-    // IO Methods
-    // =======================================================================
 
     public FSNode createDir(String subdir) throws IOException, FileURISyntaxException
     {
@@ -207,52 +116,84 @@ public abstract class FSNode
         return file;
     }
 
-    public String resolvePath(String relPath) throws FileURISyntaxException
+    public boolean delete(LinkOption... linkOptions) throws IOException
+    {
+        Files.delete(_path);
+        return true;
+    }
+
+    public boolean exists(LinkOption... linkOptions)
+    {
+        if (linkOptions == null)
+        {
+            return Files.exists(_path);
+        }
+        else
+        {
+            return Files.exists(_path, linkOptions);
+        }
+    }
+
+    /**
+     * Returns creation time in millis since EPOCH, if supported. Returns -1 otherwise.
+     */
+    public FileTime getAccessTime() throws IOException
+    {
+        BasicFileAttributes attrs = this.getBasicAttributes();
+
+        if (attrs == null)
+        {
+            return null;
+        }
+
+        return attrs.lastAccessTime();
+    }
+
+    /**
+     * Returns last part of the path inlcuding extension.
+     */
+    public String getBasename()
+    {
+        return getBasename(true);
+    }
+
+    public String getBasename(boolean includeExtension)
+    {
+        String fileName = _path.getFileName().toString();
+
+        if (includeExtension)
+        {
+            return fileName;
+        }
+        else
+        {
+            return URIFactory.stripExtension(fileName);
+        }
+    }
+
+    public BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException
     {
         try
         {
-            return new URIFactory(uri).resolvePath(relPath);
+            if (basicAttrs == null)
+            {
+                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class, linkOptions);
+            }
         }
-        catch (URISyntaxException e)
+        catch (IOException e)
         {
-            throw new FileURISyntaxException(e.getMessage(), relPath, e);
-        }
-    }
-
-    public URI resolvePathURI(String relPath) throws FileURISyntaxException
-    {
-        try
-        {
-            return new URIFactory(uri).setPath(resolvePath(relPath)).toURI();
-        }
-        catch (URISyntaxException e)
-        {
-            throw new FileURISyntaxException(e.getMessage(), relPath, e);
-        }
-    }
-
-    public FSNode create() throws IOException
-    {
-        byte bytes[] = new byte[0];
-
-        // Default way to create a file is by writing zero bytes:
-        OutputStream outps = this.fsHandler.createOutputStream(this,false);
-        outps.write(bytes);
-        outps.close();
-
-        return this;
-    }
-
-    public boolean isRoot()
-    {
-        String path = this.getPathname();
-
-        if ("/".equals(path))
-        {
-            return true;
+            // Auto dereference in the case of a borken link:
+            if (isBrokenLink())
+            {
+                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            }
+            else
+            {
+                throw e;
+            }
         }
 
-        return false;
+        return basicAttrs;
     }
 
     public FileTime getCreationTime() throws IOException
@@ -261,35 +202,20 @@ public abstract class FSNode
 
         if (attrs == null)
         {
-            return null; 
+            return null;
         }
-        
+
         return attrs.creationTime();
     }
 
-    public long getModificationTimeMillies() throws IOException
+    public String getDirname()
     {
-        FileTime time=getModificationTime();
-        if (time==null)
-        {
-            return -1;
-        }
-        else
-        {
-            return time.toMillis();
-        }
+        return URIFactory.dirname(_path.toUri().getPath());
     }
-    
-    public FileTime getModificationTime() throws IOException
-    {
-        BasicFileAttributes attrs = this.getBasicAttributes();
 
-        if (attrs == null)
-        {
-            return null; 
-        }
-        
-        return attrs.lastModifiedTime();
+    public String getExtension()
+    {
+        return URIFactory.extension(_path.toUri().getPath());
     }
 
     public long getFileSize() throws IOException
@@ -302,64 +228,374 @@ public abstract class FSNode
         return attrs.size();
     }
 
-    // =======================================================================
-    // InputStream/OutputStream 
-    // =======================================================================
-    
+    public String getGroupName() throws IOException
+    {
+        PosixFileAttributes attrs;
+
+        if ((attrs = this.getPosixAttributes()) == null)
+        {
+            return null;
+        }
+
+        return attrs.group().getName();
+    }
+
+    public String getHostname()
+    {
+        return _path.toUri().getHost();
+    }
+
+    public FileTime getModificationTime() throws IOException
+    {
+        BasicFileAttributes attrs = this.getBasicAttributes();
+
+        if (attrs == null)
+        {
+            return null;
+        }
+
+        return attrs.lastModifiedTime();
+    }
+
+    public long getModificationTimeMillies() throws IOException
+    {
+        FileTime time = getModificationTime();
+        if (time == null)
+        {
+            return -1;
+        }
+        else
+        {
+            return time.toMillis();
+        }
+    }
+
+    public String getOwnerName() throws IOException
+    {
+        PosixFileAttributes attrs;
+
+        if ((attrs = this.getPosixAttributes()) == null)
+            return null;
+
+        return attrs.owner().getName();
+    }
+
+    public FSNode getParent()
+    {
+        return new FSNode(getFSHandler(), _path.getParent());
+    }
+
+    /**
+     * @return Return actual nio.file.path
+     */
+    public Path getPath()
+    {
+        return _path;
+    }
+
+    /**
+     * Returns absolute and normalized URI path
+     * 
+     * @return
+     */
+    public String getPathname()
+    {
+        return _path.toUri().getPath();
+    }
+
+    public int getPort()
+    {
+        return _path.toUri().getPort();
+    }
+
+    public PosixFileAttributes getPosixAttributes() throws IOException
+    {
+        try
+        {
+            if (posixAttrs == null)
+            {
+                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class);
+            }
+        }
+        catch (IOException e)
+        {
+            // auto dereference in the case of a borken link:
+            if (isBrokenLink())
+            {
+                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            }
+            else
+            {
+                throw e;
+            }
+        }
+        catch (UnsupportedOperationException e)
+        {
+            return null;
+        }
+
+        return posixAttrs;
+    }
+
+    /**
+     * Returns symbolic link target or NULL
+     */
+    public FSNode getSymbolicLinkTarget() throws IOException
+    {
+        if (this.isSymbolicLink() == false)
+            return null;
+
+        Path target = Files.readSymbolicLink(_path);
+
+        return new FSNode(getFSHandler(), target);
+    }
+
+    public int getUnixFileMode() throws IOException
+    {
+        PosixFileAttributes attrs;
+        if ((attrs = getPosixAttributes()) == null)
+            return 0;
+
+        Set<PosixFilePermission> perms = attrs.permissions();
+
+        return FSUtil.toUnixFileMode(perms);
+    }
+
+    public URI getURI()
+    {
+        return _path.toUri();
+    }
+
+    public URL getURL() throws MalformedURLException
+    {
+        return _path.toUri().toURL();
+    }
+
+
+
+    public boolean isBrokenLink() throws IOException
+    {
+        if (isSymbolicLink() == false)
+        {
+            return false;
+        }
+
+        return (getSymbolicLinkTarget().exists() == false);
+    }
+
+    public boolean isDirectory(LinkOption... linkOptions)
+    {
+        if (linkOptions == null)
+        {
+            return Files.isDirectory(_path);
+        }
+        else
+        {
+            return Files.isDirectory(_path, linkOptions);
+        }
+    }
+
+    public boolean isFile(LinkOption... linkOptions)
+    {
+        return Files.isRegularFile(_path, linkOptions);
+    }
+
+    public boolean isHidden()
+    {
+        // Windows has a different way to hide files.
+        // Use default UNIX way to indicate hidden files.
+        return this.getBasename().startsWith(".");
+    }
+
+    /**
+     * Whether this file points to a local file. Currently only local files are supported.
+     */
+    public boolean isLocal()
+    {
+        return true;
+    }
+
+//    boolean isPosix()
+//    {
+//        return false;
+//    }
+
+    public boolean isRoot() 
+    {
+        String path = this.getPathname();
+
+        if ("/".equals(path))
+        {
+            return true;
+        }
+
+        if (isFileSystemRoot())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Is a unix style soft- or symbolic link.
+     * 
+     * @throws IOException
+     */
+    public boolean isSymbolicLink()
+    {
+        return Files.isSymbolicLink(_path);
+    }
+
+    public boolean isFileSystemRoot() 
+    {
+        List<FSNode> roots = this.fsHandler.listRoots();
+        
+        for (FSNode root:roots)
+        {
+            if (root._path.normalize().toString().equals(_path.normalize().toString()))
+            {
+                return true;
+            }
+        }
+        return false; 
+    }
+
+    public String[] list() throws IOException
+    {
+        DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path);
+        try
+        {
+            Iterator<Path> dirIterator = dirStream.iterator();
+            ArrayList<String> list = new ArrayList<String>();
+
+            while (dirIterator.hasNext())
+            {
+                list.add(dirIterator.next().getFileName().toString());
+            }
+
+            return list.toArray(new String[0]);
+        }
+        finally
+        {
+            dirStream.close();
+        }
+    }
+
+    public FSNode[] listNodes() throws IOException
+    {
+        DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path);
+        try
+        {
+            Iterator<Path> dirIterator = dirStream.iterator();
+            ArrayList<FSNode> list = new ArrayList<FSNode>();
+
+            while (dirIterator.hasNext())
+            {
+                list.add(new FSNode(getFSHandler(), dirIterator.next()));
+            }
+
+            return list.toArray(new FSNode[0]);
+
+        }
+        finally
+        {
+            dirStream.close();
+        }
+
+    }
+
+    public FSNode mkdir() throws IOException
+    {
+        Files.createDirectory(_path);
+        return this;
+    }
+
+    public FSNode mkdirs() throws IOException
+    {
+        Files.createDirectories(_path);
+        return this;
+    }
+
+    public FSNode newPath(String path) throws IOException
+    {
+        URI resolved=this.resolvePathURI(path); 
+        FSNode lfile = this.fsHandler.newFSNode(resolved);
+        return lfile;
+    }
+
+    public FSNode renameTo(String relativeOrAbsolutePath) throws IOException
+    {
+        FSNode other = this.newPath(relativeOrAbsolutePath);
+
+        Path targetPath = other._path;
+        Path actualPath = Files.move(this._path, targetPath);
+        // no errrors, assume path is renamed.
+        return other;
+    }
+
+    public String resolvePath(String relPath) throws FileURISyntaxException
+    {
+        try
+        {
+            return new URIFactory(_path.toUri()).resolvePath(relPath);
+        }
+        catch (URISyntaxException e)
+        {
+            throw new FileURISyntaxException(e.getMessage(), relPath, e);
+        }
+    }
+
+    public URI resolvePathURI(String relPath) throws FileURISyntaxException
+    {
+        try
+        {
+            return new URIFactory(_path.toUri()).setPath(resolvePath(relPath)).toURI();
+        }
+        catch (URISyntaxException e)
+        {
+            throw new FileURISyntaxException(e.getMessage(), relPath, e);
+        }
+    }
+
+    public void setUnixFileMode(int mode) throws IOException
+    {
+        Files.setPosixFilePermissions(_path, FSUtil.fromUnixFileMode(mode));
+    }
+
+    public boolean sync()
+    {
+        this.basicAttrs = null;
+        this.posixAttrs = null;
+        return true;
+    }
+
+    // =======================
+    // IO Methods
+    // =======================
+
     public InputStream createInputStream() throws IOException
     {
         return fsHandler.createInputStream(this);
     }
-    
+
     public OutputStream createOutputStream(boolean append) throws IOException
     {
-        return fsHandler.createOutputStream(this,append);
+        return fsHandler.createOutputStream(this, append);
     }
-    
-    boolean isPosix()
+
+    // =======================
+    // Misc.
+    // =======================
+
+    public java.io.File toJavaFile()
     {
-    	return false;   
+        return _path.toFile();
     }
-    
-    // =======================================================================
-    // Abstract Interface
-    // =======================================================================
 
-    /**
-     * FSNode factory method, optionally resolves path against parent FSNode.
-     */
-    public abstract FSNode newPath(String path) throws FileURISyntaxException;
-
-    public abstract boolean exists(LinkOption... linkOptions);
-
-    /** Is a regular file. */
-    public abstract boolean isFile(LinkOption... linkOptions);
-
-    /** Is a regular directory. */
-    public abstract boolean isDirectory(LinkOption... linkOptions);
-
-    /** Logical parent */
-    public abstract FSNode getParent();
-
-    /** Delete file or empty directory. */
-    public abstract boolean delete(LinkOption... linkOptions) throws IOException;
-
-    // === Directory methods === //
-
-    /** Return contents of directory. */
-    public abstract String[] list() throws IOException;
-
-    /** Return contents of directory as FSNode objects . */
-    public abstract FSNode[] listNodes() throws IOException;
-
-    /** Create last path element as (sub)directory, parent directory must exist. */
-    public abstract FSNode mkdir() throws IOException;
-
-    /** Create full directory path. */
-    public abstract FSNode mkdirs() throws IOException;
-
-    public abstract BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException;
-
-
+    public String toString()
+    {
+        return "(FSNode)" + this.getURI().toString();
+    }
 
 }

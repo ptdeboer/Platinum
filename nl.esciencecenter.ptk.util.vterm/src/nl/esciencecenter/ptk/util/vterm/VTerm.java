@@ -1418,7 +1418,7 @@ public class VTerm extends JFrame implements  Runnable
 		saveConfig();
 	}
 	
-	URI getPropertiesFileURI() throws FileURISyntaxException
+	URI getPropertiesFileURI() throws IOException
 	{
 	    FSUtil fsUtils=FSUtil.getDefault(); 
 	    return fsUtils.getUserHomeDir().resolvePathURI(".vterm/vterm.prop");

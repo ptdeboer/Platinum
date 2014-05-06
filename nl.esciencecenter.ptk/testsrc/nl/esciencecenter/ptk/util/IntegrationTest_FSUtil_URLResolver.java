@@ -128,7 +128,7 @@ public class IntegrationTest_FSUtil_URLResolver
         URI baseUri = new URI("file:" + baseUrlStr);
         URI expectedUri = URIUtil.resolvePathURI(baseUri, relativePath); // use URI resolve as standard here!
 
-        Assert.assertEquals("Pre URLSolver: File URI from FSNode doesn't match expected URI", filePathUri, expectedUri);
+        Assert.assertEquals("Pre URLSolver: File URI from FSNode doesn't match expected URI", expectedUri, filePathUri);
 
         // III) test URLResolver with specified URL base path:
         URL urls[] = new URL[] {

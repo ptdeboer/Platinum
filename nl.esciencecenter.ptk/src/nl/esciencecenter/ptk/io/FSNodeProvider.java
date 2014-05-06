@@ -26,15 +26,15 @@ import java.io.OutputStream;
 import java.util.List;
 
 /** 
- * Delegated FileSystem handler. 
+ * FileSystem interface.  
  */
 public interface FSNodeProvider
 {
-    public abstract String getScheme(); 
+    public abstract String[] getSchemes(); 
 
-    public abstract List<FSNode> listRoots() throws IOException;
+    public abstract List<FSNode> listRoots();
     
-    public abstract FSNode newFSNode(java.net.URI uri);
+    public abstract FSNode newFSNode(java.net.URI uri) throws IOException;
 
     public abstract RandomReadable createRandomReader(FSNode node) throws IOException;
 

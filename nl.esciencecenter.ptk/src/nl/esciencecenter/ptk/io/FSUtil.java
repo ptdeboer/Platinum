@@ -20,31 +20,42 @@
 
 package nl.esciencecenter.ptk.io;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
-import nl.esciencecenter.ptk.io.local.LocalFSNodeProvider;
-import nl.esciencecenter.ptk.io.local.LocalFSNode;
+import nl.esciencecenter.ptk.io.local.LocalFSReader;
+import nl.esciencecenter.ptk.io.local.LocalFSWriter;
+import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
+import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
  * Global File System utils and resource loaders. <br>
  * Used to access the local file system.
  */
-public class FSUtil implements ResourceProvider
+public class FSUtil implements ResourceProvider, FSNodeProvider
 {
     private static final ClassLogger logger = ClassLogger.getLogger(FSUtil.class);
 
@@ -57,7 +68,9 @@ public class FSUtil implements ResourceProvider
     public static FSUtil getDefault()
     {
         if (instance == null)
+        {
             instance = new FSUtil();
+        }
 
         return instance;
     }
@@ -148,8 +161,6 @@ public class FSUtil implements ResourceProvider
 
     protected FSOptions fsOptions = new FSOptions();
 
-    private LocalFSNodeProvider localFSHandler;
-
     public FSUtil()
     {
         init();
@@ -157,7 +168,6 @@ public class FSUtil implements ResourceProvider
 
     private void init()
     {
-        this.localFSHandler = LocalFSNodeProvider.getDefault();
 
         try
         {
@@ -198,6 +208,13 @@ public class FSUtil implements ResourceProvider
         }
     }
 
+    public String[] getSchemes()
+    {
+        return new String[] {
+            "file"
+        };
+    }
+
     public boolean existsPath(String path, LinkOption... linkOptions) throws IOException
     {
         return newFSNode(resolvePathURI(path)).exists(linkOptions);
@@ -208,8 +225,8 @@ public class FSUtil implements ResourceProvider
      */
     public void copyFile(URI source, URI destination) throws IOException
     {
-        InputStream finput = localFSHandler.createInputStream(newFSNode(source));
-        OutputStream foutput = localFSHandler.createOutputStream(newFSNode(destination), false);
+        InputStream finput = createInputStream(newFSNode(source));
+        OutputStream foutput = createOutputStream(newFSNode(destination), false);
 
         IOUtil.copyStreams(finput, foutput, false);
 
@@ -295,40 +312,37 @@ public class FSUtil implements ResourceProvider
         return false;
     }
 
-    public FSNode newFSNode(String path) throws IOException
-    {
-        return localFSHandler.newFSNode(resolvePathURI(path));
-    }
-
     /**
      * Return new FileSystem Node specified by the URI. Currently only local files are supported.
      * 
      * @param uri
-     *            - uri of the file.
-     * @return Lofical FileSystem Node.
+     *            - uri of the file. Uri can be relative here.
+     * @return new resolved FSNode
      */
-    public FSNode newFSNode(URI uri)
+    public FSNode newFSNode(URI uri) throws IOException
     {
-        return new LocalFSNode(localFSHandler, uri);
-    }
-
-    /**
-     * Return new local file node specified by the path.
-     * 
-     * @param path
-     *            - the relative,logical or absolute path to resolve on the local file system.
-     */
-    public LocalFSNode newLocalFSNode(URI localFileURI)
-    {
-        if (localFileURI.isAbsolute())
+        try
         {
-            return new LocalFSNode(LocalFSNodeProvider.getDefault(), localFileURI);
+            if (uri.isAbsolute() == false)
+            {
+                uri = URIUtil.resolvePath(this.workingDir, this.userHome, true, uri.getPath());
+            }
+        }
+        catch (URISyntaxException e)
+        {
+            throw new FileURISyntaxException("Invalid (file)URI:" + uri, uri.getPath(), e);
+        }
+
+        FileSystem fs = FileSystems.getDefault();
+        if (GlobalProperties.isWindows())
+        {
+            String dosPath = new URIFactory(uri).getDosPath();
+            return new FSNode(this, fs.getPath(dosPath));
         }
         else
         {
-            return new LocalFSNode(localFSHandler, workingDir.resolve(localFileURI));
+            return new FSNode(this, fs.getPath(uri.getPath()));
         }
-
     }
 
     /**
@@ -375,24 +389,6 @@ public class FSUtil implements ResourceProvider
     }
 
     /**
-     * Open local file and return InputStream to read from.
-     * 
-     * @param filename
-     *            - relative or absolute file path (resolves to absolute path on local filesystem)
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    public InputStream createInputStream(String filename) throws IOException, FileURISyntaxException
-    {
-        return localFSHandler.createInputStream(newFSNode(filename));
-    }
-
-    public InputStream createInputStream(FSNode file) throws IOException, FileURISyntaxException
-    {
-        return localFSHandler.createInputStream(file);
-    }
-
-    /**
      * Open local file and return OutputStream to write to. The default implementation is to creat a new File if it
      * doesn't exists or replace an existing file with the new contents if it exists.
      * 
@@ -403,123 +399,7 @@ public class FSUtil implements ResourceProvider
      */
     public OutputStream createOutputStream(String filename) throws IOException, FileURISyntaxException
     {
-        return localFSHandler.createOutputStream(newFSNode(filename), false);
-    }
-
-    public OutputStream createOutputStream(FSNode file, boolean append) throws IOException, FileURISyntaxException
-    {
-        return localFSHandler.createOutputStream(file, append);
-    }
-
-    public RandomReadable createRandomReader(FSNode node) throws IOException
-    {
-        return node.getFSHandler().createRandomReader(node);
-    }
-
-    public RandomWritable createRandomWriter(FSNode node) throws IOException
-    {
-        return node.getFSHandler().createRandomWriter(node);
-    }
-
-    /**
-     * Read file and return as UTF8 String.
-     * 
-     * @param filename
-     *            - path to resolve and read.
-     * @throws URISyntaxException
-     */
-    public String readText(String filename) throws IOException, FileURISyntaxException
-    {
-        return readText(filename, ENCODING_UTF8);
-    }
-
-    public String readText(String filename, String encoding) throws IOException, FileURISyntaxException
-    {
-        return readText(filename, encoding, 1024 * 1024);
-    }
-
-    /**
-     * Read file and return as String. Provide optional encoding (can be null for default). Limit size to maxSize
-     * 
-     * @param filename
-     *            - absolute of relative filepath
-     * @param enconding
-     *            - optional encoding. Use null for default.
-     * @param maxSize
-     *            - limit size of number of bytes read (not the String size).
-     * @throws FileURISyntaxException
-     *             - when the filename contains invalid characters.
-     */
-    public String readText(String filename, String encoding, int maxSize) throws IOException, FileURISyntaxException
-    {
-        if (encoding == null)
-        {
-            encoding = ENCODING_UTF8;
-        }
-
-        FSNode file = newFSNode(filename);
-        int len = (int) file.getFileSize();
-        if (len > maxSize)
-        {
-            len = maxSize;
-        }
-
-        InputStream finps = localFSHandler.createInputStream(file);
-        try
-        {
-            byte buffer[] = new byte[len + 1];
-
-            int numRead = IOUtil.syncReadBytes(finps, 0, buffer, 0, len, false);
-            // truncate buffer in the case of a read error:
-            buffer[numRead] = 0;
-            return new String(buffer, encoding);
-        }
-        finally
-        {
-            IOUtil.autoClose(finps);
-        }
-    }
-
-    public void writeText(String path, String txt) throws IOException, FileURISyntaxException
-    {
-        writeText(path, txt, ENCODING_UTF8);
-    }
-
-    public void writeText(String filename, String txt, String encoding) throws IOException, FileURISyntaxException
-    {
-        if (encoding == null)
-        {
-            encoding = ENCODING_UTF8;
-        }
-
-        FSNode file = newFSNode(filename);
-
-        OutputStream foutps = localFSHandler.createOutputStream(file, false);
-        int len = 0;
-
-        try
-        {
-            byte bytes[] = txt.getBytes(encoding);
-            len = bytes.length;
-            foutps.write(bytes);
-            // close and flush
-            foutps.flush();
-            foutps.close();
-            foutps = null; // close successful
-
-            long fileLen = file.getFileSize();
-
-            if (len != fileLen)
-            {
-                logger.warnPrintf("File NOT truncated: After writing %d byte to '%s', file length is:%d!\n", filename, len, fileLen);
-            }
-        }
-        finally
-        {
-            IOUtil.autoClose(foutps);
-        }
-
-        return;
+        return createOutputStream(newFSNode(filename), false);
     }
 
     public FSNode mkdir(String path) throws IOException, FileURISyntaxException
@@ -536,14 +416,14 @@ public class FSUtil implements ResourceProvider
         return dir;
     }
 
-    public LocalFSNode getLocalTempDir()
+    public FSNode getLocalTempDir() throws IOException
     {
-        return this.newLocalFSNode(this.tmpDir);
+        return this.newFSNode(this.tmpDir);
     }
 
-    public LocalFSNode getWorkingDir()
+    public FSNode getWorkingDir() throws IOException
     {
-        return this.newLocalFSNode(this.workingDir);
+        return this.newFSNode(this.workingDir);
     }
 
     public URI getUserHome()
@@ -551,7 +431,7 @@ public class FSUtil implements ResourceProvider
         return userHome;
     }
 
-    public FSNode getUserHomeDir()
+    public FSNode getUserHomeDir() throws IOException
     {
         return newFSNode(this.userHome);
     }
@@ -578,21 +458,22 @@ public class FSUtil implements ResourceProvider
      * @param dirUri
      *            - location of new Directory
      * @return - new Local Directory object.
+     * @throws IOException
      */
-    public LocalFSNode newLocalDir(URI dirUri)
+    public FSNode newLocalDir(URI dirUri) throws IOException
     {
-        LocalFSNode dir = this.newLocalFSNode(dirUri);
+        FSNode dir = this.newFSNode(dirUri);
         return dir;
     }
 
-    public LocalFSNode newLocalFSNode(String fileUri) throws FileURISyntaxException
+    public FSNode newFSNode(String fileUri) throws IOException
     {
-        return newLocalFSNode(resolvePathURI(fileUri));
+        return newFSNode(resolvePathURI(fileUri));
     }
 
     public void deleteDirectoryContents(URI uri, boolean recursive) throws IOException
     {
-        LocalFSNode node = newLocalDir(uri);
+        FSNode node = newLocalDir(uri);
         if (node.exists() == false)
             throw new FileNotFoundException("Directory does not exist:" + uri);
 
@@ -670,36 +551,7 @@ public class FSUtil implements ResourceProvider
         return true;
     }
 
-    @Override
-    public OutputStream createOutputStream(URI uri) throws IOException
-    {
-        if (isLocalFSUri(uri))
-        {
-            return localFSHandler.createOutputStream(newFSNode(uri), false);
-        }
-        else
-        {
-            // use default URL method !
-            return uri.toURL().openConnection().getOutputStream();
-        }
-
-    }
-
-    @Override
-    public InputStream createInputStream(URI uri) throws IOException
-    {
-        if (isLocalFSUri(uri))
-        {
-            return localFSHandler.createInputStream(newFSNode(uri));
-        }
-        else
-        {
-            // use default URL method !
-            return uri.toURL().openConnection().getInputStream();
-        }
-    }
-
-    private boolean isLocalFSUri(URI uri)
+    public boolean isLocalFSUri(URI uri)
     {
         if (uri.getScheme().equalsIgnoreCase("file"))
         {
@@ -712,20 +564,152 @@ public class FSUtil implements ResourceProvider
     }
 
     @Override
-    public RandomReadable createRandomReader(URI uri) throws IOException
+    public List<FSNode> listRoots() 
     {
-        return localFSHandler.createRandomReader(newFSNode(uri));
+        ArrayList<FSNode> roots=new ArrayList<FSNode>(); 
+        
+        Iterator<Path> iterator = java.nio.file.FileSystems.getDefault().getRootDirectories().iterator();
+        
+        while(iterator.hasNext())
+        {   
+            Path path=iterator.next();
+            roots.add(new FSNode(this,path)); 
+        }
+        return roots; 
+    }
+
+    /** 
+     * Old code which explicitly checks driver "A:" through "Z:" 
+     * @throws IOException 
+     */
+    public List<FSNode> listWindowsDrives() throws IOException
+    {
+        ArrayList<FSNode> roots = new ArrayList<FSNode>();
+
+        // update system property
+        // GlobalProperties.getBoolProperty(GlobalProperties.PROP_SKIP_FLOPPY_SCAN, true);
+        boolean skipFloppy = true; 
+
+        // Create the A: drive whether it is mounted or not
+        if (skipFloppy == false)
+        {
+            String drivestr = "A:\\";
+            roots.add(this.newFSNode(drivestr)); 
+        }
+
+        // Run through all possible mount points and check
+        // for their existence.
+        for (char c = 'C'; c <= 'Z'; c++)
+        {
+            char deviceChars[] = { c, ':', '\\' };
+            String deviceName = new String(deviceChars);
+            FSNode device=newFSNode(deviceName); 
+            
+            if (device.exists())
+            {
+                roots.add(device);
+            }
+        }
+        return roots;
+    }
+
+    // ==============
+    // IO Methods
+    // ==============
+
+
+    @Override
+    public InputStream createInputStream(java.net.URI uri) throws IOException
+    {
+        return createInputStream(newFSNode(uri));
     }
 
     @Override
-    public RandomWritable createRandomWriter(URI uri) throws IOException
+    public InputStream createInputStream(FSNode node) throws IOException
     {
-        return localFSHandler.createRandomWriter(newFSNode(uri));
+        return Files.newInputStream(((FSNode) node)._path);
     }
 
-    public List<FSNode> listRoots()
+    @Override
+    public OutputStream createOutputStream(URI uri) throws IOException
     {
-        return localFSHandler.listRoots();
+        if (isLocalFSUri(uri))
+        {
+            return createOutputStream(newFSNode(uri), false);
+        }
+        else
+        {
+            // use default URL method !
+            return uri.toURL().openConnection().getOutputStream();
+        }
+
+    }
+    public OutputStream createOutputStream(FSNode node, boolean append) throws IOException
+    {
+        OpenOption openOptions[];
+
+        if (append)
+        {
+            openOptions = new OpenOption[4];
+            openOptions[0] = StandardOpenOption.WRITE;
+            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
+            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
+            openOptions[3] = StandardOpenOption.APPEND;
+        }
+        else
+        {
+            openOptions = new OpenOption[3];
+            openOptions[0] = StandardOpenOption.WRITE;
+            openOptions[1] = StandardOpenOption.CREATE; // create if not exists
+            openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
+        }
+
+        return Files.newOutputStream(node._path, openOptions); // OpenOptions..
+    }
+
+    @Override
+    public RandomReadable createRandomReader(URI uri) throws IOException
+    {
+        return new LocalFSReader(newFSNode(uri));
+    }
+    
+    @Override
+    public RandomReadable createRandomReader(FSNode node) throws IOException
+    {
+        return new LocalFSReader((FSNode) node);
+    }
+
+    @Override
+    public RandomWritable createRandomWriter(FSNode node) throws IOException
+    {
+        return new LocalFSWriter((FSNode) node);
+    }
+    
+    @Override
+    public RandomWritable createRandomWriter(URI uri) throws IOException
+    {
+        return new LocalFSWriter((newFSNode(uri)));
+    }
+
+    public ResourceLoader getResourceLoader()
+    {
+        return new ResourceLoader(this,null); 
+    }
+
+    // ============
+    // Util methods
+    // ============
+    
+    public String readText(String filename) throws IOException
+    {
+        URI uri=this.resolvePathURI(filename); 
+        return this.getResourceLoader().readText(uri);  
+    }
+
+    public void writeText(String filePath, String text) throws IOException
+    {
+        URI uri=this.resolvePathURI(filePath); 
+        this.getResourceLoader().writeTextTo(uri, text); 
     }
 
 }

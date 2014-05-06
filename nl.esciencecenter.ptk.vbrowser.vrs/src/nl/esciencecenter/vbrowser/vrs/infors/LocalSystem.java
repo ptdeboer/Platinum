@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -73,7 +75,15 @@ public class LocalSystem extends InfoRSPathNode
 
     protected InfoResourceNode initHome() throws VrsException
     {
-        FSNode home = fsUtil.getUserHomeDir();
+        FSNode home;
+        try
+        {
+            home = fsUtil.getUserHomeDir();
+        }
+        catch (IOException e)
+        {
+          throw new VrsIOException(e.getMessage(),e); 
+        }
 
         URI uri = home.getURI();
         VRL vrl = new VRL(uri);
@@ -86,8 +96,10 @@ public class LocalSystem extends InfoRSPathNode
 
     protected void initDrives() throws VrsException
     {
-        List<FSNode> roots = fsUtil.listRoots();
-
+        List<FSNode> roots; 
+        
+        roots = fsUtil.listRoots();
+                
         int index = 0;
 
         for (FSNode root : roots)

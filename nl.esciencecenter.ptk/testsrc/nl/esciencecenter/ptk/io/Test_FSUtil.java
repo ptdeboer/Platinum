@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import nl.esciencecenter.ptk.io.local.LocalFSNode;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -41,14 +39,14 @@ public class Test_FSUtil
 
     protected static Object testDirMutex = new Object();
 
-    protected static LocalFSNode testDir = null;
+    protected static FSNode testDir = null;
 
     protected static FSUtil getFSUtil()
     {
         return FSUtil.getDefault();
     }
 
-    protected static LocalFSNode getCreateTestDir() throws IOException
+    protected static FSNode getCreateTestDir() throws IOException
     {
         synchronized (testDirMutex)
         {
@@ -63,7 +61,7 @@ public class Test_FSUtil
             FSUtil fsUtil = getFSUtil();
 
             // setup also tests basic methods !
-            testDir = fsUtil.newLocalFSNode(Settings.getInstance().getTestSubdir("testfsutil"));
+            testDir = fsUtil.newFSNode(Settings.getInstance().getTestSubdir("testfsutil"));
 
             Assert.assertNotNull("Local test directory is null", testDir);
 
@@ -110,7 +108,7 @@ public class Test_FSUtil
         FSNode tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSNode file = tDir.getNode(fileName);
+        FSNode file = tDir.newPath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
         file.create();
         Assert.assertTrue("Test file must exist after mkdir():" + file, file.exists());
@@ -132,7 +130,7 @@ public class Test_FSUtil
         FSNode tDir = getTestDir();
         String path = tDir.getPathname();
         String subdir = "subdir";
-        FSNode subDir = tDir.getNode(subdir);
+        FSNode subDir = tDir.newPath(subdir);
         Assert.assertFalse("Subdirectory already exists:" + subDir, subDir.exists());
         subDir.mkdir();
         Assert.assertTrue("Subdirectory must exist after mkdir():" + subDir, subDir.exists());
@@ -160,7 +158,7 @@ public class Test_FSUtil
         FSNode tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSNode file = tDir.getNode(fileName);
+        FSNode file = tDir.newPath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
 
         OutputStream outps = file.createOutputStream(false);

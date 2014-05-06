@@ -43,10 +43,10 @@ import javax.net.ssl.X509TrustManager;
 
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.StringList;
+import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
-import nl.esciencecenter.ptk.io.local.LocalFSNode;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
@@ -514,13 +514,13 @@ public class CertificateStore
 
             char[] passphrase = secret.getChars();
 
-            LocalFSNode keyStoreFile = null;
+            FSNode keyStoreFile = null;
 
             try
             {
                 if (keyStoreLocation != null)
                 {
-                    keyStoreFile = FSUtil.getDefault().newLocalFSNode(keyStoreLocation);
+                    keyStoreFile = FSUtil.getDefault().newFSNode(keyStoreLocation);
                 }
                 
                 // check user copy of cacerts
@@ -538,7 +538,7 @@ public class CertificateStore
                         {
                             _keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
     
-                            in = fsUtil.createInputStream(keyStoreLocation);
+                            in = fsUtil.createInputStream(fsUtil.resolvePathURI(keyStoreLocation));
                             _keyStore.load(in, passphrase);
                             IOUtil.autoClose(in); 
                         }
@@ -557,7 +557,7 @@ public class CertificateStore
                     }
                 }
             }
-            catch (FileURISyntaxException e)
+            catch (IOException e)
             {
                 throw new CertificateStoreException("Syntax Error: Invalid keyStore location:"+keyStoreLocation, e);
             }
