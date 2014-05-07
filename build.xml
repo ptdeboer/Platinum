@@ -37,6 +37,16 @@
 
 	</target>
 
+	<target name="core-install" depends="init,modules-core-dist-install" />
+
+	<target name="modules-core-dist-install" depends="init">
+
+		<antcall target="doModules-core">
+			<param name="target" value="dist-install" />
+		</antcall>
+
+	</target>
+	
 	<target name="dist-install" depends="init,modules-dist-install,post-dist-install" />
 
 	<target name="modules-dist-install" depends="init">
