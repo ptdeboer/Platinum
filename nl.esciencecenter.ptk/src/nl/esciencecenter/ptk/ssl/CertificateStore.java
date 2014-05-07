@@ -102,7 +102,7 @@ public class CertificateStore
     static
     {
         logger = ClassLogger.getLogger(CertificateStore.class);
-        logger.setLevelToDebug(); 
+        //logger.setLevelToDebug(); 
     }
 
     /**
