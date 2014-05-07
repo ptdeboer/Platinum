@@ -52,9 +52,21 @@ public class IntegrationTest_FSUtil_URLResolver
     @Test
     public void test_CreateAndResolve() throws Exception
     {
-    	boolean isWindows=settings.isWindows(); 
-    	
         FSNode baseDir = FSUtil_getCreateTestDir();
+        test_CreateAndResolve(baseDir); 
+    }
+    
+//    @Test
+//    public void test_CreateAndResolveCDrive() throws Exception
+//    {
+//        FSNode baseDir = FSUtil.getDefault().newFSNode("file:/C:/");
+//        test_CreateAndResolve(baseDir); 
+//    }
+    
+    public void test_CreateAndResolve(FSNode baseDir) throws Exception
+    {
+        boolean isWindows=settings.isWindows(); 
+        
 
         testCreateResolve(baseDir, "file1", true, true);
         testCreateResolve(baseDir, "file2 space", true, true);
@@ -101,7 +113,9 @@ public class IntegrationTest_FSUtil_URLResolver
 
     protected void testCreateResolve(FSNode baseDir, String relativePath, boolean isFilePath, boolean create) throws Exception
     {
-        // I) Ccreate file first. URL must point to existing files.
+        //
+        // I) Create file first. URLs must always point to existing files.
+        // 
         FSNode filePath = baseDir.resolvePath(relativePath);
         if (filePath.exists() == false)
         {
@@ -115,10 +129,14 @@ public class IntegrationTest_FSUtil_URLResolver
             }
         }
 
-        // Uses URI as reference here and not URL.
-        URI filePathUri = normalize(filePath.getURI()); 
+        //
+        // Use normalized URI from FSNode as reference here and not the URL.
+        //
+        URI normalizedFSNodeURI = normalize(filePath.getURI()); 
         
+        //
         // II) Resolve URL manually using absolute path:
+        //
         String baseUrlStr = baseDir.getPathname();
         // avoid double slashes here.
         if (baseUrlStr.endsWith("/"))
@@ -129,26 +147,32 @@ public class IntegrationTest_FSUtil_URLResolver
         URI baseUri = normalize(new URI("file:" + baseUrlStr)); 
         URI expectedUri = normalize(URIUtil.resolvePathURI(baseUri, relativePath)); // use URI resolve as standard here!
 
-        Assert.assertEquals("Pre URLSolver: File URI from FSNode doesn't match expected URI", expectedUri, filePathUri);
+        Assert.assertEquals("Pre URLSolver: File URI from FSNode doesn't match expected URI from URIUtil.resolvePathURI():", expectedUri, normalizedFSNodeURI);
 
+        //
         // III) test URLResolver with specified URL base path:
-        URL urls[] = new URL[] {
-                baseUri.toURL()
-        };
+        //
+        
+        URL urls[] = new URL[] { baseUri.toURL() };
         URLResolver resolver = new URLResolver(null, urls);
         URL resolvedUrl = resolver.resolveUrlPath(relativePath);
 
+        // URLs only works when file actually exists: 
         Assert.assertNotNull("URLResolver couldn't resolve URL. Has the file been created ? [base,relativePath]=[" + baseUri + ","
                 + relativePath + "]", resolvedUrl);
 
+        //
         // Check decoded URL paths here only as URI and URL may have different authentication parts.
+        //
         Assert.assertEquals("Resulted URL from URLResolver doesn't match expected", expectedUri.toURL().getPath(), resolvedUrl.getPath());
-        Assert.assertEquals("File URL from FSNode doesn't match resolved URL", filePathUri.toURL().getPath(), resolvedUrl.getPath());
+        Assert.assertEquals("File URL from FSNode doesn't match resolved URL", normalizedFSNodeURI.toURL().getPath(), resolvedUrl.getPath());
 
         String decodedPath=resolvedUrl.getPath(); 
-        outPrintf("resolveURL[baseUrl,relativePath]=[%s,%s]=>%s (Decoded path=%s)\n", baseUri, relativePath, resolvedUrl,decodedPath);
+        outPrintf("resolveURL[baseUrl,relativePath]=['%s','%s']=>%s (Decoded path='%s')\n", baseUri, relativePath, resolvedUrl,decodedPath);
         
+        // -------------
         // POST: cleanup
+        // -------------
         filePath.delete();
         Assert.assertFalse("After deleting, test file may not exist:" + filePath, filePath.exists());
 
@@ -167,11 +191,11 @@ public class IntegrationTest_FSUtil_URLResolver
         {
             path=path.substring(0, path.length()-1);
         }
-        //normalize 'file:/' and 'file:///' which are equivalent but not equal.
-        if ("file".equals(scheme))
-        {
-            newUri=new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),path,uri.getQuery(),uri.getFragment()); 
-        }
+        
+        //normalize 'file:/' and 'file:///' which are equivalent but not equal. To get the file:/// in an URI
+        // recreated it with an empty auth part. 
+        newUri=new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),path,uri.getQuery(),uri.getFragment()); 
+        
 
         return newUri;
     }
