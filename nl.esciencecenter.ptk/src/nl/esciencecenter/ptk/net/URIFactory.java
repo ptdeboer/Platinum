@@ -95,7 +95,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * </ul>
      * 
      * @param orgpath
-     *            - The original DOS or linux path. Can be relative to the current working dir. 
+     *            - The original DOS or linux path. Can be relative to the current working dir.
      * @param makeAbsolute
      *            - prefix optional relative paths with '/' to make them absolute.
      * @param localSepChar
@@ -132,14 +132,14 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
         //
         // III) Windows conversion
-        // 
+        //
         // Canonical paths vs. Absolute paths:
         //
         // Note: Windows interprets "C:" also as relative if the current directory on "C:" is 'C:/windows'.
         // The relative path "C:subdir" will result in "C:/windows/subdir"
         //
         // Add extra '/' to make it absolute "C:/"
-        // Note that java (under windows) accepts paths like '/C:/dir' and paths do not have to have backslashes in it. 
+        // Note that java (under windows) accepts paths like '/C:/dir' and paths do not have to have backslashes in it.
         //
         // IIIa insert '/' if path starts with "C:" or "[a-zA-Z]:"
         // IIIb convert "/c:path => /c:/path"
@@ -193,32 +193,32 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         return newpath;
     }
 
-    /** 
-     * If path start with tilde, replace actual tilde with userHome. 
+    /**
+     * If path start with tilde, replace actual tilde with userHome.
      */
     public static String resolveTilde(String homePath, String path)
     {
-        String subPath; 
-        
+        String subPath;
+
         if (path.startsWith("~/"))
-        {   
-            subPath=path.substring(2); 
-            path=homePath+"/"+subPath; 
+        {
+            subPath = path.substring(2);
+            path = homePath + "/" + subPath;
         }
         else if (path.startsWith("~"))
         {
-            subPath=path.substring(1); 
-            path=homePath+"/"+subPath; 
+            subPath = path.substring(1);
+            path = homePath + "/" + subPath;
         }
         else if (path.startsWith("/~"))
         {
-            subPath=path.substring(2);
-            path=homePath+"/"+subPath; 
+            subPath = path.substring(2);
+            path = homePath + "/" + subPath;
         }
-        
-        return path; 
+
+        return path;
     }
-    
+
     /**
      * Remove extension part of filename.
      * 
@@ -1251,7 +1251,5 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
             return false;
         return true;
     }
-
-
 
 }

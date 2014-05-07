@@ -108,7 +108,7 @@ public class Test_FSUtil
         FSNode tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSNode file = tDir.newPath(fileName);
+        FSNode file = tDir.resolvePath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
         file.create();
         Assert.assertTrue("Test file must exist after mkdir():" + file, file.exists());
@@ -130,7 +130,7 @@ public class Test_FSUtil
         FSNode tDir = getTestDir();
         String path = tDir.getPathname();
         String subdir = "subdir";
-        FSNode subDir = tDir.newPath(subdir);
+        FSNode subDir = tDir.resolvePath(subdir);
         Assert.assertFalse("Subdirectory already exists:" + subDir, subDir.exists());
         subDir.mkdir();
         Assert.assertTrue("Subdirectory must exist after mkdir():" + subDir, subDir.exists());
@@ -158,7 +158,7 @@ public class Test_FSUtil
         FSNode tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSNode file = tDir.newPath(fileName);
+        FSNode file = tDir.resolvePath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
 
         OutputStream outps = file.createOutputStream(false);

@@ -23,7 +23,10 @@ package nl.esciencecenter.ptk.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
+
+import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 
 /** 
  * FileSystem interface.  
@@ -33,6 +36,8 @@ public interface FSNodeProvider
     public abstract String[] getSchemes(); 
 
     public abstract List<FSNode> listRoots();
+    
+    public abstract URI resolvePathURI(String path) throws FileURISyntaxException;
     
     public abstract FSNode newFSNode(java.net.URI uri) throws IOException;
 

@@ -39,7 +39,7 @@ public class IOUtil
 
     static
     {
-        logger.setLevelToDebug();
+        //logger.setLevelToDebug();
     }
 
     public static class ReadFunctor implements Readable

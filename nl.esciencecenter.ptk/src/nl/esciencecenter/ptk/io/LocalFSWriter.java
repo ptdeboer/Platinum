@@ -18,63 +18,37 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.io.local;
+package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import nl.esciencecenter.ptk.io.FSNode;
-import nl.esciencecenter.ptk.io.IOUtil;
-import nl.esciencecenter.ptk.io.RandomReadable;
-
-public class LocalFSReader implements RandomReadable
+public class LocalFSWriter implements RandomWritable
 {
     protected FSNode fsNode;
 
     protected RandomAccessFile randomFile = null;
 
-    public LocalFSReader(FSNode node) throws IOException
+    public LocalFSWriter(FSNode node)
     {
-        this.fsNode = node;
-        this.randomFile = new RandomAccessFile(fsNode.toJavaFile(), "r");
-    }
-
-    public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
-    {
-        RandomAccessFile afile = null;
-
-        try
-        {
-            // Seek sets position starting from beginnen, not current seek position.
-            randomFile.seek(fileOffset);
-            int nrRead = randomFile.read(buffer, bufferOffset, nrBytes);
-            return nrRead;
-        }
-        catch (IOException e)
-        {
-            throw new IOException("Could open location for reading:" + this, e);
-        }
-        finally
-        {
-            if (afile != null)
-            {
-                try
-                {
-                    // Must close between Reads! (not fast but ensures consistency between reads).
-                    afile.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
-        }
-
+        fsNode = node;
     }
 
     @Override
-    public long getLength() throws IOException
+    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
     {
-        return fsNode.getFileSize();
+
+        try
+        {
+            randomFile = new RandomAccessFile(fsNode.toJavaFile(), "rw");
+            randomFile.seek(fileOffset);
+            randomFile.write(buffer, bufferOffset, nrBytes);
+            return;// if failed, some exception occured !
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
     }
 
     public boolean autoClose()
@@ -93,5 +67,4 @@ public class LocalFSReader implements RandomReadable
     {
         autoClose();
     }
-
 }

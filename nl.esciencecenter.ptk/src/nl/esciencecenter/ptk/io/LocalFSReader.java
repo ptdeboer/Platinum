@@ -18,41 +18,59 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.io.local;
+package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import nl.esciencecenter.ptk.io.FSNode;
-import nl.esciencecenter.ptk.io.IOUtil;
-import nl.esciencecenter.ptk.io.RandomWritable;
-
-public class LocalFSWriter implements RandomWritable
+public class LocalFSReader implements RandomReadable
 {
     protected FSNode fsNode;
 
     protected RandomAccessFile randomFile = null;
 
-    public LocalFSWriter(FSNode node)
+    public LocalFSReader(FSNode node) throws IOException
     {
-        fsNode = node;
+        this.fsNode = node;
+        this.randomFile = new RandomAccessFile(fsNode.toJavaFile(), "r");
     }
 
-    @Override
-    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
+    public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
     {
+        RandomAccessFile afile = null;
 
         try
         {
-            randomFile = new RandomAccessFile(fsNode.toJavaFile(), "rw");
+            // Seek sets position starting from beginnen, not current seek position.
             randomFile.seek(fileOffset);
-            randomFile.write(buffer, bufferOffset, nrBytes);
-            return;// if failed, some exception occured !
+            int nrRead = randomFile.read(buffer, bufferOffset, nrBytes);
+            return nrRead;
         }
         catch (IOException e)
         {
-            throw e;
+            throw new IOException("Could open location for reading:" + this, e);
         }
+        finally
+        {
+            if (afile != null)
+            {
+                try
+                {
+                    // Must close between Reads! (not fast but ensures consistency between reads).
+                    afile.close();
+                }
+                catch (IOException e)
+                {
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public long getLength() throws IOException
+    {
+        return fsNode.getFileSize();
     }
 
     public boolean autoClose()
@@ -71,4 +89,5 @@ public class LocalFSWriter implements RandomWritable
     {
         autoClose();
     }
+
 }

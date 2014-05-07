@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/** 
- * URI Factory methods. 
+/**
+ * URI Factory methods.
  */
 public class URIUtil
 {
-    
+
     public static URI replacePath(URI uri, String newPath) throws URISyntaxException
     {
         return new URIFactory(uri).setPath(newPath).toURI();
@@ -52,17 +52,17 @@ public class URIUtil
         if ((resolveTilde) && (relativePath != null) && relativePath.contains("~"))
         {
             String homePath = URIFactory.uripath(userHome.getPath());
-            relativePath=URIFactory.resolveTilde(homePath,relativePath);
+            relativePath = URIFactory.resolveTilde(homePath, relativePath);
         }
 
         return URIUtil.resolvePathURI(workingDir, relativePath);
     }
-    
+
     public static URI resolvePathURI(URI uri, String relativePath) throws URISyntaxException
     {
-        URIFactory fac=new URIFactory(uri); 
-        String newPath=fac.resolvePath(relativePath);
-        return fac.setPath(newPath).toURI(); 
+        URIFactory fac = new URIFactory(uri);
+        String newPath = fac.resolvePath(relativePath);
+        return fac.setPath(newPath).toURI();
     }
 
     public static URI appendPath(URI uri, String path) throws URISyntaxException
@@ -98,8 +98,5 @@ public class URIUtil
         scanner.close();
         return uris;
     }
-
-    
-
 
 }

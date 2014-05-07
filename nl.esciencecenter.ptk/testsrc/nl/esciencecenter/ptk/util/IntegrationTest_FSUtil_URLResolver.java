@@ -1,6 +1,7 @@
 package nl.esciencecenter.ptk.util;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import nl.esciencecenter.ptk.io.FSNode;
@@ -65,10 +66,10 @@ public class IntegrationTest_FSUtil_URLResolver
         	testCreateResolve(baseDir, "postfixSpaced4 ", true, true);
         }
         
-        FSNode subDir = baseDir.newPath("subDir1").mkdir();
+        FSNode subDir = baseDir.resolvePath("subDir1").mkdir();
         testCreateResolve(baseDir, "subDir1/subFile5", true, true);
 
-        FSNode subDirSpaced = baseDir.newPath("subDir Spaced6").mkdir();
+        FSNode subDirSpaced = baseDir.resolvePath("subDir Spaced6").mkdir();
         testCreateResolve(baseDir, "subDir Spaced6/subFile7", true, true);
         testCreateResolve(baseDir, "subDir Spaced6/subFile Spaced8", true, true);
         if (isWindows)
@@ -101,7 +102,7 @@ public class IntegrationTest_FSUtil_URLResolver
     protected void testCreateResolve(FSNode baseDir, String relativePath, boolean isFilePath, boolean create) throws Exception
     {
         // I) Ccreate file first. URL must point to existing files.
-        FSNode filePath = baseDir.newPath(relativePath);
+        FSNode filePath = baseDir.resolvePath(relativePath);
         if (filePath.exists() == false)
         {
             if (isFilePath)
@@ -115,8 +116,8 @@ public class IntegrationTest_FSUtil_URLResolver
         }
 
         // Uses URI as reference here and not URL.
-        URI filePathUri = filePath.getURI();
-
+        URI filePathUri = normalize(filePath.getURI()); 
+        
         // II) Resolve URL manually using absolute path:
         String baseUrlStr = baseDir.getPathname();
         // avoid double slashes here.
@@ -125,8 +126,8 @@ public class IntegrationTest_FSUtil_URLResolver
             baseUrlStr = baseUrlStr.substring(0, baseUrlStr.length() - 1);
         }
 
-        URI baseUri = new URI("file:" + baseUrlStr);
-        URI expectedUri = URIUtil.resolvePathURI(baseUri, relativePath); // use URI resolve as standard here!
+        URI baseUri = normalize(new URI("file:" + baseUrlStr)); 
+        URI expectedUri = normalize(URIUtil.resolvePathURI(baseUri, relativePath)); // use URI resolve as standard here!
 
         Assert.assertEquals("Pre URLSolver: File URI from FSNode doesn't match expected URI", expectedUri, filePathUri);
 
@@ -151,6 +152,28 @@ public class IntegrationTest_FSUtil_URLResolver
         filePath.delete();
         Assert.assertFalse("After deleting, test file may not exist:" + filePath, filePath.exists());
 
+    }
+
+
+    protected URI normalize(URI orgUri) throws URISyntaxException
+    {
+        URI uri=orgUri.normalize();
+        URI newUri=uri; 
+        String auth=uri.getAuthority(); 
+        String scheme=uri.getScheme(); 
+        
+        String path=uri.getPath(); 
+        if (path.endsWith("/"))
+        {
+            path=path.substring(0, path.length()-1);
+        }
+        //normalize 'file:/' and 'file:///' which are equivalent but not equal.
+        if ("file".equals(scheme))
+        {
+            newUri=new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),path,uri.getQuery(),uri.getFragment()); 
+        }
+
+        return newUri;
     }
 
     public static void outPrintf(String format, Object... args)

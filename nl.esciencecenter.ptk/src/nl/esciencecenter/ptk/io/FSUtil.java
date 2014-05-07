@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.io;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,8 +43,6 @@ import java.util.Set;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
-import nl.esciencecenter.ptk.io.local.LocalFSReader;
-import nl.esciencecenter.ptk.io.local.LocalFSWriter;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader;
@@ -225,11 +222,12 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
      */
     public void copyFile(URI source, URI destination) throws IOException
     {
+        // Create
         InputStream finput = createInputStream(newFSNode(source));
         OutputStream foutput = createOutputStream(newFSNode(destination), false);
-
+        // Copy
         IOUtil.copyStreams(finput, foutput, false);
-
+        // Close 
         IOUtil.autoClose(finput);
         IOUtil.autoClose(foutput);
         return;
@@ -389,27 +387,26 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     }
 
     /**
-     * Open local file and return OutputStream to write to. The default implementation is to creat a new File if it
+     * Open local file and return OutputStream to write to. The default implementation is to create a new File if it
      * doesn't exists or replace an existing file with the new contents if it exists.
      * 
      * @param filename
      *            - relative or absolute file path (resolves to absolute path on local fileystem)
-     * @throws URISyntaxException
      * @throws IOException
      */
-    public OutputStream createOutputStream(String filename) throws IOException, FileURISyntaxException
+    public OutputStream createOutputStream(String filename) throws IOException
     {
         return createOutputStream(newFSNode(filename), false);
     }
 
-    public FSNode mkdir(String path) throws IOException, FileURISyntaxException
+    public FSNode mkdir(String path) throws IOException
     {
         FSNode dir = this.newFSNode(path);
         dir.mkdir();
         return dir;
     }
 
-    public FSNode mkdirs(String path) throws IOException, FileURISyntaxException
+    public FSNode mkdirs(String path) throws IOException
     {
         FSNode dir = this.newFSNode(path);
         dir.mkdirs();
@@ -579,19 +576,15 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     }
 
     /** 
-     * Old code which explicitly checks driver "A:" through "Z:" 
+     * Old code which explicitly checks drive "A:" through "Z:" 
      * @throws IOException 
      */
-    public List<FSNode> listWindowsDrives() throws IOException
+    public List<FSNode> listWindowsDrives(boolean skipFloppyScan) throws IOException
     {
         ArrayList<FSNode> roots = new ArrayList<FSNode>();
 
-        // update system property
-        // GlobalProperties.getBoolProperty(GlobalProperties.PROP_SKIP_FLOPPY_SCAN, true);
-        boolean skipFloppy = true; 
-
         // Create the A: drive whether it is mounted or not
-        if (skipFloppy == false)
+        if (skipFloppyScan == false)
         {
             String drivestr = "A:\\";
             roots.add(this.newFSNode(drivestr)); 

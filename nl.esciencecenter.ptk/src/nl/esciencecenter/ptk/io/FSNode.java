@@ -28,8 +28,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -42,9 +40,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.net.URIUtil;
 
 /**
  * Wrapper around nio.file.path interface.
@@ -75,7 +73,7 @@ public class FSNode
         this.fsHandler = fsHandler;
         init(path);
     }
-    
+
     private void init(Path path)
     {
         this._path = path;
@@ -86,9 +84,9 @@ public class FSNode
         return fsHandler;
     }
 
-    // =====
-    //
-    // =====
+    // ==========================
+    // Create/Delete/Rename
+    // ==========================
 
     public FSNode create() throws IOException
     {
@@ -104,14 +102,14 @@ public class FSNode
 
     public FSNode createDir(String subdir) throws IOException, FileURISyntaxException
     {
-        FSNode dir = newPath(resolvePath(subdir));
+        FSNode dir = resolvePath(subdir);
         dir.mkdir();
         return dir;
     }
 
     public FSNode createFile(String filepath) throws IOException, FileURISyntaxException
     {
-        FSNode file = newPath(resolvePath(filepath));
+        FSNode file = resolvePath(filepath);
         file.create();
         return file;
     }
@@ -133,6 +131,20 @@ public class FSNode
             return Files.exists(_path, linkOptions);
         }
     }
+
+    public FSNode renameTo(String relativeOrAbsolutePath) throws IOException
+    {
+        FSNode other = this.resolvePath(relativeOrAbsolutePath);
+
+        Path targetPath = other._path;
+        Path actualPath = Files.move(this._path, targetPath);
+        // no errrors, assume path is renamed.
+        return other;
+    }
+
+    // ==========================
+    // Attributes
+    // ==========================
 
     /**
      * Returns creation time in millis since EPOCH, if supported. Returns -1 otherwise.
@@ -228,18 +240,6 @@ public class FSNode
         return attrs.size();
     }
 
-    public String getGroupName() throws IOException
-    {
-        PosixFileAttributes attrs;
-
-        if ((attrs = this.getPosixAttributes()) == null)
-        {
-            return null;
-        }
-
-        return attrs.group().getName();
-    }
-
     public String getHostname()
     {
         return _path.toUri().getHost();
@@ -270,19 +270,9 @@ public class FSNode
         }
     }
 
-    public String getOwnerName() throws IOException
-    {
-        PosixFileAttributes attrs;
-
-        if ((attrs = this.getPosixAttributes()) == null)
-            return null;
-
-        return attrs.owner().getName();
-    }
-
     public FSNode getParent()
     {
-        return new FSNode(getFSHandler(), _path.getParent());
+        return new FSNode(fsHandler, _path.getParent());
     }
 
     /**
@@ -308,35 +298,6 @@ public class FSNode
         return _path.toUri().getPort();
     }
 
-    public PosixFileAttributes getPosixAttributes() throws IOException
-    {
-        try
-        {
-            if (posixAttrs == null)
-            {
-                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class);
-            }
-        }
-        catch (IOException e)
-        {
-            // auto dereference in the case of a borken link:
-            if (isBrokenLink())
-            {
-                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-            }
-            else
-            {
-                throw e;
-            }
-        }
-        catch (UnsupportedOperationException e)
-        {
-            return null;
-        }
-
-        return posixAttrs;
-    }
-
     /**
      * Returns symbolic link target or NULL
      */
@@ -347,18 +308,7 @@ public class FSNode
 
         Path target = Files.readSymbolicLink(_path);
 
-        return new FSNode(getFSHandler(), target);
-    }
-
-    public int getUnixFileMode() throws IOException
-    {
-        PosixFileAttributes attrs;
-        if ((attrs = getPosixAttributes()) == null)
-            return 0;
-
-        Set<PosixFilePermission> perms = attrs.permissions();
-
-        return FSUtil.toUnixFileMode(perms);
+        return new FSNode(fsHandler, target);
     }
 
     public URI getURI()
@@ -370,8 +320,6 @@ public class FSNode
     {
         return _path.toUri().toURL();
     }
-
-
 
     public boolean isBrokenLink() throws IOException
     {
@@ -415,12 +363,12 @@ public class FSNode
         return true;
     }
 
-//    boolean isPosix()
-//    {
-//        return false;
-//    }
+    // boolean isPosix()
+    // {
+    // return false;
+    // }
 
-    public boolean isRoot() 
+    public boolean isRoot()
     {
         String path = this.getPathname();
 
@@ -447,19 +395,23 @@ public class FSNode
         return Files.isSymbolicLink(_path);
     }
 
-    public boolean isFileSystemRoot() 
+    public boolean isFileSystemRoot()
     {
         List<FSNode> roots = this.fsHandler.listRoots();
-        
-        for (FSNode root:roots)
+
+        for (FSNode root : roots)
         {
             if (root._path.normalize().toString().equals(_path.normalize().toString()))
             {
                 return true;
             }
         }
-        return false; 
+        return false;
     }
+
+    // ==========================
+    // Directory methods
+    // ==========================
 
     public String[] list() throws IOException
     {
@@ -492,7 +444,7 @@ public class FSNode
 
             while (dirIterator.hasNext())
             {
-                list.add(new FSNode(getFSHandler(), dirIterator.next()));
+                list.add(new FSNode(fsHandler, dirIterator.next()));
             }
 
             return list.toArray(new FSNode[0]);
@@ -517,45 +469,73 @@ public class FSNode
         return this;
     }
 
-    public FSNode newPath(String path) throws IOException
-    {
-        URI resolved=this.resolvePathURI(path); 
-        FSNode lfile = this.fsHandler.newFSNode(resolved);
-        return lfile;
-    }
+    // ==================
+    // Resolve Methods
+    // ==================
 
-    public FSNode renameTo(String relativeOrAbsolutePath) throws IOException
+    public FSNode resolvePath(String relativePath) throws IOException
     {
-        FSNode other = this.newPath(relativeOrAbsolutePath);
-
-        Path targetPath = other._path;
-        Path actualPath = Files.move(this._path, targetPath);
-        // no errrors, assume path is renamed.
-        return other;
-    }
-
-    public String resolvePath(String relPath) throws FileURISyntaxException
-    {
-        try
-        {
-            return new URIFactory(_path.toUri()).resolvePath(relPath);
-        }
-        catch (URISyntaxException e)
-        {
-            throw new FileURISyntaxException(e.getMessage(), relPath, e);
-        }
+        FSNode file = this.fsHandler.newFSNode(resolvePathURI(relativePath));
+        return file;
     }
 
     public URI resolvePathURI(String relPath) throws FileURISyntaxException
     {
         try
         {
-            return new URIFactory(_path.toUri()).setPath(resolvePath(relPath)).toURI();
+            return URIUtil.resolvePathURI(getURI(),relPath); 
         }
         catch (URISyntaxException e)
         {
             throw new FileURISyntaxException(e.getMessage(), relPath, e);
         }
+    }
+
+    // ==================
+    // Posix Methods
+    // ==================
+
+    /** 
+     * @return Posix File Attributes if supported by the file system. 
+     */
+    public PosixFileAttributes getPosixAttributes() throws IOException
+    {
+        try
+        {
+            if (posixAttrs == null)
+            {
+                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class);
+            }
+        }
+        catch (IOException e)
+        {
+            // auto dereference in the case of a borken link:
+            if (isBrokenLink())
+            {
+                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            }
+            else
+            {
+                throw e;
+            }
+        }
+        catch (UnsupportedOperationException e)
+        {
+            return null;
+        }
+
+        return posixAttrs;
+    }
+
+    public int getUnixFileMode() throws IOException
+    {
+        PosixFileAttributes attrs;
+        if ((attrs = getPosixAttributes()) == null)
+            return 0;
+
+        Set<PosixFilePermission> perms = attrs.permissions();
+
+        return FSUtil.toUnixFileMode(perms);
     }
 
     public void setUnixFileMode(int mode) throws IOException
@@ -563,13 +543,28 @@ public class FSNode
         Files.setPosixFilePermissions(_path, FSUtil.fromUnixFileMode(mode));
     }
 
-    public boolean sync()
+    public String getGroupName() throws IOException
     {
-        this.basicAttrs = null;
-        this.posixAttrs = null;
-        return true;
-    }
+        PosixFileAttributes attrs;
 
+        if ((attrs = this.getPosixAttributes()) == null)
+        {
+            return null;
+        }
+
+        return attrs.group().getName();
+    } 
+
+    public String getOwnerName() throws IOException
+    {
+        PosixFileAttributes attrs;
+
+        if ((attrs = this.getPosixAttributes()) == null)
+            return null;
+
+        return attrs.owner().getName();
+    }
+    
     // =======================
     // IO Methods
     // =======================
@@ -587,7 +582,14 @@ public class FSNode
     // =======================
     // Misc.
     // =======================
-
+    
+    public boolean sync()
+    {
+        this.basicAttrs = null;
+        this.posixAttrs = null;
+        return true;
+    }
+    
     public java.io.File toJavaFile()
     {
         return _path.toFile();
@@ -595,7 +597,7 @@ public class FSNode
 
     public String toString()
     {
-        return "(FSNode)" + this.getURI().toString();
+        return "FSNode:[uri=" + this.getURI().toString() + "]";
     }
 
 }
