@@ -705,4 +705,17 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         this.getResourceLoader().writeTextTo(uri, text); 
     }
 
+    @Override
+    public LinkOption[] linkOptions()
+    {
+        if (this.fsOptions.defaultFollowLinks)
+        {
+            return null; 
+        }
+        else
+        {
+            return new LinkOption[]{LinkOption.NOFOLLOW_LINKS};  
+        }
+    }
+
 }

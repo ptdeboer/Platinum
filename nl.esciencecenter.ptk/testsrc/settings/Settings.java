@@ -1,8 +1,13 @@
 package settings;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import org.junit.Assert;
+
 import nl.esciencecenter.ptk.GlobalProperties;
+import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 public class Settings
@@ -91,5 +96,24 @@ public class Settings
     {
     	return GlobalProperties.isWindows(); 
     }
+
+    public FSNode getFSUtil_testDir(boolean autoCreate) throws IOException
+    {
+        String testDirstr = getLocalTestDir() + "/testDirPTKUtil";
+        FSNode testDir = FSUtil.getDefault().newFSNode(testDirstr);
+
+        if (testDir.exists() == false)  
+        {
+            if (autoCreate==false)
+            {
+                throw new IOException("Test directory doesn't exists and I'm not allowed to create it:"+testDirstr); 
+            }
+            
+            testDir.mkdir();
+            Assert.assertTrue("Test dir must exist:" + testDir, testDir.exists());
+        }
+        return testDir; 
+    }
+
     
 }

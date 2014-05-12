@@ -3,7 +3,6 @@ package nl.esciencecenter.ptk.net;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -199,4 +198,39 @@ public class Test_URIFactory
         }
         
     }
+    
+    @Test
+    public void regression_TestDosURLs() throws Exception
+    {
+        // plain 
+        testDosURLvsURI("file:////C:/MyDocuments/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv");
+        // spaces
+        testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv");
+        // test query +fragment syntax 
+        testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv?query");
+        testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv#ref"); 
+        testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv?query#ref"); 
+    }
+    
+    protected void testDosURLvsURI(String uriStr) throws Exception
+    {
+        String fileStr="file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv"; 
+        
+        // Use URIFactory to create normalized and Compatible URIs from URL!
+        // I) Use string in constructor
+        java.net.URL url=new java.net.URL(fileStr);
+        URIFactory factory1=new URIFactory(fileStr);
+        URI factoryURI1=factory1.toURI();
+        
+        // II) Use url in constructor
+        URIFactory factory2=new URIFactory(url);
+        URI factoryURI2=factory2.toURI();
+        
+        Assert.assertEquals("URI constructed from DOS URL mustch match URI constructed from String",factoryURI1,factoryURI2); 
+        
+        //URI urlUri=url.toURI();
+        
+        
+    }
+    
 }

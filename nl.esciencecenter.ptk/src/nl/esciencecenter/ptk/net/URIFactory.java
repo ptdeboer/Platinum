@@ -487,7 +487,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
     public URIFactory(final URL url) throws URISyntaxException
     {
-        init(url.toURI());
+        init(url.getProtocol(),url.getUserInfo(),url.getHost(),url.getPort(),url.getPath(),url.getQuery(),null,false);
     }
 
     public URIFactory(final URIFactory uri)

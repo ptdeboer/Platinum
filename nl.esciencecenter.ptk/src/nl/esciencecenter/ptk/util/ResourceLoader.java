@@ -41,6 +41,7 @@ import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
@@ -53,9 +54,8 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class ResourceLoader
 {
-    private static ClassLogger logger;
+    private static ClassLogger logger = ClassLogger.getLogger(ResourceLoader.class);
 
-    
     /** Default UTF-8 */
     public static final String CHARSET_UTF8 = "UTF-8";
 
@@ -96,76 +96,58 @@ public class ResourceLoader
 
     private static ResourceLoader instance;
 
+    static
+    {
+        logger.setLevelToDebug();
+    }
+    
     // =================================================================
     //
     // =================================================================
 
     /**
-     * Util class for all the URL resolve methods.
+     * Util class for all the URL resolve methods. Relative URLs are different in that they can be resolved against to
+     * the Java Classpath.
      */
     public static class URLResolver
     {
-        /**
-         * URL ClassLoaders needs DIR style URLs where directory paths must end with a slash '/'.
-         * Also URL paths must contain forward slashes.   
-         * 
-         * @throws MalformedURLException 
-         */
-        public static URL[] toDirUrls(URL urls[]) throws MalformedURLException 
-        {
-            URL dirUrls[]=new URL[urls.length]; 
-            for (int i=0;i<urls.length;i++)
-            {
-               URL url=urls[i];
-               if (url.getPath().endsWith("/")==false)
-               {
-                   dirUrls[i]=new URL(url.toString()+"/");     
-               }
-               else
-               {
-                   dirUrls[i]=url; // keep as-is. 
-               }
-            }
-            
-            return dirUrls; 
-        }
-        
+
         protected URLClassLoader classLoader = null;
-        
+
         public URLResolver(URLClassLoader parentClassLoader, URL[] urls) throws MalformedURLException
         {
-            init(parentClassLoader,toDirUrls(urls));
+            init(parentClassLoader, toDirUrls(urls));
         }
 
         public URLResolver(URL[] urls)
         {
-            init(null,urls);
+            init(null, urls);
         }
-        
-        protected void init(ClassLoader parentLoader,URL urls[])
+
+        protected void init(ClassLoader parentLoader, URL urls[])
         {
-            if (parentLoader==null)
+            if (parentLoader == null)
             {
                 // context class loader including extra search path:
                 parentLoader = Thread.currentThread().getContextClassLoader();
             }
-            
-            if (urls!=null)
+
+            if (urls != null)
             {
-            	classLoader = new URLClassLoader(urls, parentLoader);
+                classLoader = new URLClassLoader(urls, parentLoader);
             }
         }
 
-        /** 
-         * Resolve relative path and return URL to existing resource. 
+        /**
+         * Resolve relative path and return URL to existing resource.
          */
         public URL resolveUrlPath(String relativePath)
         {
-            return resolveUrlPath(null,relativePath); 
+            return resolveUrlPath(null, relativePath);
         }
-        
-        /** 
-         * Resolve relative path and return URL to existing resource. 
+
+        /**
+         * Resolve relative path and return URL to existing resource.
          */
         public java.net.URL resolveUrlPath(ClassLoader optClassLoader, String relativeUrl)
         {
@@ -202,8 +184,7 @@ public class ResourceLoader
                 }
             }
 
-            // (III) Check default (global) classloader for icons which are on the
-            // classpath
+            // (III) Check default (global) classloader for resources which are on the global classpath.
             if (resolvedUrl == null)
             {
                 resolvedUrl = this.getClass().getClassLoader().getResource(urlStr);
@@ -241,7 +222,7 @@ public class ResourceLoader
             {
                 urls = this.classLoader.getURLs();
             }
-            
+
             return urls;
         }
     }
@@ -249,11 +230,6 @@ public class ResourceLoader
     // =================================================================
     // Static methods
     // =================================================================
-
-    static
-    {
-        logger = ClassLogger.getLogger(ResourceLoader.class);
-    }
 
     public static String[] getDefaultCharEncodings()
     {
@@ -266,6 +242,31 @@ public class ResourceLoader
             instance = new ResourceLoader(null);
 
         return instance;
+    }
+
+    /**
+     * URL ClassLoaders needs DIR style URLs where directory paths must end with a slash '/'. Also URL paths must
+     * contain forward slashes.
+     * 
+     * @throws MalformedURLException
+     */
+    public static URL[] toDirUrls(URL urls[]) throws MalformedURLException
+    {
+        URL dirUrls[] = new URL[urls.length];
+        for (int i = 0; i < urls.length; i++)
+        {
+            URL url = urls[i];
+            if (url.getPath().endsWith("/") == false)
+            {
+                dirUrls[i] = new URL(url.toString() + "/");
+            }
+            else
+            {
+                dirUrls[i] = url; // keep as-is.
+            }
+        }
+
+        return dirUrls;
     }
 
     // =================================================================
@@ -281,6 +282,7 @@ public class ResourceLoader
     public ResourceLoader()
     {
         init(FSUtil.getDefault(), null);
+      
     }
 
     /**
@@ -311,13 +313,13 @@ public class ResourceLoader
 
     protected void init(ResourceProvider resourceProvider, URL urls[])
     {
-    	urlResolver = new URLResolver(urls);
-        
+        urlResolver = new URLResolver(urls);
+
         this.resourceProvider = resourceProvider;
 
         if (this.resourceProvider == null)
         {
-            resourceProvider = FSUtil.getDefault();
+            this.resourceProvider = FSUtil.getDefault();
         }
     }
 
@@ -340,6 +342,11 @@ public class ResourceLoader
     // =================================================================
     // URI/URL resolving
     // =================================================================
+
+    public URLResolver getURLResolver()
+    {
+        return this.urlResolver;
+    }
 
     /**
      * Resolve URL string to absolute URL
@@ -366,7 +373,7 @@ public class ResourceLoader
      */
     public URL resolveUrl(ClassLoader optClassLoader, String url)
     {
-        // delegate: 
+        // delegate:
         return urlResolver.resolveUrlPath(optClassLoader, url);
     }
 
@@ -375,7 +382,7 @@ public class ResourceLoader
      */
     public URL[] getSearchPath()
     {
-        return urlResolver.getURLs(); 
+        return urlResolver.getURLs();
     }
 
     // =================================================================

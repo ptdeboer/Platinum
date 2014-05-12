@@ -30,18 +30,12 @@ public class IntegrationTest_FSUtil_URLResolver
 
     public FSNode FSUtil_getCreateTestDir() throws Exception
     {
+        
         if (testDir == null)
         {
-            String testDirstr = settings.getLocalTestDir() + "/urlResolver";
-            testDir = FSUtil.getDefault().newFSNode(testDirstr);
-
-            if (testDir.exists() == false)
-            {
-                testDir.mkdir();
-                Assert.assertTrue("Test dir must exist:" + testDir, testDir.exists());
-            }
+            testDir=settings.getFSUtil_testDir(true); 
         }
-
+        
         return testDir;
     }
 
@@ -154,7 +148,7 @@ public class IntegrationTest_FSUtil_URLResolver
         //
         
         URL urls[] = new URL[] { baseUri.toURL() };
-        URLResolver resolver = new URLResolver(null, urls);
+        URLResolver resolver = new URLResolver(null,urls);
         URL resolvedUrl = resolver.resolveUrlPath(relativePath);
 
         // URLs only works when file actually exists: 
@@ -196,7 +190,6 @@ public class IntegrationTest_FSUtil_URLResolver
         // recreated it with an empty auth part. 
         newUri=new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),path,uri.getQuery(),uri.getFragment()); 
         
-
         return newUri;
     }
 

@@ -284,13 +284,49 @@ public class FSNode
     }
 
     /**
-     * Returns absolute and normalized URI path
-     * 
+     * Returns absolute and normalized URI style path
      * @return
      */
     public String getPathname()
     {
-        return _path.toUri().getPath();
+        return getPathname(false); 
+    }
+    /**
+     * Returns absolute and normalized URI style path
+     * @param dirPath if this path is a directory, end with a "/" 
+     * @return absolute and normalized URI style path. 
+     */    
+    public String getPathname(boolean dirPath)
+    {
+        String pathStr =_path.toUri().getPath();
+        if (dirPath)
+        {
+            dirPath=this.isDirectory(this.fsHandler.linkOptions()); 
+        }
+        
+        if (pathStr.endsWith("/"))
+        {
+            if (dirPath)
+            {
+                return pathStr;
+            }
+            else
+            {
+                return pathStr.substring(0, pathStr.length()-1);
+            }
+        }
+        else
+        {
+            if (dirPath)
+            {
+                return pathStr+"/";
+            }
+            else
+            {
+                return pathStr;
+            }
+        }
+        
     }
 
     public int getPort()
@@ -335,7 +371,7 @@ public class FSNode
     {
         if (linkOptions == null)
         {
-            return Files.isDirectory(_path);
+            return Files.isDirectory(_path,fsHandler.linkOptions());
         }
         else
         {
