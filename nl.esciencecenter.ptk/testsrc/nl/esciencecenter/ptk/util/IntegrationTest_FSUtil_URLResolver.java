@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import nl.esciencecenter.ptk.io.FSNode;
-import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
 
@@ -15,8 +14,8 @@ import org.junit.Test;
 import settings.Settings;
 
 /**
- * Combined use of FSUtil with URLResolver to ensure consistency between created FSNodes and resolved URLs.<br>
- * To make sure URLs are normalized the Java recommended construction URI.toURL() is used to compare URLs.
+ * Test FSUtil with URLResolver to ensure consistency between created FSNodes and resolved URLs.<br>
+ * To make sure URLs are normalized the Java recommended construction URI.toURL() is used to compare URIs.
  */
 public class IntegrationTest_FSUtil_URLResolver
 {

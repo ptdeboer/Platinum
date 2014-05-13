@@ -28,7 +28,7 @@ import java.net.URL;
 
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.URLUTF8Encoder;
+import nl.esciencecenter.ptk.util.URIPathEncoder;
 
 /**
  * Generic URI Factory. <br>
@@ -194,7 +194,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     /**
-     * If path start with tilde, replace actual tilde with userHome.
+     * If path starts with tilde, replace actual tilde with userHome.
      */
     public static String resolveTilde(String homePath, String path)
     {
@@ -282,13 +282,13 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      */
     public static String encodeQuery(String rawString)
     {
-        String encoded = URLUTF8Encoder.encode(rawString);
+        String encoded = URIPathEncoder.encode(rawString);
         return encoded;
     }
 
     public static String encodePath(String rawString)
     {
-        String encoded = URLUTF8Encoder.encode(rawString);
+        String encoded = URIPathEncoder.encode(rawString);
         return encoded;
     }
 

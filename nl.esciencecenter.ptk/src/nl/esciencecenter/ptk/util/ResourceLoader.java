@@ -41,7 +41,6 @@ import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
@@ -98,7 +97,7 @@ public class ResourceLoader
 
     static
     {
-        logger.setLevelToDebug();
+       //logger.setLevelToDebug();
     }
     
     // =================================================================
@@ -111,7 +110,6 @@ public class ResourceLoader
      */
     public static class URLResolver
     {
-
         protected URLClassLoader classLoader = null;
 
         public URLResolver(URLClassLoader parentClassLoader, URL[] urls) throws MalformedURLException
@@ -413,27 +411,23 @@ public class ResourceLoader
     }
 
     /**
-     * Returns an inputstream from the specified URI.
-     * 
-     * @param uri
-     * @return
-     * @throws VlException
+     * Creates a new InputStream from the specified URL.
      */
     public InputStream createInputStream(URL url) throws IOException
     {
         if (url == null)
         {
-            throw new NullPointerException("URL is NULL!");
+            throw new NullPointerException("createInputStream():URL is NULL!");
         }
 
         try
         {
-            return resourceProvider.createInputStream(url.toURI());
+            return resourceProvider.createInputStream(new URIFactory(url).toURI());
         }
         catch (URISyntaxException e)
         {
             // wrap:
-            throw new IOException("Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
+            throw new IOException("Invalid URL: Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
         }
         catch (IOException e)
         {
@@ -462,12 +456,37 @@ public class ResourceLoader
         }
     }
 
-    public OutputStream createOutputStream(URI uri) throws IOException
+    /**
+     * Creates a new InputStream from the specified URL.
+     */
+    public OutputStream createOutputStream(URL url) throws IOException
     {
-        return _createOutputStream(uri);
+        if (url == null)
+        {
+            throw new NullPointerException("createOutputStream():URL is NULL!");
+        }
+
+        try
+        {
+            return resourceProvider.createOutputStream(new URIFactory(url).toURI());
+        }
+        catch (URISyntaxException e)
+        {
+            // wrap:
+            throw new IOException("Invalid URL: Cannot create OutputStream from" + url + "\n" + e.getMessage(), e);
+        }
+        catch (IOException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new IOException("Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
+        }
     }
 
-    protected OutputStream _createOutputStream(URI uri) throws IOException
+    
+    public OutputStream createOutputStream(URI uri) throws IOException
     {
         try
         {
@@ -731,6 +750,15 @@ public class ResourceLoader
         writeBytesTo(loc, text.getBytes(charset));
     }
 
+    
+    /**
+     * Save properties file to specified location.
+     */
+    public void writeTextTo(URL loc, String text, String charset) throws IOException
+    {
+        writeBytesTo(loc, text.getBytes(charset));
+    }
+    
     /**
      * Write bytes to URI location.
      * 
@@ -747,6 +775,22 @@ public class ResourceLoader
         IOUtil.autoClose(outps);
     }
 
+    /**
+     * Write bytes to URI location.
+     * 
+     * @param uri
+     *            - URI of location. URI scheme must support OutputStreams.
+     * @param bytes
+     *            - bytes to write to the location
+     * @throws IOException
+     */
+    public void writeBytesTo(URL url, byte[] bytes) throws IOException
+    {
+        OutputStream outps = createOutputStream(url);
+        outps.write(bytes);
+        IOUtil.autoClose(outps);
+    }
+    
     public void writeBytes(OutputStream outps, byte[] bytes) throws IOException
     {
         outps.write(bytes);
