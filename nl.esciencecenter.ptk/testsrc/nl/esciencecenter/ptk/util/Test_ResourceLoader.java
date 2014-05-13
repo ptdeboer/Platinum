@@ -1,9 +1,11 @@
 package nl.esciencecenter.ptk.util;
 
+import java.io.File;
 import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 
 import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.net.URIFactory;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -121,16 +123,19 @@ public class Test_ResourceLoader
     
     protected void test_readText(String pathName,String contents) throws Exception
     {
-        String actualPath=createTestFile(pathName,contents);
+        String localPath=createTestFile(pathName,contents);
+        // normalize as this is used in URIs: 
+        String actualUriPath=URIFactory.uripath(localPath, true, File.separatorChar); 
         
-        ResourceLoader loader=createTestDirResourceLoader();
-        java.net.URL url=new java.net.URL("file:"+actualPath); 
-        Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+pathName+" (actualPath="+actualPath,url);
+        System.out.printf("pathName => actualPath ='%s' => '%s'\n",pathName,actualUriPath); 
+              
+        java.net.URL url=new java.net.URL("file:"+localPath); 
+        Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+pathName+" (actualPath="+localPath,url);
         // read from URL
         String readBack=new ResourceLoader().readText(url);
         Assert.assertEquals("Read back contents should be the same", contents,readBack); 
         // read from URI
-        java.net.URI uri=new java.net.URI("file",null,actualPath, null,null);
+        java.net.URI uri=new java.net.URI("file",null,actualUriPath, null,null);
         String readBackUri=new ResourceLoader().readText(uri);
         Assert.assertEquals("Read back contents should be the same", contents,readBackUri); 
     
@@ -152,7 +157,8 @@ public class Test_ResourceLoader
         FSNode node=FSUtil_getCreateTestDir(); 
         FSNode fileNode=node.resolvePath(subPath); 
         java.net.URL fileUrl=fileNode.getURL(); 
-        String actualPath=fileNode.getPathname(); 
+        String localPath=fileNode.getPathname(); 
+        String actualUriPath=URIFactory.uripath(localPath, true, File.separatorChar); 
         
         // write to URL
         ResourceLoader loader=createTestDirResourceLoader();
@@ -165,7 +171,7 @@ public class Test_ResourceLoader
         Assert.assertEquals("Read back contents should be the same", contents,readBack); 
         
         // write to URI
-        String uriPath=actualPath+"a"; 
+        String uriPath=actualUriPath+"a"; 
         java.net.URI uri=new java.net.URI("file",null,uriPath, null,null);
         loader.writeTextTo(uri, contents, "UTF-8");
         // readback 
