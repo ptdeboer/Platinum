@@ -196,16 +196,40 @@ public class VRSContext
     {
         this.persistantConfigLocation=configHome; 
         this.hasPersistantConfig=enabled; 
+        vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP,configHome);
+        vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_ENABLED_PROP,enabled);
     }
     
     public VRL getPersistantConfigLocation()
     {
-        return this.persistantConfigLocation; 
+        // check for explicit set property: 
+        if (this.persistantConfigLocation!=null)
+        {
+            return persistantConfigLocation; 
+        }
+        
+        String propVal=vrsProperties.getStringProperty(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
+        
+        if (propVal!=null)
+        {
+            try
+            {
+                // return 
+                return new VRL(propVal); 
+            }
+            catch (Exception e)
+            {
+                logger.errorPrintf("Could parse property %s:'%s'\n", VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP,propVal);
+            }
+        }
+        
+        logger.infoPrintf("Property not defined or wrong value:%s\n", VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
+        return null; 
     }
     
     public boolean hasPersistantConfig() 
     {
-        return this.hasPersistantConfig; 
+        return (hasPersistantConfig) && (getPersistantConfigLocation()!=null);  
     }
 
     public String getVO()
@@ -222,5 +246,6 @@ public class VRSContext
     {
         return new VRL("info:/"); 
     }
+    
     
 }
