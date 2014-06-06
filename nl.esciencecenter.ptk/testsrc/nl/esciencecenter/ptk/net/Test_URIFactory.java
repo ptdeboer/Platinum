@@ -240,4 +240,26 @@ public class Test_URIFactory
         
     }
     
+    @Test
+    public void testDosURI2URL_regresssion1() throws Exception
+    {
+    	String exectedURIPath="/C:/Root/Spaced File";
+        String fileStr="file:/C:/Root/Spaced File"; 
+        URIFactory factory1=new URIFactory(fileStr);
+
+        // check URI and URL compatibility 
+        URI factoryURI=factory1.toURI();
+        java.net.URL factoryUrl=factory1.toURL();  
+        
+        String uriPath=factoryURI.getPath(); 
+        String urlPath=factoryUrl.getPath();
+
+        // URI to URL encodes the path, but URL class doesn't decode it when using url.getPath(). 
+        //System.err.printf("uriPath=%s\n", uriPath); 
+        //System.err.printf("urlPath=%s\n", urlPath); 
+ 
+        Assert.assertEquals("URI path doesn't match expected.",uriPath,exectedURIPath);
+        Assert.assertEquals("URL path doesn't match URI path.",urlPath,uriPath); 
+    }
+    
 }

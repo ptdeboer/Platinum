@@ -162,6 +162,11 @@ public class Test_ResourceLoader
         // use test Dir to resolve To. 
         java.net.URL baseUrl=FSUtil_getCreateTestDir().getURL();
         ResourceLoader loader= new ResourceLoader(null,new java.net.URL[]{baseUrl}); 
+        System.err.printf("URL             = %s\n",fileUrl); 
+        System.err.printf("FSNode path     = %s\n",fileNode.getPath());
+        System.err.printf("FSNode URI      = %s\n",fileNode.getURI());
+        System.err.printf("FSNode URI path = %s\n",fileNode.getURI().getPath());
+        System.err.printf("URL    path     = %s\n",fileUrl.getPath()); 
         
         loader.writeTextTo(fileUrl, contents, "UTF-8");
         outPrintf("written text to: %s\n",fileUrl); 

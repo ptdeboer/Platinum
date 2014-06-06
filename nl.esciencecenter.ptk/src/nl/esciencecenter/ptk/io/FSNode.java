@@ -352,9 +352,20 @@ public class FSNode
         return _path.toUri();
     }
 
-    public URL getURL() throws MalformedURLException
+    /** 
+     * Return decoded URL. <p>
+     * <strong>note:</strong> as URLs do not do encoding of special characters, use the file URI (toURI()) 
+     * to ensure consistency between encoded and decoded paths. 
+     * @return
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public URL getURL() throws MalformedURLException, URISyntaxException
     {
-        return _path.toUri().toURL();
+    	// return new URIFactory(_path.toUri()).toURL();
+    	URI uri=_path.toUri(); 
+    	// to create a local file URL, use decoded parts, also local files do not recognize query nor reference fields.
+    	return new URL(uri.getScheme(),uri.getUserInfo(),uri.getPort(),uri.getPath()); 
     }
 
     public boolean isBrokenLink() throws IOException
