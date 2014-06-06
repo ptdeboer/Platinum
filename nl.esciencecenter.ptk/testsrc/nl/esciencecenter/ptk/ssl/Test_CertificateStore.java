@@ -56,7 +56,7 @@ public class Test_CertificateStore
         // test defaults: 
         CertificateStore certs = createEmpty();
         
-        java.net.URL url=ClassLoader.getSystemResource("certificates/TestCert.crt");
+        java.net.URL url=ClassLoader.getSystemResource("test/certificates/TestCert.crt");
         Assert.assertNotNull("FATAL: Could not get test certificate!",url); 
         
         X509Certificate cert = certs.addDERCertificate(url.getPath(), false);  
