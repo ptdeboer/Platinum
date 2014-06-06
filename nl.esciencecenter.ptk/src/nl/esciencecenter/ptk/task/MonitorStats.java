@@ -61,10 +61,13 @@ public class MonitorStats
     }
 
     /**
-     * Returns total current running time in millis or total time when task is done. 
+     * @return total current running time or total time it took to finish the task in milliseconds. 
      */
     public long getTotalDoneTime()
     {
+        if (monitor==null)
+            return -1; 
+        
         TaskStats stats = monitor.getTaskStats(); // may never be null
         
         if (stats.startTimeMillies<=0)
@@ -105,6 +108,9 @@ public class MonitorStats
      */
     public long getETA()
     {
+        if (monitor==null)
+            return -1; 
+        
         if (monitor.isDone())
         {
             return 0; // done
