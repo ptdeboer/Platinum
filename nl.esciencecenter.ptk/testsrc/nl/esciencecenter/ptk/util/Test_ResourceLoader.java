@@ -87,7 +87,13 @@ public class Test_ResourceLoader
         String subDirname=testDir.getBasename(); 
         FSNode parentDir=testDir.getParent();
         
-        ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{parentDir.getFileURL()}); 
+        java.net.URL baseUrl=parentDir.getDirURL(); 
+        java.net.URL webUrl=parentDir.getWebURL(); 
+        
+        System.err.printf(" baseUrl = '%s'\n",baseUrl); 
+        System.err.printf(" webUrl  = '%s'\n",webUrl); 
+        
+        ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{baseUrl}); 
         java.net.URL url=loader.resolveUrl(subDirname);
         Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+subDirname,url);
         Assert.assertEquals("Resolved path from URL must match File Path\n", testDir.getPathname(),url.getPath());
@@ -101,7 +107,7 @@ public class Test_ResourceLoader
         String fileName="subFile"; 
         FSNode file=testDir.createFile(fileName); 
         
-        ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{testDir.getFileURL()}); 
+        ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{testDir.getDirURL()}); 
         java.net.URL url=loader.resolveUrl(fileName);
         Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+fileName,url);
         Assert.assertEquals("Resolved path from URL must match File Path\n", file.getPathname(),url.getPath());
@@ -155,18 +161,13 @@ public class Test_ResourceLoader
         FSNode node=FSUtil_getCreateTestDir(); 
         FSNode fileNode=node.resolvePath(subPath);
         // use FS util to create normalized URL 
-        java.net.URL fileUrl=fileNode.getFileURL(); 
+        java.net.URL fileUrl=fileNode.getDirURL(); 
         String localPath=fileNode.getPathname(); 
         String actualUriPath=URIFactory.uripath(localPath, true, File.separatorChar); 
         
-        // use test Dir to resolve To. 
-        java.net.URL baseUrl=FSUtil_getCreateTestDir().getFileURL();
-        ResourceLoader loader= new ResourceLoader(null,new java.net.URL[]{baseUrl}); 
-        System.err.printf("URL             = %s\n",fileUrl); 
-        System.err.printf("FSNode path     = %s\n",fileNode.getPath());
-        System.err.printf("FSNode URI      = %s\n",fileNode.getURI());
-        System.err.printf("FSNode URI path = %s\n",fileNode.getURI().getPath());
-        System.err.printf("URL    path     = %s\n",fileUrl.getPath()); 
+        // URL Loaders need explicit directory URL where the path ends with a slash.  
+        java.net.URL baseUrl=FSUtil_getCreateTestDir().getDirURL();
+        ResourceLoader loader= new ResourceLoader(null,new java.net.URL[]{baseUrl});
         
         loader.writeTextTo(fileUrl, contents, "UTF-8");
         outPrintf("written text to: %s\n",fileUrl); 

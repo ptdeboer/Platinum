@@ -368,10 +368,8 @@ public class FSNode
     }
     
     /** 
-     * Return decoded (file) URL. <p>
-     * <strong>note:</strong> as URLs do not do encoding of special characters, use the file URI (toURI()) 
-     * to ensure consistency between encoded and decoded paths. 
-     * @return decoded URL for (local) file access. 
+     * @return Returns decoded file URI as URL.   
+     * @see URIFactory#toFileURL() 
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
@@ -381,6 +379,18 @@ public class FSNode
         return new URIFactory(_path.toUri()).toFileURL();
     }
 
+    /** 
+     * @return Returns decoded directory URI as URL with a the path ending with a slash ('/').  
+     * @see URIFactory#toDirURL() 
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public URL getDirURL() throws MalformedURLException, URISyntaxException
+    {
+        // use uri factory: 
+        return new URIFactory(_path.toUri()).toDirURL();
+    }
+    
     public boolean isBrokenLink() throws IOException
     {
         if (isSymbolicLink() == false)

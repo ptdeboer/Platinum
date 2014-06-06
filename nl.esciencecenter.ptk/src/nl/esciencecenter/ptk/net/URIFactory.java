@@ -1198,75 +1198,133 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     @Override
     public boolean equals(Object obj)
     {
+        // Generated:
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         URIFactory other = (URIFactory) obj;
         if (fragment == null)
         {
             if (other.fragment != null)
+            {
                 return false;
+            }
         }
         else if (!fragment.equals(other.fragment))
+        {
             return false;
+        }
         if (hostname == null)
         {
             if (other.hostname != null)
+            {
                 return false;
+            }
         }
         else if (!hostname.equals(other.hostname))
+        {
             return false;
+        }
         if (isOpaque != other.isOpaque)
+        {
             return false;
+        }
         if (pathOrReference == null)
         {
             if (other.pathOrReference != null)
+            {
                 return false;
+            }
         }
         else if (!pathOrReference.equals(other.pathOrReference))
+        {
             return false;
+        }
         if (port != other.port)
+        {
             return false;
+        }
         if (query == null)
         {
             if (other.query != null)
+            {
                 return false;
+            }
         }
         else if (!query.equals(other.query))
+        {
             return false;
+        }
         if (scheme == null)
         {
             if (other.scheme != null)
+            {
                 return false;
+            }
         }
         else if (!scheme.equals(other.scheme))
+        {
             return false;
+        }
+
         if (userInfo == null)
         {
             if (other.userInfo != null)
+            {
                 return false;
+            }
         }
         else if (!userInfo.equals(other.userInfo))
+        {
             return false;
+        }
+
         return true;
     }
 
     /**
-     * The default java.net.URI class encoded paths, however when using toURL(), the paths is encoded as well. This
-     * method return the decoded URI as URL.
+     * Create local file system compatible URL represented by the current URI. As toURI().toURL() might encode the
+     * actual path in the URI and URL.getPath() does not do any decoding of an optionally encoded path, converting
+     * encoded URIs to URLs might cause inconsistencies when accessing the local file system. This method uses the
+     * decoded URI fields to create a (file) URL.
      * 
-     * @return decoded URL of the URI representation.
+     * @return decoded (local) file URL.
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
     public URL toFileURL() throws MalformedURLException, URISyntaxException
     {
-        URI uri = this.toURI();
         // to create a local file URL, use decoded parts, also local files do not recognize query nor reference fields.
-        return new URL(uri.getScheme(), uri.getUserInfo(), uri.getPort(), uri.getPath());
+        return new URL(getScheme(), getHostname(), getPort(), getPath());
+    }
+
+    /**
+     * Same as toFileURL(), but the path in the returned URL ends with a "/".
+     * 
+     * @return decoded directory URL where the path ends with a "/".
+     * @see #toFileURL()
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public URL toDirURL() throws MalformedURLException, URISyntaxException
+    {
+        String path = getPath();
+        if (path.endsWith("/") == false)
+        {
+            path = path + "/";
+        }
+
+        // to create a local file URL, use decoded parts, also local files do not recognize query nor reference fields.
+        return new URL(getScheme(), getHostname(), getPort(), path);
     }
 
 }
