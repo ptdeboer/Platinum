@@ -249,7 +249,7 @@ public class Test_URIFactory
 
         // check URI and URL compatibility 
         URI factoryURI=factory1.toURI();
-        java.net.URL factoryUrl=factory1.toURL();  
+        java.net.URL factoryUrl=factory1.toFileURL();  
         
         String uriPath=factoryURI.getPath(); 
         String urlPath=factoryUrl.getPath();

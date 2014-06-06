@@ -487,7 +487,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
     public URIFactory(final URL url) throws URISyntaxException
     {
-        init(url.getProtocol(),url.getUserInfo(),url.getHost(),url.getPort(),url.getPath(),url.getQuery(),null,false);
+        init(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null, false);
     }
 
     public URIFactory(final URIFactory uri)
@@ -1079,7 +1079,9 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     /**
-     * calls toURI().toURL()
+     * Calls toURI().toURL()<br>
+     * <strong>Note:</strong> toURI() encodes the URI fields. This will result in an encoded URL as well. Use
+     * toFileURL() to get an decoded file URL where the path field is not encoded.
      */
     public URL toURL() throws MalformedURLException, URISyntaxException
     {
@@ -1250,6 +1252,21 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         else if (!userInfo.equals(other.userInfo))
             return false;
         return true;
+    }
+
+    /**
+     * The default java.net.URI class encoded paths, however when using toURL(), the paths is encoded as well. This
+     * method return the decoded URI as URL.
+     * 
+     * @return decoded URL of the URI representation.
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public URL toFileURL() throws MalformedURLException, URISyntaxException
+    {
+        URI uri = this.toURI();
+        // to create a local file URL, use decoded parts, also local files do not recognize query nor reference fields.
+        return new URL(uri.getScheme(), uri.getUserInfo(), uri.getPort(), uri.getPath());
     }
 
 }

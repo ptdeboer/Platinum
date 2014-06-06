@@ -352,20 +352,33 @@ public class FSNode
         return _path.toUri();
     }
 
+
     /** 
-     * Return decoded URL. <p>
-     * <strong>note:</strong> as URLs do not do encoding of special characters, use the file URI (toURI()) 
+     * Return encoded (web) URL. <p>
+     * This method uses toUri().toURL() which encodes the paths in the URL.<br> 
+     * <strong>note:</strong> as URLs do not do encoding nor decoding of special characters, use the file URI (toURI()) 
      * to ensure consistency between encoded and decoded paths. 
-     * @return
+     * @return encoded URI compatible URL. 
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    public URL getURL() throws MalformedURLException, URISyntaxException
+    public URL getWebURL() throws MalformedURLException
     {
-    	// return new URIFactory(_path.toUri()).toURL();
-    	URI uri=_path.toUri(); 
-    	// to create a local file URL, use decoded parts, also local files do not recognize query nor reference fields.
-    	return new URL(uri.getScheme(),uri.getUserInfo(),uri.getPort(),uri.getPath()); 
+        return _path.toUri().toURL(); 
+    }
+    
+    /** 
+     * Return decoded (file) URL. <p>
+     * <strong>note:</strong> as URLs do not do encoding of special characters, use the file URI (toURI()) 
+     * to ensure consistency between encoded and decoded paths. 
+     * @return decoded URL for (local) file access. 
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public URL getFileURL() throws MalformedURLException, URISyntaxException
+    {
+        // use uri factory: 
+        return new URIFactory(_path.toUri()).toFileURL();
     }
 
     public boolean isBrokenLink() throws IOException
