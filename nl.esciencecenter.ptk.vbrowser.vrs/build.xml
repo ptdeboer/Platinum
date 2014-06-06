@@ -98,6 +98,18 @@
             <fileset dir="lib/jmimemagic" />
         </copy>
 
+        <mkdir dir="${project.dist.auxlib}/jackson" />
+        <copy todir="${project.dist.auxlib}/jackson">
+            <fileset dir="lib/jackson" />
+        </copy>
+
+        <!-- icons  -->
+        <mkdir dir="${project.dist.lib}/icons" />
+        <copy todir="${project.dist.lib}/icons">
+            <!-- <fileset file="${comp.dist.lib.icons.jar}" /> --> 
+			<fileset dir="${comp.root}/icons" /> 
+        </copy>
+			    
         <!-- etc -->
         <!-- <mkdir dir="${project.dist}/etc" />
 		<copy todir="${project.dist}/etc">

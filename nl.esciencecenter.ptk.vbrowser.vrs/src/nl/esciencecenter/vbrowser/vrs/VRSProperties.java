@@ -312,6 +312,11 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         doPut(name, new Integer(value));
     }
 
+    public void set(String name, VRL vrl)
+    {
+        doPut(name, vrl);
+    }
+    
     public void remove(String name)
     {
         doRemove(name);
@@ -370,7 +375,20 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     protected void doPut(String name, Object value)
     {
-        this._properties.put(name, value);
+        if (name==null)
+        {
+            throw new NullPointerException("Parameter 'name' can not be NULL"); 
+        }
+        
+        if (value==null)
+        {
+            this._properties.remove(name); 
+        }
+        else
+        {
+            this._properties.put(name, value);
+        }
+        
     }
 
     protected void doRemove(String name)

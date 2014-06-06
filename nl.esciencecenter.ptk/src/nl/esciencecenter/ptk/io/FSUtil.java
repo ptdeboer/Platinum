@@ -169,7 +169,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         try
         {
             this.userHome = new java.io.File(GlobalProperties.getGlobalUserHome()).toURI();
-            this.workingDir = new java.io.File(GlobalProperties.getGlobalUserHome()).toURI();
+            this.workingDir = new java.io.File(GlobalProperties.getGlobalUserDir()).toURI();
             this.tmpDir = new java.io.File(GlobalProperties.getGlobalTempDir()).toURI();
         }
         catch (Throwable e)

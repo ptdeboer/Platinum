@@ -5,7 +5,7 @@
             	            	
     </description>
 
-    <property name="project.root" location="../.." />
+    <property name="project.root" location=".." />
     <!-- project environment + component settings -->
     <property file="${project.root}/project.prop" />
     <property environment="env" />
@@ -90,6 +90,11 @@
         <!-- lib -->
         <copy todir="${project.dist.lib}">
             <fileset file="${comp.dist.lib.jar}" />
+        </copy>
+        
+        <!-- scripts -->
+        <copy todir="${project.dist}">
+            <fileset file="scripts/vbrowser.sh" />
         </copy>
 
         <!-- icons  -->
