@@ -1,6 +1,6 @@
 #!/bin/bash 
 ###
-# (C) 2012-2014 Netherlands eScienceCenter
+# (C) 2012-2014 Netherlands eScience Center
 #
 # file  : vbrowser.sh: 
 # info  : VBrowser startup script. 
@@ -69,7 +69,7 @@ echo "CLASSPATH            ="$CLASSPATH
 echo "VBROWSER_CLASS       ="$VBROWSER_CLASS
 echo "Command line options ="$OPTS
 
-# bootstrap class set's up real enviromment: 
-echo "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar $BASE_DIR/lib/bootstrapper.jar "$VBROWSER_CLASS" $OPTS
-"$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar $BASE_DIR/lib/bootstrapper.jar "$VBROWSER_CLASS" $OPTS
+# bootstrap class sets up real enviromment: 
+echo "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/bootstrapper.jar" "$VBROWSER_CLASS" $OPTS
+"$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/bootstrapper.jar" "$VBROWSER_CLASS" $OPTS
 
