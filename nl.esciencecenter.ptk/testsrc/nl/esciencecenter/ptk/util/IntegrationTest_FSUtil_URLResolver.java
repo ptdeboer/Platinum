@@ -3,8 +3,10 @@ package nl.esciencecenter.ptk.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.LinkOption;
 
 import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
 
@@ -46,7 +48,26 @@ public class IntegrationTest_FSUtil_URLResolver
     public void test_CreateAndResolve() throws Exception
     {
         FSNode baseDir = FSUtil_getCreateTestDir();
-        test_CreateAndResolve(baseDir); 
+        test_CreateAndResolve(baseDir);
+        
+        FSNode subDir=baseDir.resolvePath("sub dir");
+        if (subDir.exists())
+        {
+        	outPrintf("Warning:test directory already exists:%s\n",subDir);
+        }
+        else
+        {
+        	subDir.mkdir();
+        }
+        
+        Assert.assertTrue("Sub-directory must exists:"+subDir,subDir.exists()); 
+        
+        test_CreateAndResolve(subDir);
+        	
+        subDir.delete(LinkOption.NOFOLLOW_LINKS); 
+        
+        Assert.assertFalse("After deletion, sub-directory may not exit anymore:"+subDir,subDir.exists()); 
+        
     }
     
 //    @Test
@@ -128,16 +149,16 @@ public class IntegrationTest_FSUtil_URLResolver
         URI normalizedFSNodeURI = normalize(filePath.getURI()); 
         
         //
-        // II) Resolve URL manually using absolute path:
+        // II) Manually create absolute and encoded URI 
         //
-        String baseUrlStr = baseDir.getPathname();
+        String baseUrlStr = baseDir.getPathname(); 
         // avoid double slashes here.
         if (baseUrlStr.endsWith("/"))
         {
             baseUrlStr = baseUrlStr.substring(0, baseUrlStr.length() - 1);
         }
 
-        URI baseUri = normalize(new URI("file:" + baseUrlStr)); 
+        URI baseUri = normalize(new URI("file:" + URIFactory.encodePath(baseUrlStr))); 
         URI expectedUri = normalize(URIUtil.resolvePathURI(baseUri, relativePath)); // use URI resolve as standard here!
 
         Assert.assertEquals("Pre URLSolver: File URI from FSNode doesn't match expected URI from URIUtil.resolvePathURI():", expectedUri, normalizedFSNodeURI);

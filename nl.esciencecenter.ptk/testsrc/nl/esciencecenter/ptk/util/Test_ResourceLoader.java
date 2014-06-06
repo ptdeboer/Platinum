@@ -2,10 +2,10 @@ package nl.esciencecenter.ptk.util;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import java.net.MalformedURLException;
 
 import nl.esciencecenter.ptk.io.FSNode;
 import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,6 +14,16 @@ import settings.Settings;
 
 public class Test_ResourceLoader
 {
+	static
+	{
+		ClassLogger.getLogger(ResourceLoader.class).setLevelToInfo(); 
+	}
+	
+	private static void outPrintf(String format,Object... args)
+	{
+		System.out.printf(format,args); 
+	}
+	
     protected Settings settings = Settings.getInstance();
 
     protected FSNode testDir = null;
@@ -64,21 +74,10 @@ public class Test_ResourceLoader
         
         return new String(bytes,"UTF-8"); 
     }
-    /**
-     * Create resource loader for testing with the testDir URL as single URL to resolve to. 
-     */
-    public ResourceLoader createTestDirResourceLoader() throws MalformedURLException, Exception
-    {
-        // use test Dir to resolve To. 
-        java.net.URL baseUrl=FSUtil_getCreateTestDir().getURL();
-        return new ResourceLoader(null,new java.net.URL[]{baseUrl}); 
-    }
-
     
     // ========================================================================
     // Tests  
-    // ======================================================================== 
-    
+    // ========================================================================   
     
     // ResourceLoader must be able to resolve the test dir. 
     @Test 
@@ -87,7 +86,6 @@ public class Test_ResourceLoader
         FSNode testDir= FSUtil_getCreateTestDir();
         String subDirname=testDir.getBasename(); 
         FSNode parentDir=testDir.getParent();
-
         
         ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{parentDir.getURL()}); 
         java.net.URL url=loader.resolveUrl(subDirname);
@@ -127,7 +125,7 @@ public class Test_ResourceLoader
         // normalize as this is used in URIs: 
         String actualUriPath=URIFactory.uripath(localPath, true, File.separatorChar); 
         
-        System.out.printf("pathName => actualPath ='%s' => '%s'\n",pathName,actualUriPath); 
+        outPrintf("pathName => actualPath ='%s' => '%s'\n",pathName,actualUriPath); 
               
         java.net.URL url=new java.net.URL("file:"+localPath); 
         Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+pathName+" (actualPath="+localPath,url);
@@ -144,27 +142,33 @@ public class Test_ResourceLoader
     @Test
     public void test_writeText() throws Exception
     {
-        test_writeText("testReadText","12345a"); 
-        test_writeText("test ReadText","12345b");
-        test_writeText("test&ReadText","12345c");
-        test_writeText("test~ReadText","12345d");
-        test_writeText("testReadDosText~1","12345e");
-        test_writeText("test%ReadText","12345f");
+        test_writeText("testRWText","12345a"); 
+        test_writeText("test RWText","12345b");
+        test_writeText("test&RWText","12345c");
+        test_writeText("test~RWText","12345d");
+        test_writeText("testRWDosText~1","12345e");
+        test_writeText("test%RWText","12345f");
     }
     
     protected void test_writeText(String subPath,String contents) throws Exception
     {
         FSNode node=FSUtil_getCreateTestDir(); 
-        FSNode fileNode=node.resolvePath(subPath); 
+        FSNode fileNode=node.resolvePath(subPath);
+        // use FS util to create normalized URL 
         java.net.URL fileUrl=fileNode.getURL(); 
         String localPath=fileNode.getPathname(); 
         String actualUriPath=URIFactory.uripath(localPath, true, File.separatorChar); 
         
-        // write to URL
-        ResourceLoader loader=createTestDirResourceLoader();
-        java.net.URL resolvedUrl=loader.resolveUrl(subPath); 
-        Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+subPath+" (actualPath="+fileNode.getPathname(),resolvedUrl);
-        loader.writeTextTo(resolvedUrl, contents, "UTF-8");
+        // use test Dir to resolve To. 
+        java.net.URL baseUrl=FSUtil_getCreateTestDir().getURL();
+        ResourceLoader loader= new ResourceLoader(null,new java.net.URL[]{baseUrl}); 
+        
+        loader.writeTextTo(fileUrl, contents, "UTF-8");
+        outPrintf("written text to: %s\n",fileUrl); 
+        
+        // after write, file exists and can be resolved: 
+        java.net.URL resolvedUrl=loader.resolveUrl(subPath);
+        Assert.assertNotNull("Got NULL URL. Failed to resolve URL [baseUrl,subPath] = ['"+baseUrl+"','"+subPath+"'] (actualPath="+fileNode.getPathname(),resolvedUrl);
         
         // readback
         String readBack=this.readTestFile(fileNode.getPathname()); 

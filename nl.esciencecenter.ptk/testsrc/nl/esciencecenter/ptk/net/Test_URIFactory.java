@@ -156,7 +156,14 @@ public class Test_URIFactory
 
         testResolveDosPath("file:///C:\\subdir\\","../twindir1","file:/C:/twindir1","C:\\twindir1"); 
         testResolveDosPath("file:///C:\\subdir\\","./../twindir2","file:/C:/twindir2","C:\\twindir2"); 
-
+    }
+    
+    @Test
+    public void testDosSpacedRelativePaths() throws Exception
+    {
+        testResolveDosPath("file:///C:","sub dir","file:/C:/sub dir","C:\\sub dir");
+        testResolveDosPath("file:///C:/Spaced Dir","sub dir","file:/C:/Spaced Dir/sub dir","C:\\Spaced Dir\\sub dir");
+        
     }
 
     protected void testResolveDosPath(String uri,String relativePath,String decodedURIStr,String dosPath) throws URISyntaxException
