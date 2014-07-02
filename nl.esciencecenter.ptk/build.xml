@@ -25,7 +25,7 @@
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${comp.build}" />
 		<mkdir dir="${comp.build}/bootstrap" />
-		<mkdir dir="${comp.build.classdir}" />
+		<mkdir dir="${comp.build.classes}" />
 		<mkdir dir="${comp.dist}" />
 
 		<mkdir dir="${comp.dist}/lib" />
@@ -65,7 +65,7 @@
 			<include name="**/*.jar" />
 		</fileset>
 
-		<pathelement location="${comp.build.classdir}" />
+		<pathelement location="${comp.build.classes}" />
 		<pathelement location="${comp.testsrc}" />
 
 	</path>
@@ -75,7 +75,7 @@
 	<target name="build" depends="init-build" description="compile the source ">
 		<!-- Compile the java code from into ${build} -->
 
-		<javac srcdir="${comp.src}" destdir="${comp.build.classdir}" compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}" target="${javac.target}">
+		<javac srcdir="${comp.src}" destdir="${comp.build.classes}" compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}" target="${javac.target}">
 			<classpath refid="comp.classpath" />
 		</javac>
 
@@ -85,7 +85,7 @@
 	<target name="build-tests" depends="init-build,build" description="compile the test source ">
 		<!-- Compile the java code from into ${build} -->
 
-		<javac srcdir="${comp.testsrc}" destdir="${comp.build.classdir}" compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}" target="${javac.target}">
+		<javac srcdir="${comp.testsrc}" destdir="${comp.build.classes}" compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}" target="${javac.target}">
 			<classpath refid="test.classpath" />
 		</javac>
 
@@ -107,7 +107,7 @@
 		<property name="project.vendor" value="${user.name}" />
 
 		<!-- Create application JAR file -->
-		<jar jarfile="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" basedir="${comp.build.classdir}">
+		<jar jarfile="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" basedir="${comp.build.classes}">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="${comp.mainclass}" />
@@ -187,7 +187,7 @@
 					<fileset dir="${comp.src}" />
 				</sourcefiles>
 				<classfiles>
-					<fileset dir="${comp.build.classdir}" />
+					<fileset dir="${comp.build.classes}" />
 				</classfiles>
 			</structure>
 			<html destdir="dist/reports/jacoco" />

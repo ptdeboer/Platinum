@@ -19,6 +19,6 @@ comp.package.dir=nl/esciencecenter/ptk/util/vterm
 # Build environment. 
 comp.src=src
 comp.build=build
-comp.build.classes=${comp.build}/classes
 comp.dist=dist
 comp.lib=lib
+comp.build.classes=${comp.build}/classes

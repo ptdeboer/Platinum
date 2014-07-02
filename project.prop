@@ -47,4 +47,7 @@ javac.debug=true
 javac.target=1.7
 javac.source=1.7
 javac.compiler=modern
+# explicit needed for MacOs: 
+javac.encoding=utf8
+#javac.encoding=ASCII
 

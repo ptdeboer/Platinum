@@ -17,6 +17,6 @@ comp.src=${comp.root}/src
 comp.dist=${comp.root}/dist
 comp.build=${comp.root}/build
 comp.lib=${comp.root}/lib
-comp.build.classes=${comp.root}/build/classes
+comp.build.classes=${comp.build}/classes
 
 

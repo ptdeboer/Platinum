@@ -52,7 +52,7 @@
     <target name="build" depends="init" description="compile the source ">
         <!-- Compile the java code from the srclist } into ${build} -->
         <javac srcdir="${comp.src}" 
-        	destdir="${comp.build}" 
+        	destdir="${comp.build.classes}" 
         	compiler="${javac.compiler}" 
         	debug="${javac.debug}" 
         	source="${javac.source}" 
@@ -65,8 +65,14 @@
  
     <target name="jar" depends="build">
 
+        <property name="comp.dist.lib.jar" value="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" /> 
+        <property name="comp.dist.lib.icons.jar" value="${comp.dist}/lib/${comp.artefactId}-icons-${comp.version}.jar" /> 
+                
         <!-- Create application JAR file -->
-        <jar jarfile="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" basedir="${comp.build}" />
+        <jar jarfile="${comp.dist.lib.jar}" basedir="${comp.build.classes}" />
+
+        <!-- creat jar file out of icons -->
+		<jar jarfile="${comp.dist.lib.icons.jar}" basedir="${comp.root}/icons" />
 
     </target>
 
@@ -89,7 +95,7 @@
 
         <!-- lib -->
         <copy todir="${project.dist.lib}">
-            <fileset file="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" />
+            <fileset file="${comp.dist.lib.jar}" />
         </copy>
 
         <!-- libs -->
@@ -106,8 +112,7 @@
         <!-- icons  -->
         <mkdir dir="${project.dist.lib}/icons" />
         <copy todir="${project.dist.lib}/icons">
-            <!-- <fileset file="${comp.dist.lib.icons.jar}" /> --> 
-			<fileset dir="${comp.root}/icons" /> 
+            <fileset file="${comp.dist.lib.icons.jar}" /> 
         </copy>
 			    
         <!-- etc -->

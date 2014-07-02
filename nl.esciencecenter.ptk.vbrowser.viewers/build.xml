@@ -1,7 +1,7 @@
 <project name="VBrowser Viewers" default="dist" basedir=".">
     <description>
 		Project: VBrowser
-		Module : vb2.viewers
+		Module : viewers
             	            	
     </description>
 
@@ -22,10 +22,10 @@
         <mkdir dir="${comp.dist}" />
         <mkdir dir="${comp.dist}/lib" />
         <mkdir dir="${comp.dist}/etc" />
-    	
+
         <property name="platinum.version" value="dev-snapshot"/>
         <property name="comp.version" value="${platinum.version}"/>
-    	
+
     </target>
 
     <target name="config">
@@ -46,27 +46,32 @@
      *	Target : Compilation 
 	 -->
     <target name="build" depends="init" description="compile the source ">
-        <!-- Compile the java code from the srclist } into ${build} -->
+
         <javac srcdir="${comp.src}" 
-        	destdir="${comp.build}" 
-        	compiler="${javac.compiler}" 
-        	debug="${javac.debug}" 
-        	source="${javac.source}" 
-        	target="${javac.target}">
+            destdir="${comp.build.classes}" 
+            compiler="${javac.compiler}"
+            encoding="${javac.encoding}"
+            debug="${javac.debug}" 
+            source="${javac.source}" 
+            target="${javac.target}">
             <classpath refid="comp.classpath" />
         </javac>
+
     </target>
-    
+
     <target name="test" depends="build">
-    </target> 
-        
+    </target>
+
     <target name="jar" depends="build">
 
+        <property name="comp.dist.lib.jar" value="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" /> 
+        <property name="comp.dist.lib.icons.jar" value="${comp.dist}/lib/${comp.artefactId}-icons-${comp.version}.jar" /> 
+                
         <!-- Create application JAR file -->
-        <jar jarfile="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" basedir="${comp.build}" />
+        <jar jarfile="${comp.dist.lib.jar}" basedir="${comp.build.classes}" />
 
         <!-- creat jar file out of icons -->
-        <jar jarfile="${comp.dist}/lib/${comp.artefactId}-icons-${comp.version}.jar" basedir="${comp.root}/icons" />
+		<jar jarfile="${comp.dist.lib.icons.jar}" basedir="${comp.root}/icons" />
 
     </target>
 

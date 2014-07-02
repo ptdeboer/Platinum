@@ -16,6 +16,6 @@ comp.artefactId=nlesc-platinum.vbrowser.viewers
 comp.src=${comp.root}/src
 comp.dist=${comp.root}/dist
 comp.build=${comp.root}/build
-comp.build.classes=${comp.root}/build/classes
+comp.build.classes=${comp.build}/classes
 
 

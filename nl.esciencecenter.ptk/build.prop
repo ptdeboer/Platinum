@@ -17,7 +17,7 @@ comp.src=src
 comp.testsrc=testsrc
 comp.dist=dist
 comp.build=build
-comp.build.classdir=${comp.build}/classes
+comp.build.classes=${comp.build}/classes
 
 ##
 #bootstrapper:
