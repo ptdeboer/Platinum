@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.GlobalProperties;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
@@ -75,7 +75,7 @@ public class LocalSystem extends InfoRSPathNode
 
     protected InfoResourceNode initHome() throws VrsException
     {
-        FSNode home;
+        FSPath home;
         try
         {
             home = fsUtil.getUserHomeDir();
@@ -96,13 +96,13 @@ public class LocalSystem extends InfoRSPathNode
 
     protected void initDrives() throws VrsException
     {
-        List<FSNode> roots; 
+        List<FSPath> roots; 
         
         roots = fsUtil.listRoots();
                 
         int index = 0;
 
-        for (FSNode root : roots)
+        for (FSPath root : roots)
         {
             URI uri = root.getURI();
             VRL vrl = new VRL(uri);

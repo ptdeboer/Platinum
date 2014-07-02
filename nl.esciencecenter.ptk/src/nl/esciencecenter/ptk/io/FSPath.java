@@ -47,7 +47,7 @@ import nl.esciencecenter.ptk.net.URIUtil;
 /**
  * Wrapper around nio.file.path interface.
  */
-public class FSNode
+public class FSPath
 {
     public static final String DIR_TYPE = "Dir";
 
@@ -59,16 +59,18 @@ public class FSNode
     // Instance
     // =========
 
-    // nio !
+    /** The nio file path */
     protected Path _path;
 
+    /** Basic file attributes are supported by all filesystem implementations. */
     protected BasicFileAttributes basicAttrs;
 
-    protected FSNodeProvider fsHandler = null;
+    protected FSPathProvider fsHandler = null;
 
+    /** Holds posix attributes, if the are supported. Is null otherwise. */
     protected PosixFileAttributes posixAttrs;
 
-    protected FSNode(FSNodeProvider fsHandler, Path path)
+    protected FSPath(FSPathProvider fsHandler, Path path)
     {
         this.fsHandler = fsHandler;
         init(path);
@@ -79,7 +81,7 @@ public class FSNode
         this._path = path;
     }
 
-    protected FSNodeProvider getFSHandler()
+    protected FSPathProvider getFSHandler()
     {
         return fsHandler;
     }
@@ -88,7 +90,7 @@ public class FSNode
     // Create/Delete/Rename
     // ==========================
 
-    public FSNode create() throws IOException
+    public FSPath create() throws IOException
     {
         byte bytes[] = new byte[0];
 
@@ -100,16 +102,16 @@ public class FSNode
         return this;
     }
 
-    public FSNode createDir(String subdir) throws IOException, FileURISyntaxException
+    public FSPath createDir(String subdir) throws IOException, FileURISyntaxException
     {
-        FSNode dir = resolvePath(subdir);
+        FSPath dir = resolvePath(subdir);
         dir.mkdir();
         return dir;
     }
 
-    public FSNode createFile(String filepath) throws IOException, FileURISyntaxException
+    public FSPath createFile(String filepath) throws IOException, FileURISyntaxException
     {
-        FSNode file = resolvePath(filepath);
+        FSPath file = resolvePath(filepath);
         file.create();
         return file;
     }
@@ -132,9 +134,9 @@ public class FSNode
         }
     }
 
-    public FSNode renameTo(String relativeOrAbsolutePath) throws IOException
+    public FSPath renameTo(String relativeOrAbsolutePath) throws IOException
     {
-        FSNode other = this.resolvePath(relativeOrAbsolutePath);
+        FSPath other = this.resolvePath(relativeOrAbsolutePath);
 
         Path targetPath = other._path;
         Path actualPath = Files.move(this._path, targetPath);
@@ -147,7 +149,7 @@ public class FSNode
     // ==========================
 
     /**
-     * Returns creation time in millis since EPOCH, if supported. Returns -1 otherwise.
+     * Returns creation time in milli seconds since EPOCH, if supported. Returns -1 otherwise.
      */
     public FileTime getAccessTime() throws IOException
     {
@@ -162,7 +164,7 @@ public class FSNode
     }
 
     /**
-     * Returns last part of the path inlcuding extension.
+     * Returns last part of the path including extension.
      */
     public String getBasename()
     {
@@ -270,9 +272,9 @@ public class FSNode
         }
     }
 
-    public FSNode getParent()
+    public FSPath getParent()
     {
-        return new FSNode(fsHandler, _path.getParent());
+        return new FSPath(fsHandler, _path.getParent());
     }
 
     /**
@@ -285,25 +287,29 @@ public class FSNode
 
     /**
      * Returns absolute and normalized URI style path
+     * 
      * @return
      */
     public String getPathname()
     {
-        return getPathname(false); 
+        return getPathname(false);
     }
+
     /**
      * Returns absolute and normalized URI style path
-     * @param dirPath if this path is a directory, end with a "/" 
-     * @return absolute and normalized URI style path. 
-     */    
+     * 
+     * @param dirPath
+     *            if this path is a directory, end with a "/"
+     * @return absolute and normalized URI style path.
+     */
     public String getPathname(boolean dirPath)
     {
-        String pathStr =_path.toUri().getPath();
+        String pathStr = _path.toUri().getPath();
         if (dirPath)
         {
-            dirPath=this.isDirectory(this.fsHandler.linkOptions()); 
+            dirPath = this.isDirectory(this.fsHandler.linkOptions());
         }
-        
+
         if (pathStr.endsWith("/"))
         {
             if (dirPath)
@@ -312,21 +318,21 @@ public class FSNode
             }
             else
             {
-                return pathStr.substring(0, pathStr.length()-1);
+                return pathStr.substring(0, pathStr.length() - 1);
             }
         }
         else
         {
             if (dirPath)
             {
-                return pathStr+"/";
+                return pathStr + "/";
             }
             else
             {
                 return pathStr;
             }
         }
-        
+
     }
 
     public int getPort()
@@ -337,14 +343,14 @@ public class FSNode
     /**
      * Returns symbolic link target or NULL
      */
-    public FSNode getSymbolicLinkTarget() throws IOException
+    public FSPath getSymbolicLinkTarget() throws IOException
     {
         if (this.isSymbolicLink() == false)
             return null;
 
         Path target = Files.readSymbolicLink(_path);
 
-        return new FSNode(fsHandler, target);
+        return new FSPath(fsHandler, target);
     }
 
     public URI getURI()
@@ -352,45 +358,46 @@ public class FSNode
         return _path.toUri();
     }
 
-
-    /** 
-     * Return encoded (web) URL. <p>
-     * This method uses toUri().toURL() which encodes the paths in the URL.<br> 
-     * <strong>note:</strong> as URLs do not do encoding nor decoding of special characters, use the file URI (toURI()) 
-     * to ensure consistency between encoded and decoded paths. 
-     * @return encoded URI compatible URL. 
+    /**
+     * Return encoded (web) URL.
+     * <p>
+     * This method uses toUri().toURL() which encodes the paths in the URL.<br>
+     * <strong>note:</strong> as URLs do not do encoding nor decoding of special characters, use the file URI (toURI())
+     * to ensure consistency between encoded and decoded paths.
+     * 
+     * @return encoded URI compatible URL.
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
     public URL getWebURL() throws MalformedURLException
     {
-        return _path.toUri().toURL(); 
+        return _path.toUri().toURL();
     }
-    
-    /** 
-     * @return Returns decoded file URI as URL.   
-     * @see URIFactory#toFileURL() 
+
+    /**
+     * @return Returns decoded file URI as URL.
+     * @see URIFactory#toFileURL()
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
     public URL getFileURL() throws MalformedURLException, URISyntaxException
     {
-        // use uri factory: 
+        // use uri factory:
         return new URIFactory(_path.toUri()).toFileURL();
     }
 
-    /** 
-     * @return Returns decoded directory URI as URL with a the path ending with a slash ('/').  
-     * @see URIFactory#toDirURL() 
+    /**
+     * @return Returns decoded directory URI as URL with a the path ending with a slash ('/').
+     * @see URIFactory#toDirURL()
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
     public URL getDirURL() throws MalformedURLException, URISyntaxException
     {
-        // use uri factory: 
+        // use uri factory:
         return new URIFactory(_path.toUri()).toDirURL();
     }
-    
+
     public boolean isBrokenLink() throws IOException
     {
         if (isSymbolicLink() == false)
@@ -405,7 +412,7 @@ public class FSNode
     {
         if (linkOptions == null)
         {
-            return Files.isDirectory(_path,fsHandler.linkOptions());
+            return Files.isDirectory(_path, fsHandler.linkOptions());
         }
         else
         {
@@ -467,9 +474,9 @@ public class FSNode
 
     public boolean isFileSystemRoot()
     {
-        List<FSNode> roots = this.fsHandler.listRoots();
+        List<FSPath> roots = this.fsHandler.listRoots();
 
-        for (FSNode root : roots)
+        for (FSPath root : roots)
         {
             if (root._path.normalize().toString().equals(_path.normalize().toString()))
             {
@@ -504,20 +511,20 @@ public class FSNode
         }
     }
 
-    public FSNode[] listNodes() throws IOException
+    public FSPath[] listNodes() throws IOException
     {
         DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path);
         try
         {
             Iterator<Path> dirIterator = dirStream.iterator();
-            ArrayList<FSNode> list = new ArrayList<FSNode>();
+            ArrayList<FSPath> list = new ArrayList<FSPath>();
 
             while (dirIterator.hasNext())
             {
-                list.add(new FSNode(fsHandler, dirIterator.next()));
+                list.add(new FSPath(fsHandler, dirIterator.next()));
             }
 
-            return list.toArray(new FSNode[0]);
+            return list.toArray(new FSPath[0]);
 
         }
         finally
@@ -527,13 +534,13 @@ public class FSNode
 
     }
 
-    public FSNode mkdir() throws IOException
+    public FSPath mkdir() throws IOException
     {
         Files.createDirectory(_path);
         return this;
     }
 
-    public FSNode mkdirs() throws IOException
+    public FSPath mkdirs() throws IOException
     {
         Files.createDirectories(_path);
         return this;
@@ -543,9 +550,9 @@ public class FSNode
     // Resolve Methods
     // ==================
 
-    public FSNode resolvePath(String relativePath) throws IOException
+    public FSPath resolvePath(String relativePath) throws IOException
     {
-        FSNode file = this.fsHandler.newFSNode(resolvePathURI(relativePath));
+        FSPath file = this.fsHandler.newFSPath(resolvePathURI(relativePath));
         return file;
     }
 
@@ -553,7 +560,7 @@ public class FSNode
     {
         try
         {
-            return URIUtil.resolvePathURI(getURI(),relPath); 
+            return URIUtil.resolvePathURI(getURI(), relPath);
         }
         catch (URISyntaxException e)
         {
@@ -565,8 +572,8 @@ public class FSNode
     // Posix Methods
     // ==================
 
-    /** 
-     * @return Posix File Attributes if supported by the file system. 
+    /**
+     * @return Posix File Attributes if supported by the file system.
      */
     public PosixFileAttributes getPosixAttributes() throws IOException
     {
@@ -623,7 +630,7 @@ public class FSNode
         }
 
         return attrs.group().getName();
-    } 
+    }
 
     public String getOwnerName() throws IOException
     {
@@ -634,7 +641,7 @@ public class FSNode
 
         return attrs.owner().getName();
     }
-    
+
     // =======================
     // IO Methods
     // =======================
@@ -652,14 +659,14 @@ public class FSNode
     // =======================
     // Misc.
     // =======================
-    
+
     public boolean sync()
     {
         this.basicAttrs = null;
         this.posixAttrs = null;
         return true;
     }
-    
+
     public java.io.File toJavaFile()
     {
         return _path.toFile();
@@ -667,7 +674,7 @@ public class FSNode
 
     public String toString()
     {
-        return "FSNode:[uri=" + this.getURI().toString() + "]";
+        return "FSPath:[uri=" + this.getURI().toString() + "]";
     }
 
 }

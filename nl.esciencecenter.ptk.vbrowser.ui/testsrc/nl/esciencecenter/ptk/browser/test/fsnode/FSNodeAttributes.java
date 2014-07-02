@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.presentation.IPresentable;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
@@ -93,9 +93,9 @@ public class FSNodeAttributes implements AttributeSource, IPresentable
     
     // ========================================================================
     
-    private FSNode anyFile;
+    private FSPath anyFile;
 
-    public FSNodeAttributes(FSNode anyFile)
+    public FSNodeAttributes(FSPath anyFile)
     {
         this.anyFile=anyFile; 
     }

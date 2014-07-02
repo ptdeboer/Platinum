@@ -32,23 +32,23 @@ import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 /** 
  * FileSystem interface.  
  */
-public interface FSNodeProvider
+public interface FSPathProvider
 {
     public abstract String[] getSchemes(); 
 
-    public abstract List<FSNode> listRoots();
+    public abstract List<FSPath> listRoots();
     
     public abstract URI resolvePathURI(String path) throws FileURISyntaxException;
     
-    public abstract FSNode newFSNode(java.net.URI uri) throws IOException;
+    public abstract FSPath newFSPath(java.net.URI uri) throws IOException;
 
-    public abstract RandomReadable createRandomReader(FSNode node) throws IOException;
+    public abstract RandomReadable createRandomReader(FSPath node) throws IOException;
 
-    public abstract RandomWritable createRandomWriter(FSNode node) throws IOException;
+    public abstract RandomWritable createRandomWriter(FSPath node) throws IOException;
 
-    public abstract InputStream createInputStream(FSNode node) throws IOException;
+    public abstract InputStream createInputStream(FSPath node) throws IOException;
 
-    public abstract OutputStream createOutputStream(FSNode node,boolean append) throws IOException;
+    public abstract OutputStream createOutputStream(FSPath node,boolean append) throws IOException;
 
     public abstract LinkOption[] linkOptions();
 

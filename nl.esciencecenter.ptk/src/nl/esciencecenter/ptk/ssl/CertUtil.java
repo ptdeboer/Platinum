@@ -99,7 +99,7 @@ public class CertUtil
         CertificateStore.logger.debugPrintf("Loading (DER ENCODED) Certificate :%s\n", filename);
     
         FSUtil fsUtil = FSUtil.getDefault();
-        InputStream finps = fsUtil.newFSNode(filename).createInputStream();
+        InputStream finps = fsUtil.newFSPath(filename).createInputStream();
     
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate x590 = (X509Certificate) cf.generateCertificate(finps);

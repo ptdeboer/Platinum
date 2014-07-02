@@ -27,7 +27,7 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.presentation.Presentation;
@@ -44,7 +44,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class FSNodeProxyNode extends ProxyNode
 {
-	FSNode file;
+	FSPath file;
 	
 	private FSNodeAttributes metaFile; 
 	
@@ -58,7 +58,7 @@ public class FSNodeProxyNode extends ProxyNode
         super(anyFileProxyFactory,loc); 
         try
         {
-            file=FSUtil.getDefault().newFSNode(loc.getPath());
+            file=FSUtil.getDefault().newFSPath(loc.getPath());
         }
         catch (IOException e)
         {
@@ -67,7 +67,7 @@ public class FSNodeProxyNode extends ProxyNode
         init(); 
     } 
     
-    public FSNodeProxyNode(ProxyFactory anyFileProxyFactory,VRL loc,FSNode file) throws ProxyException
+    public FSNodeProxyNode(ProxyFactory anyFileProxyFactory,VRL loc,FSPath file) throws ProxyException
     {
         super(anyFileProxyFactory,loc); 
         this.file=file; 
@@ -132,7 +132,7 @@ public class FSNodeProxyNode extends ProxyNode
     @Override
     public List<? extends ProxyNode> doGetChilds(int offset, int range,LongHolder numChildsLeft) throws ProxyException
     {
-    	FSNode[] files;
+    	FSPath[] files;
 		try 
 		{
 			files = file.listNodes();
@@ -157,7 +157,7 @@ public class FSNodeProxyNode extends ProxyNode
     	return subrange(nodes,offset,range);  
     }
 
-    protected FSNodeProxyNode createNewNode(FSNode fsNode) throws ProxyException
+    protected FSNodeProxyNode createNewNode(FSPath fsNode) throws ProxyException
     {
         return new FSNodeProxyNode(getProxyFactory(),new VRL(fsNode.getURI()),fsNode); 
     }
@@ -185,11 +185,11 @@ public class FSNodeProxyNode extends ProxyNode
     {
     	if (file.isFile())
     	{
-    		return FSNode.FILE_TYPE;
+    		return FSPath.FILE_TYPE;
     	}
     	else
     	{
-    		return FSNode.DIR_TYPE;
+    		return FSPath.DIR_TYPE;
     	}
     }
 
@@ -202,7 +202,7 @@ public class FSNodeProxyNode extends ProxyNode
     @Override
     protected List<String> doGetChildTypes() 
     {
-        return new StringList(FSNode.FILE_TYPE,FSNode.DIR_TYPE); 
+        return new StringList(FSPath.FILE_TYPE,FSPath.DIR_TYPE); 
     }
 
     @Override
@@ -247,13 +247,13 @@ public class FSNodeProxyNode extends ProxyNode
     {
         try
         {
-            FSNode newPath=file.resolvePath(optNewName); 
-            if (StringUtil.equals(type,FSNode.FILE_TYPE))
+            FSPath newPath=file.resolvePath(optNewName); 
+            if (StringUtil.equals(type,FSPath.FILE_TYPE))
             {
                 newPath.create();
                 return createNewNode(newPath); 
             }
-            else if (StringUtil.equals(type,FSNode.FILE_TYPE))
+            else if (StringUtil.equals(type,FSPath.FILE_TYPE))
             {
                 newPath.mkdir(); 
                 return createNewNode(newPath); 

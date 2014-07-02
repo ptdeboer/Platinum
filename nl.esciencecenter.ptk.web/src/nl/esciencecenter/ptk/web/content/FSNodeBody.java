@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.web.PutMonitor;
 
 import org.apache.http.entity.mime.MIME;
@@ -38,7 +38,7 @@ import org.apache.http.entity.mime.content.AbstractContentBody;
  */
 public class FSNodeBody  extends AbstractContentBody 
 {
-    private final FSNode fsNode; 
+    private final FSPath fsNode; 
     
     private long totalWritten=0;
 
@@ -46,7 +46,7 @@ public class FSNodeBody  extends AbstractContentBody
     
     private int defaultChunkSize=4096; 
     
-    public FSNodeBody(final FSNode node, final String mimeType, PutMonitor putMonitor) 
+    public FSNodeBody(final FSPath node, final String mimeType, PutMonitor putMonitor) 
     {
         super(mimeType);
         this.putMonitor=putMonitor; 
@@ -59,12 +59,12 @@ public class FSNodeBody  extends AbstractContentBody
         this.fsNode = node;
     }
     
-    public FSNodeBody(final FSNode node) 
+    public FSNodeBody(final FSPath node) 
     {
         this(node, "application/octet-stream",null);
     }
     
-    public FSNodeBody(final FSNode node, PutMonitor putMonitor) 
+    public FSNodeBody(final FSPath node, PutMonitor putMonitor) 
     {
         this(node, "application/octet-stream",putMonitor);
     }

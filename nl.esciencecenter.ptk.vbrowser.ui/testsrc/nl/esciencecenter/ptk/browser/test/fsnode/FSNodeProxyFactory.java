@@ -21,7 +21,7 @@
 package nl.esciencecenter.ptk.browser.test.fsnode;
 
 import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -50,7 +50,7 @@ public class FSNodeProxyFactory extends ProxyFactory
 	@Override
 	public boolean canOpen(VRL locator,StringHolder reason) 
 	{
-	    return locator.hasScheme(FSNode.FILE_SCHEME);
+	    return locator.hasScheme(FSPath.FILE_SCHEME);
 	}
 
 }

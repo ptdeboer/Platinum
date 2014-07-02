@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.LinkOption;
 
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
@@ -23,13 +23,13 @@ public class IntegrationTest_FSUtil_URLResolver
 {
     protected Settings settings = Settings.getInstance();
 
-    protected FSNode testDir = null;
+    protected FSPath testDir = null;
 
     // =================
     // FSUtil methods
     // =================
 
-    public FSNode FSUtil_getCreateTestDir() throws Exception
+    public FSPath FSUtil_getCreateTestDir() throws Exception
     {
         
         if (testDir == null)
@@ -47,10 +47,10 @@ public class IntegrationTest_FSUtil_URLResolver
     @Test
     public void test_CreateAndResolve() throws Exception
     {
-        FSNode baseDir = FSUtil_getCreateTestDir();
+        FSPath baseDir = FSUtil_getCreateTestDir();
         test_CreateAndResolve(baseDir);
         
-        FSNode subDir=baseDir.resolvePath("sub dir");
+        FSPath subDir=baseDir.resolvePath("sub dir");
         if (subDir.exists())
         {
         	outPrintf("Warning:test directory already exists:%s\n",subDir);
@@ -77,7 +77,7 @@ public class IntegrationTest_FSUtil_URLResolver
 //        test_CreateAndResolve(baseDir); 
 //    }
     
-    public void test_CreateAndResolve(FSNode baseDir) throws Exception
+    public void test_CreateAndResolve(FSPath baseDir) throws Exception
     {
         boolean isWindows=settings.isWindows(); 
         
@@ -92,10 +92,10 @@ public class IntegrationTest_FSUtil_URLResolver
         	testCreateResolve(baseDir, "postfixSpaced4 ", true, true);
         }
         
-        FSNode subDir = baseDir.resolvePath("subDir1").mkdir();
+        FSPath subDir = baseDir.resolvePath("subDir1").mkdir();
         testCreateResolve(baseDir, "subDir1/subFile5", true, true);
 
-        FSNode subDirSpaced = baseDir.resolvePath("subDir Spaced6").mkdir();
+        FSPath subDirSpaced = baseDir.resolvePath("subDir Spaced6").mkdir();
         testCreateResolve(baseDir, "subDir Spaced6/subFile7", true, true);
         testCreateResolve(baseDir, "subDir Spaced6/subFile Spaced8", true, true);
         if (isWindows)
@@ -125,12 +125,12 @@ public class IntegrationTest_FSUtil_URLResolver
 
     }
 
-    protected void testCreateResolve(FSNode baseDir, String relativePath, boolean isFilePath, boolean create) throws Exception
+    protected void testCreateResolve(FSPath baseDir, String relativePath, boolean isFilePath, boolean create) throws Exception
     {
         //
         // I) Create file first. URLs must always point to existing files.
         // 
-        FSNode filePath = baseDir.resolvePath(relativePath);
+        FSPath filePath = baseDir.resolvePath(relativePath);
         if (filePath.exists() == false)
         {
             if (isFilePath)

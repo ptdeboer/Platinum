@@ -25,11 +25,11 @@ import java.io.RandomAccessFile;
 
 public class LocalFSWriter implements RandomWritable
 {
-    protected FSNode fsNode;
+    protected FSPath fsNode;
 
     protected RandomAccessFile randomFile = null;
 
-    public LocalFSWriter(FSNode node)
+    public LocalFSWriter(FSPath node)
     {
         fsNode = node;
     }

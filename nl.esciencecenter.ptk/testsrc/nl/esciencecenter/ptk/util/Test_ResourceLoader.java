@@ -3,7 +3,7 @@ package nl.esciencecenter.ptk.util;
 import java.io.File;
 import java.io.RandomAccessFile;
 
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
@@ -26,13 +26,13 @@ public class Test_ResourceLoader
 	
     protected Settings settings = Settings.getInstance();
 
-    protected FSNode testDir = null;
+    protected FSPath testDir = null;
 
     // =================
     // FSUtil methods
     // =================
 
-    public FSNode FSUtil_getCreateTestDir() throws Exception
+    public FSPath FSUtil_getCreateTestDir() throws Exception
     {
         
         if (testDir == null)
@@ -50,7 +50,7 @@ public class Test_ResourceLoader
     {
         // Use plain old Java File interface, can not use ResourceLoader/FSUtil here.  
         
-        FSNode dir=FSUtil_getCreateTestDir();
+        FSPath dir=FSUtil_getCreateTestDir();
         java.io.File file=new java.io.File(dir.getPathname()+"/"+name);  
         
         java.io.RandomAccessFile randomFile=new RandomAccessFile(file,"rw"); 
@@ -83,9 +83,9 @@ public class Test_ResourceLoader
     @Test 
     public void testResolveTestDir() throws Exception
     {
-        FSNode testDir= FSUtil_getCreateTestDir();
+        FSPath testDir= FSUtil_getCreateTestDir();
         String subDirname=testDir.getBasename(); 
-        FSNode parentDir=testDir.getParent();
+        FSPath parentDir=testDir.getParent();
         
         java.net.URL baseUrl=parentDir.getDirURL(); 
         java.net.URL webUrl=parentDir.getWebURL(); 
@@ -103,9 +103,9 @@ public class Test_ResourceLoader
     @Test 
     public void testResolveFile() throws Exception
     {
-        FSNode testDir= FSUtil_getCreateTestDir();
+        FSPath testDir= FSUtil_getCreateTestDir();
         String fileName="subFile"; 
-        FSNode file=testDir.createFile(fileName); 
+        FSPath file=testDir.createFile(fileName); 
         
         ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{testDir.getDirURL()}); 
         java.net.URL url=loader.resolveUrl(fileName);
@@ -158,8 +158,8 @@ public class Test_ResourceLoader
     
     protected void test_writeText(String subPath,String contents) throws Exception
     {
-        FSNode node=FSUtil_getCreateTestDir(); 
-        FSNode fileNode=node.resolvePath(subPath);
+        FSPath node=FSUtil_getCreateTestDir(); 
+        FSPath fileNode=node.resolvePath(subPath);
         // use FS util to create normalized URL 
         java.net.URL fileUrl=fileNode.getDirURL(); 
         String localPath=fileNode.getPathname(); 

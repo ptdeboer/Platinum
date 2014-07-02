@@ -32,7 +32,7 @@ import javax.net.ssl.SSLContext;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.SecretHolder;
 import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
@@ -976,10 +976,10 @@ public class WebClient
         // Add the part to the MultipartEntity.
 
         // FSNode:
-        FSNode node;
+        FSPath node;
         try
         {
-            node = FSUtil.getDefault().newFSNode(filePath);
+            node = FSUtil.getDefault().newFSPath(filePath);
         }
         catch (IOException e)
         {

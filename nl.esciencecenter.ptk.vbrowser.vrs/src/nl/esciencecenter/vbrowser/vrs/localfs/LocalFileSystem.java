@@ -65,7 +65,7 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
             // optionall resolve tilde:
             VRL homeVLR = this.getVRSContext().getHomeVRL();
             path = URIFactory.resolveTilde(homeVLR.getPath(), path);
-            return new LocalFSPathNode(this, fsUtil.newFSNode(path));
+            return new LocalFSPathNode(this, fsUtil.newFSPath(path));
         }
         catch (IOException e)
         {

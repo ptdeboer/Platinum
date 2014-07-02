@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
@@ -113,11 +113,11 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
     {
         if (isDir())
         {
-            return FSNode.DIR_TYPE;
+            return FSPath.DIR_TYPE;
         }
         else
         {
-            return FSNode.FILE_TYPE;
+            return FSPath.FILE_TYPE;
         }
     }
 

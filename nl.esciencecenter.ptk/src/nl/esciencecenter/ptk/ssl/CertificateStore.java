@@ -43,7 +43,7 @@ import javax.net.ssl.X509TrustManager;
 
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
@@ -514,13 +514,13 @@ public class CertificateStore
 
             char[] passphrase = secret.getChars();
 
-            FSNode keyStoreFile = null;
+            FSPath keyStoreFile = null;
 
             try
             {
                 if (keyStoreLocation != null)
                 {
-                    keyStoreFile = FSUtil.getDefault().newFSNode(keyStoreLocation);
+                    keyStoreFile = FSUtil.getDefault().newFSPath(keyStoreLocation);
                 }
                 
                 // check user copy of cacerts

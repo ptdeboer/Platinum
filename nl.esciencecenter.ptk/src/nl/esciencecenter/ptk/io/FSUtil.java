@@ -52,7 +52,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  * Global File System utils and resource loaders. <br>
  * Used to access the local file system.
  */
-public class FSUtil implements ResourceProvider, FSNodeProvider
+public class FSUtil implements ResourceProvider, FSPathProvider
 {
     private static final ClassLogger logger = ClassLogger.getLogger(FSUtil.class);
 
@@ -214,7 +214,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
 
     public boolean existsPath(String path, LinkOption... linkOptions) throws IOException
     {
-        return newFSNode(resolvePathURI(path)).exists(linkOptions);
+        return newFSPath(resolvePathURI(path)).exists(linkOptions);
     }
 
     /**
@@ -223,8 +223,8 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     public void copyFile(URI source, URI destination) throws IOException
     {
         // Create
-        InputStream finput = createInputStream(newFSNode(source));
-        OutputStream foutput = createOutputStream(newFSNode(destination), false);
+        InputStream finput = createInputStream(newFSPath(source));
+        OutputStream foutput = createOutputStream(newFSPath(destination), false);
         // Copy
         IOUtil.copyStreams(finput, foutput, false);
         // Close 
@@ -246,7 +246,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
 
         try
         {
-            FSNode file = newFSNode(filePath);
+            FSPath file = newFSPath(filePath);
             if (file.exists(linkOptions) == false)
             {
                 return false;
@@ -291,7 +291,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
 
         try
         {
-            FSNode file = newFSNode(directoryPath);
+            FSPath file = newFSPath(directoryPath);
             if (file.exists(linkOptions) == false)
                 return false;
 
@@ -315,9 +315,9 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
      * 
      * @param uri
      *            - uri of the file. Uri can be relative here.
-     * @return new resolved FSNode
+     * @return new resolved FSPath
      */
-    public FSNode newFSNode(URI uri) throws IOException
+    public FSPath newFSPath(URI uri) throws IOException
     {
         try
         {
@@ -335,11 +335,11 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         if (GlobalProperties.isWindows())
         {
             String dosPath = new URIFactory(uri).getDosPath();
-            return new FSNode(this, fs.getPath(dosPath));
+            return new FSPath(this, fs.getPath(dosPath));
         }
         else
         {
-            return new FSNode(this, fs.getPath(uri.getPath()));
+            return new FSPath(this, fs.getPath(uri.getPath()));
         }
     }
 
@@ -351,7 +351,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
      */
     public String[] list(String dirPath, LinkOption... linkOptions) throws IOException, FileURISyntaxException
     {
-        FSNode file = newFSNode(resolvePathURI(dirPath));
+        FSPath file = newFSPath(resolvePathURI(dirPath));
 
         if (file.exists(linkOptions) == false)
         {
@@ -380,7 +380,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
 
     public void deleteFile(String filename) throws IOException, FileURISyntaxException
     {
-        FSNode file = newFSNode(filename);
+        FSPath file = newFSPath(filename);
         if (file.exists(LinkOption.NOFOLLOW_LINKS) == false)
             return;
         file.delete();
@@ -396,31 +396,31 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
      */
     public OutputStream createOutputStream(String filename) throws IOException
     {
-        return createOutputStream(newFSNode(filename), false);
+        return createOutputStream(newFSPath(filename), false);
     }
 
-    public FSNode mkdir(String path) throws IOException
+    public FSPath mkdir(String path) throws IOException
     {
-        FSNode dir = this.newFSNode(path);
+        FSPath dir = this.newFSPath(path);
         dir.mkdir();
         return dir;
     }
 
-    public FSNode mkdirs(String path) throws IOException
+    public FSPath mkdirs(String path) throws IOException
     {
-        FSNode dir = this.newFSNode(path);
+        FSPath dir = this.newFSPath(path);
         dir.mkdirs();
         return dir;
     }
 
-    public FSNode getLocalTempDir() throws IOException
+    public FSPath getLocalTempDir() throws IOException
     {
-        return this.newFSNode(this.tmpDir);
+        return this.newFSPath(this.tmpDir);
     }
 
-    public FSNode getWorkingDir() throws IOException
+    public FSPath getWorkingDir() throws IOException
     {
-        return this.newFSNode(this.workingDir);
+        return this.newFSPath(this.workingDir);
     }
 
     public URI getUserHome()
@@ -428,9 +428,9 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         return userHome;
     }
 
-    public FSNode getUserHomeDir() throws IOException
+    public FSPath getUserHomeDir() throws IOException
     {
-        return newFSNode(this.userHome);
+        return newFSPath(this.userHome);
     }
 
     public URI getUserHomeURI()
@@ -450,27 +450,27 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     }
 
     /**
-     * Returns new directory FSNode Object. Path might not exist.
+     * Returns new directory FSPath Object. Path might not exist.
      * 
      * @param dirUri
      *            - location of new Directory
      * @return - new Local Directory object.
      * @throws IOException
      */
-    public FSNode newLocalDir(URI dirUri) throws IOException
+    public FSPath newLocalDir(URI dirUri) throws IOException
     {
-        FSNode dir = this.newFSNode(dirUri);
+        FSPath dir = this.newFSPath(dirUri);
         return dir;
     }
 
-    public FSNode newFSNode(String fileUri) throws IOException
+    public FSPath newFSPath(String fileUri) throws IOException
     {
-        return newFSNode(resolvePathURI(fileUri));
+        return newFSPath(resolvePathURI(fileUri));
     }
 
     public void deleteDirectoryContents(URI uri, boolean recursive) throws IOException
     {
-        FSNode node = newLocalDir(uri);
+        FSPath node = newLocalDir(uri);
         if (node.exists() == false)
             throw new FileNotFoundException("Directory does not exist:" + uri);
 
@@ -478,10 +478,10 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         return;
     }
 
-    public void deleteDirectoryContents(FSNode dirNode, boolean recursive) throws IOException
+    public void deleteDirectoryContents(FSPath dirNode, boolean recursive) throws IOException
     {
-        FSNode[] nodes = dirNode.listNodes();
-        for (FSNode node : nodes)
+        FSPath[] nodes = dirNode.listNodes();
+        for (FSPath node : nodes)
         {
             if (node.isDirectory() && recursive)
             {
@@ -491,7 +491,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         }
     }
 
-    public void delete(FSNode node, boolean recursive) throws IOException
+    public void delete(FSPath node, boolean recursive) throws IOException
     {
         if ((node.isDirectory()) && (recursive))
         {
@@ -515,7 +515,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         try
         {
             URI uri = this.resolvePathURI(relPath);
-            FSNode node = newFSNode(uri);
+            FSPath node = newFSPath(uri);
             // should trigger file system check on path.
             boolean exists = node.exists();
             if (reasonH != null)
@@ -561,16 +561,16 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     }
 
     @Override
-    public List<FSNode> listRoots() 
+    public List<FSPath> listRoots() 
     {
-        ArrayList<FSNode> roots=new ArrayList<FSNode>(); 
+        ArrayList<FSPath> roots=new ArrayList<FSPath>(); 
         
         Iterator<Path> iterator = java.nio.file.FileSystems.getDefault().getRootDirectories().iterator();
         
         while(iterator.hasNext())
         {   
             Path path=iterator.next();
-            roots.add(new FSNode(this,path)); 
+            roots.add(new FSPath(this,path)); 
         }
         return roots; 
     }
@@ -579,15 +579,15 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
      * Old code which explicitly checks drive "A:" through "Z:" 
      * @throws IOException 
      */
-    public List<FSNode> listWindowsDrives(boolean skipFloppyScan) throws IOException
+    public List<FSPath> listWindowsDrives(boolean skipFloppyScan) throws IOException
     {
-        ArrayList<FSNode> roots = new ArrayList<FSNode>();
+        ArrayList<FSPath> roots = new ArrayList<FSPath>();
 
         // Create the A: drive whether it is mounted or not
         if (skipFloppyScan == false)
         {
             String drivestr = "A:\\";
-            roots.add(this.newFSNode(drivestr)); 
+            roots.add(this.newFSPath(drivestr)); 
         }
 
         // Run through all possible mount points and check
@@ -596,7 +596,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         {
             char deviceChars[] = { c, ':', '\\' };
             String deviceName = new String(deviceChars);
-            FSNode device=newFSNode(deviceName); 
+            FSPath device=newFSPath(deviceName); 
             
             if (device.exists())
             {
@@ -614,13 +614,13 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     @Override
     public InputStream createInputStream(java.net.URI uri) throws IOException
     {
-        return createInputStream(newFSNode(uri));
+        return createInputStream(newFSPath(uri));
     }
 
     @Override
-    public InputStream createInputStream(FSNode node) throws IOException
+    public InputStream createInputStream(FSPath node) throws IOException
     {
-        return Files.newInputStream(((FSNode) node)._path);
+        return Files.newInputStream(((FSPath) node)._path);
     }
 
     @Override
@@ -628,7 +628,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     {
         if (isLocalFSUri(uri))
         {
-            return createOutputStream(newFSNode(uri), false);
+            return createOutputStream(newFSPath(uri), false);
         }
         else
         {
@@ -637,7 +637,7 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
         }
 
     }
-    public OutputStream createOutputStream(FSNode node, boolean append) throws IOException
+    public OutputStream createOutputStream(FSPath node, boolean append) throws IOException
     {
         OpenOption openOptions[];
 
@@ -663,25 +663,25 @@ public class FSUtil implements ResourceProvider, FSNodeProvider
     @Override
     public RandomReadable createRandomReader(URI uri) throws IOException
     {
-        return new LocalFSReader(newFSNode(uri));
+        return new LocalFSReader(newFSPath(uri));
     }
     
     @Override
-    public RandomReadable createRandomReader(FSNode node) throws IOException
+    public RandomReadable createRandomReader(FSPath node) throws IOException
     {
-        return new LocalFSReader((FSNode) node);
+        return new LocalFSReader((FSPath) node);
     }
 
     @Override
-    public RandomWritable createRandomWriter(FSNode node) throws IOException
+    public RandomWritable createRandomWriter(FSPath node) throws IOException
     {
-        return new LocalFSWriter((FSNode) node);
+        return new LocalFSWriter((FSPath) node);
     }
     
     @Override
     public RandomWritable createRandomWriter(URI uri) throws IOException
     {
-        return new LocalFSWriter((newFSNode(uri)));
+        return new LocalFSWriter((newFSPath(uri)));
     }
 
     public ResourceLoader getResourceLoader()

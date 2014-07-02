@@ -25,9 +25,8 @@ import java.io.IOException;
 public interface RandomReadable extends AutoCloseable
 {
     /**
-     * Reads <code>nrBytes</code> from file starting to read from
-     * <code>fileOffset</code>. Data is stored into the byte array buffer[]
-     * starting at bufferOffset.
+     * Reads <code>nrBytes</code> from file starting to read from <code>fileOffset</code>. Data is stored into the byte
+     * array buffer[] starting at bufferOffset.
      * 
      * @throws IOException
      * @see java.io.RandomAccessFile#readBytes
@@ -36,11 +35,10 @@ public interface RandomReadable extends AutoCloseable
             int nrBytes) throws IOException;
 
     /**
-     * Return (maximum) length of random readable resource. fileOffset+nrBytes
-     * &lt; length of resource.
+     * Return (maximum) length of random readable resource. fileOffset+nrBytes &lt; length of resource.
      */
     long getLength() throws IOException;
-    
+
     // explicit inheritance
-    public void close() throws Exception; 
+    public void close() throws Exception;
 }

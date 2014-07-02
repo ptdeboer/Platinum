@@ -25,11 +25,11 @@ import java.io.RandomAccessFile;
 
 public class LocalFSReader implements RandomReadable
 {
-    protected FSNode fsNode;
+    protected FSPath fsNode;
 
     protected RandomAccessFile randomFile = null;
 
-    public LocalFSReader(FSNode node) throws IOException
+    public LocalFSReader(FSPath node) throws IOException
     {
         this.fsNode = node;
         this.randomFile = new RandomAccessFile(fsNode.toJavaFile(), "r");

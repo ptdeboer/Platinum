@@ -26,7 +26,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.util.Vector;
 
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData.VRLEntry;
@@ -118,7 +118,7 @@ public class VRLEntryListTransferable implements Transferable
             {
                 VRL vri = vris.get(i).vrl;
                 // local files are dropped:
-                if (vri.hasScheme(FSNode.FILE_SCHEME))
+                if (vri.hasScheme(FSPath.FILE_SCHEME))
                 {
                     // create local file path (leave out hostname!)
                     urisstr += "file://" + vri.getPath();
@@ -145,7 +145,7 @@ public class VRLEntryListTransferable implements Transferable
             {
                 VRL vri = ref.vrl;
 
-                if (vri.hasScheme(FSNode.FILE_SCHEME))
+                if (vri.hasScheme(FSPath.FILE_SCHEME))
                 {
                     File file = new File(vri.getPath());
                     fileList.add(file);

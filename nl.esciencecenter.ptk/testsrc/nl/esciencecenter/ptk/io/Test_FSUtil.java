@@ -39,14 +39,14 @@ public class Test_FSUtil
 
     protected static Object testDirMutex = new Object();
 
-    protected static FSNode testDir = null;
+    protected static FSPath testDir = null;
 
     protected static FSUtil getFSUtil()
     {
         return FSUtil.getDefault();
     }
 
-    protected static FSNode getCreateTestDir() throws IOException
+    protected static FSPath getCreateTestDir() throws IOException
     {
         synchronized (testDirMutex)
         {
@@ -61,7 +61,7 @@ public class Test_FSUtil
             FSUtil fsUtil = getFSUtil();
 
             // setup also tests basic methods !
-            testDir = fsUtil.newFSNode(Settings.getInstance().getTestSubdir("testfsutil"));
+            testDir = fsUtil.newFSPath(Settings.getInstance().getTestSubdir("testfsutil"));
 
             Assert.assertNotNull("Local test directory is null", testDir);
 
@@ -90,7 +90,7 @@ public class Test_FSUtil
     // Actual tests
     // ========================================================================
 
-    public FSNode getTestDir() throws IOException
+    public FSPath getTestDir() throws IOException
     {
         return getCreateTestDir();
     }
@@ -98,17 +98,17 @@ public class Test_FSUtil
     @Test
     public void checkTestDir() throws IOException
     {
-        FSNode dir = getTestDir();
+        FSPath dir = getTestDir();
         Assert.assertTrue("Local test directory MUST exist:" + testDir, dir.exists());
         Assert.assertTrue("Local test directory MUST is not directory!", dir.isDirectory());
     }
 
-    public void testCreateDeleteFile(FSNode parent, String fileName) throws Exception
+    public void testCreateDeleteFile(FSPath parent, String fileName) throws Exception
     {
-        FSNode tDir = getTestDir();
+        FSPath tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSNode file = tDir.resolvePath(fileName);
+        FSPath file = tDir.resolvePath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
         file.create();
         Assert.assertTrue("Test file must exist after mkdir():" + file, file.exists());
@@ -127,10 +127,10 @@ public class Test_FSUtil
     @Test
     public void testCreateDeleteDir() throws Exception
     {
-        FSNode tDir = getTestDir();
+        FSPath tDir = getTestDir();
         String path = tDir.getPathname();
         String subdir = "subdir";
-        FSNode subDir = tDir.resolvePath(subdir);
+        FSPath subDir = tDir.resolvePath(subdir);
         Assert.assertFalse("Subdirectory already exists:" + subDir, subDir.exists());
         subDir.mkdir();
         Assert.assertTrue("Subdirectory must exist after mkdir():" + subDir, subDir.exists());
@@ -153,12 +153,12 @@ public class Test_FSUtil
         testCreateDeleteFile(getTestDir(), "test File1");
     }
 
-    public void testCreateReadWriteFile(FSNode parent, String fileName) throws Exception
+    public void testCreateReadWriteFile(FSPath parent, String fileName) throws Exception
     {
-        FSNode tDir = getTestDir();
+        FSPath tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSNode file = tDir.resolvePath(fileName);
+        FSPath file = tDir.resolvePath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
 
         OutputStream outps = file.createOutputStream(false);
@@ -200,7 +200,7 @@ public class Test_FSUtil
     {
         try
         {
-            FSNode tDir = getCreateTestDir();
+            FSPath tDir = getCreateTestDir();
             getFSUtil().delete(tDir, true);
             Assert.assertFalse("Test directory must be deleted after testSuite", tDir.exists());
         }

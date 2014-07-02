@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.junit.Assert;
 
 import nl.esciencecenter.ptk.GlobalProperties;
-import nl.esciencecenter.ptk.io.FSNode;
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
@@ -97,10 +97,10 @@ public class Settings
     	return GlobalProperties.isWindows(); 
     }
 
-    public FSNode getFSUtil_testDir(boolean autoCreate) throws IOException
+    public FSPath getFSUtil_testDir(boolean autoCreate) throws IOException
     {
         String testDirstr = getLocalTestDir() + "/testDirPTKUtil";
-        FSNode testDir = FSUtil.getDefault().newFSNode(testDirstr);
+        FSPath testDir = FSUtil.getDefault().newFSPath(testDirstr);
 
         if (testDir.exists() == false)  
         {

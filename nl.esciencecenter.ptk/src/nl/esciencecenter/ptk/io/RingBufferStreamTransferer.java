@@ -30,12 +30,10 @@ import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
- * RingBufferStreamTransferer copies data from in InputStream to an
- * OutputStream. It uses a circular (ring) buffer to transfer bytes from the
- * InputStream to the OutputStream. It starts the reader in a background thread
- * while waiting for the reader to fill the buffer and starting writing the data
- * in current thread. This parallel read/write will better use the available
- * bandwidth by both reading and writing in parallel.
+ * RingBufferStreamTransferer copies data from in InputStream to an OutputStream. <br>
+ * It uses a circular (ring) buffer to transfer bytes from the InputStream to the OutputStream. It starts the reader in
+ * a background thread while waiting for the reader to fill the buffer and starting writing the data in current thread.
+ * This parallel read/write will better use the available bandwidth by both reading and writing in parallel.
  * <p>
  * 
  * @author P.T. de Boer
@@ -75,8 +73,8 @@ public class RingBufferStreamTransferer
     private long writeTime = 0;
 
     /**
-     * Optional Transfer info. Class will update current transfer by updating
-     * the nr of bytes currently transferred by this buffer.
+     * Optional Transfer info. Class will update current transfer by updating the nr of bytes currently transferred by
+     * this buffer.
      */
     ITaskMonitor transferInfo = null;
 
@@ -152,9 +150,8 @@ public class RingBufferStreamTransferer
     }
 
     /**
-     * Limits the nr of bytes thats get written each write iteration. If the
-     * OutputStream can not efficiently (or not at all!) handle big writes,
-     * limit the maximum with this method.
+     * Limits the nr of bytes thats get written each write iteration. If the OutputStream can not efficiently (or not at
+     * all!) handle big writes, limit the maximum with this method.
      */
     public void setMaxWriteChunkSize(int size)
     {
@@ -162,10 +159,9 @@ public class RingBufferStreamTransferer
     }
 
     /**
-     * Limits the nr of bytes thats get read each read iteration. If the
-     * InputStream can not efficiently (or not at all!) handle big reads, limit
-     * the maximum with this method. Usually the 'read()' method already reads
-     * the nr. bytes it can handle per read (which it returns).
+     * Limits the nr of bytes thats get read each read iteration. If the InputStream can not efficiently (or not at
+     * all!) handle big reads, limit the maximum with this method. Usually the 'read()' method already reads the nr.
+     * bytes it can handle per read (which it returns).
      */
     public void setMaxReadChunkSize(int size)
     {
@@ -495,7 +491,7 @@ public class RingBufferStreamTransferer
         }
         catch (InterruptedException e)
         {
-            throw e; 
+            throw e;
         }
         // after transfer make sure all streams are flushes and closed !
 
