@@ -69,7 +69,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     // todo: UTF-8 Char Mapping
     public final String specialCharMapping[] =
     {
-            "�", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 00 - 0F
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 00 - 0F
             "", "", "", "\u240d", "", "", "", "", "", "", "", "", "", "", "", "", // 10-1F
             "", "A", "B", "C", "D", "E", "F", "G", "", "", "", "", "", "", "", "", // 20
             "H", "I", "J", "K", "L", "M", "N", "O", "", "", "", "", "", "", "", "", // 30
