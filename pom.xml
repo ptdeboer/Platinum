@@ -1,114 +1,74 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <!--  
-             Default build properties for standalone build.
-          -->
-        <ptk.rootdir>.</ptk.rootdir>
-        <ptk.dist>${ptk.rootdir}/dist</ptk.dist>
-        <ptk.source.subdir>.</ptk.source.subdir>
-        <ptk.modules.dir>${ptk.source.subdir}</ptk.modules.dir>
+	<groupId>nl.esciencecenter.platinum</groupId>
+	<artifactId>platinum</artifactId>
+	<packaging>pom</packaging>
+	<name>Platinum</name>
+	<version>1.1.0-SNAPSHOT</version>
 
-        <!-- should read project.prop+local.prop here -->
-        <project.version>0.8.0</project.version>
-        <ptk.version>0.8.0</ptk.version>
+	<properties>
+		<ptk.version>${project.version}</ptk.version>
+		<junit.version>4.12</junit.version>
+	</properties>
 
-    </properties>
+	<repositories>
+	</repositories>
 
-    <!-- Master build artefact is *this* -->
+	<modules>
+		<module>ptk-core</module>
+		<module>ptk-web</module>
+		<module>ptk-ui</module>
+		<module>ptk-util-vterm</module>
+		<module>ptk-vbrowser-vrs</module>
+		<module>ptk-vbrowser-ui</module>
+		<module>ptk-vbrowser-viewers</module>
+		<module>ptk-vbrowser-viewers-loboviewer</module> 
+	</modules>
 
-    <groupId>nl.esciencecenter.platinum</groupId>
-    <artifactId>mvnbuild</artifactId>
-    <packaging>pom</packaging>
-    <version>dev-1</version>
-    <name>mvnbuild (${project.version})</name>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+						<files>
+							<file>project.prop</file>
+							<file>local.prop</file>
+						</files>
+					</configuration>
+				</plugin>
 
-    <repositories>
+				<!-- Assembly -->
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.5.2</version>
+				</plugin>
 
-        <repository>
-            <id>nlesc-1</id>
-            <name>nelsc-1</name>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-            <url>http://maven2.esciencetest.nl/maven2</url>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-        </repository>
-
-    </repositories>
-
-    <modules>
-        <!--  core -->
-        <module>${ptk.modules.dir}/nl.esciencecenter.ptk</module>
-        <module>${ptk.modules.dir}/nl.esciencecenter.ptk.web</module>
-        <module>${ptk.modules.dir}/nl.esciencecenter.ptk.vbrowser.vrs</module>
-
-        <!-- UI modules -->
-        <module>${ptk.modules.dir}/nl.esciencecenter.ptk.ui</module>
-        <module>${ptk.modules.dir}/nl.esciencecenter.ptk.vbrowser.viewers</module>
-        <module>${ptk.modules.dir}/nl.esciencecenter.ptk.vbrowser.ui</module>
-
-    </modules>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                        <files>
-                            <file>${ptk.rootdir}/project.prop</file>
-                            <file>${ptk.rootdir}/local.prop</file>
-                        </files>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.2.1</version>
-                    <configuration>
-                        <descriptors>
-                            <descriptor>bin.xml</descriptor>
-                        </descriptors>
-                    </configuration>
-                </plugin>
-
-            </plugins>
-        </pluginManagement>
-    </build>
-
-    <dependencies>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- *************** MAVEN PROPERTIES PLUGIN *************** -->
-
-        <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>properties-maven-plugin</artifactId>
-            <version>1.0-alpha-2</version>
-        </dependency>
-
-    </dependencies>
+	<dependencies>
+		<!-- JUnit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Maven Properties Plugin -->
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>properties-maven-plugin</artifactId>
+			<version>1.0-alpha-2</version>
+		</dependency>
+	</dependencies>
 
 </project>

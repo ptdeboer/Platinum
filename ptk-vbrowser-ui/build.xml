@@ -1,0 +1,123 @@
+<project name="Platinum-vbrowser.ui" default="dist" basedir=".">
+    <description>
+		Project	  : Platinum
+		Component : VBrowser UI
+            	            	
+    </description>
+
+    <property name="project.root" location=".." />
+    <!-- project environment + component settings -->
+    <property file="${project.root}/project.prop" />
+    <property environment="env" />
+    <property name="comp.root" location="." />
+    <property file="build.prop" />
+
+    <!-- 
+      *	Target: init 
+      -->
+    <target name="init">
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${comp.build}" />
+        <mkdir dir="${comp.build.classes}" />
+        <mkdir dir="${comp.dist}" />
+        <mkdir dir="${comp.dist}/lib" />
+        <mkdir dir="${comp.dist}/etc" />
+    	
+        <property name="platinum.version" value="dev-snapshot"/>
+        <property name="comp.version" value="${platinum.version}"/>
+        	
+    </target>
+
+    <target name="config">
+    </target>
+
+    <target name="generate">
+    </target>
+
+    <path id="comp.classpath">
+        <!-- include project libraries-->
+        <fileset dir="${project.dist.lib}">
+            <include name="**/*.jar" />
+        </fileset>
+        <!-- add local paths settings -->
+    </path>
+
+    <!--
+     *	Target : Compilation 
+	 -->
+    <target name="build" depends="init" description="compile the source ">
+        
+        <javac srcdir="${comp.src}" 
+            destdir="${comp.build.classes}" 
+            compiler="${javac.compiler}"
+            encoding="${javac.encoding}"
+            debug="${javac.debug}" 
+            source="${javac.source}" 
+            target="${javac.target}">
+            <classpath refid="comp.classpath" />
+        </javac>
+                
+    </target>
+    
+    <target name="test" depends="build">
+    </target> 
+        
+    <target name="jar" depends="build">
+
+        <property name="comp.dist.lib.jar" value="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" /> 
+        <property name="comp.dist.lib.icons.jar" value="${comp.dist}/lib/${comp.artefactId}-icons-${comp.version}.jar" /> 
+                
+        <!-- Create application JAR file -->
+        <jar jarfile="${comp.dist.lib.jar}" basedir="${comp.build.classes}" />
+
+        <!-- creat jar file out of icons -->
+		<jar jarfile="${comp.dist.lib.icons.jar}" basedir="${comp.icons}" />
+
+    </target>
+
+    <!-- source distribution: nothing to do -->
+    <target name="source-dist" />
+
+    <!-- 
+    	Target: dist 
+      -->
+    <target name="dist" depends="build,jar">
+    </target>
+
+    <!--
+	 *	Target: dist-install
+	 *  Info  : 
+	 * 		    copy component jars, etc into project directory 
+     -->
+    <target name="dist-install" depends="dist" description="install libraries">
+        <fail message="*** Error: property 'project.root' not defined. Please start with '-Dproject.root=&lt;path&gt;' argument. " unless="project.env.ok" />
+
+        <mkdir dir="${project.dist.lib}" />
+
+        <!-- lib -->
+        <copy todir="${project.dist.lib}">
+            <fileset file="${comp.dist.lib.jar}" />
+        </copy>
+        
+        <!-- scripts -->
+        <copy todir="${project.dist}">
+            <fileset file="scripts/vbrowser.sh" />
+        </copy>
+
+        <!-- icons  -->
+        <mkdir dir="${project.dist.lib}/icons" />
+        <copy todir="${project.dist.lib}/icons">
+			<fileset file="${comp.dist.lib.icons.jar}" />  
+			<!-- <fileset dir="${comp.root}/icons" /> -->  
+        </copy>
+
+    </target>
+
+    <target name="clean" description="clean">
+        <delete dir="${comp.dist}"/>
+        <delete dir="${comp.build}"/>
+    </target>
+
+</project>
+
+

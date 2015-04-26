@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ptk-vbrowser-ui</artifactId>
+    <name>ptk-vbrowser-ui ${version}</name>
+
+    <parent>
+        <groupId>nl.esciencecenter.platinum</groupId>
+        <artifactId>platinum</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/resources/icons</directory>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <!-- <dependency> <groupId>nl.ikarus.nxt.priv.imageio.icoreader</groupId> 
+            <artifactId>ICOReader</artifactId> <version>1.04</version> </dependency> -->
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-core</artifactId>
+            <version>${version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-vbrowser-vrs</artifactId>
+            <version>${version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-vbrowser-viewers</artifactId>
+            <version>${version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
