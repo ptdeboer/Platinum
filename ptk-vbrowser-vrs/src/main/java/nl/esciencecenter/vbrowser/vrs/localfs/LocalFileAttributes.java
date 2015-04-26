@@ -23,41 +23,30 @@ package nl.esciencecenter.vbrowser.vrs.localfs;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
-import nl.esciencecenter.vbrowser.vrs.node.FileAttributes;
+import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
 
-public class LocalFileAttributes extends FileAttributes 
+public class LocalFileAttributes implements VFSFileAttributes
 {
-    protected BasicFileAttributes attrs; 
-             
+    protected BasicFileAttributes attrs;
+
     public LocalFileAttributes(BasicFileAttributes attrs)
     {
-        this.attrs=attrs;  
+        this.attrs = attrs;
     }
-    
+
     public boolean isSymbolicLink()
     {
         return attrs.isSymbolicLink();
     }
-    
+
     public String getSymbolicLinkTarget()
     {
-        return null; 
+        return null;
     }
 
     public boolean isHidden()
     {
-        return false; 
-    }
-
-    public long getModificationTime()
-    {
-        FileTime time = attrs.lastModifiedTime();
-        if (time==null)
-        {
-            return -1; 
-        }
-        
-        return time.toMillis(); 
+        return false;
     }
 
     @Override
@@ -87,7 +76,7 @@ public class LocalFileAttributes extends FileAttributes
     @Override
     public boolean isDirectory()
     {
-       return attrs.isDirectory();
+        return attrs.isDirectory();
     }
 
     @Override
@@ -99,13 +88,25 @@ public class LocalFileAttributes extends FileAttributes
     @Override
     public long size()
     {
-        return attrs.size(); 
+        return attrs.size();
     }
 
     @Override
     public Object fileKey()
     {
         return attrs.fileKey();
+    }
+
+    @Override
+    public boolean isLocal()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isRemote()
+    {
+        return false;
     }
 
 }
