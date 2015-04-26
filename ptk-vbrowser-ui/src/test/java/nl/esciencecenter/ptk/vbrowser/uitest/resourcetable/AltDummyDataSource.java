@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.vbrowser.uitest.ui.resourcetable;
+package nl.esciencecenter.ptk.vbrowser.uitest.resourcetable;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.vbrowser.uitest.ui.resourcetable;
+package nl.esciencecenter.ptk.vbrowser.uitest.resourcetable;
 
 
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
