@@ -61,7 +61,7 @@
 	<target name="platinum-modules-test" depends="init">
 
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk"/>
+			<param name="name" value="ptk"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
@@ -78,13 +78,13 @@
 	<target name="platinum-core" depends="init,platinum-auxlibs">
 
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk"/>
+			<param name="name" value="ptk-core"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
 
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk.web"/>
+			<param name="name" value="ptk-web"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
@@ -93,7 +93,7 @@
 	<target name="platinum-vbrowser-vrs" depends="init,platinum-core">
 
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk.vbrowser.vrs"/>
+			<param name="name" value="ptk-vbrowser-vrs"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
@@ -109,7 +109,7 @@
 	<target name="platinum-util-vterm" depends="platinum-core">
 
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk.util.vterm"/>
+			<param name="name" value="ptk-util-vterm"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
@@ -125,7 +125,7 @@
 	<target name="platinum-vbrowser" depends="platinum-core,platinum-vbrowser-vrs">
 
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk.ui"/>
+			<param name="name" value="ptk-ui"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
@@ -134,13 +134,13 @@
     	     Note: VBrowser viewers are build before VBrowser core component!
     	  -->
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk.vbrowser.viewers"/>
+			<param name="name" value="ptk-vbrowser-viewers"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
 
 		<antcall target="module-build">
-			<param name="name" value="nl.esciencecenter.ptk.vbrowser.ui"/>
+			<param name="name" value="ptk-vbrowser-ui"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
@@ -184,7 +184,7 @@
 	<target name="platinum-doc.userguide" if="do.build.doc.userguide" depends="platinum-core,check-build-userguide">
 
 		<antcall target="module-build" >
-			<param name="name" value="doc.userguide"/>
+			<param name="name" value="ptk-doc-userserguide"/>
 			<param name="version" value=""/>
 			<param name="subpath" value=""/>
 		</antcall>
