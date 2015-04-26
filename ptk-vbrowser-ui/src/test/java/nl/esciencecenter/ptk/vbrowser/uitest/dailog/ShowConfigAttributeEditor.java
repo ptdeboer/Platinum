@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.vbrowser.uitest.ui.dailog;
+package nl.esciencecenter.ptk.vbrowser.uitest.dailog;
 
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeEditorForm;
