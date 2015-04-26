@@ -5,4 +5,6 @@
 /build
 /packs
 /target
-
+.project
+.settings
+.classpath
