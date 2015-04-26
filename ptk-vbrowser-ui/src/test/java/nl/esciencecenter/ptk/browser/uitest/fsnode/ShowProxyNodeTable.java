@@ -18,7 +18,7 @@
  */ 
 // source: 
 
-package nl.esciencecenter.ptk.browser.test.fsnode;
+package nl.esciencecenter.ptk.browser.uitest.fsnode;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -36,7 +36,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 
 
-public class TestProxyNodeTable
+public class ShowProxyNodeTable
 {
     public static void main(String args[])
     {

@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.vbrowser.ui.dailog;
+package nl.esciencecenter.ptk.vbrowser.uitest.ui.dailog;
 
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeViewer;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;

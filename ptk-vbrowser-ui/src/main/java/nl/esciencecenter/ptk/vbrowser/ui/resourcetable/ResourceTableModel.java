@@ -185,7 +185,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
     private StringList allAttributeNames = null;
 
     // For Testing
-    protected ResourceTableModel(String[] headers)
+    public ResourceTableModel(String[] headers)
     {
         super();
         initHeaders(headers);

@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
+package nl.esciencecenter.ptk.vbrowser.uitest.ui.resourcetable;
 
 import java.awt.BorderLayout;
 
@@ -7,13 +7,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
-import nl.esciencecenter.ptk.browser.test.dummy.StartDummyBrowser;
+import nl.esciencecenter.ptk.browser.uitest.dummy.StartDummyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterfaceAdaptor;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 
-public class Start_ShowAltDummyResourceTable
+public class ShowAltDummyResourceTable
 {
     public static void main(String args[])
     {

@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.browser.test.dummy;
+package nl.esciencecenter.ptk.browser.uitest.dummy;
 
 import java.awt.BorderLayout;
 

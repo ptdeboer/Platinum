@@ -18,7 +18,7 @@
  */
 // source: 
 
-package nl.esciencecenter.ptk.browser.test.dummy;
+package nl.esciencecenter.ptk.browser.uitest.dummy;
 
 import test.viewers.DummyViewer;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
