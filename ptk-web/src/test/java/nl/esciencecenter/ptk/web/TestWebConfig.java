@@ -15,16 +15,16 @@ public class TestWebConfig
     public void TestCreateWebConfigFromURIs() throws URISyntaxException
     {
         
-        testCreateConfig("http","pablo","escobar.net",8080,"/service","/service");
-        testCreateConfig("https","pablo","escobar.net",8443,"/service","/service");
-        testCreateConfig("https","pablo","escobar.net",8443,"service","/service");
-        testCreateConfig("https","pablo","escobar.net",8443,"service/","/service");
-        testCreateConfig("https","pablo","escobar.net",8443,"/service/","/service");
+        testCreateConfig("http","pablo","escobar.net",8080,"/service","http://pablo@escobar.net:8080/service");
+        testCreateConfig("https","pablo","escobar.net",8443,"/service","https://pablo@escobar.net:8443/service");
+        testCreateConfig("https","pablo","escobar.net",8443,"service","https://pablo@escobar.net:8443/service");
+        testCreateConfig("https","pablo","escobar.net",8443,"service/","https://pablo@escobar.net:8443/service");
+        testCreateConfig("https","pablo","escobar.net",8443,"/service/","https://pablo@escobar.net:8443/service");
 
-        testCreateConfig("http","pablo","escobar.net",80,null,"/");
-        testCreateConfig("http",null,"escobar.net",80,"/service","/");
-        testCreateConfig("http","pablo","escobar.net",80,null,"/");
-        testCreateConfig("http",null,"escobar.net",80,null,"/");
+        testCreateConfig("http","pablo","escobar.net",80,null,"http://pablo@escobar.net:80/");
+        testCreateConfig("http",null,"escobar.net",80,"/service","http://pablo@escobar.net:80/service");
+        testCreateConfig("http","pablo","escobar.net",80,null,"http://pablo@escobar.net:80/");
+        testCreateConfig("http",null,"escobar.net",80,null,"http://pablo@escobar.net:80/");
         
         // null ports ? 
         //testCreateConfig("http","pablo","escobar.net",0,"/service","/service");
@@ -32,41 +32,17 @@ public class TestWebConfig
 
     }
     
-    protected void testCreateConfig(String scheme, String user,String host, int port, String servicePath,String resolvedServicePath) throws URISyntaxException
+    protected void testCreateConfig(String scheme, String user,String host, int port, String servicePath,String expectedUri) throws URISyntaxException
     {
-        String uriStr=scheme+"://";
         
-        if (user!=null)
-            uriStr+=user+"@";
-        
-        uriStr+=host;
-        
-        if (port>0)
-            uriStr+=":"+port; 
-    
-        if (servicePath==null)
-        {
-            uriStr+="/";
-        }
-        else if (servicePath.startsWith("/")==false) 
-        {
-            uriStr+="/"+servicePath;
-        }
-        else
-        {
-            uriStr+=servicePath;
-        }
-        
-        URI uri=new URI(uriStr); 
+        URI uri=new URI(expectedUri); 
         uri=uri.normalize(); 
         
         WebConfig conf=new WebConfig(uri); 
         Assert.assertEquals("Scheme must match protocol.",scheme,conf.getProtocol());  
         Assert.assertEquals("Hostnames must match.",host,conf.getHostname());  
         Assert.assertEquals("Port numbers must match.",port,conf.getPort());   
-        Assert.assertEquals("Service paths must match.",resolvedServicePath,conf.getServicePath());    
-        Assert.assertEquals("Port numbers must match.",port,conf.getPort());   
-
+        
         outPrintf("Service URI=%s\n",conf.getServiceURI());
         Assert.assertEquals("Service URIs must match",uri,conf.getServiceURI()); 
         
