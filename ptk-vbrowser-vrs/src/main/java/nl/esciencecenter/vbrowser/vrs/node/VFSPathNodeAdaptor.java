@@ -6,10 +6,11 @@ import java.util.List;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Adaptor for the abstract VFSPathNode class. Currently used for testing.  
+/**
+ * Adaptor for the abstract VFSPathNode class. Currently used for testing.
  */
 public class VFSPathNodeAdaptor extends VFSPathNode
 {
@@ -32,7 +33,7 @@ public class VFSPathNodeAdaptor extends VFSPathNode
     }
 
     @Override
-    public FileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException
+    public VFSFileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException
     {
         return null;
     }
@@ -63,7 +64,7 @@ public class VFSPathNodeAdaptor extends VFSPathNode
 
     public boolean delete(LinkOption... linkOptions) throws VrsException
     {
-        return false; 
+        return false;
     }
 
     @Override
@@ -71,6 +72,5 @@ public class VFSPathNodeAdaptor extends VFSPathNode
     {
         return null;
     }
-
 
 }
