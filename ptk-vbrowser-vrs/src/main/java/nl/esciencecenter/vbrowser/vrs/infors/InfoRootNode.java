@@ -211,10 +211,11 @@ public class InfoRootNode extends InfoResourceNode
         logger.infoPrintf("Saving InfoRootNode to:%s\n",configVrl); 
        
         VRSClient vrsClient=this.infors.getVRSClient(); 
-        String xml=toXML();
-        xml=XMLData.prettyFormat(xml, 3); 
         try
         {
+            String xml=toXML();
+            xml=XMLData.prettyFormat(xml, 3);
+
             VFSPath path = vrsClient.openVFSPath(configVrl); 
             VFSPath dir=path.getParent();
             

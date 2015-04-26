@@ -1,6 +1,7 @@
-package nl.esciencecenter.ptk.ui;
+package nl.esciencecenter.ptk.ui.interactive;
 
 import nl.esciencecenter.ptk.data.SecretHolder;
+import nl.esciencecenter.ptk.ui.SimpelUI;
 
 import org.junit.Assert;
 import org.junit.Test;
