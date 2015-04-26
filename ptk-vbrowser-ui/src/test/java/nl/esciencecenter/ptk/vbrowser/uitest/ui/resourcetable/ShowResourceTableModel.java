@@ -1,12 +1,13 @@
-package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
+package nl.esciencecenter.ptk.vbrowser.uitest.ui.resourcetable;
 
 
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowData;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class Test_ResourceTableModel
+public class ShowResourceTableModel
 {
 
     // ================

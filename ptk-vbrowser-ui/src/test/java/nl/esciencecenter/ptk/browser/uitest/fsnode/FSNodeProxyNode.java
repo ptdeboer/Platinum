@@ -18,7 +18,7 @@
  */
 // source: 
 
-package nl.esciencecenter.ptk.browser.test.fsnode;
+package nl.esciencecenter.ptk.browser.uitest.fsnode;
 
 import java.io.IOException;
 import java.nio.file.LinkOption;
