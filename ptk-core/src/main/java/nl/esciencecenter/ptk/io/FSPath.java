@@ -290,7 +290,7 @@ public class FSPath
      * 
      * @return
      */
-    public String getPathname()
+    public String getPathString()
     {
         return getPathname(false);
     }
@@ -447,7 +447,7 @@ public class FSPath
 
     public boolean isRoot()
     {
-        String path = this.getPathname();
+        String path = this.getPathString();
 
         if ("/".equals(path))
         {

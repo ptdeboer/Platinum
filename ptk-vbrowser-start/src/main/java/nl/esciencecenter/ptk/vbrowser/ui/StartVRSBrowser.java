@@ -26,6 +26,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
+import nl.esciencecenter.vbrowser.vrs.sftp.SftpFileSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -52,11 +53,11 @@ public class StartVRSBrowser
 
     public static void initVRSPlugins(VRSContext context)
     {
-//    	try {
-//    		context.getRegistry().registerFactory(VRSProxyFactory.class);
-//		} catch (InstantiationException | IllegalAccessException e) {
-//			e.printStackTrace();
-//		}
+    	try {
+    		context.getRegistry().registerFactory(SftpFileSystemFactory.class);
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 
     }
 
@@ -84,10 +85,11 @@ public class StartVRSBrowser
         InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
         rootNode.loadPersistantConfig();
 
+        String user=context.getUserName(); 
         // Add default links, will be ignored if already exists.
         rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null);
         rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null);
-        rootNode.addResourceLink("My Links", "sftp://sftptest@localhost:22/", new VRL("sftp://sftptest@localhost:22/"), null);
+        rootNode.addResourceLink("My Links", "sftp://"+user+"@localhost:22/", new VRL("sftp://"+user+"@localhost:22/"), null);
 
         // main location to start browsing:
         ProxyNode root = fac.openLocation("info:/");

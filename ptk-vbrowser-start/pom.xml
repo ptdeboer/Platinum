@@ -13,14 +13,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/resources/icons</directory>
-            </resource>
-        </resources>
-    </build>
-
     <dependencies>
 		<!--  ptk -->
         <dependency>
@@ -33,6 +25,13 @@
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-vbrowser-vrs</artifactId>
+            <version>${version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-vbrowser-vrs-sftp</artifactId>
             <version>${version}</version>
             <type>jar</type>
             <scope>compile</scope>

@@ -89,7 +89,7 @@ public class Test_XMLProperties
             Assert.assertNotNull("Duplicate field value is NOT defined:" + key, other);
 
             // compare String values;
-            Assert.assertEquals("Field:" + key + " doesn't not match original value", org.toString(), other.toString()); 
+            Assert.assertEquals("Field:" + key + " doesn't not match original value", org.toString(), other.toString());
 
             if (checkStringValuesOnly == false)
             {

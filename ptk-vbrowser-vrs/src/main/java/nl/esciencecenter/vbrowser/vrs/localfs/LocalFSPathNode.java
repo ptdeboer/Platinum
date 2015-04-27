@@ -101,7 +101,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
         }
         catch (java.nio.file.AccessDeniedException e)
         {
-            throw new ResourceAccessDeniedException(this, e.getMessage(), e);
+            throw new ResourceAccessDeniedException(e.getMessage(), e);
         }
         catch (IOException e)
         {
@@ -153,7 +153,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
         {
             if ((ignoreExisting == false) && exists())
             {
-                throw new ResourceCreationException(this, "File already exists:" + getVRL(), null);
+                throw new ResourceCreationException("File already exists:" + getVRL(), null);
             }
 
             fsNode = fsNode.create();
@@ -179,7 +179,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
                 }
                 else
                 {
-                    throw new ResourceCreationException(this, "mkdir(): directory already exists:" + this.fsNode.getPath(), null);
+                    throw new ResourceCreationException("mkdir(): directory already exists:" + this.fsNode.getPath(), null);
                 }
 
             }
@@ -187,7 +187,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
         }
         catch (IOException e)
         {
-            throw LocalFileSystem.convertException(this, "Failed to create directory:" + getVRL(), e);
+            throw LocalFileSystem.convertException(this,"Failed to create directory:" + getVRL(), e);
         }
 
         return true;
@@ -209,7 +209,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
 
                 if ((nodes != null) && (nodes.length > 0))
                 {
-                    throw new ResourceNotEmptyException(this, "Directory is not empty:" + fsNode, null);
+                    throw new ResourceNotEmptyException("Directory is not empty:" + fsNode, null);
                 }
             }
 
@@ -228,7 +228,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     {
         try
         {
-            String newPath = fsNode.renameTo(other.getVRL().getPath()).getPathname();
+            String newPath = fsNode.renameTo(other.getVRL().getPath()).getPathString();
             return this.resolvePath(newPath);
         }
         catch (IOException e)

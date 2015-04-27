@@ -161,6 +161,15 @@ public class VRSContext
         return info; 
     }
 
+    /** 
+     * Return actual ResourceSystemInfo used for the specified ResourceSystem.
+     */
+    public ResourceSystemInfo getResourceSystemInfoFor(VResourceSystem vrs) throws VrsException
+    {
+        // todo: query actual instance instead of registry.
+        return getResourceSystemInfoFor(vrs.getServerVRL(), false);
+    }
+    
     public void putResourceSystemInfo(ResourceSystemInfo info)
     {
         resourceInfoRegistry.putInfo(info); 
@@ -246,6 +255,8 @@ public class VRSContext
     {
         return new VRL("info:/"); 
     }
+
+
     
     
 }

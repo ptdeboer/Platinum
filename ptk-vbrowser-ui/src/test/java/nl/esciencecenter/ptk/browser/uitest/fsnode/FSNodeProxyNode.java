@@ -37,6 +37,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
@@ -165,7 +166,7 @@ public class FSNodeProxyNode extends ProxyNode
 	@Override
 	protected String doGetMimeType() throws ProxyException 
 	{
-	    return MimeTypes.getDefault().getMimeType(file.getPathname());  
+	    return MimeTypes.getDefault().getMimeType(file.getPathString());  
 	}
 
 	@Override
@@ -289,6 +290,12 @@ public class FSNodeProxyNode extends ProxyNode
     protected boolean doExists() throws ProxyException
     {
         return this.file.exists(LinkOption.NOFOLLOW_LINKS);
+    }
+
+    @Override
+    protected ResourceSystemInfo doGetResourceSystemInfo() throws ProxyException
+    {
+        return null;
     }
 
 }

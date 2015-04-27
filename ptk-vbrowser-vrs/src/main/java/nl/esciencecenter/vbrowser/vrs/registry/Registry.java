@@ -26,8 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-
-
 import nl.esciencecenter.ptk.util.logging.ClassLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
@@ -40,116 +38,115 @@ import nl.esciencecenter.vbrowser.vrs.webrs.WebRSFactory;
 
 public class Registry
 {
-    private final static ClassLogger logger=ClassLogger.getLogger(Registry.class); 
-    
-    private static Registry instance; 
-    
+    private final static ClassLogger logger = ClassLogger.getLogger(Registry.class);
+
+    private static Registry instance;
+
     public static Registry getInstance()
     {
         logger.setLevelToDebug();
-        
-        synchronized(Registry.class)
+
+        synchronized (Registry.class)
         {
-            if (instance==null)
+            if (instance == null)
             {
-                instance = new Registry(); 
+                instance = new Registry();
             }
         }
-        
-        return instance; 
+
+        return instance;
     }
-    
+
     protected static class SchemeInfo
     {
-        protected String scheme; 
-        
+        protected String scheme;
+
         protected VResourceSystemFactory vrsFactory;
-        
-        SchemeInfo(String scheme,VResourceSystemFactory factory)
+
+        SchemeInfo(String scheme, VResourceSystemFactory factory)
         {
-            this.scheme=scheme; 
-            this.vrsFactory=factory; 
+            this.scheme = scheme;
+            this.vrsFactory = factory;
         }
     }
-    
+
     // ========================================================================
     //
     // ========================================================================
-    
+
     private Map<String, ArrayList<SchemeInfo>> registeredSchemes = new LinkedHashMap<String, ArrayList<SchemeInfo>>();
 
     /**
-     * List of services. VRSFactories are registered using their class names as
-     * key.
+     * List of services. VRSFactories are registered using their class names as key.
      */
     private Map<String, VResourceSystemFactory> registeredServices = new HashMap<String, VResourceSystemFactory>();
-    
-    private ResourceSystemInstances instances=new ResourceSystemInstances(); 
-    
+
+    private ResourceSystemInstances instances = new ResourceSystemInstances();
+
     private Registry()
     {
-        init(); 
+        init();
     }
-    
+
     private void init()
     {
         initFactories();
     }
-    
+
     private void initFactories()
     {
-        this.registryFactoryNoException(LocalFSFileSystemFactory.class,ClassLogger.ERROR);
-        this.registryFactoryNoException(WebRSFactory.class,ClassLogger.ERROR);
-        this.registryFactoryNoException(InfoRSFactory.class,ClassLogger.ERROR);
+        this.registryFactoryNoException(LocalFSFileSystemFactory.class, ClassLogger.ERROR);
+        this.registryFactoryNoException(WebRSFactory.class, ClassLogger.ERROR);
+        this.registryFactoryNoException(InfoRSFactory.class, ClassLogger.ERROR);
     }
 
     public VResourceSystemFactory getVResourceSystemFactoryFor(VRSContext vrsContext, String scheme)
     {
-        ArrayList<SchemeInfo> list = registeredSchemes.get(scheme); 
-        if ((list==null) || (list.size()<=0)) 
+        ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);
+        if ((list == null) || (list.size() <= 0))
         {
-               return null;  
+            return null;
         }
-        
+
         return list.get(0).vrsFactory;
     }
-    
+
     public VResourceSystem getVResourceSystemFor(VRSContext vrsContext, VRL vrl) throws VrsException
     {
-        if (vrl==null)
+        if (vrl == null)
         {
-            throw new NullPointerException("VRL is NULL"); 
+            throw new NullPointerException("VRL is NULL");
         }
-        
-        VResourceSystemFactory factory = getVResourceSystemFactoryFor(vrsContext,vrl.getScheme());
-        
-        if (factory==null)
+
+        VResourceSystemFactory factory = getVResourceSystemFactoryFor(vrsContext, vrl.getScheme());
+
+        if (factory == null)
         {
-            throw new VrsException("No VResourceSystem registered for:"+vrl); 
+            throw new VrsException("No VResourceSystem registered for:" + vrl);
         }
-        
-        synchronized(instances)
+
+        synchronized (instances)
         {
-            String id=factory.createResourceSystemId(vrl); 
-            
+            String id = factory.createResourceSystemId(vrl);
+
             VResourceSystem resourceSystem = instances.get(id);
-            
-            if (resourceSystem==null)
+
+            if (resourceSystem == null)
             {
-                ResourceSystemInfo info=getResourceSystemInfo(vrsContext, vrl, true);
-                resourceSystem=factory.createResourceSystemFor(vrsContext,info,vrl);
-                instances.put(id, resourceSystem); 
+                ResourceSystemInfo info = getResourceSystemInfo(vrsContext, vrl, true);
+                resourceSystem = factory.createResourceSystemFor(vrsContext, info, vrl);
+                instances.put(id, resourceSystem);
             }
             return resourceSystem;
         }
     }
-    
-    protected ResourceSystemInfo getResourceSystemInfo(VRSContext vrsContext, VRL vrl,boolean autoCreate) throws VrsException
+
+    protected ResourceSystemInfo getResourceSystemInfo(VRSContext vrsContext, VRL vrl, boolean autoCreate) throws VrsException
     {
-        return vrsContext.getResourceSystemInfoFor(vrl,true); 
+        return vrsContext.getResourceSystemInfoFor(vrl, true);
     }
-    
-    public void registryFactoryNoException(Class<? extends VResourceSystemFactory> vrsClass,Level loggerLevel)
+
+    public void registryFactoryNoException(Class<? extends VResourceSystemFactory> vrsClass, Level loggerLevel)
     {
         try
         {
@@ -163,70 +160,70 @@ public class Registry
 
     public void registerFactory(Class<? extends VResourceSystemFactory> vrsClass) throws InstantiationException, IllegalAccessException
     {
-        VResourceSystemFactory vrsInstance; 
-        
-        synchronized(registeredServices)
+        VResourceSystemFactory vrsInstance;
+
+        synchronized (registeredServices)
         {
             // ===
-            // Protected VRSFactory instance is created here ! 
+            // Protected VRSFactory instance is created here !
             // ===
-            vrsInstance = vrsClass.newInstance(); 
-            registeredServices.put(vrsClass.getCanonicalName(), vrsInstance); 
+            vrsInstance = vrsClass.newInstance();
+            registeredServices.put(vrsClass.getCanonicalName(), vrsInstance);
         }
-        
-        synchronized(registeredSchemes)
+
+        synchronized (registeredSchemes)
         {
-            for (String scheme:vrsInstance.getSchemes())
+            for (String scheme : vrsInstance.getSchemes())
             {
-                ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);    
-                if (list==null)
+                ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);
+                if (list == null)
                 {
-                    logger.debugPrintf("Registering scheme:%s =>%s\n",scheme,vrsClass.getCanonicalName());
-                    list=new ArrayList<SchemeInfo>(); 
-                    registeredSchemes.put(scheme,list); 
+                    logger.debugPrintf("Registering scheme:%s =>%s\n", scheme, vrsClass.getCanonicalName());
+                    list = new ArrayList<SchemeInfo>();
+                    registeredSchemes.put(scheme, list);
                 }
-                
-                list.add(new SchemeInfo(scheme,vrsInstance));
+
+                list.add(new SchemeInfo(scheme, vrsInstance));
             }
-        }       
+        }
     }
 
-    public void unregisterFactory(Class<? extends VResourceSystemFactory> vrsClass) 
-    { 
-        VResourceSystemFactory vrsInstance;  
-        
-        synchronized(registeredServices)
+    public void unregisterFactory(Class<? extends VResourceSystemFactory> vrsClass)
+    {
+        VResourceSystemFactory vrsInstance;
+
+        synchronized (registeredServices)
         {
-            vrsInstance = registeredServices.remove(vrsClass.getCanonicalName());  
+            vrsInstance = registeredServices.remove(vrsClass.getCanonicalName());
         }
-        
-        if (vrsInstance==null)
-            return; 
-        
-        synchronized(registeredSchemes)
+
+        if (vrsInstance == null)
+            return;
+
+        synchronized (registeredSchemes)
         {
-            for (String scheme:vrsInstance.getSchemes())
+            for (String scheme : vrsInstance.getSchemes())
             {
-                ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);    
-                if (list==null)
+                ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);
+                if (list == null)
                 {
-                    return; 
+                    return;
                 }
 
                 // reverse list and remove entries.
-                int listSize=list.size(); 
-                
-                for (int i=listSize-1;i>=0;i--) 
+                int listSize = list.size();
+
+                for (int i = listSize - 1; i >= 0; i--)
                 {
-                    SchemeInfo entry = list.get(i); 
-                    
-                    if (entry.vrsFactory==vrsInstance)
+                    SchemeInfo entry = list.get(i);
+
+                    if (entry.vrsFactory == vrsInstance)
                     {
                         list.remove(i);
-                        listSize=list.size(); 
+                        listSize = list.size();
                     }
                 }
             }
-        }       
+        }
     }
 }

@@ -72,7 +72,7 @@ public class ResFile extends VPathNode implements VStreamReadable
                     in = classLoader.getResourceAsStream(file);
                     if (in == null)
                     {
-                        throw new ResourceNotFoundException(null, "Resource " + file + " not found in " + host + ".", null);
+                        throw new ResourceNotFoundException("Resource " + file + " not found in " + host + ".", null);
                     }
                 }
             }

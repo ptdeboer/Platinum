@@ -19,11 +19,9 @@ public class Test_XMLResourceNode_InfoRootNode
         VRSClient vrsClient = Test_InfoRS.initTestClient();
         InfoRootNode rootNode = vrsClient.getInfoRootNode();
         Assert.assertNotNull(rootNode);
-
         XMLData data = new XMLData(new VRSContext());
         String xml = data.toXML(rootNode);
         System.out.printf(XMLData.prettyFormat(xml, 3));
-
     }
 
     @Test
@@ -44,11 +42,11 @@ public class Test_XMLResourceNode_InfoRootNode
 
         XMLData data = new XMLData(ctx);
         String xml = data.toXML(rootNode);
+
         System.out.printf(XMLData.prettyFormat(xml, 3));
 
         InfoResourceNode copyFolder = rootNode.createFolder("XMLCopy");
         data.addXMLResourceNodesTo(copyFolder, xml);
-
     }
 
 }

@@ -54,7 +54,7 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
 
     public static final String SERVER_CONFIG_PROPERTIES = "serverConfigProperties";
 
-    public static final String ATTR_SSH_IDENTITY = "sshIdentity";
+    public static final String ATTR_USER_IDENTITY_FILES = "userIdentityFiles";
 
     public static final String ATTR_AUTH_SCHEME = "authScheme";
 
@@ -62,7 +62,7 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     {
         NONE,
         PASSWORD,
-        CERTIFICATE
+        USER_ID
     };
 
     // ==================
@@ -97,8 +97,10 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
         properties.set(SERVER_SCHEME, vrl.getScheme());
         properties.set(SERVER_HOSTNAME, vrl.getHostname());
         // must use default port;
+
         int port = vrl.getPort();
         if (port <= 0)
+
         {
             port = VRS.getDefaultPort(vrl.getScheme());
         }

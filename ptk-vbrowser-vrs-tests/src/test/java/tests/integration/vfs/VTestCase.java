@@ -1,6 +1,7 @@
 package tests.integration.vfs;
 
 import nl.esciencecenter.ptk.util.ResourceLoader;
+import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 
@@ -96,6 +97,10 @@ public class VTestCase
         }
 
         return this.resourceLoader;
+    }
+    
+    protected void deleteLater(VFSPath path) {
+        
     }
 
 }

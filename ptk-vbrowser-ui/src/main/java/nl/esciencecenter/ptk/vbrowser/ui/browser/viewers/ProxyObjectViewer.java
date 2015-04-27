@@ -43,6 +43,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -265,15 +266,20 @@ public class ProxyObjectViewer extends EmbeddedViewer implements ProxyViewer
         viewNode = proxyNode.createViewItem(uiModel);
         iconLabel.setIcon(viewNode.getIcon());
         iconLabel.setText(viewNode.getName());
-
+        // node attributes
         List<String> attrNames = proxyNode.getAttributeNames();
         List<Attribute> attrs = proxyNode.getAttributes(attrNames);
         AttributeSet attrSet = new AttributeSet(attrs);
-
+        // resource system attributes -> own panel !
+        ResourceSystemInfo info = proxyNode.getResourceSystemInfo();
+        if (info!=null) {
+            attrSet.set(new Attribute("[configuration]","-------",false));
+            AttributeSet infoAttrs = info.getAttributeSet(); 
+            attrSet.putAll(infoAttrs);
+        }
+        // show
         this.attrPanel.setAttributes(attrSet, false);
-
         super.requestFramePack();
-
     }
 
 }

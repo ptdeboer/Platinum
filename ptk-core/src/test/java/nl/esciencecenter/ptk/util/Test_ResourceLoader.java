@@ -51,7 +51,7 @@ public class Test_ResourceLoader
         // Use plain old Java File interface, can not use ResourceLoader/FSUtil here.  
         
         FSPath dir=FSUtil_getCreateTestDir();
-        java.io.File file=new java.io.File(dir.getPathname()+"/"+name);  
+        java.io.File file=new java.io.File(dir.getPathString()+"/"+name);  
         
         java.io.RandomAccessFile randomFile=new RandomAccessFile(file,"rw"); 
         randomFile.write(content.getBytes("UTF-8")); 
@@ -96,7 +96,7 @@ public class Test_ResourceLoader
         ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{baseUrl}); 
         java.net.URL url=loader.resolveUrl(subDirname);
         Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+subDirname,url);
-        Assert.assertEquals("Resolved path from URL must match File Path\n", testDir.getPathname(),url.getPath());
+        Assert.assertEquals("Resolved path from URL must match File Path\n", testDir.getPathString(),url.getPath());
         
     }
     
@@ -110,7 +110,7 @@ public class Test_ResourceLoader
         ResourceLoader loader=new ResourceLoader(null,new java.net.URL[]{testDir.getDirURL()}); 
         java.net.URL url=loader.resolveUrl(fileName);
         Assert.assertNotNull("Got NULL URL. Failed to resolve URL:"+fileName,url);
-        Assert.assertEquals("Resolved path from URL must match File Path\n", file.getPathname(),url.getPath());
+        Assert.assertEquals("Resolved path from URL must match File Path\n", file.getPathString(),url.getPath());
         
     }
     
@@ -162,7 +162,7 @@ public class Test_ResourceLoader
         FSPath fileNode=node.resolvePath(subPath);
         // use FS util to create normalized URL 
         java.net.URL fileUrl=fileNode.getDirURL(); 
-        String localPath=fileNode.getPathname(); 
+        String localPath=fileNode.getPathString(); 
         String actualUriPath=URIFactory.uripath(localPath, true, File.separatorChar); 
         
         // URL Loaders need explicit directory URL where the path ends with a slash.  
@@ -174,10 +174,10 @@ public class Test_ResourceLoader
         
         // after write, file exists and can be resolved: 
         java.net.URL resolvedUrl=loader.resolveUrl(subPath);
-        Assert.assertNotNull("Got NULL URL. Failed to resolve URL [baseUrl,subPath] = ['"+baseUrl+"','"+subPath+"'] (actualPath="+fileNode.getPathname(),resolvedUrl);
+        Assert.assertNotNull("Got NULL URL. Failed to resolve URL [baseUrl,subPath] = ['"+baseUrl+"','"+subPath+"'] (actualPath="+fileNode.getPathString(),resolvedUrl);
         
         // readback
-        String readBack=this.readTestFile(fileNode.getPathname()); 
+        String readBack=this.readTestFile(fileNode.getPathString()); 
         Assert.assertEquals("Read back contents should be the same", contents,readBack); 
         
         // write to URI

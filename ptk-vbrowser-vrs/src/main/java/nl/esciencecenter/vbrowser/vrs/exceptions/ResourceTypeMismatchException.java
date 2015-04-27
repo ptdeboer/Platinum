@@ -20,23 +20,17 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-import nl.esciencecenter.vbrowser.vrs.VPath;
 
 /**
- * Access denied or wrong permissions.
+ * Class or Type mismatch.
  */
 public class ResourceTypeMismatchException extends ResourceException
 {
     private static final long serialVersionUID = 5927781236898146710L;
-
-    public static final String CREATION_FAILED = "Resource Type Mismatch.";
-
-    /**
-     * Public constructor which holds original system exception.
-     */
-    public ResourceTypeMismatchException(VPath path,String message, Throwable cause)
+    
+    public ResourceTypeMismatchException(String message, Throwable cause)
     {
-        super(path, message, cause, CREATION_FAILED);
+        super(message, cause, RESOURCE_TYPE_MISMATCH);
     };
 
 }

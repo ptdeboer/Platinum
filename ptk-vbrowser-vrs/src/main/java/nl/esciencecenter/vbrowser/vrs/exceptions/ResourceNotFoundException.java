@@ -20,24 +20,20 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-import nl.esciencecenter.vbrowser.vrs.VPath;
 
 /**
- * Access denied or wrong permissions.
+ * File or directory not found.
  */
 public class ResourceNotFoundException extends ResourceException
 {
-    public static final String NOT_FOUND = "Resource Not Found.";
-
     private static final long serialVersionUID = 1829852296515159771L;
-
 
     /**
      * Public constructor which holds original system exception.
      */
-    public ResourceNotFoundException(VPath path,String message, Throwable cause)
+    public ResourceNotFoundException(String message, Throwable cause)
     {
-        super(path, message, cause, NOT_FOUND);
+        super(message, cause, NOT_FOUND);
     };
 
 }

@@ -50,14 +50,10 @@ import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
-import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 
 /**
@@ -251,7 +247,7 @@ public class BrowserFrame extends JFrame
                     // ... iconsPanel
                     {
                         IconsPanel iconsPanel = new IconsPanel(this.browserController, null);
-                        addTab("Icons", iconsPanel, false,true);
+                        addTab("Icons", iconsPanel, false, true);
                     }
                     // default table panel
                     // {
@@ -267,16 +263,16 @@ public class BrowserFrame extends JFrame
         // default sizes:
         this.setSize(1000, 600);
     }
-    
+
     protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus, boolean withScrollPane)
     {
-        TabContentPanel tabPanel = TabContentPanel.createTab(name, comp,withScrollPane);
- 
+        TabContentPanel tabPanel = TabContentPanel.createTab(name, comp, withScrollPane);
+
         int newIndex = uiRightTabPane.getTabCount();
         uiRightTabPane.add(tabPanel, newIndex);
-        // use size from ui model: 
-        tabPanel.setScrollBarUnitIncrement(48/2);
-        
+        // use size from ui model:
+        tabPanel.setScrollBarUnitIncrement(48 / 2);
+
         TabButtonHandler handler = new TabButtonHandler(tabPanel);
         TabTopLabelPanel topTapPnl = new TabTopLabelPanel(tabPanel, handler);
         uiRightTabPane.setTabComponentAt(newIndex, topTapPnl);
@@ -286,7 +282,7 @@ public class BrowserFrame extends JFrame
             Component tabComp = uiRightTabPane.getTabComponentAt(newIndex - 1);
             if (tabComp instanceof TabTopLabelPanel)
             {
-                // disable add button if not lasts. 
+                // disable add button if not lasts.
                 ((TabTopLabelPanel) tabComp).setEnableAddButton(false);
             }
         }
@@ -311,8 +307,8 @@ public class BrowserFrame extends JFrame
             {
                 return null;
             }
-            
-            currentTab = this.addTab("Icons", null, false,true);
+
+            currentTab = this.addTab("Icons", null, false, true);
         }
 
         JComponent comp = currentTab.getContent();
@@ -325,18 +321,18 @@ public class BrowserFrame extends JFrame
         {
             return null;
         }
-        
+
         ProxyNode node = this.getViewedProxyNode();
         IconsPanel pnl = new IconsPanel(this.browserController, null);
         pnl.setDataSource(node, true);
         currentTab.setContent(pnl);
-        
+
         return pnl;
     }
 
     protected TabContentPanel createIconsPanelTab(ProxyNode node, boolean setFocus)
     {
-        TabContentPanel tab = this.addTab("Icons", null, setFocus,true);
+        TabContentPanel tab = this.addTab("Icons", null, setFocus, true);
         IconsPanel pnl = new IconsPanel(this.browserController, null);
         pnl.setDataSource(node, true);
         tab.setContent(pnl);
@@ -352,7 +348,7 @@ public class BrowserFrame extends JFrame
             if (autoCreate == false)
                 return;
 
-            tab = this.addTab("Table", null, true,true);
+            tab = this.addTab("Table", null, true, true);
         }
 
         JComponent comp = tab.getContent();
@@ -368,7 +364,7 @@ public class BrowserFrame extends JFrame
             {
                 return;
             }
-            
+
             tbl = new ResourceTable(this.browserController, new ResourceTableModel(false));
             tab.setContent(tbl);
         }
@@ -379,7 +375,7 @@ public class BrowserFrame extends JFrame
     protected void addViewerPanel(ViewerPlugin viewer, boolean setFocus)
     {
         // TabContentPanel currentTab = this.getCurrentTab();
-        TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus,(viewer.haveOwnScrollPane()==false));
+        TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus, (viewer.haveOwnScrollPane() == false));
         tab.setContent(viewer.getViewerPanel());
         return;
     }
@@ -631,8 +627,8 @@ public class BrowserFrame extends JFrame
 
         JComponent comp = tab.getContent();
 
-        ProxyDataSource dataSource=null;
-        
+        ProxyDataSource dataSource = null;
+
         if (comp instanceof IconsPanel)
         {
             dataSource = ((IconsPanel) comp).getDataSource();
@@ -645,9 +641,9 @@ public class BrowserFrame extends JFrame
         {
             dataSource = ((ResourceTree) comp).getDataSource();
         }
-        if (dataSource==null)
+        if (dataSource == null)
         {
-            return null; 
+            return null;
         }
         else
         {
@@ -662,17 +658,17 @@ public class BrowserFrame extends JFrame
         if (index < 0)
             return;
 
-        Component tabComp = uiRightTabPane.getTabComponentAt(index); 
-        
+        Component tabComp = uiRightTabPane.getTabComponentAt(index);
+
         if (tabComp instanceof TabTopLabelPanel)
         {
-            ((TabTopLabelPanel)tabComp).setTabLabelText(name);
+            ((TabTopLabelPanel) tabComp).setTabLabelText(name);
         }
         else
         {
-            logger.errorPrintf("FIXME:Component is not a TabTopLabelPanel:%s\n",tabComp); 
+            logger.errorPrintf("FIXME:Component is not a TabTopLabelPanel:%s\n", tabComp);
         }
-        
+
         this.uiRightTabPane.setTitleAt(index, name);
         tab.setName(name);
 

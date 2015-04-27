@@ -212,7 +212,7 @@ public class VRSClient
        boolean result=transferManager.doCopyMove(new ExtendedList<VRL>(sourceFile), destDirectory,false, null,resultPathsH,null,null); 
        if ( (result==false) || (resultPathsH.isEmpty()) )
        {
-           throw new ResourceCreationException(null,"No results for CopyMove action:"+sourceFile+"to:"+destDirectory,null);  
+           throw new ResourceCreationException("No results for CopyMove action:"+sourceFile+"to:"+destDirectory,null);  
        }
        return resultPathsH.get().get(0); 
     }
@@ -223,7 +223,7 @@ public class VRSClient
        boolean result=transferManager.doCopyMove(new ExtendedList<VRL>(sourceDir), destParentDirectory,false, null,resultPathsH,null,null); 
        if ( (result==false) || (resultPathsH.isEmpty()) )
        {
-           throw new ResourceCreationException(null,"No results for CopyMove action:"+sourceDir+"to:"+destParentDirectory,null);  
+           throw new ResourceCreationException("No results for CopyMove action:"+sourceDir+"to:"+destParentDirectory,null);  
        }
        return resultPathsH.get().get(0); 
     }
@@ -268,7 +268,7 @@ public class VRSClient
         }
         else
         {
-            throw new ResourceTypeMismatchException(file,"Cannot create InputStream from:"+file,null); 
+            throw new ResourceTypeMismatchException("Cannot create InputStream from:"+file,null); 
         }
     }
  
@@ -280,7 +280,7 @@ public class VRSClient
         }
         else
         {
-            throw new ResourceTypeMismatchException(file,"Cannot create InputStream from:"+file,null); 
+            throw new ResourceTypeMismatchException("Cannot create InputStream from:"+file,null); 
         }
     }
 
@@ -292,7 +292,7 @@ public class VRSClient
         }
         else
         {
-            throw new ResourceTypeMismatchException(file,"Cannot create RandomReadable from:"+file,null); 
+            throw new ResourceTypeMismatchException("Cannot create RandomReadable from:"+file,null); 
         }
     }
 
@@ -304,7 +304,7 @@ public class VRSClient
         }
         else
         {
-            throw new ResourceTypeMismatchException(file,"Cannot create RandomWriter from:"+file,null); 
+            throw new ResourceTypeMismatchException("Cannot create RandomWriter from:"+file,null); 
         }
     }
     

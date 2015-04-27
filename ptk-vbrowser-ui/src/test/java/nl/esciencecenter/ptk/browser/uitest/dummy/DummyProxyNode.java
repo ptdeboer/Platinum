@@ -28,7 +28,10 @@ import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
+import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class DummyProxyNode extends ProxyNode
@@ -273,6 +276,18 @@ public class DummyProxyNode extends ProxyNode
     protected boolean doExists() throws ProxyException
     {
         return true;
+    }
+
+    @Override
+    protected ResourceSystemInfo doGetResourceSystemInfo() throws ProxyException
+    {
+        return null;
+//        try {
+//            return VRS.createVRSClient().getVRSContext().getResourceSystemInfoFor(this.getVRL(), true);
+//        }
+//        catch (VrsException e) {
+//            throw new ProxyException(e.getMessage(),e);
+//        }
     }
 
 }
