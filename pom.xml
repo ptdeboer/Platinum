@@ -24,9 +24,11 @@
 		<module>ptk-ui</module>
 		<module>ptk-util-vterm</module>
 		<module>ptk-vbrowser-vrs</module>
+		<module>ptk-vbrowser-vrs-sftp</module>
 		<module>ptk-vbrowser-ui</module>
 		<module>ptk-vbrowser-viewers</module>
 		<module>ptk-vbrowser-viewers-loboviewer</module>
+		<module>ptk-vbrowser-vrs-tests</module>
 	</modules>
 
 	<build>

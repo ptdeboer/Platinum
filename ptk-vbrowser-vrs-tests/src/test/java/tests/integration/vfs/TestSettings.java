@@ -21,6 +21,7 @@ public class TestSettings
     {
         VFS_LOCALFS_LOCATION,
         VFS_LOCAL_TEMPDIR_LOCATION,
+        VFS_SFTP_LOCALHOST
     }
 
     /**
@@ -88,6 +89,9 @@ public class TestSettings
 
         testLocations.put(TestLocation.VFS_LOCALFS_LOCATION,
                 new VRL("file", null, "/tmp/" + testUserName + "/testLocalFS"));
+
+        testLocations.put(TestLocation.VFS_SFTP_LOCALHOST,
+                new VRL("sftp", null,"localhost", 22, "/tmp/" + "sftptest" + "/testSftpFS"));
 
     }
 

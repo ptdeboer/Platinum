@@ -35,6 +35,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeNames;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -686,6 +687,11 @@ public abstract class ProxyNode
         return attrs;
     }
 
+    public ResourceSystemInfo getResourceSystemInfo() throws ProxyException 
+    {
+        return this.doGetResourceSystemInfo();
+    }
+    
     public String toString()
     {
         return "<ProxyNode:" + getResourceType() + ":" + getVRL();
@@ -780,6 +786,12 @@ public abstract class ProxyNode
 
     abstract protected String doGetIconURL(String status, int size) throws ProxyException;
 
+    // =====================
+    // VRS Internal
+    // =====================
+    
+    abstract protected ResourceSystemInfo doGetResourceSystemInfo() throws ProxyException;
+    
     // ============================
     // Child/Composite Attributes
     // ============================
@@ -822,6 +834,7 @@ public abstract class ProxyNode
     abstract protected void doDelete(boolean recurse) throws ProxyException;
 
     abstract protected ProxyNode doRenameTo(String nameOrNewPath) throws ProxyException;
+
 
 
 

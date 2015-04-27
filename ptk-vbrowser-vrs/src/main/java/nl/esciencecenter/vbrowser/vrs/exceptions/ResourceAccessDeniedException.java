@@ -20,25 +20,22 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-import nl.esciencecenter.vbrowser.vrs.VPath;
-
 /**
  * Access denied or wrong permissions.
  */
 public class ResourceAccessDeniedException extends ResourceException
 {
-    public static final String ACCES_DENIED = "Access Denied";
-
     private static final long serialVersionUID = 1829852296515159771L;
 
     /**
      * Public constructor which holds original system exception.
-     * @param sourcePath 
-     * @param object 
+     * 
+     * @param sourcePath
+     * @param object
      */
-    public ResourceAccessDeniedException(VPath sourcePath, String message, Throwable cause)
+    public ResourceAccessDeniedException(String message, Throwable cause)
     {
-        super(sourcePath, message, cause, ACCES_DENIED);
+        super(message, cause, ACCES_DENIED);
     };
 
 }

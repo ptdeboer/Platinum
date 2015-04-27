@@ -20,10 +20,9 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-import nl.esciencecenter.vbrowser.vrs.VPath;
 
 /**
- * Access denied or wrong permissions.
+ * Couldn't create Resource.
  */
 public class ResourceCreationException extends ResourceException
 {
@@ -34,9 +33,9 @@ public class ResourceCreationException extends ResourceException
     /**
      * Public constructor which holds original system exception.
      */
-    public ResourceCreationException(VPath path,String message, Throwable cause)
+    public ResourceCreationException(String message, Throwable cause)
     {
-        super(path, message, cause, CREATION_FAILED);
+        super(message, cause, CREATION_FAILED);
     };
 
 }

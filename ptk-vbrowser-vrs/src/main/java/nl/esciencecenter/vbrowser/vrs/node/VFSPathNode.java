@@ -22,6 +22,8 @@ package nl.esciencecenter.vbrowser.vrs.node;
 
 import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.LinkOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -43,6 +45,8 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
+import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
+
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -224,7 +228,8 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         }
         else if (name.compareTo(ATTR_MODIFICATION_TIME) == 0)
         {
-            FileTime time = getFileAttributes().lastModifiedTime();
+        	FileTime time = getFileAttributes().lastModifiedTime();
+        	
             if (time != null)
             {
                 return new Attribute(name, Presentation.createDate(time));
@@ -273,9 +278,9 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
 
     public boolean isHidden()
     {
-        return false;
+    	return false; 
     }
-
+    
     public boolean create() throws VrsException
     {
         if (isFile())
@@ -452,6 +457,21 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         }
     }
 
+    protected void createEmptyFile(VStreamWritable streamWritable) throws VrsException
+    {
+        try
+        {
+            OutputStream outps = streamWritable.createOutputStream(false);
+            byte bytes[]=new byte[0];
+            outps.write(bytes);
+            outps.flush();
+            outps.close();
+        }
+        catch (IOException e) {
+            throw new VrsException (e.getMessage(),e); 
+        }
+    }
+    
     // ===================
     // Abstract Interface
     // ===================

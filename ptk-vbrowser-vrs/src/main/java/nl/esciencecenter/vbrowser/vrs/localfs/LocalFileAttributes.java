@@ -108,5 +108,4 @@ public class LocalFileAttributes implements VFSFileAttributes
     {
         return false;
     }
-
 }

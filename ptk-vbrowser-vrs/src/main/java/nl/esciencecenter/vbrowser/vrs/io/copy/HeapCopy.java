@@ -273,7 +273,7 @@ public class HeapCopy
                 if (vfsPath.exists() == false)
                 {
                     // can happen if directory changed since last scan.
-                    throw new ResourceNotFoundException(vfsPath, "Source path doesn't exists!. Has it been moved ?:" + vfsPath, null);
+                    throw new ResourceNotFoundException("Source path doesn't exists!. Has it been moved ?:" + vfsPath, null);
                 }
                 else if (vfsPath.isDir())
                 {
@@ -297,7 +297,7 @@ public class HeapCopy
                 else
                 {
                     monitorLogPrintf(" - Error: Unknown VFS resource:%s\n", vfsPath);
-                    throw new ResourceTypeMismatchException(vfsPath, "Can not copy VFSPath:" + vfsPath, null);
+                    throw new ResourceTypeMismatchException("Can not copy VFSPath:" + vfsPath, null);
                 }
 
                 if (status)
@@ -318,7 +318,7 @@ public class HeapCopy
             else
             {
                 monitorLogPrintf(" - Error: non VFS Path:%s\n", sourcePath);
-                throw new ResourceTypeMismatchException(sourcePath, "Can not copy:" + sourcePath, null);
+                throw new ResourceTypeMismatchException("Can not copy:" + sourcePath, null);
             }
 
             // update total done:

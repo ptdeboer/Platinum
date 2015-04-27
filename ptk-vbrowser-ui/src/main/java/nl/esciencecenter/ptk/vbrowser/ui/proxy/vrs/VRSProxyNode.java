@@ -32,14 +32,15 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VPath;
+import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VFSDeletable;
-import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
@@ -487,6 +488,21 @@ public class VRSProxyNode extends ProxyNode
         else
         {
             throw new ProxyException("Resource can't be renamed:"+vnode); 
+        }
+    }
+
+    @Override
+    protected ResourceSystemInfo doGetResourceSystemInfo() throws ProxyException
+    {
+        VResourceSystem vrs;
+        try
+        {
+            vrs = vnode.getResourceSystem();
+            return vrs.getVRSContext().getResourceSystemInfoFor(vrs);
+        }
+        catch (VrsException e)
+        {
+            throw new ProxyException(e.getMessage(),e);
         }
     }
     

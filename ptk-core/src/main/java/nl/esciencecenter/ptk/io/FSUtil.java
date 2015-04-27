@@ -181,13 +181,11 @@ public class FSUtil implements ResourceProvider, FSPathProvider
     /**
      * Check syntax and decode optional (relative) URL or path to an absolute normalized path. If an exception occurs
      * (syntax error) the path is returned "as is" ! Use resolveURI(path) to resolve to an absolute and normalized URI.
-     * 
-     * @throws FileURISyntaxException
-     *             if the path contains invalid characters.
+     * @throws IOException 
      */
-    public String resolvePath(String path) throws FileURISyntaxException
+    public FSPath resolvePath(String path) throws IOException
     {
-        return resolvePathURI(path).getPath();
+        return newFSPath(path);
     }
 
     /**
@@ -372,7 +370,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider
         // sanitize:
         for (int i = 0; i < strs.length; i++)
         {
-            strs[i] = resolvePath(dirPath + "/" + strs[i]);
+            strs[i] = resolvePath(dirPath + "/" + strs[i]).getPathString();
         }
 
         return strs;

@@ -23,19 +23,16 @@ package nl.esciencecenter.vbrowser.vrs.localfs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.nio.file.FileSystemException;
 
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotEmptyException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
@@ -77,7 +74,7 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
     {
         return this.fsUtil;
     }
-    
+
     @Override
     public InputStream createInputStream(VRL vrl) throws VrsException
     {
@@ -95,27 +92,27 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
         // new nio.file exceptions have reason in the Exception name.
         if (ex instanceof java.nio.file.AccessDeniedException)
         {
-            return new ResourceAccessDeniedException(sourcePath, actionText + "\n" + "Access Denied.\n" + ex.getMessage(), ex);
+            return new ResourceAccessDeniedException(actionText + "\n" + "Access Denied.\n" + ex.getMessage(), ex);
         }
         else if (ex instanceof java.nio.file.DirectoryNotEmptyException)
         {
-            return new ResourceNotEmptyException(sourcePath, actionText + "\n" + "Directory not empty.\n" + ex.getMessage(), ex);
+            return new ResourceNotEmptyException(actionText + "\n" + "Directory not empty.\n" + ex.getMessage(), ex);
         }
         else if (ex instanceof java.nio.file.FileAlreadyExistsException)
         {
-            return new ResourceCreationException(sourcePath, actionText + "\n" + "File already exists.\n" + ex.getMessage(), ex);
+            return new ResourceCreationException(actionText + "\n" + "File already exists.\n" + ex.getMessage(), ex);
         }
         else if (ex instanceof java.nio.file.NoSuchFileException)
         {
-            return new ResourceNotFoundException(sourcePath, actionText + "\n" + "No such file.\n" + ex.getMessage(), ex);
+            return new ResourceNotFoundException(actionText + "\n" + "No such file.\n" + ex.getMessage(), ex);
         }
         else if (ex instanceof java.nio.file.NotDirectoryException)
         {
-            return new ResourceNotFoundException(sourcePath, actionText + "\n" + "Not a directory.\n" + ex.getMessage(), ex);
+            return new ResourceNotFoundException(actionText + "\n" + "Not a directory.\n" + ex.getMessage(), ex);
         }
         else if (ex instanceof java.nio.file.NotLinkException)
         {
-            return new ResourceNotFoundException(sourcePath, actionText + "\n" + "Not a link.\n" + ex.getMessage(), ex);
+            return new ResourceNotFoundException(actionText + "\n" + "Not a link.\n" + ex.getMessage(), ex);
         }
         else if (ex instanceof FileSystemException)
         {
@@ -135,6 +132,5 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
         }
 
     }
-
 
 }

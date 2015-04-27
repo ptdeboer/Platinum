@@ -274,7 +274,10 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 break;
             case LOCATION_CHANGED:
                 this.updateLocationFromNavBar();
+                break;
             case LOCATION_EDITED:
+                this.updateLocationFromNavBar();
+                break;
             default:
                 logger.errorPrintf("FIXME: NavBar action not implemented:%s\n", navAction);
         }
