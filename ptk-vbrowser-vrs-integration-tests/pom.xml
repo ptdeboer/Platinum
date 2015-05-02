@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ptk-util-vterm</artifactId>
-	<name>ptk-util-vterm ${project.version} - Platinum VTerm</name>
+	<artifactId>ptk-vbrowser-vrs-integration-tests</artifactId>
+	<name>ptk-vbrowser-vrs-integration-tests ${project.version}</name>
 
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
@@ -18,13 +18,37 @@
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-core</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>nl.esciencecenter.platinum</groupId>
-			<artifactId>ptk-ui</artifactId>
+			<artifactId>ptk-vbrowser-vrs</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>nl.esciencecenter.platinum</groupId>
+			<artifactId>ptk-vbrowser-vrs-sftp</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!--  JUnit  -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-</project>
+	<build>
+		<plugins>
+			<plugin>
+				<!--  configuration is inherited from parent -->
+				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
+
+</project>

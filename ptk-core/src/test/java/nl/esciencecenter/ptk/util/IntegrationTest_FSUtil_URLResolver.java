@@ -151,7 +151,7 @@ public class IntegrationTest_FSUtil_URLResolver
         //
         // II) Manually create absolute and encoded URI 
         //
-        String baseUrlStr = baseDir.getPathString(); 
+        String baseUrlStr = baseDir.getPathname(); 
         // avoid double slashes here.
         if (baseUrlStr.endsWith("/"))
         {

@@ -150,7 +150,7 @@ public class FSNodeAttributes implements AttributeSource, IPresentable
         
         if (name.equalsIgnoreCase(""+FileAttribute.PATH))
         {
-            return new Attribute(name,anyFile.getPathString());
+            return new Attribute(name,anyFile.getPathname());
         }
         
         return null; 

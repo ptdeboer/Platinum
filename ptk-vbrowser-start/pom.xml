@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ptk-vbrowser-start</artifactId>
-    <name>ptk-vbrowser-start ${version}</name>
+    <name>ptk-vbrowser-start ${project.version}</name>
 
     <parent>
         <groupId>nl.esciencecenter.platinum</groupId>
@@ -14,39 +14,39 @@
     </parent>
 
     <dependencies>
-		<!--  ptk -->
+	<!--  ptk -->
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-core</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-vbrowser-vrs</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-vbrowser-vrs-sftp</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-vbrowser-viewers</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-vbrowser-ui</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>

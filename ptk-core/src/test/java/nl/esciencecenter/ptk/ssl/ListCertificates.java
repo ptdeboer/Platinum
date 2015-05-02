@@ -1,12 +1,13 @@
 package nl.esciencecenter.ptk.ssl;
 
+import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.crypt.Secret;
 
 public class ListCertificates
@@ -18,7 +19,9 @@ public class ListCertificates
         // CertificateStore certs=CertificateStore.getDefault(true); 
         // CertificateStore certs=CertificateStore.loadCertificateStore(GlobalProperties.getGlobalUserHome()+"/.vletrc/cacerts","changeit",false,false);
         Secret secret=new Secret("changeit".toCharArray()); 
-        CertificateStore certs=CertificateStore.loadCertificateStore(GlobalProperties.getGlobalUserHome()+"/.vletrc/cacerts",secret,false,false);
+        URL url = ListCertificates.class.getResource("/test/certificates/cacerts");
+        Assert.assertNotNull("Can not resolve test certificate store");
+        CertificateStore certs=CertificateStore.loadCertificateStore(url.getPath(),secret,false,false); 
         
         List<String> aliasses = certs.getAliases();
         

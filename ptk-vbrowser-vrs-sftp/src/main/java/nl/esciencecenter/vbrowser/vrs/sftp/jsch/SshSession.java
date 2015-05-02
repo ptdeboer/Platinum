@@ -260,7 +260,7 @@ public class SshSession implements AutoCloseable
                 if (keyFile.exists())
                 {
                     logger.info("addUserIDFiles(): adding existing identity:{}\n", keyFile);
-                    jsch.addIdentity(keyFile.getPathString());
+                    jsch.addIdentity(keyFile.getPathname());
                 }
                 else
                 {
@@ -297,7 +297,7 @@ public class SshSession implements AutoCloseable
             FSPath hostsFile = configPath.resolvePath(knownHostsFile);
             if (hostsFile.exists())
             {
-                jsch.setKnownHosts(hostsFile.getPathString());
+                jsch.setKnownHosts(hostsFile.getPathname());
             }
         }
         catch (IOException e)

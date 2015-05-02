@@ -166,7 +166,7 @@ public class FSNodeProxyNode extends ProxyNode
 	@Override
 	protected String doGetMimeType() throws ProxyException 
 	{
-	    return MimeTypes.getDefault().getMimeType(file.getPathString());  
+	    return MimeTypes.getDefault().getMimeType(file.getPathname());  
 	}
 
 	@Override

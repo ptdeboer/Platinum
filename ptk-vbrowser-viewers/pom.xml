@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ptk-vbrowser-viewers</artifactId>
-    <name>ptk-vbrowser-viewers ${version}</name>
+    <name>ptk-vbrowser-viewers ${project.version}</name>
 
     <parent>
         <groupId>nl.esciencecenter.platinum</groupId>
@@ -16,21 +16,21 @@
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-core</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-ui</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-vbrowser-vrs</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>

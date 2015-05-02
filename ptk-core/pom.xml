@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>ptk-core</artifactId>
-	<name>ptk-core ${version} - Platinum Core Module</name>
+	<name>ptk-core ${project.version} - Platinum Core Module</name>
 
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
@@ -14,7 +14,7 @@
 	</parent>
 
 	<dependencies>
-		<!--  Ext Libs -->
+		<!-- libs -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -27,7 +27,7 @@
 			<version>1.7.7</version>
 			<scope>compile</scope>
 		</dependency>
-		<!--  JUnit -->
+		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -35,5 +35,16 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- parent plugins -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
 
 </project>

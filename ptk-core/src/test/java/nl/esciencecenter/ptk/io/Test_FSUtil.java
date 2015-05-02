@@ -106,7 +106,7 @@ public class Test_FSUtil
     public void testCreateDeleteFile(FSPath parent, String fileName) throws Exception
     {
         FSPath tDir = getTestDir();
-        String path = tDir.getPathString();
+        String path = tDir.getPathname();
 
         FSPath file = tDir.resolvePath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
@@ -115,7 +115,7 @@ public class Test_FSUtil
         Assert.assertTrue("Test file be of file type after create():" + file, file.isFile());
         if (file.isLocal())
         {
-            java.io.File jfile = new java.io.File(file.getPathString());
+            java.io.File jfile = new java.io.File(file.getPathname());
             Assert.assertTrue("A local created file must be compatible with an existing (local) java.io.File", jfile.exists());
             Assert.assertTrue("A local file must be a real 'file' type", jfile.isFile());
         }
@@ -128,7 +128,7 @@ public class Test_FSUtil
     public void testCreateDeleteDir() throws Exception
     {
         FSPath tDir = getTestDir();
-        String path = tDir.getPathString();
+        String path = tDir.getPathname();
         String subdir = "subdir";
         FSPath subDir = tDir.resolvePath(subdir);
         Assert.assertFalse("Subdirectory already exists:" + subDir, subDir.exists());
@@ -137,7 +137,7 @@ public class Test_FSUtil
         Assert.assertTrue("Subdirectory must be directory after mkdir():" + subDir, subDir.isDirectory());
         if (subDir.isLocal())
         {
-            java.io.File jfile = new java.io.File(subDir.getPathString());
+            java.io.File jfile = new java.io.File(subDir.getPathname());
             Assert.assertTrue("A local created file must be compatible with an existing (local) java.io.File", jfile.exists());
             Assert.assertTrue("A local directory must be a real 'Directory' type", jfile.isDirectory());
         }
@@ -156,7 +156,7 @@ public class Test_FSUtil
     public void testCreateReadWriteFile(FSPath parent, String fileName) throws Exception
     {
         FSPath tDir = getTestDir();
-        String path = tDir.getPathString();
+        String path = tDir.getPathname();
 
         FSPath file = tDir.resolvePath(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());

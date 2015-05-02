@@ -370,7 +370,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider
         // sanitize:
         for (int i = 0; i < strs.length; i++)
         {
-            strs[i] = resolvePath(dirPath + "/" + strs[i]).getPathString();
+            strs[i] = resolvePath(dirPath + "/" + strs[i]).getPathname();
         }
 
         return strs;

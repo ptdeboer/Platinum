@@ -286,21 +286,19 @@ public class FSPath
     }
 
     /**
-     * Returns absolute and normalized URI style path
-     * 
-     * @return
+     * @return absolute and normalized URI style path as String.
      */
-    public String getPathString()
+    public String getPathname()
     {
         return getPathname(false);
     }
 
     /**
-     * Returns absolute and normalized URI style path
+     * Returns absolute and normalized URI style path endign with a "/"
      * 
      * @param dirPath
      *            if this path is a directory, end with a "/"
-     * @return absolute and normalized URI style path.
+     * @return absolute and normalized URI style path as directory path ending with "/"
      */
     public String getPathname(boolean dirPath)
     {
@@ -447,7 +445,7 @@ public class FSPath
 
     public boolean isRoot()
     {
-        String path = this.getPathString();
+        String path = this.getPathname();
 
         if ("/".equals(path))
         {

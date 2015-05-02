@@ -36,7 +36,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>jmimemagic</groupId>
 			<artifactId>jmimemagic</artifactId>
@@ -73,8 +72,6 @@
 			<artifactId>woodstox-core-asl</artifactId>
 			<version>4.1.4</version>
 		</dependency>
-
-
 	</dependencies>
 
 </project>
