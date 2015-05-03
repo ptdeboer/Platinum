@@ -39,7 +39,7 @@ import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEvent;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventSource;
@@ -57,7 +57,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
 {
     private static final long serialVersionUID = 7872709733522871820L;
 
-    private static ClassLogger logger = ClassLogger.getLogger(EmbeddedViewer.class);
+    private static PLogger logger = PLogger.getLogger(EmbeddedViewer.class);
 
     // =======
     //
@@ -508,7 +508,7 @@ public abstract class EmbeddedViewer extends JPanel implements Disposable, Viewe
 
     protected void fireEvent(ViewerEvent event)
     {
-        logger.debugPrintf(">>> Firing event:%s\n"); 
+        logger.debugPrintf(">>> Firing event:%s\n",event); 
         
         ViewerEventDispatcher dispatcher = getViewerEventDispatcher();
 

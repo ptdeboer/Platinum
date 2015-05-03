@@ -21,7 +21,7 @@
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
 import nl.esciencecenter.ptk.task.ITaskSource;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
@@ -36,7 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdater
 {
-    private final static ClassLogger logger = ClassLogger.getLogger(IconsPanelUpdater.class);
+    private final static PLogger logger = PLogger.getLogger(IconsPanelUpdater.class);
 
     private ProxyDataSource dataSource;
 

@@ -28,7 +28,7 @@ import java.io.OutputStream;
 
 import nl.esciencecenter.ptk.ui.charpane.ICharacterTerminal;
 import nl.esciencecenter.ptk.ui.charpane.StyleChar;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.util.vterm.VT10xEmulatorDefs.Token;
 
 /**
@@ -40,11 +40,11 @@ import nl.esciencecenter.ptk.util.vterm.VT10xEmulatorDefs.Token;
  */
 public class VT10xEmulator extends Emulator
 {
-    static ClassLogger logger; 
+    static PLogger logger; 
     
     static
     {
-        logger=ClassLogger.getLogger(VT10xEmulator.class);
+        logger=PLogger.getLogger(VT10xEmulator.class);
         // logger.setLevelToDebug(); 
     }
     
@@ -195,7 +195,7 @@ public class VT10xEmulator extends Emulator
         	// Catch ALL and continue!!
         	catch (Throwable e)
         	{
-        	    logger.logException(ClassLogger.ERROR,e,"nextToken()\n");
+        	    logger.logException(PLogger.ERROR,e,"nextToken()\n");
               //break ;
         	}
         }// while

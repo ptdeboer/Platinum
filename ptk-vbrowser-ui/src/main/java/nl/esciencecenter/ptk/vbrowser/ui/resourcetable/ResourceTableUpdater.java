@@ -25,7 +25,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ITaskSource;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
@@ -47,7 +47,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUpdater
 {
-    private static ClassLogger  logger = ClassLogger.getLogger(ResourceTableUpdater.class);
+    private static PLogger  logger = PLogger.getLogger(ResourceTableUpdater.class);
 
     // ========================================================================
     // Instance
@@ -175,7 +175,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
         }
         catch (ProxyException e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Failed to get Presenation from dataSource:%s\n", dataSource);
+            logger.logException(PLogger.ERROR, e, "Failed to get Presenation from dataSource:%s\n", dataSource);
             handle("Couldn't get presentation\n", e);
         }
 
@@ -277,7 +277,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
 
     protected void handle(String message, Throwable t)
     {
-        logger.logException(ClassLogger.ERROR, t, "Exception:%s\n", t);
+        logger.logException(PLogger.ERROR, t, "Exception:%s\n", t);
         BrowserInterface masterB = getMasterBrowser();
         if (masterB != null)
         {

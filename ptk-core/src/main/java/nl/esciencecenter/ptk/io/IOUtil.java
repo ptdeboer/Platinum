@@ -26,14 +26,14 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
 import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * IO helper methods.
  */
 public class IOUtil
 {
-    private static ClassLogger logger = ClassLogger.getLogger(IOUtil.class);
+    private static PLogger logger = PLogger.getLogger(IOUtil.class);
 
     private static int defaultBufferSize = 1 * 1024 * 1024;
 
@@ -397,6 +397,9 @@ public class IOUtil
         }
     }
 
+    /**
+     * Close InputStream and ignore exceptions.
+     */
     public static boolean autoClose(InputStream inps)
     {
         if (inps == null)
@@ -411,11 +414,14 @@ public class IOUtil
         }
         catch (IOException e)
         {
-            logger.logException(ClassLogger.DEBUG, e, "Exception when closing input stream:%s\n", inps);
+            logger.logException(PLogger.DEBUG, e, "Exception when closing input stream:%s\n", inps);
             return false;
         }
     }
 
+    /**
+     * Close OutputStream and ignore exceptions.
+     */
     public static boolean autoClose(OutputStream outps)
     {
         if (outps == null)
@@ -430,7 +436,7 @@ public class IOUtil
         }
         catch (IOException e)
         {
-            logger.logException(ClassLogger.DEBUG, e, "Exception when closing output stream:%s\n", outps);
+            logger.logException(PLogger.DEBUG, e, "Exception when closing output stream:%s\n", outps);
             return false;
         }
     }
@@ -449,7 +455,7 @@ public class IOUtil
         }
         catch (IOException e)
         {
-            logger.logException(ClassLogger.DEBUG, e, "Exception when closing input stream:%s\n", rndFile);
+            logger.logException(PLogger.DEBUG, e, "Exception when closing input stream:%s\n", rndFile);
             return false;
         }
 

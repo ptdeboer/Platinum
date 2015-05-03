@@ -26,7 +26,7 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
@@ -44,11 +44,11 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class VRSProxyFactory extends ProxyFactory
 {
-    private static ClassLogger logger; 
+    private static PLogger logger; 
     
     static
     {
-    	logger=ClassLogger.getLogger(VRSProxyFactory.class);
+    	logger=PLogger.getLogger(VRSProxyFactory.class);
     }
     
     public static VRSProxyFactory createFor(BrowserPlatform platform) 

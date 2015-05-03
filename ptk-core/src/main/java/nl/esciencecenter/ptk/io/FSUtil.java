@@ -46,15 +46,17 @@ import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
- * Global File System utils and resource loaders. <br>
- * Used to access the local file system.
+ * File System util and resource provoder work with local file paths and URIs.
+ * Pathnames are resolved to absolute paths and normalizes to URI style paths.<br>
+ * <br>
+ * For example: <code>'file:///C:/Users/Bob/'</code>
  */
 public class FSUtil implements ResourceProvider, FSPathProvider
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(FSUtil.class);
+    private static final PLogger logger = PLogger.getLogger(FSUtil.class);
 
     public static final String ENCODING_UTF8 = "UTF8";
 
@@ -84,7 +86,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider
          * 
          * @see LinkOption.NOFOLLOW_LINKS
          */
-        public boolean defaultFollowLinks = true;
+        public LinkOption linkOption = null;
 
     }
 
@@ -165,16 +167,17 @@ public class FSUtil implements ResourceProvider, FSPathProvider
 
     private void init()
     {
-
+        FileSystem fs = FileSystems.getDefault();
+        
         try
         {
-            this.userHome = new java.io.File(GlobalProperties.getGlobalUserHome()).toURI();
-            this.workingDir = new java.io.File(GlobalProperties.getGlobalUserDir()).toURI();
-            this.tmpDir = new java.io.File(GlobalProperties.getGlobalTempDir()).toURI();
+            this.userHome = fs.getPath(GlobalProperties.getGlobalUserHome()).toUri();
+            this.workingDir = fs.getPath(GlobalProperties.getGlobalUserDir()).toUri();
+            this.tmpDir = fs.getPath(GlobalProperties.getGlobalTempDir()).toUri();
         }
         catch (Throwable e)
         {
-            logger.logException(ClassLogger.FATAL, e, "Initialization Exception:%s\n", e);
+            logger.logException(PLogger.FATAL, e, "Initialization Exception:%s\n", e);
         }
     }
 
@@ -186,6 +189,11 @@ public class FSUtil implements ResourceProvider, FSPathProvider
     public FSPath resolvePath(String path) throws IOException
     {
         return newFSPath(path);
+    }
+
+    public FSPath resolve(URI uri) throws IOException
+    {
+        return newFSPath(uri);
     }
 
     /**
@@ -218,17 +226,19 @@ public class FSUtil implements ResourceProvider, FSPathProvider
     /**
      * Simple Copy File uses URIs to ensure absolute and normalized Paths.
      */
-    public void copyFile(URI source, URI destination) throws IOException
+    public long copyFile(URI source, URI destination) throws IOException
     {
+        long num;
         // Create
-        InputStream finput = createInputStream(newFSPath(source));
-        OutputStream foutput = createOutputStream(newFSPath(destination), false);
-        // Copy
-        IOUtil.copyStreams(finput, foutput, false);
-        // Close 
-        IOUtil.autoClose(finput);
-        IOUtil.autoClose(foutput);
-        return;
+        try(InputStream finput = createInputStream(newFSPath(source)))
+        {
+            try (OutputStream foutput = createOutputStream(newFSPath(destination), false))
+            {
+                // Copy
+                num=IOUtil.copyStreams(finput, foutput, false);
+            }
+        }
+        return num;
     }
 
     /**
@@ -513,7 +523,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider
         try
         {
             URI uri = this.resolvePathURI(relPath);
-            FSPath node = newFSPath(uri);
+            FSPath node = resolve(uri);
             // should trigger file system check on path.
             boolean exists = node.exists();
             if (reasonH != null)
@@ -612,13 +622,13 @@ public class FSUtil implements ResourceProvider, FSPathProvider
     @Override
     public InputStream createInputStream(java.net.URI uri) throws IOException
     {
-        return createInputStream(newFSPath(uri));
+        return createInputStream(resolve(uri));
     }
 
     @Override
     public InputStream createInputStream(FSPath node) throws IOException
     {
-        return Files.newInputStream(((FSPath) node)._path);
+        return Files.newInputStream(node.path());
     }
 
     @Override
@@ -626,7 +636,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider
     {
         if (isLocalFSUri(uri))
         {
-            return createOutputStream(newFSPath(uri), false);
+            return createOutputStream(resolve(uri), false);
         }
         else
         {
@@ -655,31 +665,31 @@ public class FSUtil implements ResourceProvider, FSPathProvider
             openOptions[2] = StandardOpenOption.TRUNCATE_EXISTING;
         }
 
-        return Files.newOutputStream(node._path, openOptions); // OpenOptions..
+        return Files.newOutputStream(node.path(), openOptions); // OpenOptions..
     }
 
     @Override
     public RandomReadable createRandomReader(URI uri) throws IOException
     {
-        return new LocalFSReader(newFSPath(uri));
+        return new FSReader(resolve(uri).path());
     }
     
     @Override
     public RandomReadable createRandomReader(FSPath node) throws IOException
     {
-        return new LocalFSReader((FSPath) node);
+        return new FSReader(node._path);
     }
 
     @Override
     public RandomWritable createRandomWriter(FSPath node) throws IOException
     {
-        return new LocalFSWriter((FSPath) node);
+        return new FSWriter(node._path);
     }
     
     @Override
     public RandomWritable createRandomWriter(URI uri) throws IOException
     {
-        return new LocalFSWriter((newFSPath(uri)));
+        return new FSWriter((resolve(uri)._path));
     }
 
     public ResourceLoader getResourceLoader()
@@ -706,13 +716,13 @@ public class FSUtil implements ResourceProvider, FSPathProvider
     @Override
     public LinkOption[] linkOptions()
     {
-        if (this.fsOptions.defaultFollowLinks)
+        if (this.fsOptions.linkOption==null)
         {
             return null; 
         }
         else
         {
-            return new LinkOption[]{LinkOption.NOFOLLOW_LINKS};  
+            return new LinkOption[]{fsOptions.linkOption};  
         }
     }
 

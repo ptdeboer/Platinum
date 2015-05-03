@@ -25,7 +25,7 @@ import java.security.NoSuchAlgorithmException;
 
 import nl.esciencecenter.ptk.crypt.StringHasher;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class Test_StringHasher
 {
     static
     {
-        ClassLogger logger=ClassLogger.getLogger(StringHasher.class);
+        PLogger logger=PLogger.getLogger(StringHasher.class);
         logger.setLevelToWarn(); 
     }
     

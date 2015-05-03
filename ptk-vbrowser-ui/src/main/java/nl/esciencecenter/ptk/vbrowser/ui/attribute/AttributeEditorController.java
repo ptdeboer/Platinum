@@ -28,12 +28,12 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 
 public class AttributeEditorController implements ActionListener, WindowListener
 {
-    private final static ClassLogger logger=ClassLogger.getLogger(AttributeEditorController.class);
+    private final static PLogger logger=PLogger.getLogger(AttributeEditorController.class);
     
     protected JFrame standAloneFrame = null;
 

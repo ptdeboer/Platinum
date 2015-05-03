@@ -24,6 +24,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
+import nl.esciencecenter.ptk.vbrowser.ui.tool.vtermstarter.VTermStarter;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.sftp.SftpFileSystemFactory;
@@ -48,23 +49,31 @@ public class StartVRSBrowser
 
     public static BrowserPlatform getPlatform()
     {
-    	return BrowserPlatform.getInstance("vbrowser");
+        return BrowserPlatform.getInstance("vbrowser");
     }
 
     public static void initVRSPlugins(VRSContext context)
     {
-    	try {
-    		context.getRegistry().registerFactory(SftpFileSystemFactory.class);
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+        try
+        {
+            context.getRegistry().registerFactory(SftpFileSystemFactory.class);
+        }
+        catch (InstantiationException | IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
 
+    }
+
+    public static void initVRSViewers(BrowserPlatform platform)
+    {
+        platform.getViewerRegistry().registerViewer(VTermStarter.class);
     }
 
     public static ProxyBrowserController startVBrowser(String args[]) throws Exception
     {
-    	// BrowserPlatform/Context
-        BrowserPlatform platform=getPlatform();
+        // BrowserPlatform/Context
+        BrowserPlatform platform = getPlatform();
 
         // VRSContext
         VRSContext context = platform.getVRSContext();
@@ -75,6 +84,7 @@ public class StartVRSBrowser
         // Do this preferably after enabling the persistent configuration environment
         // to load optional persistant VRS Configurations.
         initVRSPlugins(context);
+        initVRSViewers(platform);
 
         // Actual ProxyBrowser
         ProxyBrowserController browser = (ProxyBrowserController) platform.createBrowser();
@@ -85,11 +95,12 @@ public class StartVRSBrowser
         InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
         rootNode.loadPersistantConfig();
 
-        String user=context.getUserName(); 
+        String user = context.getUserName();
         // Add default links, will be ignored if already exists.
-        rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null);
-        rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null);
-        rootNode.addResourceLink("My Links", "sftp://"+user+"@localhost:22/", new VRL("sftp://"+user+"@localhost:22/"), null);
+
+        rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null, false);
+        rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null, false);
+        rootNode.addResourceLink("My Links", "sftp://" + user + "@localhost:22/", new VRL("sftp://" + user + "@localhost:22/"), null, false);
 
         // main location to start browsing:
         ProxyNode root = fac.openLocation("info:/");

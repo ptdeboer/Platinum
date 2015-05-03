@@ -24,7 +24,7 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -32,11 +32,11 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
 public class ResourceTreeController implements TreeExpansionListener, ViewNodeActionListener
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(ResourceTreeController.class);
+        logger = PLogger.getLogger(ResourceTreeController.class);
     }
 
     private ResourceTree tree;

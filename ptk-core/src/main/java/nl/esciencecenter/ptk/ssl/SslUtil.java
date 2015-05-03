@@ -26,15 +26,15 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 public class SslUtil
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
     
     static
     {
-        logger=ClassLogger.getLogger(SslUtil.class); 
+        logger=PLogger.getLogger(SslUtil.class); 
     }
     
     public static final int DEFAULT_TIMEOUT = 30000; 
@@ -91,7 +91,7 @@ public class SslUtil
         }
         catch (Throwable e)
         {
-            logger.logException(ClassLogger.ERROR,e,"Failed to initialize SSLSocketFactory\n");
+            logger.logException(PLogger.ERROR,e,"Failed to initialize SSLSocketFactory\n");
         }
     }
 

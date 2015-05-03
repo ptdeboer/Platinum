@@ -30,7 +30,7 @@ import java.awt.event.InputEvent;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
@@ -41,7 +41,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
  */
 public class DnDTransferHandler extends TransferHandler
 {
-    private static ClassLogger logger=ClassLogger.getLogger(DnDTransferHandler.class,DnDUtil.dndLogger); 
+    private static PLogger logger=PLogger.getLogger(DnDTransferHandler.class); 
     
     private static final long serialVersionUID = -115960212645219778L;
 

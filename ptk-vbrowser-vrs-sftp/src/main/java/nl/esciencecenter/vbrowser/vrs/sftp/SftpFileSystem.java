@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.sftp;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.LinkOption;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.crypt.Secret;
+import nl.esciencecenter.ptk.exec.ShellChannel;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -35,9 +37,10 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAlreadyExistsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.io.VShellChannelCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.node.VFileSystemNode;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpChannel;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpConfig;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpEntry;
@@ -49,12 +52,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
-public class SftpFileSystem extends VFileSystemNode implements VStreamCreator
+public class SftpFileSystem extends VFileSystemNode implements VStreamCreator, VShellChannelCreator
 {
     private static final Logger logger = LoggerFactory.getLogger(SftpFileSystem.class);
 
@@ -65,13 +69,13 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator
     public static final String SSH_USER_KNOWN_HOSTS_PROPERTY = "sshUserKnownHostsFile";
     
     /** Users identidyf files, matching the global ResourceSystemInfo property name */ 
-    public static final String SSH_USER_IDENTITY_FILES=ResourceSystemInfo.ATTR_USER_IDENTITY_FILES;
+    public static final String SSH_USER_IDENTITY_FILES=ResourceConfigInfo.ATTR_USER_IDENTITY_FILES;
     
     private SshSession sftpSession;
 
     private SftpChannel sftpChannel;
 
-    public SftpFileSystem(JSch jsch, VRSContext context, ResourceSystemInfo info, VRL vrl) throws VrsException
+    public SftpFileSystem(JSch jsch, VRSContext context, ResourceConfigInfo info, VRL vrl) throws VrsException
     {
         super(context, VRLUtil.getServerVRL(vrl));
         logger.info("SftpFileSystem:New(): for vrl={}", vrl);
@@ -103,13 +107,13 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator
         }
     }
 
-    protected SftpConfig createSftpConfig(VRSContext context, ResourceSystemInfo info)
+    protected SftpConfig createSftpConfig(VRSContext context, ResourceConfigInfo info)
     {
         SftpConfig config = new SftpConfig();
         return updateSftpConfig(config, context, info);
     }
 
-    protected SftpConfig updateSftpConfig(SftpConfig config, VRSContext context, ResourceSystemInfo info)
+    protected SftpConfig updateSftpConfig(SftpConfig config, VRSContext context, ResourceConfigInfo info)
     {
 
         config.host = info.getServerHostname();
@@ -349,5 +353,24 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator
         }
 
         return new VrsException("SftpExeption:" + action + "\nReason=" + e.getMessage(), e);
+    }
+
+    @Override
+    public ShellChannel createShellChannel(VRL optionalLocation) throws IOException
+    {
+        try
+        {
+            ChannelShell shellChannel = this.sftpSession.createShellChannel();
+            return new SshShellChannel(this.sftpSession,shellChannel);
+        }
+        catch (JSchException e)
+        {
+            throw new IOException("Failed to create (SSH)ShellChannel"+e.getMessage(),e);
+        }
+    }
+
+    public String toString()
+    {
+        return "SftpFileSystem:[sftpSession='"+this.sftpSession+"']";
     }
 }

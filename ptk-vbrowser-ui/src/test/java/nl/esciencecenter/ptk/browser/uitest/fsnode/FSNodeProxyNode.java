@@ -37,7 +37,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
@@ -293,7 +293,13 @@ public class FSNodeProxyNode extends ProxyNode
     }
 
     @Override
-    protected ResourceSystemInfo doGetResourceSystemInfo() throws ProxyException
+    protected ResourceConfigInfo doGetResourceConfigInfo() throws ProxyException
+    {
+        return null;
+    }
+
+    @Override
+    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException
     {
         return null;
     }

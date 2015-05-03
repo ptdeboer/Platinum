@@ -31,7 +31,7 @@ import javax.swing.table.AbstractTableModel;
 
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.QSort;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
@@ -46,7 +46,7 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 {
     private static final long serialVersionUID = 4392816921140385298L;
 
-    private static ClassLogger logger = ClassLogger.getLogger(ResourceTableModel.class);
+    private static PLogger logger = PLogger.getLogger(ResourceTableModel.class);
 
     /**
      * Resource Row Data
@@ -253,14 +253,14 @@ public class ResourceTableModel extends AbstractTableModel implements Iterable<R
 
     public int[] doSortColumn(String name, boolean reverse)
     {
-        ClassLogger.getLogger(ResourceTableModel.class).debugPrintf("sortBy:%s , reverse=%s\n", name, reverse);
+        PLogger.getLogger(ResourceTableModel.class).debugPrintf("sortBy:%s , reverse=%s\n", name, reverse);
 
         int colnr = getHeaderIndex(name);
 
         if (colnr < 0)
             return null;
 
-        ClassLogger.getLogger(ResourceTableModel.class).debugPrintf("sortBy column number=%d\n", colnr);
+        PLogger.getLogger(ResourceTableModel.class).debugPrintf("sortBy column number=%d\n", colnr);
 
         TableRowComparer comparer = new TableRowComparer(name, reverse);
         QSort<RowData> sorter = new QSort<RowData>(comparer);

@@ -8,7 +8,7 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.MonitorStats;
 import nl.esciencecenter.ptk.task.TaskMonitorAdaptor;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
@@ -17,7 +17,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
 public class HeapCopy
 {
-    private final static ClassLogger logger = ClassLogger.getLogger(HeapCopy.class);
+    private final static PLogger logger = PLogger.getLogger(HeapCopy.class);
 
     public class HeapCopyElement
     {

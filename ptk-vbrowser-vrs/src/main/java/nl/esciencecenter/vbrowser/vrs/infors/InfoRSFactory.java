@@ -25,7 +25,7 @@ import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class InfoRSFactory implements VResourceSystemFactory
@@ -49,7 +49,7 @@ public class InfoRSFactory implements VResourceSystemFactory
     }
 
     @Override
-    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceSystemInfo info, VRL vrl) throws VrsException
+    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl) throws VrsException
     {
         if (StringUtil.equals(InfoRSConstants.INFO_SCHEME, vrl.getScheme()) == false)
         {
@@ -60,7 +60,7 @@ public class InfoRSFactory implements VResourceSystemFactory
     }
 
     @Override
-    public ResourceSystemInfo updateResourceInfo(VRSContext context, ResourceSystemInfo resourceSystemInfo, VRL vrl)
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo resourceSystemInfo, VRL vrl)
     {
         // Nothing to be updated.
         return resourceSystemInfo;

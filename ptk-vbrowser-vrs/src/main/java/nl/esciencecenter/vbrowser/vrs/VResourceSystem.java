@@ -21,7 +21,6 @@
 package nl.esciencecenter.vbrowser.vrs;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 

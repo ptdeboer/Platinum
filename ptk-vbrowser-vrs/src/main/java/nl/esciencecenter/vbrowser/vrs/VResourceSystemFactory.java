@@ -21,7 +21,7 @@
 package nl.esciencecenter.vbrowser.vrs;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface VResourceSystemFactory
@@ -42,12 +42,12 @@ public interface VResourceSystemFactory
      */
     public String createResourceSystemId(VRL vrl);
 
-    public ResourceSystemInfo updateResourceInfo(VRSContext context, ResourceSystemInfo resourceSystemInfo, VRL vrl);
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo resourceSystemInfo, VRL vrl);
 
     /**
      * Create new resource System. This system will be cached and re-used  by the VRS if the
      * ResourceSystemID matches.
      */
-    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceSystemInfo info, VRL vrl) throws VrsException;
+    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl) throws VrsException;
 
 }

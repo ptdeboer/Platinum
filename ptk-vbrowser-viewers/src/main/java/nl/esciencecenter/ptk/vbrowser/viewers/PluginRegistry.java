@@ -25,11 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.data.Pair;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.JavaWebStarter;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
+import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMappingMatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
 
@@ -38,7 +41,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
  */
 public class PluginRegistry
 {
-    private static ClassLogger logger = ClassLogger.getLogger(PluginRegistry.class);
+    private static PLogger logger = PLogger.getLogger(PluginRegistry.class);
 
     public class ViewerEntry
     {
@@ -63,7 +66,7 @@ public class PluginRegistry
         }
     }
 
-    public class MimeMenuEntry
+    public class MenuEntry
     {
         protected String methodName;
 
@@ -71,7 +74,7 @@ public class PluginRegistry
 
         protected ViewerEntry viewerEntry;
 
-        public MimeMenuEntry(String method, String menuNameValue, ViewerEntry entry)
+        public MenuEntry(String method, String menuNameValue, ViewerEntry entry)
         {
             methodName = method;
             menuName = menuNameValue;
@@ -102,7 +105,9 @@ public class PluginRegistry
 
     private Map<String, List<ViewerEntry>> mimeTypeViewers = new HashMap<String, List<ViewerEntry>>();
 
-    private Map<String, List<MimeMenuEntry>> mimeMenuMappings = new HashMap<String, List<MimeMenuEntry>>();
+    private Map<String, List<MenuEntry>> mimeMenuMappings = new HashMap<String, List<MenuEntry>>();
+
+    private List<Pair<MenuMapping, MenuEntry>> toolMenuMappings = new ArrayList<Pair<MenuMapping, MenuEntry>>();
 
     private ArrayList<ViewerEntry> toolPlugins = new ArrayList<ViewerEntry>();
 
@@ -147,32 +152,38 @@ public class PluginRegistry
         }
         catch (InstantiationException | IllegalAccessException e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Failed to register viewer class:%s\n", viewerClass);
+            logger.logException(PLogger.ERROR, e, "Failed to register viewer class:%s\n", viewerClass);
         }
     }
 
-    private void registerTool(ToolPlugin viewer, ViewerEntry entry)
+    private void registerTool(ToolPlugin toolPlugin, ViewerEntry entry)
     {
         toolPlugins.add(entry);
 
-        if (viewer.addToToolMenu())
+        if (toolPlugin.addToToolMenu())
         {
-            String menuPath[] = viewer.getToolMenuPath();
-            updateToolMenu(menuPath, viewer.getToolName());
+            String menuPath[] = toolPlugin.getToolMenuPath();
+            updateToolMenu(menuPath, toolPlugin.getToolName());
+        }
+
+        List<Pair<MenuMapping, List<String>>> mappings = toolPlugin.getMenuMappings();
+        if (mappings != null)
+        {
+            registerToolMenuMappings(mappings, entry);
         }
     }
 
     protected void updateToolMenu(String[] menuPath, String toolName)
     {
-        logger.errorPrintf("FIXME:updateToolMenu() for toolName=%s\n",toolName);
+        logger.errorPrintf("FIXME:updateToolMenu() for toolName=%s\n", toolName);
     }
 
     protected void registerMimeTypes(String[] mimeTypes, ViewerEntry entry)
     {
-        if (mimeTypes==null)
+        if (mimeTypes == null)
         {
-            logger.warnPrintf("No mime types for Viewer:<%s:>%s\n",entry.viewerClass,entry.viewerName); 
-            return; 
+            logger.warnPrintf("No mime types for Viewer:<%s:>%s\n", entry.viewerClass, entry.viewerName);
+            return;
         }
         for (String type : mimeTypes)
         {
@@ -184,8 +195,8 @@ public class PluginRegistry
                 mimeTypeViewers.put(type, list);
             }
 
-            // Insert first so that later registered custom viewrs have higher priority. 
-            list.add(0,entry);
+            // Insert first so that later registered custom viewrs have higher priority.
+            list.add(0, entry);
         }
     }
 
@@ -201,11 +212,11 @@ public class PluginRegistry
         for (String type : mimeTypes)
         {
             // Combine menu methods per MimeType:
-            List<MimeMenuEntry> combinedList = this.mimeMenuMappings.get(type);
+            List<MenuEntry> combinedList = this.mimeMenuMappings.get(type);
 
             if (combinedList == null)
             {
-                combinedList = new ArrayList<MimeMenuEntry>();
+                combinedList = new ArrayList<MenuEntry>();
                 mimeMenuMappings.put(type, combinedList);
             }
 
@@ -226,12 +237,51 @@ public class PluginRegistry
                     menuName = strs[1];
                 }
 
-                MimeMenuEntry menuEntry = new MimeMenuEntry(method, menuName, entry);
+                MenuEntry menuEntry = new MenuEntry(method, menuName, entry);
 
                 // Merge ?
                 combinedList.add(menuEntry);
             }
         }
+    }
+
+    protected void registerToolMenuMappings(List<Pair<MenuMapping, List<String>>> mappings, ViewerEntry viewerEntry)
+    {
+        if ((mappings == null) || (mappings.size() <= 0))
+        {
+            return;
+        }
+
+        for (Pair<MenuMapping, List<String>> pair : mappings)
+        {
+            MenuMapping menuMap = pair.left();
+            List<String> methodDefs = pair.right();
+
+            if (methodDefs == null)
+                continue;
+            for (String methodDef : methodDefs)
+            {
+                MenuEntry menuEntry = this.createMenuEntry(methodDef, viewerEntry);
+                Pair<MenuMapping, MenuEntry> menuPair = new Pair<MenuMapping, MenuEntry>(menuMap, menuEntry);
+                toolMenuMappings.add(menuPair);
+            }
+        }
+    }
+
+    private MenuEntry createMenuEntry(String methodDef, ViewerEntry viewerEntry)
+    {
+        // Split: "<methodName>:<Menu Name>"
+        String strs[] = methodDef.split(":");
+
+        String method = strs[0];
+        String menuName = method;
+        if (strs.length > 1)
+        {
+            menuName = strs[1];
+        }
+
+        MenuEntry menuEntry = new MenuEntry(method, menuName, viewerEntry);
+        return menuEntry;
     }
 
     public Class<? extends ViewerPlugin> getMimeTypeViewerClass(String mimeType)
@@ -256,7 +306,7 @@ public class PluginRegistry
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Could not instanciate:%s\n", viewerClass);
+            logger.logException(PLogger.ERROR, e, "Could not instanciate:%s\n", viewerClass);
         }
 
         return viewerPlugin;
@@ -275,10 +325,39 @@ public class PluginRegistry
 
     /**
      * Returns list of Menu entries for the specified mimeType.
+     * 
+     * @param entries
      */
-    public List<MimeMenuEntry> getMimeMenuEntries(String mimeType)
+    public int addMimeMenuEntries(List<MenuEntry> entries, String mimeType)
     {
-        return this.mimeMenuMappings.get(mimeType);
+        List<MenuEntry> list = mimeMenuMappings.get(mimeType);
+        if ((list == null) || (list.size() <= 0))
+            return 0;
+
+        entries.addAll(list);
+        return list.size();
+    }
+
+    public int addToolMenuMappings(List<MenuEntry> menuEntries, MenuMappingMatcher matcher)
+    {
+        if ((toolMenuMappings == null) || (toolMenuMappings.size() <= 0))
+        {
+            return 0;
+        }
+
+        int num = 0;
+
+        for (Pair<MenuMapping, MenuEntry> mapping : this.toolMenuMappings)
+        {
+            MenuMapping menuMap = mapping.left();
+            if (matcher.matches(menuMap))
+            {
+                MenuEntry entry = mapping.right();
+                menuEntries.add(entry);
+                num++;
+            }
+        }
+        return num;
     }
 
 }

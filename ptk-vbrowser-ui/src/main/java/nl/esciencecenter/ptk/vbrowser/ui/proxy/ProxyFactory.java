@@ -24,7 +24,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -37,9 +37,9 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public abstract class ProxyFactory
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
     {
-        logger=ClassLogger.getLogger(ProxyFactory.class);
+        logger=PLogger.getLogger(ProxyFactory.class);
     }
 
     /**
@@ -309,7 +309,7 @@ public abstract class ProxyFactory
 
     protected void handleException(String message, Exception e)
     {
-        logger.logException(ClassLogger.ERROR, e, " %s\n",message);
+        logger.logException(PLogger.ERROR, e, " %s\n",message);
     }
 
     protected boolean cacheExists(VRL vrl)

@@ -41,7 +41,7 @@ import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.web.WebConfig.AuthenticationType;
 import nl.esciencecenter.ptk.web.WebException.Reason;
 import nl.esciencecenter.ptk.web.content.ByteBufferBody;
@@ -84,7 +84,7 @@ import org.apache.http.message.BasicHeader;
  */
 public class WebClient
 {
-    private static ClassLogger logger = ClassLogger.getLogger(WebClient.class);
+    private static PLogger logger = PLogger.getLogger(WebClient.class);
 
     // === Static ===
 
@@ -788,7 +788,7 @@ public class WebClient
             }
             catch (IOException e)
             {
-                logger.logException(ClassLogger.DEBUG, e, "IOException when closing InputStream:%s\n");
+                logger.logException(PLogger.DEBUG, e, "IOException when closing InputStream:%s\n");
             }
 
             logger.debugPrintf(">>> ------------ String response -------------\n");
@@ -1328,7 +1328,7 @@ public class WebClient
         return "WebClient:[uri:" + this.getServiceURI() + ", isAuthenticated:" + this.isAuthenticated() + "]";
     }
 
-    protected ClassLogger getLogger()
+    protected PLogger getLogger()
     {
         return logger;
     }

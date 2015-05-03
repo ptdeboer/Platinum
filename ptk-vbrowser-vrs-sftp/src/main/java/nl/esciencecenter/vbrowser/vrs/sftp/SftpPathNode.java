@@ -27,7 +27,7 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VRandomAccessable;
@@ -39,7 +39,7 @@ import com.jcraft.jsch.SftpATTRS;
 
 public class SftpPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(SftpPathNode.class);
+    private static final PLogger logger = PLogger.getLogger(SftpPathNode.class);
 
     private SftpFileSystem sftpfs;
 

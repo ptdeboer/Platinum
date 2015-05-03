@@ -41,7 +41,7 @@ import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import nl.esciencecenter.ptk.ui.fonts.FontInfo;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Character Terminal Render Engine. Developed by Piter.NL !
@@ -70,11 +70,11 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
     static String graphSet1 = "▒␉␌␍␊°±␤␋┘┐┌└┼⎺⎻─⎼⎽├┤┴┬│≤≥";
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(CharPane.class);
+        logger = PLogger.getLogger(CharPane.class);
     }
 
     // ========================================================================

@@ -28,12 +28,12 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
-import nl.esciencecenter.ptk.vbrowser.vrs.credentials.Credential;
+import nl.esciencecenter.ptk.util.logging.PLogger;
+import nl.esciencecenter.vbrowser.vrs.credentials.Credential;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.Registry;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfoRegistry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -43,7 +43,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class VRSContext
 {
-    private static final ClassLogger logger=ClassLogger.getLogger(VRSContext.class); 
+    private static final PLogger logger=PLogger.getLogger(VRSContext.class); 
     
     private static long instanceCounter=0; 
     
@@ -141,7 +141,7 @@ public class VRSContext
         return this.resourceInfoRegistry; 
     }
     
-    public ResourceSystemInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
+    public ResourceConfigInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
     {
         VResourceSystemFactory fac = registry.getVResourceSystemFactoryFor(this, vrl.getScheme());
         if (fac==null)
@@ -151,26 +151,29 @@ public class VRSContext
         
         String id=fac.createResourceSystemId(vrl);
         
-        ResourceSystemInfo info= resourceInfoRegistry.getInfo(id);
+        ResourceConfigInfo info= resourceInfoRegistry.getInfo(id);
         
         if ((info==null) && (autoCreate==true))
         {
-            info=new ResourceSystemInfo(resourceInfoRegistry,vrl,id);
+            info=new ResourceConfigInfo(resourceInfoRegistry,vrl,id);
         }
-        info=fac.updateResourceInfo(this, info, vrl); 
+        if (info!=null)
+        {   
+            info=fac.updateResourceInfo(this, info, vrl); 
+        }
         return info; 
     }
 
     /** 
      * Return actual ResourceSystemInfo used for the specified ResourceSystem.
      */
-    public ResourceSystemInfo getResourceSystemInfoFor(VResourceSystem vrs) throws VrsException
+    public ResourceConfigInfo getResourceSystemInfoFor(VResourceSystem vrs) throws VrsException
     {
         // todo: query actual instance instead of registry.
         return getResourceSystemInfoFor(vrs.getServerVRL(), false);
     }
     
-    public void putResourceSystemInfo(ResourceSystemInfo info)
+    public void putResourceConfigInfo(ResourceConfigInfo info)
     {
         resourceInfoRegistry.putInfo(info); 
     }
@@ -255,8 +258,5 @@ public class VRSContext
     {
         return new VRL("info:/"); 
     }
-
-
-    
     
 }

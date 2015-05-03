@@ -55,7 +55,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VReplicatable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import org.junit.After;
@@ -321,7 +321,7 @@ public abstract class VFSTests extends VTestCase
     @Test
     public void testPrintInfo() throws Exception
     {
-        ResourceSystemInfo info = this.getVFS().getVRSContext().getResourceSystemInfoFor(this.getRemoteLocation(), false);
+        ResourceConfigInfo info = this.getVFS().getVRSContext().getResourceSystemInfoFor(this.getRemoteLocation(), false);
 
         message(" --- Test Info ---");
         message(" remote test dir         =" + getRemoteTestDir());
@@ -384,7 +384,7 @@ public abstract class VFSTests extends VTestCase
     public void testRootExists() throws Exception
     {
         VRL rootPath = null;
-        ResourceSystemInfo inf = this.getResourceSystemInfo();
+        ResourceConfigInfo inf = this.getResourceSystemInfo();
         // Use "/" or explicit rootPath
         // if (inf!=null)
         // rootPath=inf.getRootPath();
@@ -396,7 +396,7 @@ public abstract class VFSTests extends VTestCase
         Assert.assertTrue("Exists(): root path  '" + rootPath + "' Doesn't exist!", result);
     }
 
-    public ResourceSystemInfo getResourceSystemInfo() throws Exception
+    public ResourceConfigInfo getResourceSystemInfo() throws Exception
     {
         return this.getVFS().getVRSContext().getResourceSystemInfoFor(this.remoteTestDir.getVRL(), false);
     }

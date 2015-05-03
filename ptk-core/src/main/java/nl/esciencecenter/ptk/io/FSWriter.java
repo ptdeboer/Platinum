@@ -20,51 +20,57 @@
 
 package nl.esciencecenter.ptk.io;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class LocalFSWriter implements RandomWritable
+/**
+ * Stateless File writer which opens and closes the specified path per write action.
+ */
+public class FSWriter implements Writable, RandomWritable, AutoCloseable
 {
-    protected FSPath fsNode;
-
-    protected RandomAccessFile randomFile = null;
-
-    public LocalFSWriter(FSPath node)
+    protected Path _path;
+    
+    public FSWriter(Path path) throws FileNotFoundException
     {
-        fsNode = node;
+        _path=path;
     }
 
+    /**
+     * Perform stateless write which opens and closes file again after writing.
+     */
     @Override
     public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
     {
-
-        try
+        try (RandomAccessFile randomFile = new RandomAccessFile(_path.toFile(), "rw"))
         {
-            randomFile = new RandomAccessFile(fsNode.toJavaFile(), "rw");
             randomFile.seek(fileOffset);
             randomFile.write(buffer, bufferOffset, nrBytes);
-            return;// if failed, some exception occured !
+            return;
         }
         catch (IOException e)
         {
-            throw e;
+            throw new IOException("Failed to writeBytes to:"+_path,e);
         }
-    }
-
-    public boolean autoClose()
-    {
-        if (randomFile == null)
-        {
-            return false;
-        }
-        boolean status = IOUtil.autoClose(randomFile);
-        randomFile = null;
-        return status;
     }
 
     @Override
+    public void write(byte[] buffer, int bufferOffset, int numBytes) throws IOException
+    {
+        writeBytes(0,buffer,bufferOffset,numBytes);
+    }
+
+    @Override
+    public long getLength() throws IOException
+    {
+        return Files.size(_path);
+    }
+    
+    @Override
     public void close()
     {
-        autoClose();
     }
+
 }

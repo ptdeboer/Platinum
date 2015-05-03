@@ -32,7 +32,7 @@ import net.sf.jmimemagic.MagicException;
 import net.sf.jmimemagic.MagicMatch;
 import net.sf.jmimemagic.MagicMatchNotFoundException;
 import net.sf.jmimemagic.MagicParseException;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * MimeType util class.
@@ -52,11 +52,11 @@ public class MimeTypes
      */
     private static MimeTypes instance;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(MimeTypes.class);
+        logger = PLogger.getLogger(MimeTypes.class);
     }
 
     public static MimeTypes getDefault()
@@ -111,7 +111,7 @@ public class MimeTypes
         }
         catch (IOException e)
         {
-            logger.logException(ClassLogger.WARN, e, "Couldn't initialize default mimetypes\n", e);
+            logger.logException(PLogger.WARN, e, "Couldn't initialize default mimetypes\n", e);
             // empty one !
             this.typemap = new MimetypesFileTypeMap();
         }
@@ -188,7 +188,7 @@ public class MimeTypes
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.WARN, e, "Couldn't parse MagicMime type for:%s\n", file);
+            logger.logException(PLogger.WARN, e, "Couldn't parse MagicMime type for:%s\n", file);
         }
 
         return null;

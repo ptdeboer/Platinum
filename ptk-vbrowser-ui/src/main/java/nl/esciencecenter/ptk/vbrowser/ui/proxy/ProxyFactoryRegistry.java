@@ -24,7 +24,7 @@ import java.util.Vector;
 
 
 import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -32,11 +32,11 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ProxyFactoryRegistry
 {
-    private static ClassLogger logger; 
+    private static PLogger logger; 
     
     static
     {
-        logger=ClassLogger.getLogger("ProxyRegistry.class"); 
+        logger=PLogger.getLogger("ProxyRegistry.class"); 
     }
     
     public static ProxyFactoryRegistry createInstance()

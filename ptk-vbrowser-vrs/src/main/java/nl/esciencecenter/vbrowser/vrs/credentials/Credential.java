@@ -1,4 +1,4 @@
-package nl.esciencecenter.ptk.vbrowser.vrs.credentials;
+package nl.esciencecenter.vbrowser.vrs.credentials;
 
 public interface Credential
 {

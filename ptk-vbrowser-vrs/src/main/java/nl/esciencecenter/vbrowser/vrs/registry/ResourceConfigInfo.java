@@ -29,7 +29,10 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
+/** 
+ * Resource Configuration Information for VResourceSystems or other configurable resources.
+ */
+public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo>
 {
     // ---
     // Flags/Switchess
@@ -77,7 +80,7 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
 
     final String id;
 
-    public ResourceSystemInfo(ResourceSystemInfoRegistry registry, VRL serverVRL, String infoId)
+    public ResourceConfigInfo(ResourceSystemInfoRegistry registry, VRL serverVRL, String infoId)
     {
         this.infoRegistry = registry;
         properties = new AttributeSet();
@@ -85,7 +88,7 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
         this.id = infoId;
     }
 
-    protected ResourceSystemInfo(ResourceSystemInfoRegistry registry, AttributeSet attributes, String infoId)
+    protected ResourceConfigInfo(ResourceSystemInfoRegistry registry, AttributeSet attributes, String infoId)
     {
         this.infoRegistry = registry;
         this.properties = attributes;
@@ -180,7 +183,7 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     {
         properties.putAll(properties);
     }
-
+    
     public String getServerScheme()
     {
         return properties.getStringValue(SERVER_SCHEME);
@@ -296,15 +299,15 @@ public class ResourceSystemInfo implements Duplicatable<ResourceSystemInfo>
     }
 
     @Override
-    public ResourceSystemInfo duplicate()
+    public ResourceConfigInfo duplicate()
     {
-        ResourceSystemInfo info = new ResourceSystemInfo(infoRegistry, properties.duplicate(false), id);
+        ResourceConfigInfo info = new ResourceConfigInfo(infoRegistry, properties.duplicate(false), id);
         info.passwd = getPassword(); // copy ?
         return info;
     }
 
     @Override
-    public ResourceSystemInfo duplicate(boolean shallow)
+    public ResourceConfigInfo duplicate(boolean shallow)
     {
         return duplicate();
     }

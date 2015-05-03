@@ -44,7 +44,7 @@ import nl.esciencecenter.ptk.task.MonitorStats;
 import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.task.TransferMonitor;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Transfer Monitor dialog for (VFS)Transfers.
@@ -53,11 +53,11 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
 {
     private static final long serialVersionUID = -8463719389609233817L;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(TransferMonitorDialog.class);
+        logger = PLogger.getLogger(TransferMonitorDialog.class);
     }
 
     // === --- === //
@@ -164,7 +164,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
                     catch (Throwable t)
                     {
                         // bugs in update():
-                        logger.logException(ClassLogger.FATAL, t, "Exception during update:%s\n", t);
+                        logger.logException(PLogger.FATAL, t, "Exception during update:%s\n", t);
                     }
 
                     try
@@ -173,7 +173,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
                     }
                     catch (InterruptedException e)
                     {
-                        logger.logException(ClassLogger.ERROR, e, "Sleep Interrupted!");
+                        logger.logException(PLogger.ERROR, e, "Sleep Interrupted!");
                     }
                 }// while()
 
@@ -198,7 +198,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
 
     protected void handle(String action, Throwable e)
     {
-        logger.logException(ClassLogger.ERROR, e, "%s\n", action, e);
+        logger.logException(PLogger.ERROR, e, "%s\n", action, e);
     }
 
     /** Restart the update task */

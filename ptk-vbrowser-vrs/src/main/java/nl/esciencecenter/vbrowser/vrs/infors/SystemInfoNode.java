@@ -30,7 +30,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -39,7 +39,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public class SystemInfoNode extends InfoResourceNode
 {
 
-    protected SystemInfoNode(InfoRSPathNode parent, VRL logicalVRL, ResourceSystemInfo info)
+    protected SystemInfoNode(InfoRSPathNode parent, VRL logicalVRL, ResourceConfigInfo info)
     {
         super(parent, InfoRSConstants.RESOURCEINFO_CONFIG, logicalVRL);
         this.setTargetVRL(info.getServerVRL());
@@ -58,7 +58,7 @@ public class SystemInfoNode extends InfoResourceNode
         return false;
     }
 
-    public ResourceSystemInfo getResourceSystemInfo() throws VrsException
+    public ResourceConfigInfo getResourceSystemInfo() throws VrsException
     {
         return getVRSContext().getResourceSystemInfoFor(getServerVRL(), false);
     }
@@ -78,7 +78,7 @@ public class SystemInfoNode extends InfoResourceNode
         LinkedHashSet<String> names = new LinkedHashSet<String>();
         List<AttributeDescription> descs = new ArrayList<AttributeDescription>();
 
-        ResourceSystemInfo info = getResourceSystemInfo();
+        ResourceConfigInfo info = getResourceSystemInfo();
 
         if (info == null)
         {
@@ -104,7 +104,7 @@ public class SystemInfoNode extends InfoResourceNode
     {
         Attribute superAttr=super.getResourceAttribute(name); 
         
-        ResourceSystemInfo info=this.getResourceSystemInfo();
+        ResourceConfigInfo info=this.getResourceSystemInfo();
 
         if (info==null)
         {

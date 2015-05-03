@@ -27,7 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.TransferHandler;
 
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -47,7 +47,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class BrowserPlatform
 {
-    private static ClassLogger logger = ClassLogger.getLogger(BrowserPlatform.class);
+    private static PLogger logger = PLogger.getLogger(BrowserPlatform.class);
 
     private static Map<String, BrowserPlatform> platforms = new Hashtable<String, BrowserPlatform>();
 
@@ -71,7 +71,7 @@ public class BrowserPlatform
                 catch (Exception e)
                 {
                     logger.errorPrintf("FATAL: Could not initialize browser platform:'%s'!\n", ID);
-                    logger.logException(ClassLogger.FATAL, e, "Exception during initialization:%s\n", e);
+                    logger.logException(PLogger.FATAL, e, "Exception during initialization:%s\n", e);
                 }
                 platforms.put(ID, instance);
             }
@@ -134,7 +134,6 @@ public class BrowserPlatform
         // ===================================
 
         this.viewerEventDispatcher=new ViewerEventDispatcher(true); 
-        
         initViewers();
     }
 

@@ -32,11 +32,11 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.net.URIUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 public class DnDFlavors
 {
-    private static ClassLogger logger = ClassLogger.getLogger(DnDFlavors.class);
+    private static PLogger logger = PLogger.getLogger(DnDFlavors.class);
 
     // ===================================
     // URI/URL Flavors

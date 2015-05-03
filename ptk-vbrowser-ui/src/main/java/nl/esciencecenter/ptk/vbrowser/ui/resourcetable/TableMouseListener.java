@@ -28,7 +28,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 
@@ -37,7 +37,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
  */
 public class TableMouseListener extends ViewContainerEventAdapter
 {
-    private final static ClassLogger logger = ClassLogger.getLogger(TableMouseListener.class);
+    private final static PLogger logger = PLogger.getLogger(TableMouseListener.class);
 
     private ResourceTable table;
 

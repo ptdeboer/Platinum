@@ -31,7 +31,7 @@ import java.util.Properties;
 
 import javax.swing.JComponent;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Simple Font Information holder class. FontInfo is used by the FontToolbar.
@@ -42,11 +42,11 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class FontInfo
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(FontInfo.class);
+        logger = PLogger.getLogger(FontInfo.class);
     }
 
     // ========================================================================

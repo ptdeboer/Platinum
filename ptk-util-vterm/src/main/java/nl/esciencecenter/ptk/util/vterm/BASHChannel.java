@@ -29,7 +29,7 @@ import java.net.URI;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.exec.ChannelOptions;
 import nl.esciencecenter.ptk.exec.ShellChannel;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * 
@@ -41,11 +41,11 @@ public class BASHChannel implements ShellChannel
     
     // ========================================================================
     
-    private static ClassLogger logger;
+    private static PLogger logger;
     
     static
     {
-        logger=ClassLogger.getLogger(BASHChannel.class);
+        logger=PLogger.getLogger(BASHChannel.class);
         //logger.setLevelToDebug(); 
     }
         
@@ -136,7 +136,7 @@ public class BASHChannel implements ShellChannel
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.ERROR,e,"Couldn't initialize bash session:%s\n",e);
+            logger.logException(PLogger.ERROR,e,"Couldn't initialize bash session:%s\n",e);
             throw new IOException("Failed to start bash session.\n"+e.getMessage(),e);
         }
     }
@@ -169,7 +169,7 @@ public class BASHChannel implements ShellChannel
                 }
                 catch (InterruptedException e)
                 {
-                    logger.logException(ClassLogger.ERROR,e,"Interuppted during waitFor\n");
+                    logger.logException(PLogger.ERROR,e,"Interuppted during waitFor\n");
                 } 
                 exitValue=shellProcess.exitValue(); 
                 this.shellProcess=null; 

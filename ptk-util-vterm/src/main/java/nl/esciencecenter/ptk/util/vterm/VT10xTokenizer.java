@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.util.vterm.VT10xEmulatorDefs.Token;
 import static nl.esciencecenter.ptk.util.vterm.VT10xEmulatorDefs.*;
 import static nl.esciencecenter.ptk.util.vterm.VT10xEmulatorDefs.Token.BEEP;
@@ -54,11 +54,11 @@ import static nl.esciencecenter.ptk.util.vterm.VT10xEmulatorDefs.Token.VT;
 
 public class VT10xTokenizer
  {
-    static ClassLogger logger; 
+    static PLogger logger; 
     
     static
     {
-        logger=ClassLogger.getLogger(VT10xTokenizer.class);
+        logger=PLogger.getLogger(VT10xTokenizer.class);
         //logger.setLevel(Level.FINEST); 
     }
     
@@ -354,7 +354,7 @@ public class VT10xTokenizer
         		 logger.warnPrintf("*** Warning: Received C0 during ESCAPE Sequence:%s\n",c0Token);
         		 //currentToken=Token.ERROR; 
         		 
-        		 if (logger.isLoggable(ClassLogger.DEBUG))
+        		 if (logger.isLoggable(PLogger.DEBUG))
         		 {
         		     logger.debugPrintf("> Pattern=%s\n",this.formattedBytesString(patternBuffer.getBytes()));
         		     logger.debugPrintf("> Buffer=%s\n",this.formattedBytesString(byteBuffer.getBytes()));
@@ -531,7 +531,7 @@ public class VT10xTokenizer
 
 	private Token match(Token token)
      {
-	    if (logger.isLoggable(ClassLogger.DEBUG)); 
+	    if (logger.isLoggable(PLogger.DEBUG)); 
 	        logger.debugPrintf("MATCHED:%s,args=%s\n",currentToken,getFormattedArguments()); 
 
         this.currentToken=token;  

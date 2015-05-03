@@ -9,7 +9,7 @@ import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
 import nl.esciencecenter.ptk.ui.widgets.LocationSelectionField;
 import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
 import nl.esciencecenter.ptk.ui.widgets.LocationSelectionField.LocationType;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 public class TestLocationSelectionField
 {
@@ -20,8 +20,8 @@ public class TestLocationSelectionField
         panel.setLayout(new BorderLayout());
         frame.getContentPane().add(panel); 
         //
-        ClassLogger.getLogger(DnDFlavors.class).setLevelToDebug();
-        ClassLogger.getLogger(URIDropHandler.class).setLevelToDebug();
+        PLogger.getLogger(DnDFlavors.class).setLevelToDebug();
+        PLogger.getLogger(URIDropHandler.class).setLevelToDebug();
         
         LocationSelectionField selField=new LocationSelectionField(LocationType.DirType);
         selField.setLocationText("file:/thisisalongdirectoryname/directory/subdirectory/"); 

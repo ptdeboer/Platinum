@@ -31,12 +31,12 @@ import java.net.URI;
 import java.util.List;
 
 import nl.esciencecenter.ptk.ui.widgets.URIDropTargetLister;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class HexViewController implements AdjustmentListener, KeyListener, ActionListener, URIDropTargetLister
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(HexViewController.class);
+    private static final PLogger logger = PLogger.getLogger(HexViewController.class);
 
     private HexViewer hexViewer;
 

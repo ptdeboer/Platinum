@@ -30,7 +30,7 @@ import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ValueParseException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -48,9 +48,9 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 {
     private static final long serialVersionUID = 2911511497535338526L;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
     {
-        logger = ClassLogger.getLogger(Attribute.class);
+        logger = PLogger.getLogger(Attribute.class);
     }
 
     protected static String[] booleanEnumValues =  { "false", "true" };

@@ -27,7 +27,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.presentation.IPresentable;
 import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
@@ -40,7 +40,7 @@ import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VFSDeletable;
 import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
@@ -48,7 +48,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class VRSProxyNode extends ProxyNode
 {
-    private static final ClassLogger logger=ClassLogger.getLogger(VRSProxyNode.class); 
+    private static final PLogger logger=PLogger.getLogger(VRSProxyNode.class); 
     
     private VPath vnode;
 
@@ -238,8 +238,6 @@ public class VRSProxyNode extends ProxyNode
 	{
 		return (VRSProxyFactory)super.getProxyFactory();  
 	}
-	
-	
 	
 	public String toString()
 	{
@@ -492,7 +490,7 @@ public class VRSProxyNode extends ProxyNode
     }
 
     @Override
-    protected ResourceSystemInfo doGetResourceSystemInfo() throws ProxyException
+    protected ResourceConfigInfo doGetResourceConfigInfo() throws ProxyException
     {
         VResourceSystem vrs;
         try
@@ -506,5 +504,19 @@ public class VRSProxyNode extends ProxyNode
         }
     }
     
+    @Override
+    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException
+    {
+        VResourceSystem vrs;
+        try
+        {
+            vrs = vnode.getResourceSystem();
+            return vrs.getVRSContext().getResourceSystemInfoRegistry().putInfo(info);
+        }
+        catch (VrsException e)
+        {
+            throw new ProxyException(e.getMessage(),e);
+        }
+    }
 
 }

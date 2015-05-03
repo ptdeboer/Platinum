@@ -24,9 +24,28 @@ import java.util.LinkedHashMap;
 
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 
-public class ResourceSystemInstances extends LinkedHashMap<String, VResourceSystem>
+public class ResourceSystemInstances extends LinkedHashMap<String,LinkedHashMap<String, VResourceSystem>>
 {
     private static final long serialVersionUID = 4930474168183078842L;
 
+    public VResourceSystem getResourceSystem(String contextId,String resourceId)
+    {
+        LinkedHashMap<String, VResourceSystem> list = this.get(contextId);
+        if (list==null)
+            return null;
+        
+        return list.get(resourceId);
+    }
     
+    public VResourceSystem putResourceSystem(String contextId,String resourceId, VResourceSystem vrs)
+    {
+        LinkedHashMap<String, VResourceSystem> list = this.get(contextId);
+        if (list==null)
+        {
+            list=new LinkedHashMap<String,VResourceSystem>(); 
+            this.put(contextId,list); 
+        }
+        return list.put(resourceId, vrs); 
+    }
+
 }

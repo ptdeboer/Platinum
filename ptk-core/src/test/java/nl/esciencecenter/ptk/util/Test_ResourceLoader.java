@@ -5,7 +5,7 @@ import java.io.RandomAccessFile;
 
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class Test_ResourceLoader
 {
 	static
 	{
-		ClassLogger.getLogger(ResourceLoader.class).setLevelToInfo(); 
+		PLogger.getLogger(ResourceLoader.class).setLevelToInfo(); 
 	}
 	
 	private static void outPrintf(String format,Object... args)

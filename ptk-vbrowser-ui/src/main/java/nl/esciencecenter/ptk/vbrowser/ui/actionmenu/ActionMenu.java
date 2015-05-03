@@ -22,6 +22,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.actionmenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenu;
@@ -29,20 +30,20 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.MimeMenuEntry;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.MenuEntry;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.ViewerEntry;
 
 public class ActionMenu extends JPopupMenu
 {
     private static final long serialVersionUID = 7948518745148426493L;
 
-    private static final ClassLogger logger=ClassLogger.getLogger(ActionMenu.class); 
+    private static final PLogger logger=PLogger.getLogger(ActionMenu.class); 
     
     /**
      * 
@@ -134,9 +135,9 @@ public class ActionMenu extends JPopupMenu
         // Viewer specific menu action for this mimeType
         menu.add(new JSeparator());
         {
-            if (nodeMimeType != null)
+            if (actionSourceNode != null)
             {
-                menu.addMimeViewerMenuMethods(container, nodeMimeType);
+                menu.addMimeViewerMenuMethods(container, actionSourceNode);
             }
         }
 
@@ -374,18 +375,21 @@ public class ActionMenu extends JPopupMenu
         return mitem;
     }
 
-    private void addMimeViewerMenuMethods(Object eventSource, String mimeType)
+    private void addMimeViewerMenuMethods(Object eventSource, ViewNode actionSourceNode)
     {
         PluginRegistry viewReg = platform.getViewerRegistry();
 
-        List<MimeMenuEntry> entries = viewReg.getMimeMenuEntries(mimeType);
-
-        if (entries == null)
+        String mimeType=actionSourceNode.getMimeType();
+        List<MenuEntry> entries = new ArrayList<MenuEntry>();
+        viewReg.addMimeMenuEntries(entries,mimeType);
+        viewReg.addToolMenuMappings(entries,actionSourceNode);
+        
+        if ((entries == null) || (entries.size()<=0))
         {
             return;
         }
 
-        for (MimeMenuEntry entry : entries)
+        for (MenuEntry entry : entries)
         {
             String args[] = new String[2];
             args[0] = entry.getViewerClassName();

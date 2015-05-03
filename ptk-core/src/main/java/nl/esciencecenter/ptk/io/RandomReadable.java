@@ -35,7 +35,7 @@ public interface RandomReadable extends AutoCloseable
             int nrBytes) throws IOException;
 
     /**
-     * Return (maximum) length of random readable resource. fileOffset+nrBytes &lt; length of resource.
+     * @return length of random readable resource, -1 if unknown.
      */
     long getLength() throws IOException;
 

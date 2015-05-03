@@ -60,7 +60,7 @@ import nl.esciencecenter.ptk.ui.charpane.ColorMap;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.util.vterm.VTermChannelProvider.TermChannelOptions;
 
 
@@ -70,11 +70,11 @@ public class VTerm extends JFrame implements  Runnable
     
     // ========================================================================
     
-    private static ClassLogger logger;
+    private static PLogger logger;
     
     static
     {
-        logger=ClassLogger.getLogger(VTerm.class);
+        logger=PLogger.getLogger(VTerm.class);
         //logger.setLevelToDebug(); 
     }
     
@@ -824,11 +824,11 @@ public class VTerm extends JFrame implements  Runnable
         }
         else if (action.equals("DebugON"))
         {
-        	ClassLogger.getRootLogger().setLevelToDebug();  
+        	PLogger.getRootLogger().setLevelToDebug();  
         }
         else if (action.equals("DebugOFF"))
         {
-            ClassLogger.getRootLogger().setLevelToError();  
+            PLogger.getRootLogger().setLevelToError();  
         }
         else if (action.equals("About"))
         {
@@ -1043,11 +1043,11 @@ public class VTerm extends JFrame implements  Runnable
             }
             catch (Exception e)
             {
-                logger.logException(ClassLogger.ERROR,e,"*** Exception:%s\n",e);
+                logger.logException(PLogger.ERROR,e,"*** Exception:%s\n",e);
             }
             catch (Error e)
             {
-                logger.logException(ClassLogger.ERROR,e,"*** Exception:%s\n",e);
+                logger.logException(PLogger.ERROR,e,"*** Exception:%s\n",e);
             }
 
         }
@@ -1075,7 +1075,7 @@ public class VTerm extends JFrame implements  Runnable
             }
             catch (Exception ex)
             {
-                logger.logException(ClassLogger.ERROR,ex,"Could start bash: %s\n",ex);
+                logger.logException(PLogger.ERROR,ex,"Could start bash: %s\n",ex);
                 showError(ex); 
             }
 
@@ -1111,12 +1111,12 @@ public class VTerm extends JFrame implements  Runnable
             }
             catch (Exception e)
             {
-                logger.logException(ClassLogger.ERROR,e,"VLTerm Exception!\n"); 
+                logger.logException(PLogger.ERROR,e,"VLTerm Exception!\n"); 
                 showError(e); 
             }
             catch (Error e)
             {
-                logger.logException(ClassLogger.ERROR,e,"Internal Error:%s\n",e);  
+                logger.logException(PLogger.ERROR,e,"Internal Error:%s\n",e);  
                 showError(e); 
             }
         }
@@ -1146,12 +1146,12 @@ public class VTerm extends JFrame implements  Runnable
             }
             catch (Exception e)
             {
-                logger.logException(ClassLogger.ERROR,e,"VLTerm Exception!\n"); 
+                logger.logException(PLogger.ERROR,e,"VLTerm Exception!\n"); 
                 showError(e); 
             }
             catch (Error e)
             {
-                logger.logException(ClassLogger.ERROR,e,"Internal Error:%s\n",e);  
+                logger.logException(PLogger.ERROR,e,"Internal Error:%s\n",e);  
                 showError(e); 
             }
         }
@@ -1183,7 +1183,7 @@ public class VTerm extends JFrame implements  Runnable
                  }
                  catch (InterruptedException e)
                  {
-                     logger.logException(ClassLogger.ERROR,e,"*** Interupted *** \n");
+                     logger.logException(PLogger.ERROR,e,"*** Interupted *** \n");
                  }
                  
                  if (val==0)
@@ -1316,7 +1316,7 @@ public class VTerm extends JFrame implements  Runnable
         }
         catch (IOException e)
         {
-            logger.logException(ClassLogger.WARN,e,"Excpetion during disconnect:%s\n",this); 
+            logger.logException(PLogger.WARN,e,"Excpetion during disconnect:%s\n",this); 
         }
         
         this.shellChannel=null;
@@ -1339,7 +1339,7 @@ public class VTerm extends JFrame implements  Runnable
 	    }
 	    catch (IOException e)
         {
-	        logger.logException(ClassLogger.ERROR,e,"IOException: Couldn't send terminal size\n"); 
+	        logger.logException(PLogger.ERROR,e,"IOException: Couldn't send terminal size\n"); 
         }
 
 		if (this.getEmulator()!=null)
@@ -1362,7 +1362,7 @@ public class VTerm extends JFrame implements  Runnable
 	    }
 	    catch (IOException e)
 	    {
-	        logger.logException(ClassLogger.ERROR,e,"IOException: Couldn't send terminal type:%s\n",type); 
+	        logger.logException(PLogger.ERROR,e,"IOException: Couldn't send terminal type:%s\n",type); 
 	    }
 	    
 		// update getEmulator() 
@@ -1398,7 +1398,7 @@ public class VTerm extends JFrame implements  Runnable
         }
         catch (Exception e) 
         {
-            logger.logException(ClassLogger.WARN,e,"VLTerm:Couldn't load config vlterm.prop\n"); 
+            logger.logException(PLogger.WARN,e,"VLTerm:Couldn't load config vlterm.prop\n"); 
             return new Properties();
         }
     }

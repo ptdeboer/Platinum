@@ -23,11 +23,11 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 import java.util.List;
 
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfoRegistry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -36,7 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class SystemInfosNode extends InfoRSPathNode
 {
-    private final static ClassLogger logger = ClassLogger.getLogger(SystemInfosNode.class);
+    private final static PLogger logger = PLogger.getLogger(SystemInfosNode.class);
 
     public SystemInfosNode(InfoConfigNode parent) throws VrsException
     {
@@ -71,10 +71,10 @@ public class SystemInfosNode extends InfoRSPathNode
      * list current registered ResourceSystemInfo descriptions. 
      * @return
      */
-    protected List<ResourceSystemInfo> listResourceSystemInfos()
+    protected List<ResourceConfigInfo> listResourceSystemInfos()
     {
         ResourceSystemInfoRegistry reg = this.getVRSContext().getResourceSystemInfoRegistry();
-        List<ResourceSystemInfo> infos = reg.list();
+        List<ResourceConfigInfo> infos = reg.list();
         // filter
         return infos;
     }
@@ -83,11 +83,11 @@ public class SystemInfosNode extends InfoRSPathNode
     {
         int index = 0;
 
-        List<ResourceSystemInfo> infos = listResourceSystemInfos();
+        List<ResourceConfigInfo> infos = listResourceSystemInfos();
 
         logger.debugPrintf("Adding %d ResourceSystemInfos\n", infos.size());
 
-        for (ResourceSystemInfo info : infos)
+        for (ResourceConfigInfo info : infos)
         {
             logger.debugPrintf(" - adding ResourceSystemInfo:%s\n", info);
 
@@ -120,7 +120,7 @@ public class SystemInfosNode extends InfoRSPathNode
         }
     }
 
-    protected InfoResourceNode createSystemInfoNode(String subPath, ResourceSystemInfo info, String name, String iconUrl)
+    protected InfoResourceNode createSystemInfoNode(String subPath, ResourceConfigInfo info, String name, String iconUrl)
             throws VRLSyntaxException
     {
         VRL logicalVrl = this.createSubPathVRL(subPath);

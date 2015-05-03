@@ -23,7 +23,7 @@ package nl.esciencecenter.ptk.ssl;
 
 import javax.net.ssl.X509KeyManager;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 
 import java.net.Socket;
@@ -39,11 +39,11 @@ import java.security.cert.X509Certificate;
  */
 public class PrivateX509KeyManager implements X509KeyManager 
 {
-   static ClassLogger log = null;
+   static PLogger log = null;
    
    static
    {
-       log=ClassLogger.getLogger(PrivateX509KeyManager.class);
+       log=PLogger.getLogger(PrivateX509KeyManager.class);
    }
    
    private final X509Certificate[] certChain;
@@ -67,7 +67,7 @@ public class PrivateX509KeyManager implements X509KeyManager
    /// Intented to be implemented by GUI for user interaction, but we have only one key.
    public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) 
    {
-       if (log.isLoggable(ClassLogger.DEBUG))
+       if (log.isLoggable(PLogger.DEBUG))
        {
            log.debugPrintf("chooseClientAlias()\n");
            for (int i = 0; i < keyType.length; i++) log.debugPrintf("keyType[" + i + "]=" + keyType[i]+"\n");

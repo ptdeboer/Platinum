@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Stateful String Hasher Util class.<br>
@@ -50,11 +50,11 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
 
     // public static enum HashType
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(StringHasher.class);
+        logger = PLogger.getLogger(StringHasher.class);
     }
 
     // ========================================================================
@@ -145,7 +145,7 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
             }
             catch (NoSuchAlgorithmException e)
             {
-                logger.logException(ClassLogger.FATAL, e,
+                logger.logException(PLogger.FATAL, e,
                         "Impossible Exception:Already existing MessageDigest Instance returns NoSuchAlgorithmException"
                                 + "of its own algorithm:" + other.messageDigest.getAlgorithm());
             }

@@ -22,7 +22,7 @@ package nl.esciencecenter.vbrowser.vrs.task;
 
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.TaskWatcher;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /** 
  * ActionTask Watcher for VRSTasks. 
@@ -30,7 +30,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class VRSTaskWatcher extends TaskWatcher
 {
-    private static ClassLogger logger=ClassLogger.getLogger(TaskWatcher.class); 
+    private static PLogger logger=PLogger.getLogger(TaskWatcher.class); 
     
     private static VRSTaskWatcher instance=null;
     

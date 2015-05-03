@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /** 
  * Global properties and other runtime configurations. 
@@ -72,7 +72,7 @@ public class GlobalProperties
     // Privates
     // ======== 
     
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     /** Private copy for non system properties */ 
     private static Properties globalProperties=new Properties(); 
@@ -83,7 +83,7 @@ public class GlobalProperties
         // potentiele not initialized classes
 
         // Default logger. 
-    	logger=ClassLogger.getLogger(GlobalProperties.class); 
+    	logger=PLogger.getLogger(GlobalProperties.class); 
     	logger.infoPrintf(">>> Global Init <<<\n");
 
     	// To be checked; Applet mode or secure WebService mode. 
@@ -177,7 +177,7 @@ public class GlobalProperties
         }
         catch (Exception ex)
         {
-            logger.logException(ClassLogger.WARN,ex,"Couldn't get HOSTNAME of local machine\n");  
+            logger.logException(PLogger.WARN,ex,"Couldn't get HOSTNAME of local machine\n");  
         }
 
         Object val=getEnv("HOSTNAME");
@@ -188,9 +188,9 @@ public class GlobalProperties
         return "localhost"; 
     }
     
-    public static ClassLogger getRootLogger()
+    public static PLogger getRootLogger()
     {
-    	return ClassLogger.getRootLogger(); 
+    	return PLogger.getRootLogger(); 
     }
 
     public static String getOsArch() 

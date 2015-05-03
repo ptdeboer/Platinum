@@ -45,7 +45,7 @@ import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 
 /**
- * Wrapper around nio.file.path interface.
+ * Wrapper around nio.file.Path interface.
  */
 public class FSPath
 {
@@ -81,11 +81,11 @@ public class FSPath
         this._path = path;
     }
 
-    protected FSPathProvider getFSHandler()
+    protected Path path()
     {
-        return fsHandler;
+        return _path;
     }
-
+    
     // ==========================
     // Create/Delete/Rename
     // ==========================
@@ -95,9 +95,11 @@ public class FSPath
         byte bytes[] = new byte[0];
 
         // Default way to create a file is by writing zero bytes:
-        OutputStream outps = this.fsHandler.createOutputStream(this, false);
-        outps.write(bytes);
-        outps.close();
+        try (OutputStream outps = this.fsHandler.createOutputStream(this, false)) 
+        {
+            outps.write(bytes);
+            // no need to call outps.close(); 
+        }
 
         return this;
     }
@@ -437,11 +439,6 @@ public class FSPath
     {
         return true;
     }
-
-    // boolean isPosix()
-    // {
-    // return false;
-    // }
 
     public boolean isRoot()
     {

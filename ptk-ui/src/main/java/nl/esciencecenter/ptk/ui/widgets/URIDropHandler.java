@@ -34,14 +34,14 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Handle drops on the Navigation Bar.
  */
 public class URIDropHandler implements DropTargetListener
 {
-    private static ClassLogger logger=ClassLogger.getLogger(URIDropHandler.class); 
+    private static PLogger logger=PLogger.getLogger(URIDropHandler.class); 
      
     private URIDropTargetLister uriDropTargetListener;
 
@@ -112,11 +112,11 @@ public class URIDropHandler implements DropTargetListener
         }
         catch (UnsupportedFlavorException e)
         {
-            logger.logException(ClassLogger.ERROR,e,"UnsupportedFlavorException:%s\n",e); 
+            logger.logException(PLogger.ERROR,e,"UnsupportedFlavorException:%s\n",e); 
         }
         catch (IOException e)
         {
-            logger.logException(ClassLogger.ERROR,e,"IOException:%s\n",e); 
+            logger.logException(PLogger.ERROR,e,"IOException:%s\n",e); 
         }
 
         dtde.dropComplete(false);

@@ -34,7 +34,7 @@
 
 	<build>
 		<pluginManagement>
-			<!--  Parent plugin configurations -->
+			<!-- Parent plugin configurations trigger when plugin is referred to -->
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -68,21 +68,28 @@
 				</plugin>
 				<!-- Failsave for Integration Tests -->
 				<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.18.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.18.1</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<!-- Sonar for code inspection -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
 
+	<!-- Toplevel dependencies inherited by all childs -->
 	<dependencies>
 		<!-- JUnit -->
 		<dependency>

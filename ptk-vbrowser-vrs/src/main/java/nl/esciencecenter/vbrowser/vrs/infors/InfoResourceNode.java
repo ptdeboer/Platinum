@@ -30,7 +30,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
@@ -51,7 +51,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessable, VInfoResourcePath, VRenamable,VDeletable
 {
-    private static ClassLogger logger = ClassLogger.getLogger(InfoResourceNode.class);
+    private static PLogger logger = PLogger.getLogger(InfoResourceNode.class);
 
     public static InfoResourceNode createSubPathLinkNode(InfoRSPathNode parent, String subPath, String logicalName, VRL targetLink, String optIconURL,
             boolean showLinkIcon) throws VRLSyntaxException
@@ -380,7 +380,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     // Create/Delete Links/ResourceFolders
     // ======================================
 
-    public InfoResourceNode addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL) throws VrsException
+    public InfoResourceNode addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL, boolean save) throws VrsException
     {
         logger.infoPrintf(">>>Adding new resourceLink:%s\n", targetLink);
 
@@ -402,6 +402,11 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, optIconURL, true);
         parentNode.addSubNode(node);
 
+        if (save)
+        {
+            save(); 
+        }
+        
         return node;
     }
 

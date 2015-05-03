@@ -30,7 +30,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 
 /** 
- * FileSystem interface.  
+ * FileSystem interface for resolving local filenames and URIs.
  */
 public interface FSPathProvider
 {

@@ -41,7 +41,7 @@ import javax.swing.SwingUtilities;
 
 import nl.esciencecenter.ptk.ui.fonts.FontUtil;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrEnumField;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrIntField;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrParameterField;
@@ -60,7 +60,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class AttributePanel extends JPanel
 {
-    private static final ClassLogger logger=ClassLogger.getLogger(AttributePanel.class); 
+    private static final PLogger logger=PLogger.getLogger(AttributePanel.class); 
         
     private static final long serialVersionUID = -7067255541137647977L;
 

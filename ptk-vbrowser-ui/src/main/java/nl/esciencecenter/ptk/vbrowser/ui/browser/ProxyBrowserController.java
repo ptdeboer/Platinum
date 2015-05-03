@@ -38,7 +38,7 @@ import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMenu;
@@ -71,10 +71,10 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ProxyBrowserController implements BrowserInterface, ActionMenuListener
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     {
-        logger = ClassLogger.getLogger(ProxyBrowserController.class);
+        logger = PLogger.getLogger(ProxyBrowserController.class);
     }
 
     // ========================================================================
@@ -697,7 +697,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 }
                 catch (ProxyException e)
                 {
-                    logger.logException(ClassLogger.ERROR, e, "Failed to determine ResourceType+MimeType of:%s", node);
+                    logger.logException(PLogger.ERROR, e, "Failed to determine ResourceType+MimeType of:%s", node);
                     logger.errorPrintf("\n" + ">>>\n>>> FIXME: Set SingleNode view:%s\n>>>\n", node);
                 }
 
@@ -717,7 +717,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.WARN, e, "No icon for node:%s\n", node);
+            logger.logException(PLogger.WARN, e, "No icon for node:%s\n", node);
         }
 
         if (addHistory)
@@ -864,7 +864,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     @Override
     public void handleException(String actionText, Throwable ex)
     {
-        logger.logException(ClassLogger.ERROR, ex, "Exception:%s\n", ex);
+        logger.logException(PLogger.ERROR, ex, "Exception:%s\n", ex);
         // does ui synchonisation:
         ExceptionDialog.show(this.browserFrame, ex);
     }

@@ -25,7 +25,7 @@ import java.awt.Point;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 
@@ -38,7 +38,7 @@ public class ResourceTreeDropTarget extends ViewNodeDropTarget
 {
     private static final long serialVersionUID = -9095804562165852802L;
 
-    private static ClassLogger logger = ClassLogger.getLogger(ResourceTreeDropTarget.class);
+    private static PLogger logger = PLogger.getLogger(ResourceTreeDropTarget.class);
 
     // === //
 

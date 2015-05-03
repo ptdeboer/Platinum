@@ -20,8 +20,12 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers;
 
+import java.util.List;
+
 import javax.swing.Icon;
 
+import nl.esciencecenter.ptk.data.Pair;
+import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -65,4 +69,8 @@ public interface ToolPlugin
      */
     public Icon getToolIcon(int size);
 
+    /**
+     * @return Returns the mapping of a MenuMapping to a list of menu methods.<br>
+     */
+    public List<Pair<MenuMapping,List<String>>> getMenuMappings();
 }

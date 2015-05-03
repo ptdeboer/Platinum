@@ -5,7 +5,7 @@ import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRLUtil;
 
@@ -38,7 +38,7 @@ public class DummyRSFactory implements VResourceSystemFactory
     }
 
     @Override
-    public ResourceSystemInfo updateResourceInfo(VRSContext context, ResourceSystemInfo info, VRL vrl)
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info, VRL vrl)
     {
         info.setIfNotSet(new Attribute(dummyIntPar,1),true); 
         info.setIfNotSet(new Attribute(dummyStringPar,"stringValue"),true); 
@@ -54,7 +54,7 @@ public class DummyRSFactory implements VResourceSystemFactory
     }
 
     @Override
-    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceSystemInfo info, VRL vrl) throws VrsException
+    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl) throws VrsException
     {
         return new DummyRS(context,info,vrl); 
     }

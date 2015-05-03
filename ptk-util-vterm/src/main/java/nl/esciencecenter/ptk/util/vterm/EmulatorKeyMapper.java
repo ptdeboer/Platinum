@@ -25,7 +25,7 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 
 /**
@@ -38,7 +38,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class EmulatorKeyMapper implements TerminalKeyListener, KeyListener
 {
-    private static ClassLogger logger=ClassLogger.getLogger(EmulatorKeyMapper.class);
+    private static PLogger logger=PLogger.getLogger(EmulatorKeyMapper.class);
     
 	Emulator emulator=null;
 
@@ -154,7 +154,7 @@ public class EmulatorKeyMapper implements TerminalKeyListener, KeyListener
 		}
 		catch (Exception ee)
 		{
-			logger.logException(ClassLogger.ERROR,ee,"Emulator Exception:%s\n",e); 
+			logger.logException(PLogger.ERROR,ee,"Emulator Exception:%s\n",e); 
 		}
 		e.consume(); 
 	}
@@ -202,7 +202,7 @@ public class EmulatorKeyMapper implements TerminalKeyListener, KeyListener
 		}
 		catch (IOException ex) 
 		{
-		    logger.logException(ClassLogger.ERROR,ex,"emulator.send() exception\n"); 
+		    logger.logException(PLogger.ERROR,ex,"emulator.send() exception\n"); 
 		}
 		 
 	}

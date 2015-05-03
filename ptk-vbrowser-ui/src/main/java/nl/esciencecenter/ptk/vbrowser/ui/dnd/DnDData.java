@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Vector;
 
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -43,7 +43,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class DnDData
 {
-    private static ClassLogger logger=ClassLogger.getLogger(DnDData.class,DnDUtil.dndLogger); 
+    private static PLogger logger=PLogger.getLogger(DnDData.class); 
     
     public static final String VBROWSER_VRS_MIMETYPE_PREFIX = VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX;
 

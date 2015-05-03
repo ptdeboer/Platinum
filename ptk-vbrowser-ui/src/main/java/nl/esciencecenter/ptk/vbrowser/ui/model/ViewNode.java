@@ -28,6 +28,8 @@ import javax.swing.Icon;
 
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.MiniIcons;
+import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
+import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMappingMatcher;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -35,7 +37,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * This is the UI component which is actually 'viewed'. Multiple ViewNodes can be "viewing" a single resource
  * (ProxyNode). See ProxyNode for resource attributes.
  */
-public class ViewNode // candidate: implements Serializable
+public class ViewNode implements MenuMappingMatcher // candidate: implements Serializable
 {
     public static final String DEFAULT_ICON = "defaultIcon";
 
@@ -55,12 +57,13 @@ public class ViewNode // candidate: implements Serializable
         return vrls;
     }
 
-    public static ViewNode create(VRL vrl,String name, Icon defaultIcon, boolean isComposite,String resourceType)
+    public static ViewNode create(VRL vrl, String name, Icon defaultIcon, boolean isComposite, String resourceType)
     {
-        ViewNode node=new ViewNode(vrl,defaultIcon,name,isComposite);
-        node.resourceType=resourceType; 
-        return node; 
+        ViewNode node = new ViewNode(vrl, defaultIcon, name, isComposite);
+        node.resourceType = resourceType;
+        return node;
     }
+
     // ==========
     // Instance
     // ==========
@@ -212,6 +215,12 @@ public class ViewNode // candidate: implements Serializable
                 + ", name=" + name + ", resourceType=" + resourceType
                 + ", resourceStatus=" + resourceStatus + ", mimeType=" + mimeType + ", allowedChildTypes="
                 + allowedChildTypes + "]";
+    }
+
+    @Override
+    public boolean matches(MenuMapping menuMap)
+    {
+        return menuMap.matches(resourceType, getVRL().getScheme(), resourceStatus, mimeType);
     }
 
 }

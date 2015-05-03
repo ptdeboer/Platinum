@@ -30,7 +30,7 @@ import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
@@ -44,7 +44,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class BrowserInterfaceAdaptor  implements BrowserInterface
 {
-    final static ClassLogger logger=ClassLogger.getLogger(BrowserInterfaceAdaptor.class); 
+    final static PLogger logger=PLogger.getLogger(BrowserInterfaceAdaptor.class); 
     
     private BrowserPlatform platform;
     private JPopupMenu jpopupMenu;
@@ -63,7 +63,7 @@ public class BrowserInterfaceAdaptor  implements BrowserInterface
     @Override
     public void handleException(String message,Throwable e)
     {
-        logger.logException(ClassLogger.ERROR, e, message, "Exception:%s\n"); 
+        logger.logException(PLogger.ERROR, e, message, "Exception:%s\n"); 
     }
 
     @Override

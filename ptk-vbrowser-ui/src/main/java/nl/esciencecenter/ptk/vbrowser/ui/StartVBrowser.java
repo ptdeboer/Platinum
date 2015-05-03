@@ -70,8 +70,8 @@ public class StartVBrowser
         rootNode.loadPersistantConfig();
         
         // Add default links, will be ignored if already exists. 
-        rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null);
-        rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null);
+        rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null,false);
+        rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null,false);
 
         // main location to start browsing: 
         ProxyNode root = fac.openLocation("info:/");

@@ -22,27 +22,27 @@ package nl.esciencecenter.ptk.vbrowser.ui;
 
 import javax.swing.SwingUtilities;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 
 public class UIGlobal
 {
-    private static ClassLogger uiLogger;
+    private static PLogger uiLogger;
 
     
     static
     {
-    	uiLogger=ClassLogger.getLogger(UIGlobal.class); 
+    	uiLogger=PLogger.getLogger(UIGlobal.class); 
         uiLogger.debugPrintf(">>> UIGlobal.init() <<<\n"); 
         
         try
         {
-            uiLogger=ClassLogger.getLogger("UIGlobal"); 
+            uiLogger=PLogger.getLogger("UIGlobal"); 
       
         }
         catch (Exception e)
         {
-            uiLogger.logException(ClassLogger.FATAL,e,"Exception during initialization!"); 
+            uiLogger.logException(PLogger.FATAL,e,"Exception during initialization!"); 
         }
     }
     

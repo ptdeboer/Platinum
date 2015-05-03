@@ -39,7 +39,7 @@ import javax.swing.table.TableModel;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
@@ -62,7 +62,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 {
     private static final long serialVersionUID = -8190587704685619938L;
 
-    private static final ClassLogger logger = ClassLogger.getLogger(ResourceTable.class);
+    private static final PLogger logger = PLogger.getLogger(ResourceTable.class);
 
     // default presentation
 

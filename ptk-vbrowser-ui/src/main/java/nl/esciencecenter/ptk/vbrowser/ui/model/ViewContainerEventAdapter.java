@@ -29,7 +29,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPopupMenu;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 
@@ -38,7 +38,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
  */
 public class ViewContainerEventAdapter implements MouseListener, MouseMotionListener, FocusListener
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(ViewContainerEventAdapter.class);
+    private static final PLogger logger = PLogger.getLogger(ViewContainerEventAdapter.class);
 
     private ViewNodeContainer viewComp;
 

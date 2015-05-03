@@ -55,7 +55,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -67,7 +67,7 @@ public class FXWebJPanel extends JPanel
 {
     private static final long serialVersionUID = -7501864809216238899L;
     
-    private static final ClassLogger logger=ClassLogger.getLogger(FXWebJPanel.class); 
+    private static final PLogger logger=PLogger.getLogger(FXWebJPanel.class); 
     // 
     
     private static String toURL(String str)

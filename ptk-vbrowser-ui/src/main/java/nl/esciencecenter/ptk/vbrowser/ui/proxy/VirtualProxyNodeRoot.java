@@ -27,7 +27,7 @@ import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /** 
@@ -194,7 +194,13 @@ public class VirtualProxyNodeRoot extends ProxyNode
     }
 
     @Override
-    protected ResourceSystemInfo doGetResourceSystemInfo()
+    protected ResourceConfigInfo doGetResourceConfigInfo()
+    {
+        return null;
+    }
+
+    @Override
+    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException
     {
         return null;
     }

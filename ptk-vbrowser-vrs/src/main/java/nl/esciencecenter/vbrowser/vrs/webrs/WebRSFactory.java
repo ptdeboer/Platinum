@@ -24,7 +24,7 @@ import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 
@@ -58,13 +58,13 @@ public class WebRSFactory implements VResourceSystemFactory
     }
 
     @Override
-    public ResourceSystemInfo updateResourceInfo(VRSContext context,ResourceSystemInfo info, VRL vrl)
+    public ResourceConfigInfo updateResourceInfo(VRSContext context,ResourceConfigInfo info, VRL vrl)
     {
         return info; 
     }
 
     @Override
-    public nl.esciencecenter.vbrowser.vrs.VResourceSystem createResourceSystemFor(VRSContext context,ResourceSystemInfo info,VRL vrl) throws VrsException
+    public nl.esciencecenter.vbrowser.vrs.VResourceSystem createResourceSystemFor(VRSContext context,ResourceConfigInfo info,VRL vrl) throws VrsException
     {
         return new WebResourceSystem(context,info); 
     }

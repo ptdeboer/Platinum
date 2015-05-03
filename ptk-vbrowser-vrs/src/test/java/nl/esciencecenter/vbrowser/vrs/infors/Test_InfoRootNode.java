@@ -1,8 +1,8 @@
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-import junit.framework.Assert;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class Test_InfoRootNode

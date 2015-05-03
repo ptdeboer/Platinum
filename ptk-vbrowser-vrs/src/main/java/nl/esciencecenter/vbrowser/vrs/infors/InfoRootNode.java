@@ -22,7 +22,7 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 
 import java.util.List;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
@@ -36,7 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class InfoRootNode extends InfoResourceNode
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(InfoRootNode.class);
+    private static final PLogger logger = PLogger.getLogger(InfoRootNode.class);
 
     // ========
     // Instance
@@ -203,7 +203,7 @@ public class InfoRootNode extends InfoResourceNode
         }
         catch (VrsException e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, saveVrl);
+            logger.logException(PLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, saveVrl);
         }
     }
 
@@ -249,7 +249,7 @@ public class InfoRootNode extends InfoResourceNode
         }
         catch (VrsException e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, loadVrl);
+            logger.logException(PLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, loadVrl);
         }
     }
 

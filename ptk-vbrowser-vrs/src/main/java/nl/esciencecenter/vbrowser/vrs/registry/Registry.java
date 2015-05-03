@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
@@ -38,7 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.webrs.WebRSFactory;
 
 public class Registry
 {
-    private final static ClassLogger logger = ClassLogger.getLogger(Registry.class);
+    private final static PLogger logger = PLogger.getLogger(Registry.class);
 
     private static Registry instance;
 
@@ -95,9 +95,9 @@ public class Registry
 
     private void initFactories()
     {
-        this.registryFactoryNoException(LocalFSFileSystemFactory.class, ClassLogger.ERROR);
-        this.registryFactoryNoException(WebRSFactory.class, ClassLogger.ERROR);
-        this.registryFactoryNoException(InfoRSFactory.class, ClassLogger.ERROR);
+        this.registryFactoryNoException(LocalFSFileSystemFactory.class, PLogger.ERROR);
+        this.registryFactoryNoException(WebRSFactory.class, PLogger.ERROR);
+        this.registryFactoryNoException(InfoRSFactory.class, PLogger.ERROR);
     }
 
     public VResourceSystemFactory getVResourceSystemFactoryFor(VRSContext vrsContext, String scheme)
@@ -129,19 +129,19 @@ public class Registry
         {
             String id = factory.createResourceSystemId(vrl);
 
-            VResourceSystem resourceSystem = instances.get(id);
+            VResourceSystem resourceSystem = instances.getResourceSystem(""+vrsContext.getID(),id);
 
             if (resourceSystem == null)
             {
-                ResourceSystemInfo info = getResourceSystemInfo(vrsContext, vrl, true);
+                ResourceConfigInfo info = getResourceSystemInfo(vrsContext, vrl, true);
                 resourceSystem = factory.createResourceSystemFor(vrsContext, info, vrl);
-                instances.put(id, resourceSystem);
+                instances.putResourceSystem(""+vrsContext.getID(),id, resourceSystem);
             }
             return resourceSystem;
         }
     }
 
-    protected ResourceSystemInfo getResourceSystemInfo(VRSContext vrsContext, VRL vrl, boolean autoCreate) throws VrsException
+    protected ResourceConfigInfo getResourceSystemInfo(VRSContext vrsContext, VRL vrl, boolean autoCreate) throws VrsException
     {
         return vrsContext.getResourceSystemInfoFor(vrl, true);
     }

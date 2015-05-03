@@ -49,7 +49,7 @@ import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * This class manages a Java Keystore which contains X509Certificates. <br>
@@ -97,11 +97,11 @@ public class CertificateStore
      */
     private static CertificateStore instance = null;
 
-    static ClassLogger logger = null;
+    static PLogger logger = null;
 
     static
     {
-        logger = ClassLogger.getLogger(CertificateStore.class);
+        logger = PLogger.getLogger(CertificateStore.class);
         //logger.setLevelToDebug(); 
     }
 
@@ -544,7 +544,7 @@ public class CertificateStore
                         }
                         catch (Exception e1)
                         {
-                            logger.logException(ClassLogger.WARN, e1, "Warning: Couldn't read keystore\n");
+                            logger.logException(PLogger.WARN, e1, "Warning: Couldn't read keystore\n");
                             // password error: DO NOT AUTOINITIALIZE;
                             _keyStore = null;
     
@@ -573,7 +573,7 @@ public class CertificateStore
                 }
                 catch (Exception e2)
                 {
-                    logger.logException(ClassLogger.ERROR, e2, "Couldn't create empty keystore.\n");
+                    logger.logException(PLogger.ERROR, e2, "Couldn't create empty keystore.\n");
                     throw new CertificateStoreException("Couldn't create empty keystore!", e2);
                 }
             }
@@ -626,7 +626,7 @@ public class CertificateStore
             }
             catch (FileURISyntaxException e)
             {
-               logger.logException(ClassLogger.ERROR, e,"Syntax Error on location:%s", dir);
+               logger.logException(PLogger.ERROR, e,"Syntax Error on location:%s", dir);
                return; 
             }
             catch (IOException e1)
@@ -652,7 +652,7 @@ public class CertificateStore
                     }
                     catch (Exception e)
                     {
-                        logger.logException(ClassLogger.INFO, e,
+                        logger.logException(PLogger.INFO, e,
                                 "Warning: Failed to load Custom Certificate (ignoring):%s\n", file);
                     }   
                 }   
@@ -1123,7 +1123,7 @@ public class CertificateStore
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Exception when checking keystore!\n");
+            logger.logException(PLogger.ERROR, e, "Exception when checking keystore!\n");
         }
     }
 

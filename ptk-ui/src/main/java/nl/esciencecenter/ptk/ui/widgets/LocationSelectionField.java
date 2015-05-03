@@ -54,7 +54,7 @@ import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.jfx.util.FXFileChooser;
 import nl.esciencecenter.ptk.jfx.util.FXFileChooser.ChooserType;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 public class LocationSelectionField extends JPanel implements URIDropTargetLister
 {
@@ -332,7 +332,7 @@ public class LocationSelectionField extends JPanel implements URIDropTargetListe
         }
         catch (TooManyListenersException e)
         {
-            ClassLogger.getLogger(this.getClass()).logException(ClassLogger.ERROR, e, "TooManyListenersException:"+e);
+            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e, "TooManyListenersException:"+e);
         }
     }
 

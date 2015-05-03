@@ -20,15 +20,15 @@
 
 package nl.esciencecenter.ptk.util.logging;
 
-// Only allow default java imports. Almost all classes refer to this class!
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * java.util.logging.Logger compatible subclass for class level logging.
- * <p>
+ * Legacy Java Logger Facade.
+ * Refactored to SLF4J Plogger. 
+ * @see PLogger
  */
 public class ClassLogger extends FormattingLogger
 {
@@ -165,19 +165,6 @@ public class ClassLogger extends FormattingLogger
         
         return source; 
     }
-    
-    /**
-     * Warning: this method is a  legacy method which takes the source object as argument. 
-     * This method is slower then the recommend logging methods.
-     */
-    public void logPrintf(Level level, Object obj, String format, Object... args)
-    {
-        if (this.isLoggable(level)==false) 
-            return; 
-        
-        String source=this.object2classString(obj); 
-        log(level,source+":"+format,args);
-    }
   
     public void logException(Level level,Object source, Throwable e, String format, Object... args)
     {
@@ -186,11 +173,6 @@ public class ClassLogger extends FormattingLogger
 
         String srcstr=this.object2classString(source); 
         this.logException(level, e, srcstr+":"+format, args);
-    }
-
-    public boolean hasDebugLevel()
-    {
-        return isLoggable(ClassLogger.DEBUG);
     }
     
 }

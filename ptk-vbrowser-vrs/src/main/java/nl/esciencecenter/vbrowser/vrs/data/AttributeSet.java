@@ -32,7 +32,7 @@ import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -60,11 +60,11 @@ public class AttributeSet extends HashMapList<String, Attribute>
 
     public static final String ATTR_SETNAME = "setName";
 
-    private static ClassLogger logger = null;
+    private static PLogger logger = null;
 
     static
     {
-        logger = ClassLogger.getLogger(AttributeSet.class);
+        logger = PLogger.getLogger(AttributeSet.class);
     }
 
     /** Create VAttributeSet from Properties */

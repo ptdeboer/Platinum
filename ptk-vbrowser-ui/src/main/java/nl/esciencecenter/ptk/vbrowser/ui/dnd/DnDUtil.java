@@ -28,7 +28,7 @@ import java.awt.dnd.DnDConstants;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
@@ -38,7 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class DnDUtil
 {
-    protected static ClassLogger dndLogger = ClassLogger.getLogger(DnDUtil.class);
+    protected static PLogger dndLogger = PLogger.getLogger(DnDUtil.class);
 
     public static DnDTransferHandler getDefaultTransferHandler()
     {
@@ -74,7 +74,7 @@ public class DnDUtil
 
     public static void logException(Exception e, String format, Object... args)
     {
-        dndLogger.logException(ClassLogger.ERROR, e, format, args);
+        dndLogger.logException(PLogger.ERROR, e, format, args);
     }
 
     /**

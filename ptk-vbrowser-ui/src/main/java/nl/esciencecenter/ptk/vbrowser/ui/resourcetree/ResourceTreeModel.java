@@ -26,7 +26,7 @@ import java.util.Vector;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -38,11 +38,11 @@ public class ResourceTreeModel extends DefaultTreeModel
 {
     private static final long serialVersionUID = -1155738043667059217L;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(ResourceTreeModel.class);
+        logger = PLogger.getLogger(ResourceTreeModel.class);
     }
 
     // ========================================================================
@@ -170,7 +170,7 @@ public class ResourceTreeModel extends DefaultTreeModel
      */
     protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode childs[], boolean mergeAppend)
     {
-        logger.debugPrintf("+++ updateChilds(append=%s) for:%s,numChilds=#%d\n",
+        logger.debugPrintf("+++ updateChilds(append=%s) for:%s,numChilds=#%s\n",
                 (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRI(), ((childs!=null)?""+childs.length:"?"));
 
         // possible background thread:
@@ -235,7 +235,7 @@ public class ResourceTreeModel extends DefaultTreeModel
                 }
                 catch (Exception e)
                 {
-                    logger.logException(ClassLogger.ERROR, e, "Exception in updatNode:%s\n", e);
+                    logger.logException(PLogger.ERROR, e, "Exception in updatNode:%s\n", e);
                 }
             }
         }

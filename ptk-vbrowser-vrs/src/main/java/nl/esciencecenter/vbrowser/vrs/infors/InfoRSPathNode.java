@@ -25,7 +25,7 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
@@ -40,7 +40,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public abstract class InfoRSPathNode extends VPathNode
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(InfoRSPathNode.class);
+    private static final PLogger logger = PLogger.getLogger(InfoRSPathNode.class);
 
     // ===============
     // Class Constants

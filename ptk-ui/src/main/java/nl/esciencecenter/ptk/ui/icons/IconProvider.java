@@ -46,7 +46,7 @@ import javax.swing.JFrame;
 import net.sf.image4j.codec.ico.ICODecoder;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Simple Icon provider class which searched for icons in both user and
@@ -62,11 +62,11 @@ public class IconProvider
 
     private static IconProvider instance = null;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(IconProvider.class);
+        logger = PLogger.getLogger(IconProvider.class);
         // logger.setLevelToDebug();
     }
 
@@ -151,7 +151,7 @@ public class IconProvider
         }
         catch (IOException e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Couldn't initiliaze default icons\n");
+            logger.logException(PLogger.ERROR, e, "Couldn't initiliaze default icons\n");
         }
     }
 
@@ -410,7 +410,7 @@ public class IconProvider
             }
             catch (IOException e)
             {
-                logger.logException(ClassLogger.DEBUG, e, "Exception when loading image:%s\n", iconURL);
+                logger.logException(PLogger.DEBUG, e, "Exception when loading image:%s\n", iconURL);
             }
 
         }

@@ -23,7 +23,7 @@ package nl.esciencecenter.ptk.events;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Generic Event Dispatcher.
@@ -37,7 +37,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventListener<EventT>>
 {
-    private static ClassLogger logger = ClassLogger.getLogger(EventDispatcher.class);
+    private static PLogger logger = PLogger.getLogger(EventDispatcher.class);
 
     // ========================================================================
     //

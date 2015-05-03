@@ -9,7 +9,7 @@ import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.Registry;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -79,7 +79,7 @@ public class Settings
     //
     // ========================================================================
 
-    public static ResourceSystemInfo getServerInfoFor(VRL location, boolean create) throws VrsException
+    public static ResourceConfigInfo getServerInfoFor(VRL location, boolean create) throws VrsException
     {
         return VRS.createVRSClient().getResourceSystemInfoFor(location, create);
     }

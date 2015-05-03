@@ -27,7 +27,7 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStore.CaCertOptions;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.UI;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.web.WebClient;
 import nl.esciencecenter.ptk.web.WebConfig.AuthenticationType;
 import nl.esciencecenter.ptk.web.WebException;
@@ -38,14 +38,14 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.node.VResourceSystemNode;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class WebResourceSystem extends VResourceSystemNode
 {
     public static final String DEFAULT_HTTPRS_SERVERID = "webrs";
    
-    private final static ClassLogger logger=ClassLogger.getLogger(WebResourceSystem.class); 
+    private final static PLogger logger=PLogger.getLogger(WebResourceSystem.class); 
 
     // ========================================================================
     //
@@ -57,7 +57,7 @@ public class WebResourceSystem extends VResourceSystemNode
 
     protected WebClient webClient; 
     
-    public WebResourceSystem(VRSContext context, ResourceSystemInfo info) throws VrsException
+    public WebResourceSystem(VRSContext context, ResourceConfigInfo info) throws VrsException
     {
         super(context,info.getServerVRL()); 
         
@@ -179,7 +179,7 @@ public class WebResourceSystem extends VResourceSystemNode
         
         if ((ui==null) || ui.isEnabled()==false)
         {
-            ClassLogger.getLogger(WebResourceSystem.class).warnPrintf("Non interactive invironment. Cannot add certificate for:%s\n",vrl); 
+            PLogger.getLogger(WebResourceSystem.class).warnPrintf("Non interactive invironment. Cannot add certificate for:%s\n",vrl); 
             return false;
         }
         

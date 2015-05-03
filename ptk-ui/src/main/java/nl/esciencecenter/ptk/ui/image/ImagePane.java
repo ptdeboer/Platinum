@@ -30,7 +30,7 @@ import java.io.IOException;
 
 import javax.swing.JComponent;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 
 /** 
@@ -44,11 +44,11 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */ 
 public class ImagePane extends JComponent
 {
-    private static ClassLogger logger; 
+    private static PLogger logger; 
     
     static
     {
-        logger=ClassLogger.getLogger(ImagePane.class); 
+        logger=PLogger.getLogger(ImagePane.class); 
     }
     
 	// wait for an image to be updated 
@@ -178,7 +178,7 @@ public class ImagePane extends JComponent
 					}
 					catch (InterruptedException e)
 					{
-						logger.logException(ClassLogger.WARN,e,"waitForCompletion():Interrupted\n"); 
+						logger.logException(PLogger.WARN,e,"waitForCompletion():Interrupted\n"); 
 					}
 				}
 

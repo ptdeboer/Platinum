@@ -36,12 +36,11 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Generic ResourceLoader class which supports (relative) URIs and URLs. It is recommended to use relative URLs and URIs
@@ -53,7 +52,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class ResourceLoader
 {
-    private static ClassLogger logger = ClassLogger.getLogger(ResourceLoader.class);
+    private static PLogger logger = PLogger.getLogger(ResourceLoader.class);
 
     /** Default UTF-8 */
     public static final String CHARSET_UTF8 = "UTF-8";
@@ -568,40 +567,28 @@ public class ResourceLoader
      */
     public String readText(URL location, String charset) throws IOException
     {
-        InputStream inps = createInputStream(location);
-
-        try
+        try (InputStream inps = createInputStream(location))
         {
             String text = readText(inps, charset);
             return text;
-        }
-        finally
-        {
-            IOUtil.autoClose(inps);
         }
     }
 
     public String readText(URI uri, String charset) throws IOException
     {
-        InputStream inps = createInputStream(uri);
-
-        try
+        try (InputStream inps = createInputStream(uri))
         {
-            String text = readText(inps, charset);
-            return text;
-        }
-        finally
-        {
-            IOUtil.autoClose(inps);
+            return readText(inps, charset);
         }
     }
 
     public byte[] readBytes(String pathOrUrl) throws IOException
     {
-        InputStream inps = createInputStream(pathOrUrl);
-        byte bytes[] = readBytes(inps);
-        IOUtil.autoClose(inps);
-        return bytes;
+        try (InputStream inps = createInputStream(pathOrUrl))
+        {
+            byte bytes[] = readBytes(inps);
+            return bytes;
+        }
     }
 
     /**
@@ -677,12 +664,10 @@ public class ResourceLoader
     {
         Properties props = new Properties();
 
-        try
+        try (InputStream inps = this.resourceProvider.createInputStream(uri))
         {
-            InputStream inps = this.resourceProvider.createInputStream(uri);
             props.load(inps);
             logger.debugPrintf("Read properties from:%s\n", uri);
-            IOUtil.autoClose(inps);
         }
         catch (IOException e)
         {
@@ -723,14 +708,9 @@ public class ResourceLoader
      */
     public void saveProperties(URI loc, Properties props, String comments) throws IOException
     {
-        OutputStream outps = createOutputStream(loc);
-        try
+        try (OutputStream outps = createOutputStream(loc))
         {
             props.store(outps, comments);
-        }
-        finally
-        {
-            IOUtil.autoClose(outps);
         }
     }
 
@@ -770,9 +750,11 @@ public class ResourceLoader
      */
     public void writeBytesTo(URI uri, byte[] bytes) throws IOException
     {
-        OutputStream outps = createOutputStream(uri);
-        outps.write(bytes);
-        IOUtil.autoClose(outps);
+        try (OutputStream outps = createOutputStream(uri))
+        {
+            outps.write(bytes);
+            outps.flush();
+        }
     }
 
     /**
@@ -786,9 +768,10 @@ public class ResourceLoader
      */
     public void writeBytesTo(URL url, byte[] bytes) throws IOException
     {
-        OutputStream outps = createOutputStream(url);
-        outps.write(bytes);
-        IOUtil.autoClose(outps);
+        try (OutputStream outps = createOutputStream(url))
+        {
+            outps.write(bytes);
+        }
     }
     
     public void writeBytes(OutputStream outps, byte[] bytes) throws IOException

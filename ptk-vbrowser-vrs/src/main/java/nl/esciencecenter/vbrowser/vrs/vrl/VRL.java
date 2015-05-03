@@ -29,7 +29,7 @@ import java.net.URL;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 
 /**
@@ -41,11 +41,11 @@ public final class VRL implements Cloneable,Comparable<VRL>, Duplicatable<VRL>, 
 {
     private static final long serialVersionUID = -3255450059796404575L;
 
-    private static ClassLogger logger; 
+    private static PLogger logger; 
     
     static
     {
-        logger=ClassLogger.getLogger(VRL.class);
+        logger=PLogger.getLogger(VRL.class);
     }
     
     public static VRL createVRL(URIFactory factory, boolean duplicateFactory)

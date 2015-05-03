@@ -24,7 +24,7 @@ import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public abstract class VResourceSystemNode implements VResourceSystem
@@ -66,7 +66,7 @@ public abstract class VResourceSystemNode implements VResourceSystem
         return vrsContext; 
     }
     
-    protected ResourceSystemInfo getResourceSystemInfo() throws VrsException
+    protected ResourceConfigInfo getResourceSystemInfo() throws VrsException
     {
         return vrsContext.getResourceSystemInfoFor(getServerVRL(), true);
     }

@@ -35,7 +35,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import nl.esciencecenter.ptk.object.Disposable;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
@@ -56,11 +56,11 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 {
     private static final long serialVersionUID = -8822489309726132852L;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(IconsPanel.class);
+        logger = PLogger.getLogger(IconsPanel.class);
     }
 
     /**

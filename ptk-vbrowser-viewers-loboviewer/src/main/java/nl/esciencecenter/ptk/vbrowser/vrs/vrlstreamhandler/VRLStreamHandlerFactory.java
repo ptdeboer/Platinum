@@ -25,7 +25,7 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 import nl.esciencecenter.ptk.ssl.SslUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * The VRLStreamHandlerFactory.
@@ -49,7 +49,7 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 public class VRLStreamHandlerFactory implements URLStreamHandlerFactory
 {
-    private static final ClassLogger logger=ClassLogger.getLogger(URLStreamHandler.class);
+    private static final PLogger logger=PLogger.getLogger(URLStreamHandler.class);
     
     private static VRLStreamHandlerFactory instance = null;
 

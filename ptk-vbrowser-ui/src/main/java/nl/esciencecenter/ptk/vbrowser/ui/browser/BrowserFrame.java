@@ -44,7 +44,7 @@ import javax.swing.border.EtchedBorder;
 
 import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMethod;
 import nl.esciencecenter.ptk.vbrowser.ui.iconspanel.IconsPanel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
@@ -100,7 +100,7 @@ public class BrowserFrame extends JFrame
         }
     }
 
-    private final static ClassLogger logger = ClassLogger.getLogger(BrowserFrame.class);
+    private final static PLogger logger = PLogger.getLogger(BrowserFrame.class);
 
     private static final long serialVersionUID = 3076698217838089389L;
 

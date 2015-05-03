@@ -24,7 +24,7 @@ package nl.esciencecenter.ptk.vbrowser.viewers.loboviewer;
 import java.net.URL;
 
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -33,11 +33,11 @@ import org.lobobrowser.ua.NavigationVetoException;
 
 public class LoboPanelController implements org.lobobrowser.ua.NavigationListener
 {
-    private static final ClassLogger logger; 
+    private static final PLogger logger; 
     
     static
     {
-        logger=ClassLogger.getLogger(LoboPanelController.class); 
+        logger=PLogger.getLogger(LoboPanelController.class); 
         //logger.setLevelToDebug(); 
     }
 
@@ -55,7 +55,7 @@ public class LoboPanelController implements org.lobobrowser.ua.NavigationListene
 
     void handle(String msg,Throwable e)
     {
-        logger.logException(ClassLogger.ERROR,e,"%s\n",msg); 
+        logger.logException(PLogger.ERROR,e,"%s\n",msg); 
         ExceptionDialog.show(this.loboBrowser, "Lobo Exception", new VrsException("Lobo Error:"+msg+"\n"+e.getMessage(),e),false);
     }
 

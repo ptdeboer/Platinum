@@ -29,13 +29,13 @@ import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeNames;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -46,9 +46,9 @@ public abstract class ProxyNode
 {
     private static int idCounter = 0;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
     {
-        logger = ClassLogger.getLogger(ProxyNode.class);
+        logger = PLogger.getLogger(ProxyNode.class);
     }
 
     // ========================================================================
@@ -187,7 +187,7 @@ public abstract class ProxyNode
 
         protected Cache()
         {
-            logger.debugPrintf("New Cache() for:%s\n", ProxyNode.this);
+            logger.debugPrintf("New Cache() for:Proxynode:'%s'\n", ProxyNode.this.getVRL());
         }
 
         protected ProxyNode resolved_node;
@@ -544,7 +544,7 @@ public abstract class ProxyNode
      */
     public String getResourceType()
     {
-        if (this.cache.resource_type == null)
+        if ((this.cache==null) || (this.cache.resource_type == null))
         {
             logger.warnPrintf("resource_type NOT prefetched!\n");
 
@@ -687,10 +687,16 @@ public abstract class ProxyNode
         return attrs;
     }
 
-    public ResourceSystemInfo getResourceSystemInfo() throws ProxyException 
+    public ResourceConfigInfo getResourceConfigInfo() throws ProxyException 
     {
-        return this.doGetResourceSystemInfo();
+        return this.doGetResourceConfigInfo();
     }
+
+    public ResourceConfigInfo updateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException 
+    {
+        return this.doUpdateResourceConfigInfo(info);
+    }
+
     
     public String toString()
     {
@@ -790,8 +796,10 @@ public abstract class ProxyNode
     // VRS Internal
     // =====================
     
-    abstract protected ResourceSystemInfo doGetResourceSystemInfo() throws ProxyException;
-    
+    abstract protected ResourceConfigInfo doGetResourceConfigInfo() throws ProxyException;
+
+    abstract protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException;
+
     // ============================
     // Child/Composite Attributes
     // ============================

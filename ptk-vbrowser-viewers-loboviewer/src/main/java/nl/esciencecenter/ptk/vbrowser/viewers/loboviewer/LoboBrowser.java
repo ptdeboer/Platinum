@@ -29,14 +29,16 @@ import java.util.Map;
 
 import javax.swing.Icon;
 
+import nl.esciencecenter.ptk.data.Pair;
 import nl.esciencecenter.ptk.ssl.CertUI;
 import nl.esciencecenter.ptk.ssl.CertificateStore.CaCertOptions;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEvent;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventType;
+import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
@@ -48,7 +50,7 @@ public class LoboBrowser extends EmbeddedViewer implements ToolPlugin
 {
     private static final long serialVersionUID = 3652578919344065278L;
 
-    private static final ClassLogger logger = ClassLogger.getLogger(LoboBrowser.class);
+    private static final PLogger logger = PLogger.getLogger(LoboBrowser.class);
 
     static String mimetypes[] = {
             "text/html"
@@ -162,7 +164,7 @@ public class LoboBrowser extends EmbeddedViewer implements ToolPlugin
 
     protected void debugPrintf(String format, Object... args)
     {
-        ClassLogger.getLogger(LoboBrowser.class).debugPrintf(format, args);
+        PLogger.getLogger(LoboBrowser.class).debugPrintf(format, args);
     }
 
     public boolean checkFollow(VRL vrl) throws VrsException
@@ -314,7 +316,13 @@ public class LoboBrowser extends EmbeddedViewer implements ToolPlugin
         {
             return false;
         }
-
     }
+
+    @Override
+    public List<Pair<MenuMapping, List<String>>> getMenuMappings()
+    {
+        return null;
+    }
+   
 
 }

@@ -27,11 +27,11 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 
 import nl.esciencecenter.ptk.ssl.CertificateStore.CaCertOptions;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 public class CertUI
 {
-    private static ClassLogger logger=  ClassLogger.getLogger(CertUI.class);
+    private static PLogger logger=  PLogger.getLogger(CertUI.class);
 
     /**
      * Check whether Exception was caused by a certificate error. 
@@ -97,7 +97,7 @@ public class CertUI
             Exception certificateException = findCertificateException(e);
 
             sslErrorMessage = e.getMessage();
-            logger.logException(ClassLogger.DEBUG, e, "<<< Initial SSL Handshake failed. Exception=%s\n",
+            logger.logException(PLogger.DEBUG, e, "<<< Initial SSL Handshake failed. Exception=%s\n",
                     sslErrorMessage);
             logger.debugPrintf("Certificate Exception= %s\n", certificateException);
 

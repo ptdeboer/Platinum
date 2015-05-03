@@ -34,7 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JToolBar;
 
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 import java.awt.dnd.DropTarget;
 
@@ -270,7 +270,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
         }
         catch (TooManyListenersException e)
         {
-            ClassLogger.getLogger(this.getClass()).logException(ClassLogger.ERROR, e, "TooManyListenersException:"+e);
+            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e, "TooManyListenersException:"+e);
         }
     }
     

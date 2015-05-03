@@ -30,7 +30,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.FSPath;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
@@ -44,7 +44,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(LocalFSPathNode.class);
+    private static final PLogger logger = PLogger.getLogger(LocalFSPathNode.class);
 
     private LocalFileSystem localfs;
 

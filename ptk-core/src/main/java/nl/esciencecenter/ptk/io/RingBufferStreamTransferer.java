@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * RingBufferStreamTransferer copies data from in InputStream to an OutputStream. <br>
@@ -44,10 +44,10 @@ public class RingBufferStreamTransferer
 
     // === static ===
 
-    private ClassLogger logger;
+    private PLogger logger;
 
     {
-        logger = ClassLogger.getLogger(RingBufferStreamTransferer.class);
+        logger = PLogger.getLogger(RingBufferStreamTransferer.class);
     }
 
     // === static ===
@@ -289,7 +289,7 @@ public class RingBufferStreamTransferer
         }
         catch (Throwable err)
         {
-            logger.logException(ClassLogger.ERROR, err, "Exception:%s\n", err);
+            logger.logException(PLogger.ERROR, err, "Exception:%s\n", err);
             // Signal Strop:
             this.cancelTransfer = true;
             // notify writer since there is a read error !
@@ -406,7 +406,7 @@ public class RingBufferStreamTransferer
         }
         catch (Throwable err)
         {
-            logger.logException(ClassLogger.ERROR, err, "Exception:%s\n", err);
+            logger.logException(PLogger.ERROR, err, "Exception:%s\n", err);
             // Signal Strop:
             this.cancelTransfer = true;
             // notify reader since there is a read error !

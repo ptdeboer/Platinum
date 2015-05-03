@@ -27,11 +27,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
- * Custom logger class. Has extra formatting methods. 
- * Used as super class for all logger in vlet. 
- * 
- * This class does not set a default handler. 
- * Use FormattingLogger.addHandler() to specify an output handler!
+ *Legacy Java Logger Facade
  */
 public class FormattingLogger extends Logger
 {
@@ -175,16 +171,6 @@ public class FormattingLogger extends Logger
         LogRecord lr = new LogRecord(level,format);
         lr.setLoggerName(this.getName());
         lr.setParameters(args);
-        lr.setThrown(e);
-        log(lr); 
-    }
-
-    public void logStacktrace(Level level, Throwable e)
-    {
-        if (this.isLoggable(level)==false) //slkow check!
-            return;
-        
-        LogRecord lr = new LogRecord(level,"StackTrace\n");
         lr.setThrown(e);
         log(lr); 
     }

@@ -37,7 +37,7 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
@@ -55,11 +55,11 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 {
     private static final long serialVersionUID = -3310437371919331098L;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(ClassLogger.class);
+        logger = PLogger.getLogger(PLogger.class);
     }
 
     // ========================================================================

@@ -14,7 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
@@ -23,7 +23,6 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.XMLDataException;
-import nl.esciencecenter.vbrowser.vrs.infors.InfoRSPathNode;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoResourceNode;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -39,7 +38,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
  */
 public class XMLData
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(XMLData.class);
+    private static final PLogger logger = PLogger.getLogger(XMLData.class);
 
     // ========
     // Instance

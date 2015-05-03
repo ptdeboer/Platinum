@@ -50,7 +50,7 @@ import nl.esciencecenter.ptk.ui.fonts.FontToolBar;
 import nl.esciencecenter.ptk.ui.fonts.FontToolbarListener;
 import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
@@ -64,7 +64,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class HexViewer extends EmbeddedViewer implements FontToolbarListener// , ToolPlugin
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(HexViewer.class);
+    private static final PLogger logger = PLogger.getLogger(HexViewer.class);
 
     // todo: UTF-8 Char Mapping
     public final String specialCharMapping[] =
@@ -1047,12 +1047,12 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         }
         catch (MagicMatchNotFoundException e)
         {
-            logger.logException(ClassLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL().getPath());
+            logger.logException(PLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL().getPath());
             // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Exception when updating magic\n");
+            logger.logException(PLogger.ERROR, e, "Exception when updating magic\n");
         }
 
     }

@@ -27,18 +27,18 @@ import javax.swing.JTextField;
 
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.SecretHolder;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Simple UI Object.
  */
 public class SimpelUI implements UI
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(SimpelUI.class);
+        logger = PLogger.getLogger(SimpelUI.class);
     }
 
     private boolean enabled = true;

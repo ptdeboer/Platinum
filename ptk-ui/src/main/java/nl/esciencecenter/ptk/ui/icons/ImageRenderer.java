@@ -28,7 +28,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Simple (Icon) Image Renderer class. Performs scaling, merging and greying out
@@ -38,11 +38,11 @@ import nl.esciencecenter.ptk.util.logging.ClassLogger;
  */
 public class ImageRenderer
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(ImageRenderer.class);
+        logger = PLogger.getLogger(ImageRenderer.class);
     }
 
     public static class ARGBPixel

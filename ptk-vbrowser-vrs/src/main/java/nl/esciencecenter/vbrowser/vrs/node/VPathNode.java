@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
@@ -39,7 +39,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VPathNode implements VPath
 {
-    private final static ClassLogger logger = ClassLogger.getLogger(VPathNode.class);
+    private final static PLogger logger = PLogger.getLogger(VPathNode.class);
 
     static protected String[] vpathImmutableAttributeNames =
     {

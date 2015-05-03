@@ -23,7 +23,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 import java.util.List;
 
 import nl.esciencecenter.ptk.task.ITaskSource;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
@@ -40,11 +40,11 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpdater 
 {
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger = ClassLogger.getLogger(ResourceTreeUpdater.class);
+        logger = PLogger.getLogger(ResourceTreeUpdater.class);
     }
 
     private ResourceTree tree;

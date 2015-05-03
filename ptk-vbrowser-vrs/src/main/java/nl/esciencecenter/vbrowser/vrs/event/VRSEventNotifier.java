@@ -23,7 +23,7 @@ package nl.esciencecenter.vbrowser.vrs.event;
 import java.util.Vector;
 
 import nl.esciencecenter.ptk.task.ActionTask;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 public class VRSEventNotifier
 {
@@ -33,11 +33,11 @@ public class VRSEventNotifier
 
     private static VRSEventNotifier instance;
 
-    private static ClassLogger logger;
+    private static PLogger logger;
 
     static
     {
-        logger=ClassLogger.getLogger(VRSEventNotifier.class);
+        logger=PLogger.getLogger(VRSEventNotifier.class);
         instance=new VRSEventNotifier();
     }
 

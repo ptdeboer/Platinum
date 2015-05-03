@@ -30,7 +30,7 @@ import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.util.ResourceLoader;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
@@ -41,7 +41,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ViewerResourceLoader
 {
-    private static ClassLogger logger = ClassLogger.getLogger(ViewerResourceLoader.class);
+    private static PLogger logger = PLogger.getLogger(ViewerResourceLoader.class);
 
     // ========
     // Instance
@@ -100,11 +100,17 @@ public class ViewerResourceLoader
         return resourceLoader.readText(vrl.toURI(), textEncoding);
     }
 
+    /**
+     * Legacy method. 
+     */
     public boolean hasReplicas(VRL vrl)
     {
         return false;
     }
-
+    
+    /**
+     * Legacy method. 
+     */
     public VRL[] getReplicas(VRL vrl)
     {
         return null;
@@ -168,9 +174,21 @@ public class ViewerResourceLoader
         return vrsClient.createRandomWriter(vrsClient.openPath(loc));
     }
 
+    /**
+     * @Deprecated Must use connected URL to determine reported mimetype from server. 
+     */
+    @Deprecated
     public String getMimeTypeOf(VRL vrl) throws VrsException
     {
-        return this.vrsClient.openPath(vrl).getMimeType(); 
+        return MimeTypes.getDefault().getMimeType(vrl.getPath());
+    }
+
+    /** 
+     * Warning: VRSClient might not be visible in future interface definitions. 
+     */
+    public VRSClient getVRSClient()
+    {
+        return this.vrsClient;
     }
 
 

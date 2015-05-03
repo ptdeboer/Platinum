@@ -35,7 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import nl.esciencecenter.ptk.ui.fonts.FontUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
@@ -45,7 +45,7 @@ public class AttributeEditorForm extends JDialog
 {
     private static final long serialVersionUID = 9136623460001660679L;
     
-    private static final ClassLogger logger=ClassLogger.getLogger(AttributeEditorForm.class);
+    private static final PLogger logger=PLogger.getLogger(AttributeEditorForm.class);
 
     // ---
     // package protected 
@@ -259,7 +259,7 @@ public class AttributeEditorForm extends JDialog
                 }
                 catch (InterruptedException e)
                 {
-                    logger.logException(ClassLogger.ERROR, e, "--- Interupted ---\n");
+                    logger.logException(PLogger.ERROR, e, "--- Interupted ---\n");
                 }
             }
         }

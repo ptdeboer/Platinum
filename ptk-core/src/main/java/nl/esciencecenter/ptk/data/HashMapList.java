@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import nl.esciencecenter.ptk.object.Duplicatable;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Extended LinkedHashMap. Added more support for array and lists.
@@ -45,11 +45,11 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
 {
     private static final long serialVersionUID = -8373244037848706796L;
 
-    private static ClassLogger logger = null;
+    private static PLogger logger = null;
 
     static
     {
-        logger = ClassLogger.getLogger(HashMapList.class);
+        logger = PLogger.getLogger(HashMapList.class);
         logger.setLevelToDebug();
     }
 

@@ -22,14 +22,14 @@ package nl.esciencecenter.ptk.task;
 
 import java.util.Vector;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * ActionTask Watcher/Manager for ActionTasks.
  */
 public class TaskWatcher implements ITaskSource
 {
-    private static ClassLogger logger = ClassLogger.getLogger(TaskWatcher.class);
+    private static PLogger logger = PLogger.getLogger(TaskWatcher.class);
 
     private static TaskWatcher instance = null;
 
@@ -227,7 +227,7 @@ public class TaskWatcher implements ITaskSource
         // Optional handling of an exception throw by an ActionTask.
         // Ignore here. Subclasses might do something here.
 
-        logger.logException(ClassLogger.ERROR, task, ex, "TaskException for %s\n", task);
+        logger.logException(PLogger.ERROR, ex, "TaskException for ActionTask:%s\n", task);
     }
 
     /**
@@ -279,7 +279,7 @@ public class TaskWatcher implements ITaskSource
         }
         catch (InterruptedException e)
         {
-            logger.logException(ClassLogger.ERROR, e, "***Error: Exception:" + e);
+            logger.logException(PLogger.ERROR, e, "***Error: Exception:" + e);
         }
 
         // now send interrupt:

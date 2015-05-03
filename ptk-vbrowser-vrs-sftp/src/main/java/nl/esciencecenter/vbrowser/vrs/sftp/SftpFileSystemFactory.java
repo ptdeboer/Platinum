@@ -27,7 +27,7 @@ import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpConfig;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -62,18 +62,18 @@ public class SftpFileSystemFactory implements VResourceSystemFactory
     }
 
     @Override
-    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceSystemInfo info, VRL vrl) throws VrsException
+    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl) throws VrsException
     {
         return new SftpFileSystem(jsch, context, info, vrl);
     }
 
     @Override
-    public ResourceSystemInfo updateResourceInfo(VRSContext context, ResourceSystemInfo info, VRL vrl)
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info, VRL vrl)
     {
         logger.info("updateResourceInfo:{}",info);
         // comma seperated list: 
-        info.setIfNotSet(ResourceSystemInfo.ATTR_USER_IDENTITY_FILES, "id_rsa,id_dsa", true);
-        info.setIfNotSet(ResourceSystemInfo.SERVER_USERINFO, context.getUserName(), true);
+        info.setIfNotSet(ResourceConfigInfo.ATTR_USER_IDENTITY_FILES, "id_rsa,id_dsa", true);
+        info.setIfNotSet(ResourceConfigInfo.SERVER_USERINFO, context.getUserName(), true);
         info.setIfNotSet(SftpFileSystem.SSH_USER_KNOWN_HOSTS_PROPERTY, SftpConfig.SSH_USER_KNOWN_HOSTS, true);
         info.setIfNotSet(SftpFileSystem.SSH_USER_CONFIGSUBDIR_PROPERTY, SftpConfig.SSH_USER_CONFIG_SIBDUR, true);
         info.store(); 

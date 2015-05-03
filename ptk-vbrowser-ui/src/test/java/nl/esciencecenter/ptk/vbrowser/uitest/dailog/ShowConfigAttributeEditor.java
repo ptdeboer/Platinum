@@ -1,25 +1,25 @@
 package nl.esciencecenter.ptk.vbrowser.uitest.dailog;
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeEditorForm;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.dummyrs.DummyRSFactory;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ShowConfigAttributeEditor
 {
     public static void main(String args[])
     {
-        ClassLogger.getRootLogger().setLevelToDebug();
+        PLogger.getRootLogger().setLevelToDebug();
 
         int len = 20;
 
         Attribute attrs[] = new Attribute[len];
 
-        ResourceSystemInfo info = null;
+        ResourceConfigInfo info = null;
 
         VRSContext context = VRS.createVRSContext(null);
 

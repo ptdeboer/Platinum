@@ -8,7 +8,7 @@ import org.junit.Assert;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 public class Settings
 {
@@ -27,9 +27,9 @@ public class Settings
         return instance; 
     }
 
-    public static ClassLogger getLogger(Class<?> clazz)
+    public static PLogger getLogger(Class<?> clazz)
     {
-        return ClassLogger.getLogger(clazz); 
+        return PLogger.getLogger(clazz); 
     }
 
     // ===

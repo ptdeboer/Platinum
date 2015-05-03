@@ -22,72 +22,56 @@ package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class LocalFSReader implements RandomReadable
+/**
+ * Stateless File reader which opens and closes the specified path per read action.
+ */
+public class FSReader implements Readable, RandomReadable, AutoCloseable
 {
-    protected FSPath fsNode;
+    protected Path _path;
 
-    protected RandomAccessFile randomFile = null;
-
-    public LocalFSReader(FSPath node) throws IOException
+    public FSReader(Path path) throws IOException
     {
-        this.fsNode = node;
-        this.randomFile = new RandomAccessFile(fsNode.toJavaFile(), "r");
+        this._path=path;
     }
 
+    /**
+     * Perform stateless read which opens and closes file again after reading.
+     */
+    @Override
     public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
     {
-        RandomAccessFile afile = null;
-
-        try
+        // perform 'atomic' read.
+        try (RandomAccessFile rafile = new RandomAccessFile(_path.toFile(), "r"))
         {
             // Seek sets position starting from beginnen, not current seek position.
-            randomFile.seek(fileOffset);
-            int nrRead = randomFile.read(buffer, bufferOffset, nrBytes);
+            rafile.seek(fileOffset);
+            int nrRead = rafile.read(buffer, bufferOffset, nrBytes);
             return nrRead;
         }
         catch (IOException e)
         {
-            throw new IOException("Could open location for reading:" + this, e);
+            throw new IOException("Failed to readBytes from:"+_path,e);
         }
-        finally
-        {
-            if (afile != null)
-            {
-                try
-                {
-                    // Must close between Reads! (not fast but ensures consistency between reads).
-                    afile.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
-        }
-
     }
 
     @Override
     public long getLength() throws IOException
     {
-        return fsNode.getFileSize();
+        return Files.size(_path);
     }
 
-    public boolean autoClose()
+    @Override
+    public int read(byte[] buffer, int bufferOffset, int numBytes) throws IOException
     {
-        if (randomFile == null)
-        {
-            return false;
-        }
-        boolean status = IOUtil.autoClose(randomFile);
-        randomFile = null;
-        return status;
+        return readBytes(0,buffer,bufferOffset,numBytes);
     }
 
     @Override
     public void close()
     {
-        autoClose();
     }
 
 }

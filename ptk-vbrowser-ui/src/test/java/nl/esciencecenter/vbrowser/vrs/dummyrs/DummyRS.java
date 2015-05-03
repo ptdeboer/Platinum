@@ -4,16 +4,16 @@ import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class DummyRS implements VResourceSystem
 {
     protected VRSContext vrsContext;
-    protected ResourceSystemInfo resourceInfo;
+    protected ResourceConfigInfo resourceInfo;
     protected VRL serverVrl;
     
-    public DummyRS(VRSContext context, ResourceSystemInfo info, VRL vrl)
+    public DummyRS(VRSContext context, ResourceConfigInfo info, VRL vrl)
     {
         resourceInfo=info; 
         serverVrl=vrl; 

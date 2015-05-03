@@ -27,7 +27,7 @@ import java.util.List;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TaskMonitorDialog;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
@@ -45,7 +45,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ProxyActionHandler
 {
-    final private static ClassLogger logger = ClassLogger.getLogger(ProxyActionHandler.class);
+    final private static PLogger logger = PLogger.getLogger(ProxyActionHandler.class);
 
     private ProxyBrowserController proxyBrowser;
 

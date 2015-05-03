@@ -28,7 +28,7 @@ import java.awt.Point;
 import javax.swing.JViewport;
 
 
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 
 /** 
@@ -42,7 +42,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
  */
 public class IconLayoutManager implements LayoutManager
 {
-	private static ClassLogger logger=ClassLogger.getLogger(IconLayoutManager.class); 
+	private static PLogger logger=PLogger.getLogger(IconLayoutManager.class); 
 		
 	{
 	    //logger.setLevelToDebug();

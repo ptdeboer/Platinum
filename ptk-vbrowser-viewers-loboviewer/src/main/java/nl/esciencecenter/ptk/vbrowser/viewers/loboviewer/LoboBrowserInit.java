@@ -8,14 +8,14 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ssl.SslConst;
 import nl.esciencecenter.ptk.ssl.SslUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.vrs.vrlstreamhandler.VRLStreamHandlerFactory;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 
 public class LoboBrowserInit
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(LoboBrowserInit.class);
+    private static final PLogger logger = PLogger.getLogger(LoboBrowserInit.class);
 
     static
     {
@@ -34,7 +34,7 @@ public class LoboBrowserInit
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Static Init Exception:%s\n", e);
+            logger.logException(PLogger.ERROR, e, "Static Init Exception:%s\n", e);
         }
 
         try
@@ -68,7 +68,7 @@ public class LoboBrowserInit
         }
         catch (Exception e)
         {
-            logger.logException(ClassLogger.ERROR, e, "Init error:%s\n", e);
+            logger.logException(PLogger.ERROR, e, "Init error:%s\n", e);
         }
 
         shutuplogging();

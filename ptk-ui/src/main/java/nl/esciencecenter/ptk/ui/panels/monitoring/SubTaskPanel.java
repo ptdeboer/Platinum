@@ -38,7 +38,7 @@ import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.MonitorStats;
 import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.task.ITaskMonitor.TaskStats;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -170,7 +170,7 @@ public class SubTaskPanel extends JPanel implements ActionListener
                 }
                 catch (InterruptedException e)
                 {
-                    ClassLogger.getLogger(this.getClass()).errorPrintf("Interrupted!\n");
+                    PLogger.getLogger(this.getClass()).errorPrintf("Interrupted!\n");
                 }
             }
 

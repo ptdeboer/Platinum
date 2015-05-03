@@ -35,7 +35,7 @@ import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.VPath;
@@ -54,7 +54,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public abstract class VFSPathNode extends VPathNode implements VFSPath
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(VFSPathNode.class);
+    private static final PLogger logger = PLogger.getLogger(VFSPathNode.class);
 
     public static final String[] vfsAttributeNames =
     {
@@ -361,7 +361,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
 
             if (paths.contains(path) || prev.getVRL().equals(path.getVRL()))
             {
-                ClassLogger.getLogger(this.getClass()).errorPrintf(
+                PLogger.getLogger(this.getClass()).errorPrintf(
                         "*** Path Cycle detected, parent path:" + path + " already in path list from:" + this);
                 break;
             }

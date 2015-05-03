@@ -32,7 +32,7 @@ import nl.esciencecenter.ptk.data.VARHolder;
 import nl.esciencecenter.ptk.data.VARListHolder;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
+import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.VPath;
@@ -54,7 +54,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class VRSCopyManager
 {
-    private static final ClassLogger logger = ClassLogger.getLogger(VRSCopyManager.class);
+    private static final PLogger logger = PLogger.getLogger(VRSCopyManager.class);
 
     // ========
     // Instance

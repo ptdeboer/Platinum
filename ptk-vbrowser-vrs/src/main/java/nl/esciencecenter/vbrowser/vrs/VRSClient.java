@@ -46,7 +46,7 @@ import nl.esciencecenter.vbrowser.vrs.io.VRandomWritable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
 import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
-import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfo;
+import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.util.VRSResourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -191,7 +191,7 @@ public class VRSClient
         return paths; 
     }
 
-    public ResourceSystemInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
+    public ResourceConfigInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
     {
         return this.vrsContext.getResourceSystemInfoFor(vrl, autoCreate);
     }

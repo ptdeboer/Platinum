@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.vbrowser.vrs.registry;
 
-import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -33,25 +32,27 @@ public class ResourceSystemInfoRegistry
     /** 
      * Owner Object of this registry.  
      */ 
+    @SuppressWarnings("unused")
     private VRSContext vrsContext; 
     
-    private Map<String,ResourceSystemInfo> resourceInfos=new Hashtable<String,ResourceSystemInfo>(); 
+    private Map<String,ResourceConfigInfo> resourceInfos=new Hashtable<String,ResourceConfigInfo>(); 
     
     public ResourceSystemInfoRegistry(VRSContext vrsContext)
     {
         this.vrsContext=vrsContext;
     }
     
-    public void putInfo(ResourceSystemInfo info)
+    public ResourceConfigInfo putInfo(ResourceConfigInfo info)
     {
         synchronized(resourceInfos)
         {
             // always update ID. 
             resourceInfos.put(info.getID(),info);
+            return info;
         }
     }
     
-    public ResourceSystemInfo getInfo(String id)
+    public ResourceConfigInfo getInfo(String id)
     {
         synchronized(resourceInfos)
         {
@@ -62,9 +63,9 @@ public class ResourceSystemInfoRegistry
     /** 
      * Returns a copy of the ResourceSystemInfos as list. 
      */
-    public List<ResourceSystemInfo> list()
+    public List<ResourceConfigInfo> list()
     {
-        return new ExtendedList<ResourceSystemInfo>(resourceInfos.values());
+        return new ExtendedList<ResourceConfigInfo>(resourceInfos.values());
     }
     
 }
