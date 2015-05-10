@@ -3,12 +3,12 @@ package settings;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.junit.Assert;
-
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
+
+import org.junit.Assert;
 
 public class Settings
 {

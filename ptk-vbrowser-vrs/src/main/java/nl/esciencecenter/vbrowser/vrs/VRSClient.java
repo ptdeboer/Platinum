@@ -32,6 +32,7 @@ import nl.esciencecenter.ptk.data.VARListHolder;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
+import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceTypeMismatchException;
@@ -50,351 +51,300 @@ import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.util.VRSResourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSClient
-{
-    protected VRSContext vrsContext=null; 
-    
-    protected VRL currentPathVRL=null;
-    
-    protected VRL homeVRL=null;
-    
-    /** 
-     * Copy/Move TaskManager for this client. 
-     * Typically one VRSClient is linked with one transferManager. 
+/** 
+ * Client to the VRS Systems
+ */
+public class VRSClient implements Disposable{
+
+    protected VRSContext vrsContext = null;
+
+    protected VRL currentPathVRL = null;
+
+    protected VRL homeVRL = null;
+
+    /**
+     * Copy/Move TaskManager for this client. Typically one VRSClient is linked with one
+     * transferManager.
      */
-    protected VRSCopyManager transferManager=null;
-    
-    public VRSClient(VRSContext vrsContext)
-    {
-        this.vrsContext=vrsContext;
-        this.homeVRL=vrsContext.getHomeVRL(); 
-        this.currentPathVRL=vrsContext.getCurrentPathVRL(); 
-        this.transferManager=new VRSCopyManager(this); 
-    }
-    
-    public VRSContext getVRSContext()
-    {
-        return this.vrsContext; 
-    }
-    
-    public VPath openPath(VRL vrl) throws VrsException
-    {
-        VResourceSystem resourceSystem = getVResourceSystemFor(vrl); 
-        return resourceSystem.resolvePath(vrl);  
+    protected VRSCopyManager transferManager = null;
+
+    public VRSClient(VRSContext vrsContext) {
+        this.vrsContext = vrsContext;
+        this.homeVRL = vrsContext.getHomeVRL();
+        this.currentPathVRL = vrsContext.getCurrentPathVRL();
+        this.transferManager = new VRSCopyManager(this);
     }
 
-    public VFSPath openVFSPath(VRL vrl) throws VrsException
-    {
-        VPath path=this.openPath(vrl); 
-        if (path instanceof VFSPath)
-        {
-            return (VFSPath)path;
-        }
-        else
-        {
-            throw new VrsException("Location is not a filesystem path:(type="+path.getResourceType()+"):"+vrl); 
-        }
-    }
-    
-    public VResourceSystem getVResourceSystemFor(VRL vrl) throws VrsException
-    {
-        VResourceSystem resourceSystem = vrsContext.getRegistry().getVResourceSystemFor(vrsContext,vrl); 
-        if (resourceSystem==null)
-        {
-            throw new VrsException("Scheme not implemented, couldn't get ResourceSystem for:"+resourceSystem);
-        }
-        return resourceSystem;  
+    public VRSContext getVRSContext() {
+        return this.vrsContext;
     }
 
-    public VResourceSystemFactory getVRSFactoryForScheme(String scheme)
-    {
-        return vrsContext.getRegistry().getVResourceSystemFactoryFor(vrsContext,scheme); 
+    public VPath openPath(VRL vrl) throws VrsException {
+        VResourceSystem resourceSystem = getVResourceSystemFor(vrl);
+        return resourceSystem.resolvePath(vrl);
     }
 
-    /** 
-     * Resolve relative path against current working path and return VRL. 
-     * @param path relative path 
-     * @return resolved absolute VRL 
-     * @throws VRLSyntaxException if path string contains invalid characters 
+    public VFSPath openVFSPath(VRL vrl) throws VrsException {
+        VPath path = this.openPath(vrl);
+        if (path instanceof VFSPath) {
+            return (VFSPath) path;
+        } else {
+            throw new VrsException("Location is not a filesystem path:(type=" + path.getResourceType() + "):" + vrl);
+        }
+    }
+
+    public VResourceSystem getVResourceSystemFor(VRL vrl) throws VrsException {
+        VResourceSystem resourceSystem = vrsContext.getRegistry().getVResourceSystemFor(vrsContext, vrl);
+        if (resourceSystem == null) {
+            throw new VrsException("Scheme not implemented, couldn't get ResourceSystem for:" + resourceSystem);
+        }
+        return resourceSystem;
+    }
+
+    public VResourceSystemFactory getVRSFactoryForScheme(String scheme) {
+        return vrsContext.getRegistry().getVResourceSystemFactoryFor(vrsContext, scheme);
+    }
+
+    /**
+     * Resolve relative path against current working path and return VRL.
+     * 
+     * @param path
+     *            relative path
+     * @return resolved absolute VRL
+     * @throws VRLSyntaxException
+     *             if path string contains invalid characters
      */
-    public VRL resolvePath(String path) throws VRLSyntaxException
-    {
+    public VRL resolvePath(String path) throws VRLSyntaxException {
         return currentPathVRL.resolvePath(path);
     }
-    
-    /** 
-     * Set current location to which relative paths and URIs are resolved to. 
-     * @param vrl current "working directory" or URI to resolve relative paths against. 
+
+    /**
+     * Set current location to which relative paths and URIs are resolved to.
+     * 
+     * @param vrl
+     *            current "working directory" or URI to resolve relative paths against.
      */
-    public void setCurrentPath(VRL vrl)
-    {
-        if (vrl==null)
-        {
-            throw new NullPointerException("Current path can not be NULL!"); 
+    public void setCurrentPath(VRL vrl) {
+        if (vrl == null) {
+            throw new NullPointerException("Current path can not be NULL!");
         }
-        
-        this.currentPathVRL=vrl; 
+
+        this.currentPathVRL = vrl;
     }
 
-    public OutputStream createOutputStream(VRL vrl) throws VrsException
-    {
+    public OutputStream createOutputStream(VRL vrl) throws VrsException {
         VResourceSystem vrs = getVResourceSystemFor(vrl);
-        
-        if ((vrs instanceof VOutputStreamCreator)==false)
-        {
-            throw new VrsException("createOutputStream() not support for scheme:"+vrl); 
+        if ((vrs instanceof VOutputStreamCreator) == false) {
+            throw new VrsException("createOutputStream() not support for scheme:" + vrl);
         }
-        
-        return ((VOutputStreamCreator)vrs).createOutputStream(vrl);
+        return ((VOutputStreamCreator) vrs).createOutputStream(vrl);
     }
 
-    public InputStream createInputStream(VRL vrl) throws VrsException
-    {
+    public InputStream createInputStream(VRL vrl) throws VrsException {
         VResourceSystem vrs = getVResourceSystemFor(vrl);
-        
-        if ((vrs instanceof VInputStreamCreator)==false)
-        {
-            throw new VrsException("createInputStream() not support for scheme:"+vrl); 
+        if ((vrs instanceof VInputStreamCreator) == false) {
+            throw new VrsException("createInputStream() not support for scheme:" + vrl);
         }
-        
-        return ((VInputStreamCreator)vrs).createInputStream(vrl);
+        return ((VInputStreamCreator) vrs).createInputStream(vrl);
     }
-    
-    /** 
-     * VRS copy and move manager. 
+
+    /**
+     * VRS copy and move manager.
+     * 
      * @return VRSCopyManager
      */
-    public VRSCopyManager getVRSTransferManager()
-    {
-        return transferManager; 
+    public VRSCopyManager getVRSTransferManager() {
+        return transferManager;
     }
 
-    /** 
-     * Return the Root Node of the Info Resource System. Virtual location to start browsing. 
-     * @return InfoRootNode which is the logical root of the Virtual Resource System. 
+    /**
+     * Return the Root Node of the Info Resource System. Virtual location to start browsing.
+     * 
+     * @return InfoRootNode which is the logical root of the Virtual Resource System.
      * @throws VrsException
      */
-    public InfoRootNode getInfoRootNode() throws VrsException
-    {
-        return (InfoRootNode)openPath(vrsContext.getInfoRootNodeVRL()); 
+    public InfoRootNode getInfoRootNode() throws VrsException {
+        return (InfoRootNode) openPath(vrsContext.getInfoRootNodeVRL());
     }
 
-    public List<VPath> openPaths(List<VRL> vrls) throws VrsException
-    {
-        ArrayList<VPath> paths=new ArrayList<VPath>();
-        
-        for (VRL vrl:vrls)
-        {
-            paths.add(openPath(vrl)); 
+    public List<VPath> openPaths(List<VRL> vrls) throws VrsException {
+        ArrayList<VPath> paths = new ArrayList<VPath>();
+        for (VRL vrl : vrls) {
+            paths.add(openPath(vrl));
         }
-        
-        return paths; 
+        return paths;
     }
 
-    public ResourceConfigInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
-    {
+    public ResourceConfigInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException {
         return this.vrsContext.getResourceSystemInfoFor(vrl, autoCreate);
     }
 
-    /** 
-     * Create statefull resourceloader using this VRSClient. 
+    /**
+     * Create statefull resourceloader using this VRSClient.
      */
-    public ResourceLoader createResourceLoader()
-    {
-        VRSResourceProvider prov=new VRSResourceProvider(this); 
-        ResourceLoader loader = new ResourceLoader(prov,null); 
-        return loader; 
+    public ResourceLoader createResourceLoader() {
+        VRSResourceProvider prov = new VRSResourceProvider(this);
+        ResourceLoader loader = new ResourceLoader(prov, null);
+        return loader;
     }
 
-    public VPath copyFileToDir(VRL sourceFile,VRL destDirectory) throws VrsException
-    {
-       VARListHolder<VPath> resultPathsH=new ListHolder<VPath>(); 
-       boolean result=transferManager.doCopyMove(new ExtendedList<VRL>(sourceFile), destDirectory,false, null,resultPathsH,null,null); 
-       if ( (result==false) || (resultPathsH.isEmpty()) )
-       {
-           throw new ResourceCreationException("No results for CopyMove action:"+sourceFile+"to:"+destDirectory,null);  
-       }
-       return resultPathsH.get().get(0); 
-    }
-    
-    public VPath copyDirToDir(VRL sourceDir,VRL destParentDirectory) throws VrsException
-    {
-       VARListHolder<VPath> resultPathsH=new ListHolder<VPath>(); 
-       boolean result=transferManager.doCopyMove(new ExtendedList<VRL>(sourceDir), destParentDirectory,false, null,resultPathsH,null,null); 
-       if ( (result==false) || (resultPathsH.isEmpty()) )
-       {
-           throw new ResourceCreationException("No results for CopyMove action:"+sourceDir+"to:"+destParentDirectory,null);  
-       }
-       return resultPathsH.get().get(0); 
+    public VPath copyFileToDir(VRL sourceFile, VRL destDirectory) throws VrsException {
+        VARListHolder<VPath> resultPathsH = new ListHolder<VPath>();
+        boolean result = transferManager.doCopyMove(new ExtendedList<VRL>(sourceFile), destDirectory, false, null,
+                resultPathsH, null, null);
+        if ((result == false) || (resultPathsH.isEmpty())) {
+            throw new ResourceCreationException("No results for CopyMove action:" + sourceFile + "to:" + destDirectory,
+                    null);
+        }
+        return resultPathsH.get().get(0);
     }
 
-    public boolean existsDir(VRL dirVrl) throws VrsException
-    {
-        VPath path=this.openPath(dirVrl);  
-        if ((path instanceof VFSPath)==false)
-        {
+    public VPath copyDirToDir(VRL sourceDir, VRL destParentDirectory) throws VrsException {
+        VARListHolder<VPath> resultPathsH = new ListHolder<VPath>();
+        boolean result = transferManager.doCopyMove(new ExtendedList<VRL>(sourceDir), destParentDirectory, false, null,
+                resultPathsH, null, null);
+        if ((result == false) || (resultPathsH.isEmpty())) {
+            throw new ResourceCreationException("No results for CopyMove action:" + sourceDir + "to:"
+                    + destParentDirectory, null);
+        }
+        return resultPathsH.get().get(0);
+    }
+
+    public boolean existsDir(VRL dirVrl) throws VrsException {
+        VPath path = this.openPath(dirVrl);
+        if ((path instanceof VFSPath) == false) {
             return false;
         }
-        
-        VFSPath vfsPath=(VFSPath)path; 
+        VFSPath vfsPath = (VFSPath) path;
         return (vfsPath.exists() && vfsPath.isDir());
     }
-    
-    public boolean existsFile(VRL dirVrl) throws VrsException
-    {
-        VPath path=this.openPath(dirVrl);  
-        if ((path instanceof VFSPath)==false)
-        {
+
+    public boolean existsFile(VRL dirVrl) throws VrsException {
+        VPath path = this.openPath(dirVrl);
+        if ((path instanceof VFSPath) == false) {
             return false;
         }
-        
-        VFSPath vfsPath=(VFSPath)path; 
+        VFSPath vfsPath = (VFSPath) path;
         return (vfsPath.exists() && vfsPath.isFile());
     }
-    
-    public VFSPath mkdirs(VRL dirVrl) throws VrsException
-    {
-        VFSPath path=openVFSPath(dirVrl);
-        path.mkdirs(true); 
-        return path; 
+
+    public VFSPath mkdirs(VRL dirVrl) throws VrsException {
+        VFSPath path = openVFSPath(dirVrl);
+        path.mkdirs(true);
+        return path;
     }
 
-    public OutputStream createOutputStream(VPath file, boolean append)  throws VrsException
-    {
- 
-        if (file instanceof VStreamWritable)
-        {
-            return ((VStreamWritable)file).createOutputStream(append); 
-        }
-        else
-        {
-            throw new ResourceTypeMismatchException("Cannot create InputStream from:"+file,null); 
-        }
-    }
- 
-    public InputStream createInputStream(VPath file)  throws VrsException
-    {
-        if (file instanceof VStreamReadable)
-        {
-            return ((VStreamReadable)file).createInputStream();
-        }
-        else
-        {
-            throw new ResourceTypeMismatchException("Cannot create InputStream from:"+file,null); 
+    public OutputStream createOutputStream(VPath file, boolean append) throws VrsException {
+        if (file instanceof VStreamWritable) {
+            return ((VStreamWritable) file).createOutputStream(append);
+        } else {
+            throw new ResourceTypeMismatchException("Cannot create InputStream from:" + file, null);
         }
     }
 
-    public RandomReadable createRandomReader(VPath file) throws VrsException
-    {
-        if (file instanceof VRandomReadable)
-        {
-            return ((VRandomReadable)file).createRandomReadable();
-        }
-        else
-        {
-            throw new ResourceTypeMismatchException("Cannot create RandomReadable from:"+file,null); 
+    public InputStream createInputStream(VPath file) throws VrsException {
+        if (file instanceof VStreamReadable) {
+            return ((VStreamReadable) file).createInputStream();
+        } else {
+            throw new ResourceTypeMismatchException("Cannot create InputStream from:" + file, null);
         }
     }
 
-    public RandomWritable createRandomWriter(VPath file) throws VrsException
-    {
-        if (file instanceof VRandomWritable)
-        {
-            return ((VRandomWritable)file).createRandomWritable();
-        }
-        else
-        {
-            throw new ResourceTypeMismatchException("Cannot create RandomWriter from:"+file,null); 
+    public RandomReadable createRandomReader(VPath file) throws VrsException {
+        if (file instanceof VRandomReadable) {
+            return ((VRandomReadable) file).createRandomReadable();
+        } else {
+            throw new ResourceTypeMismatchException("Cannot create RandomReadable from:" + file, null);
         }
     }
-    
-    public byte[] readContents(VPath file) throws VrsException
-    {
-        InputStream inps=this.createInputStream(file);
+
+    public RandomWritable createRandomWriter(VPath file) throws VrsException {
+        if (file instanceof VRandomWritable) {
+            return ((VRandomWritable) file).createRandomWritable();
+        } else {
+            throw new ResourceTypeMismatchException("Cannot create RandomWriter from:" + file, null);
+        }
+    }
+
+    public byte[] readContents(VPath file) throws VrsException {
+        InputStream inps = this.createInputStream(file);
         byte[] bytes;
-        try
-        {
+        try {
             bytes = new ResourceLoader().readBytes(inps);
-            return bytes; 
-        }
-        catch (IOException e)
-        {
-            throw new VrsIOException(e.getMessage(),e); 
-        } 
-        finally
-        {
-            IOUtil.autoClose(inps); 
+            return bytes;
+        } catch (IOException e) {
+            throw new VrsIOException(e.getMessage(), e);
+        } finally {
+            IOUtil.autoClose(inps);
         }
     }
 
-    public void writeContents(VPath file, byte bytes[]) throws VrsException
-    {
-        OutputStream outps=this.createOutputStream(file,false);
-        try
-        {
-            new ResourceLoader().writeBytes(outps,bytes);
-        }
-        catch (IOException e)
-        {
-            throw new VrsIOException(e.getMessage(),e); 
-        } 
-        finally
-        {
-            IOUtil.autoClose(outps); 
+    public void writeContents(VPath file, byte bytes[]) throws VrsException {
+        OutputStream outps = this.createOutputStream(file, false);
+        try {
+            new ResourceLoader().writeBytes(outps, bytes);
+        } catch (IOException e) {
+            throw new VrsIOException(e.getMessage(), e);
+        } finally {
+            IOUtil.autoClose(outps);
         }
     }
 
-    public VFSPath moveFileToDir(VFSPath file, VFSPath destinationDir) throws VrsException
-    {
-        VARListHolder<VFSPath> resultPathsH=new ListHolder<VFSPath>(); 
-        VARListHolder<VPath> deletedNodesH=new ListHolder<VPath>(); 
-        this.transferManager.doCopyMove(new ExtendedList<VFSPath>(file), destinationDir, true, resultPathsH, deletedNodesH, null); 
-        return resultPathsH.get(0); 
+    public VFSPath moveFileToDir(VFSPath file, VFSPath destinationDir) throws VrsException {
+        VARListHolder<VFSPath> resultPathsH = new ListHolder<VFSPath>();
+        VARListHolder<VPath> deletedNodesH = new ListHolder<VPath>();
+        this.transferManager.doCopyMove(new ExtendedList<VFSPath>(file), destinationDir, true, resultPathsH,
+                deletedNodesH, null);
+        return resultPathsH.get(0);
+    }
+
+    public VFSPath copyFileToDir(VFSPath file, VFSPath destinationDir) throws VrsException {
+        VARListHolder<VFSPath> resultPathsH = new ListHolder<VFSPath>();
+        VARListHolder<VPath> deletedNodesH = new ListHolder<VPath>();
+        this.transferManager.doCopyMove(new ExtendedList<VFSPath>(file), destinationDir, false, resultPathsH,
+                deletedNodesH, null);
+        return resultPathsH.get(0);
+    }
+
+    public VFSPath moveFileToFile(VFSPath sourceFile, VFSPath targetFile) throws VrsException {
+        transferManager.copyMoveToFile(sourceFile, targetFile, true);
+        return targetFile;
+    }
+
+    public VFSPath copyFileToFile(VFSPath sourceFile, VFSPath targetFile) throws VrsException {
+        transferManager.copyMoveToFile(sourceFile, targetFile, false);
+        return targetFile;
+    }
+
+    public VFSPath copyDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName)
+            throws VrsException {
+        return copyMoveDirToDir(sourceDir, destinationPARENTDir, optSubdirectoryName, false);
+    }
+
+    public VFSPath moveDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName)
+            throws VrsException {
+        return copyMoveDirToDir(sourceDir, destinationPARENTDir, optSubdirectoryName, true);
+    }
+
+    public VFSPath copyMoveDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName,
+            boolean isMove) throws VrsException {
+        // resolve optional new SubDirectory name
+        if (optSubdirectoryName == null) {
+            optSubdirectoryName = sourceDir.getVRL().getBasename();
+        }
+
+        VFSPath targetDir = destinationPARENTDir.resolvePath(optSubdirectoryName);
+        targetDir.mkdir(false);
+        this.transferManager.copyMoveDirContents(sourceDir, targetDir, true, null);
+        return targetDir;
     }
    
-
-    public VFSPath copyFileToDir(VFSPath file, VFSPath destinationDir) throws VrsException
-    {
-        VARListHolder<VFSPath> resultPathsH=new ListHolder<VFSPath>(); 
-        VARListHolder<VPath> deletedNodesH=new ListHolder<VPath>(); 
-        this.transferManager.doCopyMove(new ExtendedList<VFSPath>(file), destinationDir, false, resultPathsH, deletedNodesH, null); 
-        return resultPathsH.get(0); 
+    public void dispose() {
+        this.currentPathVRL = null;
+        this.homeVRL = null;
+        this.transferManager.dispose();
+        this.transferManager = null;
+        this.vrsContext = null;
     }
 
-    public VFSPath moveFileToFile(VFSPath sourceFile, VFSPath targetFile) throws VrsException
-    {
-        transferManager.copyMoveToFile(sourceFile, targetFile, true); 
-        return targetFile; 
-    }
-
-    public VFSPath copyFileToFile(VFSPath sourceFile, VFSPath targetFile) throws VrsException
-    {
-        transferManager.copyMoveToFile(sourceFile, targetFile, false); 
-        return targetFile; 
-    }
-    
-    public VFSPath copyDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName) throws VrsException
-    {
-        return copyMoveDirToDir(sourceDir,destinationPARENTDir,optSubdirectoryName,false); 
-    }
-    
-    public VFSPath moveDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName) throws VrsException
-    {
-        return copyMoveDirToDir(sourceDir,destinationPARENTDir,optSubdirectoryName,true); 
-    }
-    
-    public VFSPath copyMoveDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName, boolean isMove) throws VrsException
-    {
-        // resolve optional new SubDirectory name
-        if (optSubdirectoryName==null)
-        {   
-            optSubdirectoryName=sourceDir.getVRL().getBasename(); 
-        }
-        
-        VFSPath targetDir=destinationPARENTDir.resolvePath(optSubdirectoryName); 
-        targetDir.mkdir(false);
-        this.transferManager.copyMoveDirContents(sourceDir,targetDir, true, null); 
-        return targetDir; 
-    }
-     
 }

@@ -20,12 +20,10 @@
 
 package nl.esciencecenter.ptk.ssl;
 
-public class SslConst
-{
+public class SslConst {
+
     public static final String PROTOCOL_SSLv3 = "SSLv3";
-    
-    public static final String PROTOCOL_TLS="TLS";
 
-
+    public static final String PROTOCOL_TLS = "TLS";
 
 }

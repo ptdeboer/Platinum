@@ -29,17 +29,16 @@ import nl.esciencecenter.ptk.util.SortUtil;
 /**
  * Helper class for StringLists. StringList extends the ArrayList class with extra methods.
  * <p>
- * Note: ArrayList is an not synchronized generics class.
+ * Note: ArrayList access is synchronized.
  */
-public class StringList extends ExtendedList<String> implements Cloneable, Serializable
-{
+public class StringList extends ExtendedList<String> implements Cloneable, Serializable {
+
     private static final long serialVersionUID = -2559548865729284189L;
 
     /**
      * Factory method to merge two arrays. Duplicates are removed.
      */
-    public static String[] merge(String[] arr1, String[] arr2)
-    {
+    public static String[] merge(String[] arr1, String[] arr2) {
         StringList list = new StringList(arr1);
         list.merge(arr2);
         return list.toArray();
@@ -48,8 +47,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     /**
      * Factory method to merge tree arrays. Duplicates are removed.
      */
-    public static String[] merge(String[] arr1, String[] arr2, String arr3[])
-    {
+    public static String[] merge(String[] arr1, String[] arr2, String arr3[]) {
         StringList list = new StringList(arr1);
         list.merge(arr2);
         list.merge(arr3);
@@ -59,22 +57,17 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     /**
      * Helper method to find a entry in a String Array
      */
-    public static int find(String[] list, String value)
-    {
+    public static int find(String[] list, String value) {
         if ((list == null) || (list.length == 0))
             return -1;
 
-        for (int i = 0; i < list.length; i++)
-        {
-            if (value == null)
-            {
+        for (int i = 0; i < list.length; i++) {
+            if (value == null) {
 
                 // null proof: allow ?
                 if (list[i] == null)
                     return i;
-            }
-            else if (list[i].compareTo(value) == 0)
-            {
+            } else if (list[i].compareTo(value) == 0) {
                 return i;
             }
         }
@@ -82,8 +75,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
         return -1;
     }
 
-    public static boolean hasEntry(String[] list, String val)
-    {
+    public static boolean hasEntry(String[] list, String val) {
         return (find(list, val) >= 0);
     }
 
@@ -94,8 +86,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
      * @param str
      * @return
      */
-    public static StringList createFrom(String str, String regexp)
-    {
+    public static StringList createFrom(String str, String regexp) {
         if ((str == null) || (regexp == null))
             return null;
 
@@ -106,8 +97,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     /**
      * Merge String array into one StringList. Uses merge().
      */
-    public static StringList createFrom(String list1[], String list2[])
-    {
+    public static StringList createFrom(String list1[], String list2[]) {
         StringList list = new StringList(list1);
         list.merge(list2);
         return list;
@@ -116,8 +106,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     /**
      * Merge String arrays into one StringList. Uses merge()
      */
-    public static StringList createFrom(String list1[], String list2[], String list3[])
-    {
+    public static StringList createFrom(String list1[], String list2[], String list3[]) {
         StringList list = new StringList(list1);
         list.merge(list2);
         list.merge(list3);
@@ -125,104 +114,88 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     }
 
     // ========================================================================
-    //
+    // Instance
     // ========================================================================
 
-    public StringList(String... strs)
-    {
+    public StringList(String... strs) {
         super(strs);
     }
 
-    public StringList()
-    {
+    public StringList() {
         super();// =default;
     }
 
     /**
-     * Creates a StringList with an capacity of num. Actual reported size() will be 0! Only useful if the size is known
-     * in advance and the list size will not change.
+     * Creates a StringList with an capacity of num. Actual reported size() will be 0! Only useful
+     * if the size is known in advance and the list size will not change.
      * 
-     * @param len
+     * @param capacity
      */
-    public StringList(int capacity)
-    {
+    public StringList(int capacity) {
         super(capacity);
     }
 
-    public StringList(Collection<? extends String> list)
-    {
+    public StringList(Collection<? extends String> list) {
         super((list != null) ? list : new ArrayList<String>(0));
     }
 
-    public int[] sort()
-    {
+    public int[] sort() {
         return SortUtil.qsort(this, false);
     }
 
     /**
      * Returns sorted copy. Uses duplicate().sort()
      */
-    public StringList createSorted()
-    {
+    public StringList createSorted() {
         StringList list = this.duplicate();
         list.sort();
         return list;
     }
 
-    public int[] sort(boolean ignoreCase)
-    {
+    /**
+     * Implace sort. Uses quicksort.
+     */
+    public int[] sort(boolean ignoreCase) {
         return SortUtil.qsort(this, ignoreCase);
     }
 
     /**
      * Sort this list and remove all double entries.
      */
-    public void unique(boolean isAlreadySorted)
-    {
-        if (isAlreadySorted == false)
-        {
+    public void unique(boolean isAlreadySorted) {
+        if (isAlreadySorted == false) {
             sort();
         }
 
         int index = 0;
 
-        while (index < this.size() - 1)
-        {
+        while (index < this.size() - 1) {
             String first = this.get(index);
             String second = this.get(index + 1);
 
-            if (first == second)
-            {
+            if (first == second) {
                 this.remove(second);
-            }
-            else
-            {
+            } else {
                 index++;
             }
         }
     }
 
-    public StringList duplicate()
-    {
+    public StringList duplicate() {
         return new StringList(toArray());
     }
 
-    public String[] toArray()
-    {
-        // downcast: allocate new String Array:
-        String array[] = new String[size()];
-        return this.toArray(array);// use super method.
+    public String[] toArray() {
+        return this.toArray(new String[0]);
     }
 
-    public StringList clone()
-    {
+    public StringList clone() {
         return duplicate();
     }
 
-    public boolean equals(Object object)
-    {
-        if (!(object instanceof StringList))
-        {
+    public boolean equals(Object object) {
+
+        if (!(object instanceof StringList)) {
             return false;
         }
 
@@ -231,12 +204,10 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
         if (other.size() != this.size())
             return false;
 
-        // compare elements
         return (compare((StringList) object) == 0);
     }
 
-    public int compare(StringList otherList)
-    {
+    public int compare(StringList otherList) {
         return compare(otherList, new SortUtil.StringComparer());
     }
 

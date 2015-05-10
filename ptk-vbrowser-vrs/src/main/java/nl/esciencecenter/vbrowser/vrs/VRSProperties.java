@@ -33,8 +33,8 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties>
-{
+public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties> {
+
     private static final long serialVersionUID = 1515535666077358909L;
 
     /**
@@ -50,49 +50,38 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     protected String propertiesName = "VRSProperties";
 
     /**
-     * Creates new VRSProperties and copies values from sourceProperties; Converts key object to String based key.
+     * Creates new VRSProperties and copies values from sourceProperties; Converts key object to
+     * String based key.
      * 
      * @param sourceProperties
      *            source Properties to copy.
      * @param duplicateProperties
-     *            - if all property values implement the Duplicatable interface, duplicate values as well.
+     *            - if all property values implement the Duplicatable interface, duplicate values as
+     *            well.
      */
-    public VRSProperties(String name, Map<? extends Object, Object> sourceProperties, boolean duplicateProperties)
-    {
+    public VRSProperties(String name, Map<? extends Object, Object> sourceProperties, boolean duplicateProperties) {
+        //
         init(name);
-
-        if (sourceProperties != null)
-        {
-            for (Object key : sourceProperties.keySet())
-            {
+        if (sourceProperties != null) {
+            for (Object key : sourceProperties.keySet()) {
                 Object value = sourceProperties.get(key);
 
-                if (duplicateProperties)
-                {
+                if (duplicateProperties) {
+                    //
                     Object dupValue = null;
-
                     // use Attribute:
                     AttributeType type = AttributeType.getObjectType(value, null);
-
-                    if (type != null)
-                    {
+                    if (type != null) {
                         dupValue = AttributeUtil.duplicateObject(value);
                     }
-
-                    if (dupValue == null)
-                    {
+                    if (dupValue == null) {
                         String typeStr = "<NONE>";
-
-                        if (type != null)
-                        {
+                        if (type != null) {
                             typeStr = type.toString();
                         }
-
-                        throw new Error("Cannot duplicate or clone property (attribute type='" + typeStr + "'<" + value.getClass() + ">:"
-                                + value);
-                    }
-                    else
-                    {
+                        throw new Error("Cannot duplicate or clone property (attribute type='" + typeStr + "'<"
+                                + value.getClass() + ">:" + value);
+                    } else {
                         value = dupValue;
                     }
                 }
@@ -102,14 +91,12 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
         }
     }
 
-    public VRSProperties(String name, VRSProperties parent)
-    {
+    public VRSProperties(String name, VRSProperties parent) {
         init(name);
         this.parent = parent;
     }
 
-    public VRSProperties(String name)
-    {
+    public VRSProperties(String name) {
         init(name);
     }
 
@@ -117,74 +104,59 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     // Init//Duplicate
     // ========================
 
-    protected void init(String name)
-    {
+    protected void init(String name) {
         this.propertiesName = name;
         _properties = new LinkedHashMap<String, Object>();
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.propertiesName = name;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return propertiesName;
     }
 
     /**
      * @return actual backing Map of stored properties.
      */
-    public Map<String, Object> getProperties()
-    {
+    public Map<String, Object> getProperties() {
         return _properties;
     }
 
     /**
      * @return actual keySet of properties Map.
      */
-    public Set<String> keySet()
-    {
+    public Set<String> keySet() {
         return this._properties.keySet();
     }
 
-    public String getStringProperty(String name)
-    {
+    public String getStringProperty(String name) {
         Object val = this.doGet(name);
-        if (val == null)
-        {
+        if (val == null) {
             return null;
-        }
-        else if (val instanceof String)
-        {
+        } else if (val instanceof String) {
             return (String) val;
-        }
-        else
-        {
+        } else {
             return val.toString();
         }
     }
 
-    public VRSProperties duplicate()
-    {
+    public VRSProperties duplicate() {
         return duplicate(false);
     }
 
     @Override
-    public boolean shallowSupported()
-    {
+    public boolean shallowSupported() {
         return true;
     }
 
     @Override
-    public VRSProperties duplicate(boolean shallow)
-    {
+    public VRSProperties duplicate(boolean shallow) {
         return new VRSProperties(propertiesName, _properties, !shallow);
     }
 
-    public void clear()
-    {
+    public void clear() {
         doClear();
     }
 
@@ -193,8 +165,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
      * 
      * @param vrsProps
      */
-    public void putAll(VRSProperties vrsProps)
-    {
+    public void putAll(VRSProperties vrsProps) {
         _properties.putAll(vrsProps._properties);
     }
 
@@ -203,15 +174,11 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
      * 
      * @return String list of key set.
      */
-    public List<String> keyList()
-    {
+    public List<String> keyList() {
         List<String> keys = new ArrayList<String>();
-
-        for (Object key : _properties.keySet())
-        {
+        for (Object key : _properties.keySet()) {
             keys.add(key.toString());
         }
-
         return keys;
     }
 
@@ -219,150 +186,102 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     // Setter/Getters
     // ========================
 
-    public int getIntegerProperty(String name, int defaultValue)
-    {
+    public int getIntegerProperty(String name, int defaultValue) {
         Object val = this.doGet(name);
-        if (val == null)
-        {
+        if (val == null) {
             return defaultValue;
-        }
-        else if (val instanceof Integer)
-        {
+        } else if (val instanceof Integer) {
             return (Integer) val; // autoboxing
-        }
-        else if (val instanceof Long)
-        {
+        } else if (val instanceof Long) {
             return ((Long) val).intValue(); // auto-cast
-        }
-        else
-        {
+        } else {
             return Integer.parseInt(val.toString());
         }
     }
 
-    public long getLongProperty(String name, int defaultValue)
-    {
+    public long getLongProperty(String name, int defaultValue) {
         Object val = this.doGet(name);
-        if (val == null)
-        {
+        if (val == null) {
             return defaultValue;
-        }
-        else if (val instanceof Integer)
-        {
+        } else if (val instanceof Integer) {
             return (Integer) val; // autoboxing
-        }
-        else if (val instanceof Long)
-        {
+        } else if (val instanceof Long) {
             return (Long) val;
-        }
-        else
-        {
+        } else {
             return Long.parseLong(val.toString());
         }
     }
 
-    public void set(String name, Object value)
-    {
+    public void set(String name, Object value) {
         doPut(name, value);
     }
 
-    public Object get(String name)
-    {
+    public Object get(String name) {
         return doGet(name);
     }
 
-    public boolean getBooleanProperty(String name, boolean defaultValue)
-    {
+    public boolean getBooleanProperty(String name, boolean defaultValue) {
         Object val = this.doGet(name);
-        if (val == null)
-        {
+        if (val == null) {
             return defaultValue;
-        }
-        else if (val instanceof Boolean)
-        {
+        } else if (val instanceof Boolean) {
             return (Boolean) val; // autoboxing
-        }
-        else
-        {
+        } else {
             return Boolean.parseBoolean(val.toString());
         }
     }
 
-    public void set(String name, boolean value)
-    {
+    public void set(String name, boolean value) {
         doPut(name, new Boolean(value));
     }
 
-    public void set(String name, String value)
-    {
+    public void set(String name, String value) {
         // null value mean not set -> clear value.
 
-        if (value == null)
-        {
+        if (value == null) {
             doRemove(name);
-        }
-        else
-        {
+        } else {
             doPut(name, value);
         }
     }
 
-    public void set(String name, int value)
-    {
+    public void set(String name, int value) {
         doPut(name, new Integer(value));
     }
 
-    public void set(String name, VRL vrl)
-    {
+    public void set(String name, VRL vrl) {
         doPut(name, vrl);
     }
-    
-    public void remove(String name)
-    {
+
+    public void remove(String name) {
         doRemove(name);
     }
 
-    public VRL getVRLProperty(String name, VRL defaultValue) throws VRLSyntaxException
-    {
+    public VRL getVRLProperty(String name, VRL defaultValue) throws VRLSyntaxException {
         VRL vrl = getVRLProperty(name);
-
-        if (vrl != null)
-        {
+        if (vrl != null) {
             return vrl;
         }
-
         return defaultValue;
     }
 
-    public VRL getVRLProperty(String name) throws VRLSyntaxException
-    {
+    public VRL getVRLProperty(String name) throws VRLSyntaxException {
         Object val = this.doGet(name);
-        if (val == null)
-        {
+        if (val == null) {
             return null;
-        }
-        else if (val instanceof VRL)
-        {
+        } else if (val instanceof VRL) {
             return (VRL) val;
-        }
-        else if (val instanceof java.net.URI)
-        {
+        } else if (val instanceof java.net.URI) {
             return new VRL((java.net.URI) val);
-        }
-        else if (val instanceof java.net.URL)
-        {
+        } else if (val instanceof java.net.URL) {
             return new VRL((java.net.URL) val);
-        }
-        else
-        {
+        } else {
             return new VRL(val.toString());
         }
     }
 
-    public boolean setIfNotSet(String name, String value)
-    {
-        if (this.getStringProperty(name) == null)
-        {
+    public boolean setIfNotSet(String name, String value) {
+        if (this.getStringProperty(name) == null) {
             this.set(name, value);
             return true;
         }
@@ -373,46 +292,37 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     // Protected methods.
     // ==================
 
-    protected void doPut(String name, Object value)
-    {
-        if (name==null)
-        {
-            throw new NullPointerException("Parameter 'name' can not be NULL"); 
+    protected void doPut(String name, Object value) {
+        if (name == null) {
+            throw new NullPointerException("Parameter 'name' can not be NULL");
         }
-        
-        if (value==null)
-        {
-            this._properties.remove(name); 
-        }
-        else
-        {
+
+        if (value == null) {
+            this._properties.remove(name);
+        } else {
             this._properties.put(name, value);
         }
-        
+
     }
 
-    protected void doRemove(String name)
-    {
+    protected void doRemove(String name) {
         this._properties.remove(name);
     }
 
-    protected Object doGet(String name)
-    {
+    protected Object doGet(String name) {
         Object value = null;
 
         value = _properties.get(name);
 
         // check parent:
-        if ((value == null) && (parent != null))
-        {
+        if ((value == null) && (parent != null)) {
             value = parent.doGet(name);
         }
 
         return value;
     }
 
-    protected void doClear()
-    {
+    protected void doClear() {
         _properties.clear();
     }
 
@@ -421,8 +331,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     // ==================
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "VRSProperties[properties=" + _properties + "]";
     }
 

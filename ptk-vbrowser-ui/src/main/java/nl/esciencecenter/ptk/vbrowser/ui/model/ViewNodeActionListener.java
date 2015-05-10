@@ -23,11 +23,10 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
 
 // under construction
-public interface ViewNodeActionListener 
-{
+public interface ViewNodeActionListener {
     // void handleNodeSelection(ViewNode node);
 
-	void handleNodeActionEvent(ViewNode node,Action action);
+    void handleNodeActionEvent(ViewNode node, Action action);
 
-	//
+    //
 }

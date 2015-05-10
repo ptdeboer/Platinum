@@ -15,22 +15,16 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 
-public class ShowAltDummyResourceTable
-{
-    public static void main(String args[])
-    {
-        try
-        {
+public class ShowAltDummyResourceTable {
+    public static void main(String args[]) {
+        try {
             showTable();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void showTable() throws VRLSyntaxException, ProxyException
-    {
+    public static void showTable() throws VRLSyntaxException, ProxyException {
         BrowserPlatform platform = StartDummyBrowser.getDummyPlatform();
 
         JFrame frame = new JFrame();
@@ -40,22 +34,21 @@ public class ShowAltDummyResourceTable
 
         JScrollPane pane = new JScrollPane();
         frame.add(pane, BorderLayout.CENTER);
-        
-        BrowserInterfaceAdaptor browserInterface= new BrowserInterfaceAdaptor(platform);
-        
-        JPopupMenu popMenu=new JPopupMenu(); 
+
+        BrowserInterfaceAdaptor browserInterface = new BrowserInterfaceAdaptor(platform);
+
+        JPopupMenu popMenu = new JPopupMenu();
         {
-            popMenu.add(new JMenuItem("Dummy")); 
+            popMenu.add(new JMenuItem("Dummy"));
         }
-        
-        
+
         browserInterface.setPopupMenu(popMenu);
         ResourceTable table = new ResourceTable(browserInterface, new ResourceTableModel(false));
         pane.setViewportView(table);
 
-//        VRL vrl = new VRL("dummy:///");
-//        ProxyFactory dummyFac = platform.getProxyFactoryFor(vrl);
-//        ProxyNode root = dummyFac.openLocation("dummy:///");
+        //        VRL vrl = new VRL("dummy:///");
+        //        ProxyFactory dummyFac = platform.getProxyFactoryFor(vrl);
+        //        ProxyNode root = dummyFac.openLocation("dummy:///");
 
         table.setDataSource(new AltDummyDataSource(), true);
 

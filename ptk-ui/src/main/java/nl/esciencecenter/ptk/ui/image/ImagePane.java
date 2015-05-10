@@ -32,465 +32,400 @@ import javax.swing.JComponent;
 
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
+/**
+ * ImagePane which handles asynchronous imageUpdates. After an image is loaded the component size is
+ * updated to match the new size. This because when updating an image from a remote resource, the
+ * size might not be known yet as long as the AWT toolkit is 'decoding; the image bytes.
+ * 
+ */
+public class ImagePane extends JComponent {
+    private static PLogger logger;
 
-/** 
- * ImagePane which handles asynchronous imageUpdates. 
- * After an image is loaded the component size is updated to
- * match the new size. 
- * This because when updating an image from a remote resource, 
- * the size might not be known yet as long as the AWT toolkit is 
- * 'decoding;  the image bytes.
- *  
- */ 
-public class ImagePane extends JComponent
-{
-    private static PLogger logger; 
-    
-    static
-    {
-        logger=PLogger.getLogger(ImagePane.class); 
+    static {
+        logger = PLogger.getLogger(ImagePane.class);
     }
-    
-	// wait for an image to be updated 
-	public static class ImageWaiter implements ImageObserver
-	{
-		Image image=null; 
 
-		int newWidth=0; 
-		int newHeight=0;
+    // wait for an image to be updated 
+    public static class ImageWaiter implements ImageObserver {
+        Image image = null;
 
-		boolean allBits=false; 
-		boolean error=false; 
-		
-		public ImageWaiter(Image _image)
-		{
-			image=_image;
-		}
+        int newWidth = 0;
+        int newHeight = 0;
 
-		public void setImage(Image _image)
-		{
-			this.image=_image; 
-			allBits=false; 
-		}
+        boolean allBits = false;
+        boolean error = false;
 
-		public synchronized boolean imageUpdate(Image img, int infoFlags, int x, int y,
-				int width, int height)
-		{
-			logger.debugPrintf(">>> ImageWaiter: flags=%s\n",infoFlags); 
+        public ImageWaiter(Image _image) {
+            image = _image;
+        }
 
-			
-			if ((infoFlags & ImageObserver.ERROR)>0) 
-			{
-				this.error=true; 
-				
-				synchronized(this)
-				{
-					// wakeup ! 
-					this.notifyAll();
-				}
+        public void setImage(Image _image) {
+            this.image = _image;
+            allBits = false;
+        }
 
-				return false; 
-			}
-			
-			boolean done=false; 
+        public synchronized boolean imageUpdate(Image img, int infoFlags, int x, int y, int width,
+                int height) {
+            logger.debugPrintf(">>> ImageWaiter: flags=%s\n", infoFlags);
 
-			if (width>0) 
-				newWidth=width; 
+            if ((infoFlags & ImageObserver.ERROR) > 0) {
+                this.error = true;
 
-			if (height>0) 
-				newHeight=height; 
+                synchronized (this) {
+                    // wakeup ! 
+                    this.notifyAll();
+                }
 
-			logger.debugPrintf(">>> ImageWaiter: update %d,%d => %d,%d \n",width,height,newWidth,newHeight);
+                return false;
+            }
 
-			if (allBits==false)
-				this.allBits=((infoFlags & ImageObserver.ALLBITS)>0); 
+            boolean done = false;
 
-			if (allBits) 
-			{
-				if ((newWidth>0) && (newHeight>0)) 
-				{
-					synchronized(this)
-					{
-						// wakeup ! 
-						this.notifyAll();
-					}
+            if (width > 0)
+                newWidth = width;
 
-					done=true; 
-				}
-			}
+            if (height > 0)
+                newHeight = height;
 
-			// new update needed ? 
-			return (done==false); 
-		}
+            logger.debugPrintf(">>> ImageWaiter: update %d,%d => %d,%d \n", width, height,
+                    newWidth, newHeight);
 
-		/** waits for size to be known 
-		 * @throws IOException */
-		public void waitForCompletion(boolean waitForAllBits) throws IOException
-		{
-			//debug(">>> ImageWaiter: waitForCompletion()");
+            if (allBits == false)
+                this.allBits = ((infoFlags & ImageObserver.ALLBITS) > 0);
 
-			boolean wait=true; 
+            if (allBits) {
+                if ((newWidth > 0) && (newHeight > 0)) {
+                    synchronized (this) {
+                        // wakeup ! 
+                        this.notifyAll();
+                    }
 
-			while(wait==true)
-			{
-				// get size and trigger imageUpdate ! 
+                    done = true;
+                }
+            }
 
-				this.newHeight=image.getHeight(this); 
-				this.newWidth=image.getWidth(this);
-			
-				if (error==true)
-				{
-					throw new IOException("Image Loading failed"); 
-				}
-				
-				if ((newHeight<=0) || (newWidth<=0))
-				{
-					wait=true; 
-				}
-				else 
-				{
-					// size is known now, wait for all bits ? 
-					if (waitForAllBits==false)
-					{
-						// don't wait 
-						wait=false;
-					}
-					else
-					{
-						if (allBits==true)
-							wait=false;
-						else
-							wait=true; 
-					}
-				}
+            // new update needed ? 
+            return (done == false);
+        }
 
+        /**
+         * waits for size to be known
+         * 
+         * @throws IOException
+         */
+        public void waitForCompletion(boolean waitForAllBits) throws IOException {
+            //debug(">>> ImageWaiter: waitForCompletion()");
 
-				// image not done yet:
-				if (wait)
-				{
-					try
-					{
-						synchronized(this)
-						{
-							// wait 1s. check again:
-							this.wait(1000);
-						}
-					}
-					catch (InterruptedException e)
-					{
-						logger.logException(PLogger.WARN,e,"waitForCompletion():Interrupted\n"); 
-					}
-				}
+            boolean wait = true;
 
-			}
+            while (wait == true) {
+                // get size and trigger imageUpdate ! 
 
-			logger.debugPrintf("<<< ImageWaiter: waitForCompletion():DONE!\n");
+                this.newHeight = image.getHeight(this);
+                this.newWidth = image.getWidth(this);
 
-		}
-		
-		
-	} // imageWaiters 
+                if (error == true) {
+                    throw new IOException("Image Loading failed");
+                }
 
+                if ((newHeight <= 0) || (newWidth <= 0)) {
+                    wait = true;
+                } else {
+                    // size is known now, wait for all bits ? 
+                    if (waitForAllBits == false) {
+                        // don't wait 
+                        wait = false;
+                    } else {
+                        if (allBits == true)
+                            wait = false;
+                        else
+                            wait = true;
+                    }
+                }
 
-	
-	// needed by swing 
-	private static final long serialVersionUID = 4745630397251453021L;
+                // image not done yet:
+                if (wait) {
+                    try {
+                        synchronized (this) {
+                            // wait 1s. check again:
+                            this.wait(1000);
+                        }
+                    } catch (InterruptedException e) {
+                        logger.logException(PLogger.WARN, e, "waitForCompletion():Interrupted\n");
+                    }
+                }
 
-	// ===============================================================
-	// Instance :
-	// ================================================================
-	
-	/** The Image */ 
-	private Image image=null;
-	
-	/** Default Background Color */ 
-	Color bgcolor=Color.GRAY;
-	
-	/** Width of Image, might not be same as this component's width */ 
-	private int imageWidth=-1;
-	
-	/** Height of Image, might not be same as this component's height*/ 
-	private int imageHeight=-1;
+            }
 
+            logger.debugPrintf("<<< ImageWaiter: waitForCompletion():DONE!\n");
 
-	public ImagePane(Image source) throws IOException
-	{
-		init(); 
-		this.setImage(source,false); 
-	}
+        }
 
-	public ImagePane()
-	{
-		init(); 
-	}
-	
+    } // imageWaiters 
 
-	private void init()
-	{
-		
-	}
+    // needed by swing 
+    private static final long serialVersionUID = 4745630397251453021L;
 
+    // ===============================================================
+    // Instance :
+    // ================================================================
 
-	/**
-	 * Set new image, if waitForCompletion==true, this method
-	 * will only return when the whole image loaded and ready. 
-	 * 
-	 * @param bytes
-	 * @param waitForCompletion Set to true to block and wait for the image 
-	 *                          to be complete.
-	 * @throws IOException 
-	 */
-	public void setImage(byte bytes[],boolean waitForCompletion) throws IOException
-	{
-		Toolkit tk = Toolkit.getDefaultToolkit();
-		setImage(tk.createImage(bytes),waitForCompletion);
-	}
+    /** The Image */
+    private Image image = null;
 
-	/**
-	 * Set new image, if waitForCompletion==true, this method
-	 * will only return when the whole image is ready. 
-	 * 
-	 * @param image Image to be drawn. 
-	 * @param waitForCompletion Set to true to block and wait for the image 
-	 *                          to be complete.
-	 * @throws IOException 
-	 */
-	public void setImage(Image newImage, boolean waitForCompletion) throws IOException
-	{
-		if ((newImage!=null) && (waitForCompletion)) 
-		{
-				// Since createImage is asynchronous, the image size
-				// might not be know. Wait until updateImage provides
-				// the right image size. 
-				// Specify waitForallBits==true if the complete image needs to be available. 
-				// Set to false if only the correct size is needed. 
-				
-				logger.debugPrintf("Waiting for image completion...\n");
-				
-				ImageWaiter waiter=new ImageWaiter(newImage); 
+    /** Default Background Color */
+    Color bgcolor = Color.GRAY;
 
-				waiter.waitForCompletion(false); 
-				
-				logger.debugPrintf("Done: Waiting for image completion"); 
-		}
+    /** Width of Image, might not be same as this component's width */
+    private int imageWidth = -1;
 
-		// image complete: swap: 
-		// swap 
-		// swap 
-		
-		if (this.image!=null)
-		{
-			image.flush(); 
-			image=null; 
-		}
-		
-		this.image=newImage; 
-		
-		if (this.image==null) 
-			return; 
-		
-		int tmpHeight=image.getHeight(this); // might return -1!
-		int tmpWidth=image.getWidth(this);  // might return -1!
+    /** Height of Image, might not be same as this component's height */
+    private int imageHeight = -1;
 
-		// be carefull due to ascynchronous nature of updateImage
-		// height events COULD happen during this code:
+    public ImagePane(Image source) throws IOException {
+        init();
+        this.setImage(source, false);
+    }
 
-		logger.debugPrintf("this height=%d\n",imageHeight); 
-		logger.debugPrintf("this width=%d\n",imageWidth);
-		logger.debugPrintf("new height=%d\n",tmpHeight); 
-		logger.debugPrintf("new width=%d\n",tmpWidth);
+    public ImagePane() {
+        init();
+    }
 
-		//
-		// if size is not know yet, imageUpdate will do the trick 
-		// 
-		if ((tmpHeight>0) && (tmpWidth>0))
-		{
-			this.imageHeight=tmpHeight; 
-			this.imageWidth=tmpWidth; 
-			updateSize(imageWidth,imageHeight);
-		}
-	}
+    private void init() {
 
-	@Override
-	public void setSize(int w, int h)
-	{
-		// setSize is callend by parent container to set 
-		// actual size of component. This is NOT the image size !  
-		// do optional checking here: 
-		logger.debugPrintf("setSize:%d,%d\n",w,h);
-		// call component setSize
-		// AutoResize => Update Image Size ! 
-		super.setSize(w, h);
-	}
-	
-	// return actual size of image 
-	@Override
-	public Dimension getPreferredSize()
-	{
-		if ((this.imageHeight<=0) || (this.imageWidth<=0))
-			return super.getSize(); 
-		
-		return new Dimension(this.imageWidth,this.imageHeight);
-	}
-	
-	/**
-	 * Return size of actual image. This can differ from 
-	 * current components size.
-	 */
-	public Dimension getImageSize()
-	{
-		return new Dimension(this.imageWidth,this.imageHeight); 
-	}
-	
-	// returns Component size:  
-	public Dimension getSize()
-	{
-	    return super.getSize(); 
-	}
-	public Dimension getMaximumSize()
-	{
-		if ((this.imageHeight<=0) || (this.imageWidth<=0))
-			return super.getSize(); 
+    }
 
-		return getPreferredSize(); 
-	}
-	
-	/**
-	 * Since this is a lightweight component we should handle 
-	 * ImageObserver events ourselfs. 
-	 * After an (background) update: perform the update during swing event thread
-	 */ 
-	protected void updateSize(final int newWidth,final int newHeight)
-	{
-		this.imageWidth=newWidth; 
-		this.imageHeight=newHeight; 
+    /**
+     * Set new image, if waitForCompletion==true, this method will only return when the whole image
+     * loaded and ready.
+     * 
+     * @param bytes
+     * @param waitForCompletion
+     *            Set to true to block and wait for the image to be complete.
+     * @throws IOException
+     */
+    public void setImage(byte bytes[], boolean waitForCompletion) throws IOException {
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        setImage(tk.createImage(bytes), waitForCompletion);
+    }
 
-		logger.debugPrintf("async update size="+newWidth+","+newHeight);
-		// setSize(this.width,this.height);
-		
-		// methods go background already if not event thread !  
-		revalidate(); 
-		repaint(); // request repaint! 
+    /**
+     * Set new image, if waitForCompletion==true, this method will only return when the whole image
+     * is ready.
+     * 
+     * @param image
+     *            Image to be drawn.
+     * @param waitForCompletion
+     *            Set to true to block and wait for the image to be complete.
+     * @throws IOException
+     */
+    public void setImage(Image newImage, boolean waitForCompletion) throws IOException {
+        if ((newImage != null) && (waitForCompletion)) {
+            // Since createImage is asynchronous, the image size
+            // might not be know. Wait until updateImage provides
+            // the right image size. 
+            // Specify waitForallBits==true if the complete image needs to be available. 
+            // Set to false if only the correct size is needed. 
 
-		/* Not Needed for revalidate&repaint
-		Runnable runT=new Runnable()
-		{
-			public void run()
-			{
-				//setSize(newWidth,newHeight);
-				revalidate(); 
-				repaint(); // request repaint! 
-			}
-		};
+            logger.debugPrintf("Waiting for image completion...\n");
 
-		SwingUtilities.invokeLater(runT);
-		*/
-	}
+            ImageWaiter waiter = new ImageWaiter(newImage);
 
+            waiter.waitForCompletion(false);
 
-	// Interface: ImageObserver
-	// 
-	// Must handle imageUpdate events as image is 'processed'
-	// in another thread. ! 
+            logger.debugPrintf("Done: Waiting for image completion");
+        }
 
-	public boolean imageUpdate(Image img,
-			int infoFlags,
-			int x,
-			int y,
-			int newWidth,
-			int newHeight)
-	{
-		//Let super method to the work (usually a (re)paint):
-		boolean val=super.imageUpdate(img,infoFlags,x,y,newWidth,newHeight); 
-		// check 
-		boolean updateSize=false;
+        // image complete: swap: 
+        // swap 
+        // swap 
 
-		if ((infoFlags&ImageObserver.HEIGHT)>0)
-		{
-			if (newWidth>0)
-			{
-				this.imageWidth=newWidth; 
-				logger.debugPrintf("ImagePane:NEW height=%d\n",imageHeight);
-				updateSize=true;
-			}
-		}
+        if (this.image != null) {
+            image.flush();
+            image = null;
+        }
 
-		if ((infoFlags&ImageObserver.WIDTH)>0)
-		{
-			if (newHeight>0)
-			{
-				this.imageHeight=newHeight; 
+        this.image = newImage;
 
-				logger.debugPrintf("ImagePane:NEW width=%d\n",imageWidth);
-				updateSize=true;
-			}
-		}
+        if (this.image == null)
+            return;
 
-		//
-		// don't check for ALL_BITS: drawing will be done in background
-		// 
-		if ((updateSize) && (this.imageWidth>0) && (this.imageHeight>0))
-		{
-			updateSize(this.imageWidth,this.imageHeight); 
-		}
+        int tmpHeight = image.getHeight(this); // might return -1!
+        int tmpWidth = image.getWidth(this); // might return -1!
 
-		return val;
-	}
+        // be carefull due to ascynchronous nature of updateImage
+        // height events COULD happen during this code:
 
-	/* Override update for speed ! 
+        logger.debugPrintf("this height=%d\n", imageHeight);
+        logger.debugPrintf("this width=%d\n", imageWidth);
+        logger.debugPrintf("new height=%d\n", tmpHeight);
+        logger.debugPrintf("new width=%d\n", tmpWidth);
+
+        //
+        // if size is not know yet, imageUpdate will do the trick 
+        // 
+        if ((tmpHeight > 0) && (tmpWidth > 0)) {
+            this.imageHeight = tmpHeight;
+            this.imageWidth = tmpWidth;
+            updateSize(imageWidth, imageHeight);
+        }
+    }
+
+    @Override
+    public void setSize(int w, int h) {
+        // setSize is callend by parent container to set 
+        // actual size of component. This is NOT the image size !  
+        // do optional checking here: 
+        logger.debugPrintf("setSize:%d,%d\n", w, h);
+        // call component setSize
+        // AutoResize => Update Image Size ! 
+        super.setSize(w, h);
+    }
+
+    // return actual size of image 
+    @Override
+    public Dimension getPreferredSize() {
+        if ((this.imageHeight <= 0) || (this.imageWidth <= 0))
+            return super.getSize();
+
+        return new Dimension(this.imageWidth, this.imageHeight);
+    }
+
+    /**
+     * Return size of actual image. This can differ from current components size.
+     */
+    public Dimension getImageSize() {
+        return new Dimension(this.imageWidth, this.imageHeight);
+    }
+
+    // returns Component size:  
+    public Dimension getSize() {
+        return super.getSize();
+    }
+
+    public Dimension getMaximumSize() {
+        if ((this.imageHeight <= 0) || (this.imageWidth <= 0))
+            return super.getSize();
+
+        return getPreferredSize();
+    }
+
+    /**
+     * Since this is a lightweight component we should handle ImageObserver events ourselfs. After
+     * an (background) update: perform the update during swing event thread
+     */
+    protected void updateSize(final int newWidth, final int newHeight) {
+        this.imageWidth = newWidth;
+        this.imageHeight = newHeight;
+
+        logger.debugPrintf("async update size=" + newWidth + "," + newHeight);
+        // setSize(this.width,this.height);
+
+        // methods go background already if not event thread !  
+        revalidate();
+        repaint(); // request repaint! 
+
+        /* Not Needed for revalidate&repaint
+        Runnable runT=new Runnable()
+        {
+        	public void run()
+        	{
+        		//setSize(newWidth,newHeight);
+        		revalidate(); 
+        		repaint(); // request repaint! 
+        	}
+        };
+
+        SwingUtilities.invokeLater(runT);
+        */
+    }
+
+    // Interface: ImageObserver
+    // 
+    // Must handle imageUpdate events as image is 'processed'
+    // in another thread. ! 
+
+    public boolean imageUpdate(Image img, int infoFlags, int x, int y, int newWidth, int newHeight) {
+        //Let super method to the work (usually a (re)paint):
+        boolean val = super.imageUpdate(img, infoFlags, x, y, newWidth, newHeight);
+        // check 
+        boolean updateSize = false;
+
+        if ((infoFlags & ImageObserver.HEIGHT) > 0) {
+            if (newWidth > 0) {
+                this.imageWidth = newWidth;
+                logger.debugPrintf("ImagePane:NEW height=%d\n", imageHeight);
+                updateSize = true;
+            }
+        }
+
+        if ((infoFlags & ImageObserver.WIDTH) > 0) {
+            if (newHeight > 0) {
+                this.imageHeight = newHeight;
+
+                logger.debugPrintf("ImagePane:NEW width=%d\n", imageWidth);
+                updateSize = true;
+            }
+        }
+
+        //
+        // don't check for ALL_BITS: drawing will be done in background
+        // 
+        if ((updateSize) && (this.imageWidth > 0) && (this.imageHeight > 0)) {
+            updateSize(this.imageWidth, this.imageHeight);
+        }
+
+        return val;
+    }
+
+    /* Override update for speed ! 
     public void update(Graphics g)
     {
         paint(g); 
     }*/
 
-	public void paint(Graphics g)
-	{
-		Image targetImage=this.image;
+    public void paint(Graphics g) {
+        Image targetImage = this.image;
 
-		// viewed imaged not ready ? 
-		//if ( (targetImage==null) || (targetImage.getHeight(null)<=0) || (targetImage.getWidth(null)<=0))
-		//	targetImage=this.orgImage;
+        // viewed imaged not ready ? 
+        //if ( (targetImage==null) || (targetImage.getHeight(null)<=0) || (targetImage.getWidth(null)<=0))
+        //	targetImage=this.orgImage;
 
-		//if (targetImage==null)
-		//	targetImage=this.orgImage;
-		
-		// Do NOT add X,Y Offset, parent container does this already: 
-		{
-		  int x=this.getLocation().x;
-		  int y=this.getLocation().y;
-		  logger.debugPrintf("paint(): offset x,y=%d,%d\n",x,y); 
-		}
-		
-		g.drawImage(targetImage,0,0,bgcolor,this);
-		//Dimension dim = this.getPreferredSize(); 
+        //if (targetImage==null)
+        //	targetImage=this.orgImage;
 
-		//g.drawImage(image,x,y,dim.width,dim.height,bgcolor,this);
-	}
+        // Do NOT add X,Y Offset, parent container does this already: 
+        {
+            int x = this.getLocation().x;
+            int y = this.getLocation().y;
+            logger.debugPrintf("paint(): offset x,y=%d,%d\n", x, y);
+        }
 
+        g.drawImage(targetImage, 0, 0, bgcolor, this);
+        //Dimension dim = this.getPreferredSize(); 
 
-	public void dispose()
-	{
-		if (this.image!=null)
-		{
-			this.image.flush(); 
-			this.image=null;
-		} 
-	}
+        //g.drawImage(image,x,y,dim.width,dim.height,bgcolor,this);
+    }
 
-//	public void loadImage(VRL location, boolean wait) throws VlException
-//	{
-//	 	Image img = UIGlobal.getResourceLoader().getImage(location);
-//		
-//		if (img==null)
-//			throw new IOException("Image loader returned NULL for:"+location); 
-//		
-//		setImage(img,wait);
-//	}
+    public void dispose() {
+        if (this.image != null) {
+            this.image.flush();
+            this.image = null;
+        }
+    }
 
+    //	public void loadImage(VRL location, boolean wait) throws VlException
+    //	{
+    //	 	Image img = UIGlobal.getResourceLoader().getImage(location);
+    //		
+    //		if (img==null)
+    //			throw new IOException("Image loader returned NULL for:"+location); 
+    //		
+    //		setImage(img,wait);
+    //	}
 
-	public Image getImage()
-	{
-		return this.image; 
-	}
-	
+    public Image getImage() {
+        return this.image;
+    }
+
 }

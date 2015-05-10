@@ -35,56 +35,45 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSResourceProvider implements ResourceProvider
-{
-    protected VRSClient vrsClient; 
-    
-    public VRSResourceProvider(VRSClient vrsClient)
-    {
-        this.vrsClient=vrsClient; 
+public class VRSResourceProvider implements ResourceProvider {
+
+    protected VRSClient vrsClient;
+
+    public VRSResourceProvider(VRSClient vrsClient) {
+        this.vrsClient = vrsClient;
     }
 
     @Override
-    public URI resolvePathURI(String path) throws VRLSyntaxException
-    {
-        try
-        {
+    public URI resolvePathURI(String path) throws VRLSyntaxException {
+        try {
             return vrsClient.resolvePath(path).toURI();
-        }
-        catch (URISyntaxException e)
-        {
-          throw new VRLSyntaxException(e.getMessage(),e); 
+        } catch (URISyntaxException e) {
+            throw new VRLSyntaxException(e.getMessage(), e);
         }
     }
 
-    public VPath resolvePath(URI uri) throws VrsException
-    {
-        return vrsClient.openPath(new VRL(uri)); 
+    public VPath resolvePath(URI uri) throws VrsException {
+        return vrsClient.openPath(new VRL(uri));
     }
-    
+
     @Override
-    public OutputStream createOutputStream(URI uri) throws IOException, VrsException
-    {
+    public OutputStream createOutputStream(URI uri) throws IOException, VrsException {
         return vrsClient.createOutputStream(new VRL(uri));
     }
 
     @Override
-    public InputStream createInputStream(URI uri) throws IOException, VrsException
-    {
+    public InputStream createInputStream(URI uri) throws IOException, VrsException {
         return vrsClient.createInputStream(new VRL(uri));
     }
 
     @Override
-    public RandomReadable createRandomReader(URI uri) throws IOException, VrsException
-    {
+    public RandomReadable createRandomReader(URI uri) throws IOException, VrsException {
         return vrsClient.createRandomReader(resolvePath(uri));
     }
 
     @Override
-    public RandomWritable createRandomWriter(URI uri) throws IOException, VrsException
-    {
+    public RandomWritable createRandomWriter(URI uri) throws IOException, VrsException {
         return vrsClient.createRandomWriter(resolvePath(uri));
     }
-    
 
 }

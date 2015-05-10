@@ -11,7 +11,7 @@
 			<param name="ConversionPattern" value="%d{ISO8601} %-5p %c [%t] %X{ctx} ~ %m%n" />
 		</layout>
 	</appender>
-	
+
 	<root>
 		<priority value="info" />
 		<appender-ref ref="console" />

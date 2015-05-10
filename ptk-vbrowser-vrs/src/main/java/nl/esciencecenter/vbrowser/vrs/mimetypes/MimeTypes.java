@@ -28,10 +28,7 @@ import java.net.URL;
 import javax.activation.MimetypesFileTypeMap;
 
 import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicException;
 import net.sf.jmimemagic.MagicMatch;
-import net.sf.jmimemagic.MagicMatchNotFoundException;
-import net.sf.jmimemagic.MagicParseException;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
@@ -39,8 +36,7 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
  * 
  * @author P.T. de Boer
  */
-public class MimeTypes
-{
+public class MimeTypes {
     // default mime types.
     public static final String MIME_TEXT_PLAIN = "text/plain";
     public static final String MIME_TEXT_HTML = "text/html";
@@ -54,15 +50,12 @@ public class MimeTypes
 
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(MimeTypes.class);
     }
 
-    public static MimeTypes getDefault()
-    {
-        if (instance == null)
-        {
+    public static MimeTypes getDefault() {
+        if (instance == null) {
             instance = new MimeTypes();
         }
 
@@ -78,39 +71,30 @@ public class MimeTypes
      */
     private MimetypesFileTypeMap typemap = null;
 
-    public MimeTypes()
-    {
+    public MimeTypes() {
         init();
     }
 
-    private void init()
-    {
-        try
-        {
+    private void init() {
+        try {
             // Load default mime.type file from classpath.
             String confFile = "etc/mime.types";
             URL result = getClass().getClassLoader().getResource(confFile);
 
-            if (result == null)
-            {
+            if (result == null) {
                 // no mime.type file in etc/ check optional other location.
                 confFile = "mime.types";
                 result = getClass().getClassLoader().getResource(confFile);
             }
 
-            if (result != null)
-            {
+            if (result != null) {
                 InputStream inps = result.openStream();
                 typemap = new MimetypesFileTypeMap(inps);
-            }
-            else
-            {
+            } else {
                 logger.warnPrintf("Couldn't locate ANY mime.types file on classpath \n");
                 typemap = new MimetypesFileTypeMap();
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.logException(PLogger.WARN, e, "Couldn't initialize default mimetypes\n", e);
             // empty one !
             this.typemap = new MimetypesFileTypeMap();
@@ -120,12 +104,10 @@ public class MimeTypes
     /**
      * Add extra mime type definitions.
      */
-    public void addMimeTypes(String mimeTypes)
-    {
+    public void addMimeTypes(String mimeTypes) {
         String lines[] = mimeTypes.split("\n");
         if (lines != null)
-            for (String line : lines)
-            {
+            for (String line : lines) {
                 logger.debugPrintf("Adding user mime.type:" + line);
                 typemap.addMimeTypes(line);
             }
@@ -134,8 +116,7 @@ public class MimeTypes
     /**
      * Returns mimetype string by checking the extension or name of the file
      */
-    public String getMimeType(String path)
-    {
+    public String getMimeType(String path) {
         if (path == null)
             return null;
 
@@ -143,31 +124,31 @@ public class MimeTypes
     }
 
     /**
-     * Returns the 'magic' MimeType by checking the first bytes of a file against known 'magic' values.
+     * Returns the 'magic' MimeType by checking the first bytes of a file against known 'magic'
+     * values.
      * 
      * @param firstBytes
      *            The first bytes of a file
      * @return Mime Type.
      * @throws Exception
      */
-    public String getMagicMimeType(byte firstBytes[]) throws Exception
-    {
+    public String getMagicMimeType(byte firstBytes[]) throws Exception {
         MagicMatch match;
         match = Magic.getMagicMatch(firstBytes);
         return match.getMimeType();
-        
-//        catch (MagicParseException e)
-//        {
-//            throw new Exception("MagicParseException:\n" + e.getMessage(), e);
-//        }
-//        catch (MagicMatchNotFoundException e)
-//        {
-//            throw new Exception("MagicMatchNotFoundException\n" + e.getMessage(), e);
-//        }
-//        catch (MagicException e)
-//        {
-//            throw new Exception("MagicException\n" + e.getMessage(), e);
-//        }
+
+        //        catch (MagicParseException e)
+        //        {
+        //            throw new Exception("MagicParseException:\n" + e.getMessage(), e);
+        //        }
+        //        catch (MagicMatchNotFoundException e)
+        //        {
+        //            throw new Exception("MagicMatchNotFoundException\n" + e.getMessage(), e);
+        //        }
+        //        catch (MagicException e)
+        //        {
+        //            throw new Exception("MagicException\n" + e.getMessage(), e);
+        //        }
     }
 
     /**
@@ -177,20 +158,14 @@ public class MimeTypes
      *            the file to check. File must exists.
      * @return
      */
-    public String getMagicMimeType(File file)
-    {
+    public String getMagicMimeType(File file) {
         MagicMatch match;
-
-        try
-        {
+        try {
             match = Magic.getMagicMatch(file, false);
             return match.getMimeType();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.logException(PLogger.WARN, e, "Couldn't parse MagicMime type for:%s\n", file);
         }
-
         return null;
     }
 }

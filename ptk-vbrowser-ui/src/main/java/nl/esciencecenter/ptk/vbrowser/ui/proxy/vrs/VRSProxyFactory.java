@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,141 +38,118 @@ import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * VRS Proxy Factory for VRSProxyNodes.  
+/**
+ * VRS Proxy Factory for VRSProxyNodes. <br>
+ * Bindings betweern ProxyNode and the VRS.
  */
-public class VRSProxyFactory extends ProxyFactory
-{
-    private static PLogger logger; 
-    
-    static
-    {
-    	logger=PLogger.getLogger(VRSProxyFactory.class);
+public class VRSProxyFactory extends ProxyFactory {
+
+    private static PLogger logger;
+
+    static {
+        logger = PLogger.getLogger(VRSProxyFactory.class);
     }
-    
-    public static VRSProxyFactory createFor(BrowserPlatform platform) 
-    {
+
+    public static VRSProxyFactory createFor(BrowserPlatform platform) {
         return new VRSProxyFactory(platform);
     }
-    
+
     // ========================================================================
     // 
     // ========================================================================
 
     private VRSClient vrsClient;
 
-    private VRSCopyManager transferManager; 
-    
-    protected VRSProxyNodeDnDHandler proxyDnDHandler=null;
-    
-    protected VRSProxyFactory(BrowserPlatform platform)
-    {
-        super(platform); 
-        
-        VRSContext vrsContext = platform.getVRSContext(); 
-        this.vrsClient=new VRSClient(vrsContext);
-        this.transferManager=vrsClient.getVRSTransferManager(); 
-        this.proxyDnDHandler=new VRSProxyNodeDnDHandler(this,transferManager); 
-    }
-    
-    public VRSContext getVRSContext()
-    {
-        return vrsClient.getVRSContext(); 
-    }
-    
-    public VRSClient getVRSClient()
-    {
-        return this.vrsClient; 
-    }
-    
-    public VRSCopyManager getTransferManager()
-    {
-        return transferManager;
-    }
-    
-	public VRSProxyNode _openLocation(VRL vrl) throws ProxyException
-	{
-		try 
-		{
-			return (VRSProxyNode)openLocation(vrl);
-		}
-		catch (Exception e) 
-		{
-			throw new ProxyException("Failed to open location:"+vrl+"\n"+e.getMessage(),e); 
-		} 
-	}
-	
-	// actual open location: 
-    public VRSProxyNode doOpenLocation(VRL locator) throws ProxyException
-    {
-    	logger.infoPrintf(">>> doOpenLocation():%s <<<\n",locator);
-    	
-        try
-        {
-            VPath vnode=vrsClient.openPath(createVRL(locator));
-            return createVRSProxyNode(vnode,locator);
-        }
-        catch (Exception e)
-        {
-            throw new ProxyException("Failed to open location:"+locator+"\n"+e.getMessage(),e); 
-        }
-    }
-    
-	private VRSProxyNode createVRSProxyNode(VPath vnode, VRL locator) throws ProxyException
-    {
-	    return new VRSProxyNode(this,vnode,locator);
+    private VRSCopyManager transferManager;
+
+    protected VRSProxyNodeDnDHandler proxyDnDHandler = null;
+
+    protected VRSProxyFactory(BrowserPlatform platform) {
+        super(platform);
+
+        VRSContext vrsContext = platform.getVRSContext();
+        this.vrsClient = new VRSClient(vrsContext);
+        this.transferManager = vrsClient.getVRSTransferManager();
+        this.proxyDnDHandler = new VRSProxyNodeDnDHandler(this, transferManager);
     }
 
-    private VRL createVRL(VRL locator)
-    {
-	    return new nl.esciencecenter.vbrowser.vrs.vrl.VRL(locator.getScheme(),
-	            locator.getUserinfo(),
-	            locator.getHostname(),
-	            locator.getPort(),
-	            locator.getPath(),
-	            locator.getQuery(),
-	            locator.getFragment()); 
+    public VRSContext getVRSContext() {
+        return vrsClient.getVRSContext();
+    }
+
+    public VRSClient getVRSClient() {
+        return this.vrsClient;
+    }
+
+    public VRSCopyManager getTransferManager() {
+        return transferManager;
+    }
+
+    public VRSProxyNode _openLocation(VRL vrl) throws ProxyException {
+        try {
+            return (VRSProxyNode) openLocation(vrl);
+        } catch (Exception e) {
+            throw new ProxyException("Failed to open location:" + vrl + "\n" + e.getMessage(), e);
+        }
+    }
+
+    // actual open location: 
+    public VRSProxyNode doOpenLocation(VRL locator) throws ProxyException {
+        logger.infoPrintf(">>> doOpenLocation():%s <<<\n", locator);
+
+        try {
+            VPath vnode = vrsClient.openPath(createVRL(locator));
+            return createVRSProxyNode(vnode, locator);
+        } catch (Exception e) {
+            throw new ProxyException("Failed to open location:" + locator + "\n" + e.getMessage(),
+                    e);
+        }
+    }
+
+    private VRSProxyNode createVRSProxyNode(VPath vnode, VRL locator) throws ProxyException {
+        return new VRSProxyNode(this, vnode, locator);
+    }
+
+    private VRL createVRL(VRL locator) {
+        return new nl.esciencecenter.vbrowser.vrs.vrl.VRL(locator.getScheme(),
+                locator.getUserinfo(), locator.getHostname(), locator.getPort(), locator.getPath(),
+                locator.getQuery(), locator.getFragment());
     }
 
     @Override
-	public boolean canOpen(VRL locator,StringHolder reason) 
-	{
-		// internal scheme!
-		if (StringUtil.equals("myvle",locator.getScheme())) 
-		{
-		    reason.value="Internal 'MyVle' object"; 
-			return true; 
-		}
-		
-		VResourceSystemFactory vrs = vrsClient.getVRSFactoryForScheme(locator.getScheme()); 
+    public boolean canOpen(VRL locator, StringHolder reason) {
+        // internal scheme!
+        if (StringUtil.equals("myvle", locator.getScheme())) {
+            reason.value = "Internal 'MyVle' object";
+            return true;
+        }
 
-		if (vrs!=null)
-		    return true; 
-		
-		reason.value="Unknown scheme:"+locator.getScheme(); 
-		return false; 
-	}
+        VResourceSystemFactory vrs = vrsClient.getVRSFactoryForScheme(locator.getScheme());
 
-    public VRSProxyNodeDnDHandler getProxyDnDHandler(ViewNode viewNode)
-    {
+        if (vrs != null)
+            return true;
+
+        reason.value = "Unknown scheme:" + locator.getScheme();
+        return false;
+    }
+
+    public VRSProxyNodeDnDHandler getProxyDnDHandler(ViewNode viewNode) {
         return proxyDnDHandler;
     }
 
-    public ProxyNode updateProxyNode(VPath vpath, boolean refreshCache) throws ProxyException
-    {
-        VRSProxyNode newNode= createVRSProxyNode(vpath,vpath.getVRL());
-        super.cacheUpdate(newNode); 
+    public ProxyNode updateProxyNode(VPath vpath, boolean refreshCache) throws ProxyException {
+        VRSProxyNode newNode = createVRSProxyNode(vpath, vpath.getVRL());
+        super.cacheUpdate(newNode);
         return newNode;
     }
 
-    public List<ProxyNode> updateProxyNodes(List<VPath> vpaths, boolean refreshCache) throws ProxyException
-    {
-        ArrayList<ProxyNode> proxyNodes=new ArrayList<ProxyNode>(); 
-        for (int i=0;i<vpaths.size();i++)
-        {
-            proxyNodes.add(updateProxyNode(vpaths.get(i),refreshCache)); 
+    public List<ProxyNode> updateProxyNodes(List<VPath> vpaths, boolean refreshCache)
+            throws ProxyException {
+        ArrayList<ProxyNode> proxyNodes = new ArrayList<ProxyNode>();
+        for (int i = 0; i < vpaths.size(); i++) {
+            proxyNodes.add(updateProxyNode(vpaths.get(i), refreshCache));
         }
-        return proxyNodes; 
+        return proxyNodes;
     }
 
 }

@@ -21,16 +21,15 @@
 package nl.esciencecenter.ptk.task;
 
 import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.events.IEventSource;
 
 /**
- * Interface for Action Tasks, or other objects, which can be monitored and provide statistics about the progress.
- * 
+ * Interface for Action Tasks, or other objects, which can be monitored and provide statistics about
+ * the progress.
  */
-public interface ITaskMonitor extends IEventSource
-{
-    public static class TaskStats
-    {
+public interface ITaskMonitor {
+
+    public static class TaskStats {
+
         public String name = null;
 
         public long todo = -1;
@@ -47,18 +46,11 @@ public interface ITaskMonitor extends IEventSource
 
         public boolean isDone = false;
 
-        protected TaskStats()
-        {
+        protected TaskStats() {
         }
 
-        public TaskStats(String taskName,
-                long taskTodo,
-                long taskDone,
-                long taskStartTime,
-                long taskEndTime,
-                long todoUpdateTime,
-                long doneUpdateTime)
-        {
+        public TaskStats(String taskName, long taskTodo, long taskDone, long taskStartTime,
+                long taskEndTime, long todoUpdateTime, long doneUpdateTime) {
             this.name = taskName;
             this.todo = taskTodo;
             this.done = taskDone;
@@ -68,25 +60,19 @@ public interface ITaskMonitor extends IEventSource
             this.doneLastUpdateTimeMillies = doneUpdateTime;
         }
 
-        public TaskStats(String taskName, long todo)
-        {
+        public TaskStats(String taskName, long todo) {
             this.name = taskName;
             this.todo = todo;
         }
 
-        public void markEnd()
-        {
+        public void markEnd() {
             isDone = true;
             this.stopTimeMillies = System.currentTimeMillis();
             this.doneLastUpdateTimeMillies = System.currentTimeMillis();
             this.todoLastUpdateTimeMillies = System.currentTimeMillis();
-
-            // update done ?
-            // this.done=todo; ?
         }
 
-        public void markStart()
-        {
+        public void markStart() {
             isDone = false;
             long time = System.currentTimeMillis();
             // init!
@@ -96,8 +82,7 @@ public interface ITaskMonitor extends IEventSource
             this.doneLastUpdateTimeMillies = time;
         }
 
-        public void updateDone(long numDone)
-        {
+        public void updateDone(long numDone) {
             this.done = numDone;
             this.doneLastUpdateTimeMillies = System.currentTimeMillis();
         }
@@ -109,8 +94,8 @@ public interface ITaskMonitor extends IEventSource
     // ======================
 
     /**
-     * Start new Task. Use logical taskName to distinguish between multiple tasks using the same monitor. For nested
-     * tasks use startSubTask and endSubTask as main tasks may not be nested.
+     * Start new Task. Use logical taskName to distinguish between multiple tasks using the same
+     * monitor. For nested tasks use startSubTask and endSubTask as main tasks may not be nested.
      * 
      * @param taskName
      *            - New logical task name. Main tasks may not be nested.
@@ -168,8 +153,9 @@ public interface ITaskMonitor extends IEventSource
     public void logPrintf(String format, Object... args);
 
     /**
-     * Returns logging events into one text String. Set resetLogBuffer to true to reset the log buffer so that each
-     * getLogTexT() will return the events since the last getLogText() call. Specify log event offset in logEventOffset.
+     * Returns logging events into one text String. Set resetLogBuffer to true to reset the log
+     * buffer so that each getLogTexT() will return the events since the last getLogText() call.
+     * Specify log event offset in logEventOffset.
      * 
      * @return returns current log event number.
      */

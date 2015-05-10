@@ -32,27 +32,19 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 
 import javax.swing.Icon;
 
-public class ResourceTableCellRenderer extends DefaultTableCellRenderer
-{
+public class ResourceTableCellRenderer extends DefaultTableCellRenderer {
     private static final long serialVersionUID = -7461721298242661750L;
 
     @Override
-    public Component getTableCellRendererComponent(JTable table,
-            Object value,
-            boolean isSelected,
-            boolean hasFocus,
-            int row,
-            int column)
-    {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+            boolean hasFocus, int row, int column) {
         UIViewModel uiModel = null;
 
-        if (table instanceof ResourceTable)
-        {
+        if (table instanceof ResourceTable) {
             uiModel = ((ResourceTable) table).getUIViewModel();
         }
 
-        if (value == null)
-        {
+        if (value == null) {
             value = "";
         }
 
@@ -60,30 +52,26 @@ public class ResourceTableCellRenderer extends DefaultTableCellRenderer
         // Some predefined render options.
         // Check for icon types here.
         //
-        if (value instanceof Attribute)
-        {
+        if (value instanceof Attribute) {
             Attribute attr = (Attribute) value;
             value = attr.getValue();
         }
 
-        if (value instanceof Icon)
-        {
+        if (value instanceof Icon) {
             return renderIcon(this, uiModel, (Icon) value, "", isSelected, hasFocus);
-        }
-        else if (value instanceof ViewNode)
-        {
+        } else if (value instanceof ViewNode) {
             ViewNode viewNode = (ViewNode) value;
-            return renderIcon(this, uiModel, viewNode.getIcon(), viewNode.getName(), isSelected, hasFocus);
+            return renderIcon(this, uiModel, viewNode.getIcon(), viewNode.getName(), isSelected,
+                    hasFocus);
         }
 
         // thiz should be *this*
-        Component thiz = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        Component thiz = super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                row, column);
 
         // update *this* with UI attributes
-        if (uiModel != null)
-        {
-            if (thiz == this)
-            {
+        if (uiModel != null) {
+            if (thiz == this) {
                 updateUIAttributes(this, uiModel, isSelected, hasFocus);
             }
         }
@@ -91,18 +79,12 @@ public class ResourceTableCellRenderer extends DefaultTableCellRenderer
         return thiz;
     }
 
-    private static Component renderIcon(DefaultTableCellRenderer target,
-            UIViewModel uiModel,
-            Icon icon,
-            String name,
-            boolean isSelected,
-            boolean hasFocus)
-    {
+    private static Component renderIcon(DefaultTableCellRenderer target, UIViewModel uiModel,
+            Icon icon, String name, boolean isSelected, boolean hasFocus) {
         target.setIcon(icon);
         target.setText(name);
 
-        if (uiModel != null)
-        {
+        if (uiModel != null) {
             updateUIAttributes(target, uiModel, isSelected, hasFocus);
         }
 
@@ -110,20 +92,14 @@ public class ResourceTableCellRenderer extends DefaultTableCellRenderer
     }
 
     private static Component updateUIAttributes(DefaultTableCellRenderer target,
-            UIViewModel uiModel,
-            boolean isSelected,
-            boolean hasFocus)
-    {
+            UIViewModel uiModel, boolean isSelected, boolean hasFocus) {
         Color fg = null;
         Color bg = null;
 
-        if (isSelected)
-        {
+        if (isSelected) {
             fg = uiModel.getSelectedForegroundColor();
             bg = uiModel.getSelectedBackgroundColor();
-        }
-        else
-        {
+        } else {
             fg = uiModel.getForegroundColor();
             bg = uiModel.getBackgroundColor();
         }

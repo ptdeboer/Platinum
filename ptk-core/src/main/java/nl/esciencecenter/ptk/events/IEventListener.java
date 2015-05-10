@@ -20,9 +20,8 @@
 
 package nl.esciencecenter.ptk.events;
 
-public interface IEventListener<EventType>
-{
-    
-    public void notifyEvent(EventType theEvent); 
+public interface IEventListener<EventType> {
+
+    public void notifyEvent(EventType theEvent);
 
 }

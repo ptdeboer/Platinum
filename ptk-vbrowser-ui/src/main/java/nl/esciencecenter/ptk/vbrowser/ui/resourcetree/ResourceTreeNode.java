@@ -31,8 +31,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * ResourceTreeNode holds the childs in the ResourceTree. All updates and node manipulations should go through the
- * ResourceTreeModel.
+ * ResourceTreeNode holds the childs in the ResourceTree. All updates and node manipulations should
+ * go through the ResourceTreeModel.
  */
 public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
 {
@@ -48,10 +48,8 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
 
     protected ViewNode viewNode;
 
-    public ResourceTreeNode(ResourceTreeNode parent, ViewNode item, boolean isRoot)
-    {
-        if ((parent == null) && (isRoot == false))
-        {
+    public ResourceTreeNode(ResourceTreeNode parent, ViewNode item, boolean isRoot) {
+        if ((parent == null) && (isRoot == false)) {
             throw new NullPointerException("NULL parent not allowed for non root node.");
         }
 
@@ -61,31 +59,26 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
     }
 
     @Override
-    public ResourceTreeNode getChildAt(int childIndex)
-    {
+    public ResourceTreeNode getChildAt(int childIndex) {
         return childs.get(childIndex);
     }
 
-    public boolean isRoot()
-    {
+    public boolean isRoot() {
         return isRoot;
     }
 
     /**
      * Creates new TreePath to this node
      */
-    public TreePath getTreePath()
-    {
+    public TreePath getTreePath() {
         return new TreePath(this.getPath());
     }
 
-    public ResourceTreeNode[] getPath()
-    {
+    public ResourceTreeNode[] getPath() {
         Vector<ResourceTreeNode> paths = new Vector<ResourceTreeNode>();
 
         ResourceTreeNode current = this;
-        while (current != null)
-        {
+        while (current != null) {
             paths.add(current);
 
             if (current.isRoot())
@@ -112,44 +105,36 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
     }
 
     @Override
-    public int getChildCount()
-    {
-        synchronized (this.childs)
-        {
+    public int getChildCount() {
+        synchronized (this.childs) {
             return childs.size();
         }
     }
 
     @Override
-    public ResourceTreeNode getParent()
-    {
+    public ResourceTreeNode getParent() {
         return parent;
     }
 
     @Override
-    public int getIndex(TreeNode node)
-    {
+    public int getIndex(TreeNode node) {
         return getIndex((ResourceTreeNode) node);
     }
 
-    public int getIndex(ResourceTreeNode node)
-    {
-        synchronized (this.childs)
-        {
+    public int getIndex(ResourceTreeNode node) {
+        synchronized (this.childs) {
             return this.childs.indexOf(node);
         }
     }
 
     @Override
-    public boolean getAllowsChildren()
-    {
+    public boolean getAllowsChildren() {
         // getAllowsChildren() means if this node can have childs at all...
         return viewNode.isComposite();
     }
 
     @Override
-    public boolean isLeaf()
-    {
+    public boolean isLeaf() {
         // isLeaf() => node has children.
         // Return false also, if node hasn't been populated but can have
         // children!
@@ -161,47 +146,39 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
     }
 
     @Override
-    public Enumeration<ResourceTreeNode> children()
-    {
+    public Enumeration<ResourceTreeNode> children() {
         return this.childs.elements();
     }
 
-    public List<ResourceTreeNode> getChilds()
-    {
+    public List<ResourceTreeNode> getChilds() {
         return this.childs; // vector implements List interface
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.viewNode.getName();
     }
 
-    public ViewNode getViewItem()
-    {
+    public ViewNode getViewItem() {
         return viewNode;
     }
 
-    public boolean hasChildren()
-    {
+    public boolean hasChildren() {
         return (this.childs.size() > 0);
     }
 
-    public boolean isPopulated()
-    {
+    public boolean isPopulated() {
         return this.isPopulated;
     }
 
     /**
      * Clears childs and set isPopulated to FALSE !
      */
-    protected void clear()
-    {
+    protected void clear() {
         this.childs.clear();
         this.isPopulated = false;
     }
 
-    public ResourceTreeNode getNode(VRL locator)
-    {
+    public ResourceTreeNode getNode(VRL locator) {
         // use hash ?
         for (ResourceTreeNode node : this.childs)
             if (node.getVRI().equals(locator))
@@ -210,54 +187,44 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
         return null;
     }
 
-    public VRL getVRI()
-    {
+    public VRL getVRI() {
         return this.viewNode.getVRL();
     }
 
-    protected void setViewNode(ViewNode iconItem)
-    {
+    protected void setViewNode(ViewNode iconItem) {
         this.viewNode = iconItem;
     }
 
-    protected void setPopulated(boolean val)
-    {
+    protected void setPopulated(boolean val) {
         this.isPopulated = val;
     }
 
     /** Atomic add childe node. Returns index of new childs */
-    protected int addNode(ResourceTreeNode rtnode)
-    {
-        synchronized (this.childs)
-        {
+    protected int addNode(ResourceTreeNode rtnode) {
+        synchronized (this.childs) {
             int index = this.childs.size();
             this.childs.add(rtnode);
             return index;
         }
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "{<ResourceTreeNode>:" + getVRI().toString() + "}";
     }
 
-    public void setHasFocus(boolean value)
-    {
+    public void setHasFocus(boolean value) {
         this.hasFocus = value;
     }
 
-    public boolean hasFocus()
-    {
+    public boolean hasFocus() {
         return this.hasFocus;
     }
 
     /**
      * Atomic remove child. Returns index of deleted child.
      */
-    protected int removeChild(ResourceTreeNode node)
-    {
-        synchronized (this.childs)
-        {
+    protected int removeChild(ResourceTreeNode node) {
+        synchronized (this.childs) {
             int index = this.childs.indexOf(node);
             if (index >= 0)
                 this.childs.remove(index);
@@ -266,13 +233,11 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
         }
     }
 
-    public ViewNode getViewNode()
-    {
+    public ViewNode getViewNode() {
         return viewNode;
     }
 
-    public void updateName(String newName)
-    {
+    public void updateName(String newName) {
         this.viewNode.setName(newName);
     }
 }

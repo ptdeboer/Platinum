@@ -29,48 +29,41 @@ import java.nio.file.Path;
 /**
  * Stateless File writer which opens and closes the specified path per write action.
  */
-public class FSWriter implements Writable, RandomWritable, AutoCloseable
-{
+public class FSWriter implements Writable, RandomWritable, AutoCloseable {
+
     protected Path _path;
-    
-    public FSWriter(Path path) throws FileNotFoundException
-    {
-        _path=path;
+
+    public FSWriter(Path path) throws FileNotFoundException {
+        _path = path;
     }
 
     /**
      * Perform stateless write which opens and closes file again after writing.
      */
     @Override
-    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
-    {
-        try (RandomAccessFile randomFile = new RandomAccessFile(_path.toFile(), "rw"))
-        {
+    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes)
+            throws IOException {
+        try (RandomAccessFile randomFile = new RandomAccessFile(_path.toFile(), "rw")) {
             randomFile.seek(fileOffset);
             randomFile.write(buffer, bufferOffset, nrBytes);
             return;
-        }
-        catch (IOException e)
-        {
-            throw new IOException("Failed to writeBytes to:"+_path,e);
+        } catch (IOException e) {
+            throw new IOException("Failed to writeBytes to:" + _path, e);
         }
     }
 
     @Override
-    public void write(byte[] buffer, int bufferOffset, int numBytes) throws IOException
-    {
-        writeBytes(0,buffer,bufferOffset,numBytes);
+    public void write(byte[] buffer, int bufferOffset, int numBytes) throws IOException {
+        writeBytes(0, buffer, bufferOffset, numBytes);
     }
 
     @Override
-    public long getLength() throws IOException
-    {
+    public long getLength() throws IOException {
         return Files.size(_path);
     }
-    
+
     @Override
-    public void close()
-    {
+    public void close() {
     }
 
 }

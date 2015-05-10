@@ -24,27 +24,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Interface for content viewers. Viewer Registry binds MimeTypes from getMimeTypes() to this viewer. A list of optional
- * Menu mapping can be supplied by <code>getMimeMenuMethods</code>.
+ * Interface for content viewers. Viewer Registry binds MimeTypes from getMimeTypes() to this
+ * viewer. A list of optional Menu mapping can be supplied by <code>getMimeMenuMethods</code>.
  */
-public interface MimeViewer
-{
+public interface MimeViewer {
 
     public String getViewerName();
 
     /**
-     * @return Supported mime types. One viewer may support multiple mime types. For example { "text/plain", "text/html" }. The
-     * order is preferred first.
+     * @return Supported mime types. One viewer may support multiple mime types. For example {
+     *         "text/plain", "text/html" }. The order is preferred first.
      */
     public String[] getMimeTypes();
 
     /**
      * @return Returns the mapping of a menu entry per MimeType to a list of menu methods.<br>
-     * Mapping is ::= <code> Map&lt;MimeType, List&lt;MenuMethod&gt;&gt; </code> <br>
-     * For example: { "text/plain" , {"View Text:viewText","Edit Text:editText"}}<br>
-     * Menu methods should be human readable, the actual method name after the colon may be omitted. In that case the
-     * plain text menu name will be used as Method Name. This is the optional method name when startViewer(...) is
-     * invoked.
+     *         Mapping is ::= <code> Map&lt;MimeType, List&lt;MenuMethod&gt;&gt; </code> <br>
+     *         For example: { "text/plain" , {"View Text:viewText","Edit Text:editText"}}<br>
+     *         Menu methods should be human readable, the actual method name after the colon may be
+     *         omitted. In that case the plain text menu name will be used as Method Name. This is
+     *         the optional method name when startViewer(...) is invoked.
      */
     public Map<String, List<String>> getMimeMenuMethods();
 

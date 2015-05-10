@@ -34,122 +34,104 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Fixed LocalSystem node.
  */
-public class SystemInfosNode extends InfoRSPathNode
-{
-    private final static PLogger logger = PLogger.getLogger(SystemInfosNode.class);
+public class ResourceConfigInfosNode extends InfoRSPathNode {
+    private final static PLogger logger = PLogger.getLogger(ResourceConfigInfosNode.class);
 
-    public SystemInfosNode(InfoConfigNode parent) throws VrsException
-    {
+    public ResourceConfigInfosNode(InfoConfigNode parent) throws VrsException {
         super(parent, InfoRSConstants.SYSTEMINFOS_NODE, parent.createSubPathVRL(InfoRSConstants.SYSTEMINFOS_NODE));
         initChilds();
     }
 
-    public String getName()
-    {
+    public String getName() {
         return "Server Configurations";
     }
 
-    public String getIconURL(int size)
-    {
+    public String getIconURL(int size) {
         // need better icon.
         return "info/system-configs-48.png";
     }
 
-    protected void initChilds() throws VrsException
-    {
+    protected void initChilds() throws VrsException {
         initSubNodes();
         initConfigs();
     }
 
-    public List<? extends InfoRSPathNode> list() throws VrsException
-    {
+    public List<? extends InfoRSPathNode> list() throws VrsException {
         sync();
         return super.list();
     }
 
-    /** 
-     * list current registered ResourceSystemInfo descriptions. 
+    /**
+     * list current registered ResourceSystemInfo descriptions.
+     * 
      * @return
      */
-    protected List<ResourceConfigInfo> listResourceSystemInfos()
-    {
+    protected List<ResourceConfigInfo> listResourceSystemInfos() {
         ResourceSystemInfoRegistry reg = this.getVRSContext().getResourceSystemInfoRegistry();
         List<ResourceConfigInfo> infos = reg.list();
         // filter
         return infos;
     }
 
-    protected void initConfigs() throws VrsException
-    {
+    protected void initConfigs() throws VrsException {
         int index = 0;
 
         List<ResourceConfigInfo> infos = listResourceSystemInfos();
 
         logger.debugPrintf("Adding %d ResourceSystemInfos\n", infos.size());
 
-        for (ResourceConfigInfo info : infos)
-        {
+        for (ResourceConfigInfo info : infos) {
             logger.debugPrintf(" - adding ResourceSystemInfo:%s\n", info);
 
             VRL serverVrl = info.getServerVRL();
             int port = info.getServerPort();
-            if (port < 0)
-            {
+            if (port < 0) {
                 port = 0;
             }
             String userInf = info.getUserInfo();
 
-            if (userInf == null)
-            {
+            if (userInf == null) {
                 userInf = "";
-            }
-            else
-            {
+            } else {
                 userInf = userInf + "@";
             }
             String hostname = info.getServerHostname();
-            if (StringUtil.isEmpty(hostname))
-            {
+            if (StringUtil.isEmpty(hostname)) {
                 hostname = "Localhost";
             }
 
             String name = "Server " + serverVrl.getScheme() + ":" + hostname + ":" + port;
             String subPath = "ServerConfig-" + index++;
 
-            this.addSubNode(createSystemInfoNode(subPath, info, name, "info/server-fs-network-48.png"));
+            this.addSubNode(createResourceSystemInfoNode(subPath, info, name, "info/server-fs-network-48.png"));
         }
     }
 
-    protected InfoResourceNode createSystemInfoNode(String subPath, ResourceConfigInfo info, String name, String iconUrl)
-            throws VRLSyntaxException
-    {
+    protected InfoResourceNode createResourceSystemInfoNode(String subPath, ResourceConfigInfo info, String name,
+            String iconUrl) throws VRLSyntaxException {
         VRL logicalVrl = this.createSubPathVRL(subPath);
 
-        SystemInfoNode node = new SystemInfoNode(this, logicalVrl, info);
+        ResourceSystemInfoNode node = new ResourceSystemInfoNode(this, logicalVrl, info);
         node.setLogicalName(name);
         node.setIconUrl(iconUrl);
         return node;
     }
 
-    public Attribute getResourceAttribute(String name) throws VrsException
-    {
-        if (name == null)
-        {
+    public Attribute getResourceAttribute(String name) throws VrsException {
+        if (name == null) {
             return null;
         }
-        
+
         Attribute attr = super.getResourceAttribute(name);
-        
-        if (attr != null)
-        {
+
+        if (attr != null) {
             return attr;
         }
-        
+
         return attr;
     }
 
-    public boolean sync() throws VrsException
-    {
+    public boolean sync() throws VrsException {
         initChilds();
         return true;
     }

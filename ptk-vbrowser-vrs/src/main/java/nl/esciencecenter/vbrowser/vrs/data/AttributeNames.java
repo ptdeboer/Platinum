@@ -23,8 +23,8 @@ package nl.esciencecenter.vbrowser.vrs.data;
 /**
  * List of common attribute names.
  */
-public class AttributeNames
-{
+public class AttributeNames {
+
     public static final String ATTR_URI = "URI";
 
     public static final String ATTR_USERNAME = "username";
@@ -50,9 +50,9 @@ public class AttributeNames
     public static final String ATTR_DIRNAME = "dirname";
 
     public static final String ATTR_MODIFICATION_TIME = "modificationTime";
-    
+
     public static final String ATTR_LASTACCESS_TIME = "lastAccessTime";
-    
+
     public static final String ATTR_CREATION_TIME = "creationTime";
 
     public static final String ATTR_FILE_SIZE = "fileLength";
@@ -61,8 +61,8 @@ public class AttributeNames
 
     public static final String ATTR_CHARSET = "charSet";
 
-    /** 
-     * String representation of Implementation depended permissions 
+    /**
+     * String representation of Implementation depended permissions
      */
     public static final String ATTR_PERMISSIONSTRING = "permissionString";
 
@@ -71,17 +71,17 @@ public class AttributeNames
     public static final String ATTR_RESOURCE_STATUS = "resourceStatus";
 
     public static final String ATTR_RESOURCE_EXISTS = "resourceExists";
-    
+
     public static final String ATTR_UNIX_USERID = "unix.userID";
 
     public static final String ATTR_UNIX_GROUPID = "unix.groupID";
 
-    public static final String ATTR_UNIX_OWNER= "unix.owner";
+    public static final String ATTR_UNIX_OWNER = "unix.owner";
 
     public static final String ATTR_UNIX_GROUPNAME = "unix.groupName";
 
     public static final String ATTR_UNIX_MODE = "unix.mode";
-    
+
     public static final String ATTR_PASSPHRASE = "passphrase";
 
     public static final String ATTR_PASSWORD = "password";
@@ -92,16 +92,12 @@ public class AttributeNames
 
     public static final String ATTR_LOCATION = "location";
 
-//    public static final String ATTR_ISREADABLE = "isReadable";
-//    
-//    public static final String ATTR_ISWRITABLE = "isWritable";
-    
     public static final String ATTR_ISHIDDEN = "isHidden";
-    
+
     public static final String ATTR_ISFILE = "isFile";
-    
+
     public static final String ATTR_ISDIR = "isDir";
-    
+
     public static final String ATTR_ISSYMBOLIC_LINK = "isSymbolicLink";
-    
+
 }

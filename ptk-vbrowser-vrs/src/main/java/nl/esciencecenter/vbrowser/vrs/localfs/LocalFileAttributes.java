@@ -25,87 +25,73 @@ import java.nio.file.attribute.FileTime;
 
 import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
 
-public class LocalFileAttributes implements VFSFileAttributes
-{
+public class LocalFileAttributes implements VFSFileAttributes {
+
     protected BasicFileAttributes attrs;
 
-    public LocalFileAttributes(BasicFileAttributes attrs)
-    {
+    public LocalFileAttributes(BasicFileAttributes attrs) {
         this.attrs = attrs;
     }
 
-    public boolean isSymbolicLink()
-    {
+    public boolean isSymbolicLink() {
         return attrs.isSymbolicLink();
     }
 
-    public String getSymbolicLinkTarget()
-    {
+    public String getSymbolicLinkTarget() {
         return null;
     }
 
-    public boolean isHidden()
-    {
+    public boolean isHidden() {
         return false;
     }
 
     @Override
-    public FileTime lastModifiedTime()
-    {
+    public FileTime lastModifiedTime() {
         return attrs.lastModifiedTime();
     }
 
     @Override
-    public FileTime lastAccessTime()
-    {
+    public FileTime lastAccessTime() {
         return attrs.lastAccessTime();
     }
 
     @Override
-    public FileTime creationTime()
-    {
+    public FileTime creationTime() {
         return attrs.creationTime();
     }
 
     @Override
-    public boolean isRegularFile()
-    {
+    public boolean isRegularFile() {
         return attrs.isRegularFile();
     }
 
     @Override
-    public boolean isDirectory()
-    {
+    public boolean isDirectory() {
         return attrs.isDirectory();
     }
 
     @Override
-    public boolean isOther()
-    {
+    public boolean isOther() {
         return attrs.isOther();
     }
 
     @Override
-    public long size()
-    {
+    public long size() {
         return attrs.size();
     }
 
     @Override
-    public Object fileKey()
-    {
+    public Object fileKey() {
         return attrs.fileKey();
     }
 
     @Override
-    public boolean isLocal()
-    {
+    public boolean isLocal() {
         return true;
     }
 
     @Override
-    public boolean isRemote()
-    {
+    public boolean isRemote() {
         return false;
     }
 }

@@ -5,6 +5,7 @@
 
 	<artifactId>ptk-ui</artifactId>
 	<name>ptk-ui ${project.version}</name>
+	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
@@ -32,15 +33,11 @@
 			<groupId>com.jgoodies</groupId>
 			<artifactId>forms</artifactId>
 			<version>1.2.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jgoodies</groupId>
 			<artifactId>looks</artifactId>
 			<version>2.2.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jclarion</groupId>

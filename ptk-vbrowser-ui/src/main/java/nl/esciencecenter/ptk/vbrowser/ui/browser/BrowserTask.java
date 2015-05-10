@@ -26,39 +26,36 @@ import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.task.TaskMonitorAdaptor;
 
 /**
- * ActionTask origination from a (Proxy)Browser  
+ * ActionTask origination from a (Proxy)Browser
  */
-public abstract class BrowserTask extends ActionTask
-{
+public abstract class BrowserTask extends ActionTask {
     /**
-     * Create new task origination from the provided ProxyBrowser. 
-     * Created task will be linked to this ProxyBrowserController. 
+     * Create new task origination from the provided ProxyBrowser. Created task will be linked to
+     * this ProxyBrowserController.
      */
-    public BrowserTask(ProxyBrowserController browserController, String taskName)
-    {
-        super(browserController.getTaskSource(), taskName, new TaskMonitorAdaptor(taskName,1));
+    public BrowserTask(ProxyBrowserController browserController, String taskName) {
+        super(browserController.getTaskSource(), taskName, new TaskMonitorAdaptor(taskName, 1));
     }
-    
+
     /**
-     * Create new task origination from the provided Browser task source. 
-     * @param taskSource - optional Browser TaskSource. Can be null. 
-     * @param taskName - Descriptive task name. 
+     * Create new task origination from the provided Browser task source.
+     * 
+     * @param taskSource
+     *            - optional Browser TaskSource. Can be null.
+     * @param taskName
+     *            - Descriptive task name.
      */
-    public BrowserTask(ITaskSource taskSource, String taskName)
-    {
-        super(taskSource, taskName, new TaskMonitorAdaptor(taskName,1));
+    public BrowserTask(ITaskSource taskSource, String taskName) {
+        super(taskSource, taskName, new TaskMonitorAdaptor(taskName, 1));
     }
-    
-    public BrowserTask(ITaskSource taskSource, String taskName, ITaskMonitor monitor)
-    {
+
+    public BrowserTask(ITaskSource taskSource, String taskName, ITaskMonitor monitor) {
         super(taskSource, taskName, monitor);
     }
 
-    
     @Override
-    protected void stopTask()
-    {
-        this.getTaskMonitor().logPrintf("*STOP* Received for:%s\n", this); 
+    protected void stopTask() {
+        this.getTaskMonitor().logPrintf("*STOP* Received for:%s\n", this);
     }
 
 }

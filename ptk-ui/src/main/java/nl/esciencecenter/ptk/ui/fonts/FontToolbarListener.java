@@ -23,12 +23,13 @@ package nl.esciencecenter.ptk.ui.fonts;
 import java.awt.Font;
 import java.util.Map;
 
-public interface FontToolbarListener
-{
+public interface FontToolbarListener {
     /**
-     * @param font - the new Font 
-     * @param renderingHints - Platform renderingHints like for example AntiAliasing. 
+     * @param font
+     *            - the new Font
+     * @param renderingHints
+     *            - Platform renderingHints like for example AntiAliasing.
      */
-    public void updateFont(Font font, Map<?,?> renderingHints);
-    
+    public void updateFont(Font font, Map<?, ?> renderingHints);
+
 }

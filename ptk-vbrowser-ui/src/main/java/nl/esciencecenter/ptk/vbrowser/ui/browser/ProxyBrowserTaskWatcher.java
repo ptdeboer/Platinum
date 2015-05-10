@@ -22,19 +22,17 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import nl.esciencecenter.ptk.task.TaskWatcher;
 
-public class ProxyBrowserTaskWatcher extends TaskWatcher
-{
+public class ProxyBrowserTaskWatcher extends TaskWatcher {
+
     private ProxyBrowserController browserController;
 
-    public ProxyBrowserTaskWatcher(ProxyBrowserController browser)
-    {
+    public ProxyBrowserTaskWatcher(ProxyBrowserController browser) {
         super("ProxyBrowserTaskWatcher" + browser.getBrowserId());
         browserController = browser;
     }
 
     @Override
-    public void setHasActiveTasks(boolean active)
-    {
+    public void setHasActiveTasks(boolean active) {
         browserController.updateHasActiveTasks(active);
     }
 

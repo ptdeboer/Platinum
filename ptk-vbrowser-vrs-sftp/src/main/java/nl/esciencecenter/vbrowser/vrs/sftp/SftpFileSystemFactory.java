@@ -33,51 +33,48 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import com.jcraft.jsch.JSch;
 
-public class SftpFileSystemFactory implements VResourceSystemFactory
-{
+public class SftpFileSystemFactory implements VResourceSystemFactory {
+
     private final static Logger logger = LoggerFactory.getLogger(SftpFileSystemFactory.class);
 
     private JSch jsch;
 
-    public SftpFileSystemFactory() throws VrsException
-    {
-        // an JSch instance is created at the VRSFactory level.
-        // an JSch Session is created per SftpFileSystem session.
+    public SftpFileSystemFactory() throws VrsException {
+        // an JSch instance is created per SftpFileSystemFactory instance.
+        // an JSch Session is created per SftpFileSystem instance.
         this.jsch = new JSch();
     }
 
     @Override
-    public String[] getSchemes()
-    {
-        return new String[] {
-                "sftp", "ssh-ftp"
-        };
+    public String[] getSchemes() {
+        return new String[] { "sftp", "ssh-ftp" };
     }
 
     @Override
-    public String createResourceSystemId(VRL vrl)
-    {
+    public String createResourceSystemId(VRL vrl) {
         // Add User ? -> check User authenticated contexts
         return "sftp-" + vrl.getHostname() + "-" + vrl.getPort();
     }
 
     @Override
-    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl) throws VrsException
-    {
+    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info,
+            VRL vrl) throws VrsException {
         return new SftpFileSystem(jsch, context, info, vrl);
     }
 
     @Override
-    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info, VRL vrl)
-    {
-        logger.info("updateResourceInfo:{}",info);
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info,
+            VRL vrl) {
+        logger.info("updateResourceInfo:{}", info);
         // comma seperated list: 
-        info.setIfNotSet(ResourceConfigInfo.ATTR_USER_IDENTITY_FILES, "id_rsa,id_dsa", true);
-        info.setIfNotSet(ResourceConfigInfo.SERVER_USERINFO, context.getUserName(), true);
-        info.setIfNotSet(SftpFileSystem.SSH_USER_KNOWN_HOSTS_PROPERTY, SftpConfig.SSH_USER_KNOWN_HOSTS, true);
-        info.setIfNotSet(SftpFileSystem.SSH_USER_CONFIGSUBDIR_PROPERTY, SftpConfig.SSH_USER_CONFIG_SIBDUR, true);
-        info.store(); 
-        logger.info("updateResourceInfo:Updated:{}",info);
+        info.setDefaultAttribute(ResourceConfigInfo.ATTR_USER_KEY_FILES, "id_rsa,id_dsa", true);
+        info.setDefaultAttribute(ResourceConfigInfo.RESOURCE_USERINFO, context.getUserName(), true);
+        info.setDefaultAttribute(SftpFileSystem.SSH_USER_KNOWN_HOSTS_PROPERTY,
+                SftpConfig.SSH_USER_KNOWN_HOSTS, true);
+        info.setDefaultAttribute(SftpFileSystem.SSH_USER_CONFIGSUBDIR_PROPERTY,
+                SftpConfig.SSH_USER_CONFIG_SIBDUR, true);
+        info.store();
+        logger.info("updateResourceInfo:Updated:{}", info);
         return info;
     }
 }

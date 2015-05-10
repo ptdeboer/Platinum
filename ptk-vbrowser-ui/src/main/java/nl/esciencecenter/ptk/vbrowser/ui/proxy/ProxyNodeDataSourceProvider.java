@@ -33,42 +33,36 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * DataSource which produces ViewItems from ProxyItems. Is DataSource Adaptor. 
- * Bridging class connects ProxyNode (Resource) with ViewNodes (UI Object) and Attributes. 
+ * DataSource which produces ViewItems from ProxyItems. Is DataSource Adaptor. Bridging class
+ * connects ProxyNode (Resource) with ViewNodes (UI Object) and Attributes.
  */
-public class ProxyNodeDataSourceProvider implements ProxyDataSource 
-{
+public class ProxyNodeDataSourceProvider implements ProxyDataSource {
+
     private ProxyNode rootNode;
 
     private ProxyFactory proxyFactory;
 
     private VRSEventNotifier eventNotifier;
 
-    public ProxyNodeDataSourceProvider(ProxyNode sourceNode)
-    {
+    public ProxyNodeDataSourceProvider(ProxyNode sourceNode) {
         this.rootNode = sourceNode;
         this.proxyFactory = sourceNode.getProxyFactory();
         this.eventNotifier = proxyFactory.getProxyNodeEventNotifier();
     }
 
     @Override
-    public ViewNode getRoot(UIViewModel uiModel) throws ProxyException
-    {
+    public ViewNode getRoot(UIViewModel uiModel) throws ProxyException {
         return rootNode.createViewItem(uiModel);
     }
 
-    public ProxyNode[] getChildProxyItems(VRL locator, int offset, int range, LongHolder numChildsLeft)
-            throws ProxyException
-    {
+    public ProxyNode[] getChildProxyItems(VRL locator, int offset, int range,
+            LongHolder numChildsLeft) throws ProxyException {
         ProxyNode[] childs;
 
         // check toplevel:
-        if (rootNode.hasLocator(locator))
-        {
+        if (rootNode.hasLocator(locator)) {
             childs = ProxyNode.toArray(rootNode.getChilds(offset, range, numChildsLeft));
-        }
-        else
-        {
+        } else {
 
             ProxyNode parent = proxyFactory.openLocation(locator);
             childs = ProxyNode.toArray(parent.getChilds());
@@ -77,92 +71,75 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource
         return childs;
     }
 
-    public ViewNode[] createViewItems(UIViewModel uIModel, ProxyNode[] childs) throws ProxyException
-    {
+    public ViewNode[] createViewItems(UIViewModel uIModel, ProxyNode[] childs)
+            throws ProxyException {
+        //
         if (childs == null)
             return null;
-
         int len = childs.length;
-
         ViewNode items[] = new ViewNode[len];
-
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             items[i] = childs[i].createViewItem(uIModel);
         }
-
         return items;
     }
 
     @Override
-    public void addDataSourceEventListener(VRSEventListener listener)
-    {
+    public void addDataSourceEventListener(VRSEventListener listener) {
         eventNotifier.addListener(listener);
     }
 
     @Override
-    public void removeDataSourceEventListener(VRSEventListener listener)
-    {
+    public void removeDataSourceEventListener(VRSEventListener listener) {
         eventNotifier.removeListener(listener);
     }
 
-    public ViewNode[] getChilds(UIViewModel uIModel, VRL locator) throws ProxyException
-    {
+    public ViewNode[] getChilds(UIViewModel uIModel, VRL locator) throws ProxyException {
         return createViewItems(uIModel, getChildProxyItems(locator, 0, -1, null));
     }
 
     @Override
-    public ViewNode[] getChilds(UIViewModel uiModel, VRL locator, int offset, int range, LongHolder numChildsLeft)
-            throws ProxyException
-    {
+    public ViewNode[] getChilds(UIViewModel uiModel, VRL locator, int offset, int range,
+            LongHolder numChildsLeft) throws ProxyException {
         return createViewItems(uiModel, getChildProxyItems(locator, offset, range, numChildsLeft));
     }
 
     @Override
-    public ViewNode[] createViewNodes(UIViewModel uiModel, VRL[] locations) throws ProxyException
-    {
+    public ViewNode[] createViewNodes(UIViewModel uiModel, VRL[] locations) throws ProxyException {
+        //
         int len = locations.length;
-
         ViewNode nodes[] = new ViewNode[len];
-
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             ProxyNode node = proxyFactory.openLocation(locations[i]);
             nodes[i] = node.createViewItem(uiModel);
         }
-
         return nodes;
     }
 
     @Override
-    public List<String> getAttributeNames(VRL locator) throws ProxyException
-    {
+    public List<String> getAttributeNames(VRL locator) throws ProxyException {
         ProxyNode node = proxyFactory.openLocation(locator);
         return node.getAttributeNames();
     }
 
     @Override
-    public List<Attribute> getAttributes(VRL locator, String attrNames[]) throws ProxyException
-    {
+    public List<Attribute> getAttributes(VRL locator, String attrNames[]) throws ProxyException {
         ProxyNode node = proxyFactory.openLocation(locator);
         return node.getAttributes(attrNames);
     }
 
     @Override
-    public Presentation getPresentation() throws ProxyException
-    {
+    public Presentation getPresentation() throws ProxyException {
         return rootNode.getPresentation();
     }
 
     @Override
-    public ProxyNode getRootNode()
-    {
+    public ProxyNode getRootNode() {
         return this.rootNode;
     }
 
     @Override
-    public String toString()
-    {
-        return "<ProxyNodeDataSource>:"+rootNode;
+    public String toString() {
+        return "<ProxyNodeDataSource>:" + rootNode;
     }
 }

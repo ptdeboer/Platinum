@@ -29,10 +29,9 @@ import nl.esciencecenter.ptk.ssl.SslConst;
 /**
  * All configurable parameters to connect to a web service.
  */
-public class WebConfig
-{
-    public static class SslOptions
-    {
+public class WebConfig {
+
+    public static class SslOptions {
         /**
          * Default SSL/TSL protocol to use.
          */
@@ -44,14 +43,13 @@ public class WebConfig
         public boolean disable_strict_hostname_checking = true;
     }
 
-    public static enum AuthenticationType
-    {
+    public static enum AuthenticationType {
         NONE, BASIC
     };
 
     /**
-     * Default time out of 30 seconds. The is the time to setup a TCP
-     * connection. It is not a request time out.
+     * Default time out of 30 seconds. The is the time to setup a TCP connection. It is not a
+     * request time out.
      */
     protected int tcpConnectionTimeout = 30000; // 30 seconds;
 
@@ -89,58 +87,47 @@ public class WebConfig
     protected boolean allowUserInteraction = true;
 
     /**
-     * URI part after serviceUri which initializes a new JSESSION ID. If set to
-     * null, no JSESSION ID will be requested. Use WebClient.setJSessionID() to
-     * manually specify the used JSESSION ID.
+     * URI part after serviceUri which initializes a new JSESSION ID. If set to null, no JSESSION ID
+     * will be requested. Use WebClient.setJSessionID() to manually specify the used JSESSION ID.
      */
     protected String jsessionInitPart = "REST/JSESSION";
 
     protected SslOptions sslOptions = new SslOptions(); // defaults
 
-    protected WebConfig()
-    {
+    protected WebConfig() {
     }
 
-    public WebConfig(java.net.URI serviceUri)
-    {
+    public WebConfig(java.net.URI serviceUri) {
         init(serviceUri);
     }
 
-    public WebConfig(URI serviceUri, AuthenticationType authenticationType, boolean multiThreaded)
-    {
+    public WebConfig(URI serviceUri, AuthenticationType authenticationType, boolean multiThreaded) {
         this.authenticationType = authenticationType;
         this.isMultiThreaded = multiThreaded;
         init(serviceUri);
     }
 
     /**
-     * Parse scheme,host,port and optional the username from this URI and update
-     * the configuration settings.
+     * Parse scheme,host,port and optional the username from this URI and update the configuration
+     * settings.
      */
-    public void updateURI(java.net.URI uri)
-    {
+    public void updateURI(java.net.URI uri) {
         init(uri);
     }
 
-    protected void init(java.net.URI serviceUri)
-    {
-        if (serviceUri==null)
-        {
-            throw new NullPointerException("NULL serviceUri!"); 
+    protected void init(java.net.URI serviceUri) {
+        if (serviceUri == null) {
+            throw new NullPointerException("NULL serviceUri!");
         }
-        
+
         this.protocol = serviceUri.getScheme().toLowerCase();
         this.serverHostname = serviceUri.getHost();
         this.serverPort = serviceUri.getPort();
 
-        if (this.serverPort <= 0)
-        {
-            if (this.isHTTPS())
-            {
+        if (this.serverPort <= 0) {
+            if (this.isHTTPS()) {
                 serverPort = WebConst.HTTPS_PORT;
-            }
-            else
-            {
+            } else {
                 serverPort = WebConst.HTTP_PORT;
             }
         }
@@ -151,42 +138,37 @@ public class WebConfig
 
         this.servicePath = serviceUri.getPath();
 
-        if (servicePath != null)
-        {
-            if (servicePath.equals(""))
-            {
+        if (servicePath != null) {
+            if (servicePath.equals("")) {
                 servicePath = "/";
             }
 
             // make absolute:
-            if (servicePath.startsWith("/") == false)
-            {
+            if (servicePath.startsWith("/") == false) {
                 servicePath = "/" + servicePath;
             }
 
             // strip last slash:
-            if ((servicePath.length() > 1) && (servicePath.endsWith("/")))
-            {
+            if ((servicePath.length() > 1) && (servicePath.endsWith("/"))) {
                 servicePath = this.servicePath.substring(0, servicePath.length() - 1);
             }
         }
 
-        if (serviceUri.getUserInfo() != null)
-        {
+        if (serviceUri.getUserInfo() != null) {
             this.username = serviceUri.getUserInfo();
         }
     }
 
     /**
-     * Return Web Service URI as java.net.URI including the web service path
-     * name, for example "https://www.cnn.nl:443/theNews/"
+     * Return Web Service URI as java.net.URI including the web service path name, for example
+     * "https://www.cnn.nl:443/theNews/"
      * 
      * @return The Web service URI as java.net.URI
      * @throws URISyntaxException
      */
-    public java.net.URI getServiceURI() throws URISyntaxException
-    {
-        return new java.net.URI(this.protocol, this.username, this.serverHostname, this.serverPort, this.servicePath, null, null);
+    public java.net.URI getServiceURI() throws URISyntaxException {
+        return new java.net.URI(this.protocol, this.username, this.serverHostname, this.serverPort,
+                this.servicePath, null, null);
     }
 
     /**
@@ -197,54 +179,45 @@ public class WebConfig
      * @return The server or host URI as java.net.URI
      * @throws URISyntaxException
      */
-    public java.net.URI getServerURI() throws URISyntaxException
-    {
-        return new java.net.URI(this.protocol, this.username, this.serverHostname, this.serverPort, null, null, null);
+    public java.net.URI getServerURI() throws URISyntaxException {
+        return new java.net.URI(this.protocol, this.username, this.serverHostname, this.serverPort,
+                null, null, null);
     }
 
-    public boolean hasPassword()
-    {
+    public boolean hasPassword() {
         return ((password != null) && (!password.isEmpty()));
     }
 
-    public boolean isHTTPS()
-    {
+    public boolean isHTTPS() {
         return (protocol != null ? (protocol.equals(WebConst.HTTPS_SCHEME)) : false);
     }
 
-    public boolean isHTTP()
-    {
+    public boolean isHTTP() {
         return (protocol != null ? (protocol.equals(WebConst.HTTP_SCHEME)) : false);
     }
 
-    public void setCredentials(String user, Secret passwd)
-    {
+    public void setCredentials(String user, Secret passwd) {
         this.username = user;
         this.password = passwd;
     }
 
-    public boolean hasCredentials()
-    {
+    public boolean hasCredentials() {
         return ((username != null) && (password != null) && (password.isEmpty() == false));
     }
 
-    public void setJSessionInitPart(String part)
-    {
+    public void setJSessionInitPart(String part) {
         this.jsessionInitPart = part;
     }
 
-    public String getHostname()
-    {
+    public String getHostname() {
         return serverHostname;
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return serverPort;
     }
 
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
@@ -253,8 +226,7 @@ public class WebConfig
      * 
      * @return - password as char array.
      */
-    public char[] getPasswordChars()
-    {
+    public char[] getPasswordChars() {
         if (this.password == null)
             return null;
 
@@ -266,51 +238,41 @@ public class WebConfig
      * 
      * @return
      */
-    public boolean useJSession()
-    {
-        if (useAuthentication())
-        {
+    public boolean useJSession() {
+        if (useAuthentication()) {
             return (this.jsessionInitPart != null);
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public boolean getUseBasicAuthentication()
-    {
+    public boolean getUseBasicAuthentication() {
         return (this.authenticationType == AuthenticationType.BASIC);
     }
 
-    public boolean useAuthentication()
-    {
+    public boolean useAuthentication() {
         if (this.authenticationType == null)
             return false;
 
         return (this.authenticationType != AuthenticationType.NONE);
     }
 
-    public boolean isMultiThreaded()
-    {
+    public boolean isMultiThreaded() {
         return isMultiThreaded;
     }
 
-    public void setMultiThreaded(boolean value)
-    {
+    public void setMultiThreaded(boolean value) {
         this.isMultiThreaded = value;
     }
 
-    public boolean getAllowUserInteraction()
-    {
+    public boolean getAllowUserInteraction() {
         return allowUserInteraction;
     }
 
     /**
      * Create URI string without throwing URISyntax Exceptions
      */
-    public String getServiceURIString()
-    {
+    public String getServiceURIString() {
         String uriStr = this.protocol + "://";
         if (this.username != null)
             uriStr += this.getUsername() + "@";
@@ -320,13 +282,11 @@ public class WebConfig
         return uriStr;
     }
 
-    public String getProtocol()
-    {
+    public String getProtocol() {
         return protocol;
     }
 
-    public String getServicePath()
-    {
+    public String getServicePath() {
         return servicePath;
     }
 

@@ -22,29 +22,22 @@ package nl.esciencecenter.vbrowser.vrs.exceptions;
 
 import java.net.URISyntaxException;
 
-
-public class VRLSyntaxException extends VrsException
-{
+public class VRLSyntaxException extends VrsException {
     private static final long serialVersionUID = 3938340227693163772L;
-    
-    public VRLSyntaxException(String message)
-    {
+
+    public VRLSyntaxException(String message) {
         super(message);
     }
-    
-    public VRLSyntaxException(URISyntaxException e)
-    {
-        super(e.getMessage(),e); 
-    }
-        
-    public VRLSyntaxException(Throwable e)
-    {
-        super(e); 
+
+    public VRLSyntaxException(URISyntaxException e) {
+        super(e.getMessage(), e);
     }
 
-    public VRLSyntaxException(String message,Throwable t)
-    {
-        super(message,t); 
+    public VRLSyntaxException(Throwable e) {
+        super(e);
     }
 
+    public VRLSyntaxException(String message, Throwable t) {
+        super(message, t);
+    }
 }

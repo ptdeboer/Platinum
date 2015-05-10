@@ -25,69 +25,70 @@ import javax.swing.JOptionPane;
 import nl.esciencecenter.ptk.data.SecretHolder;
 
 /**
- * UI Interface for UI Callbacks. 
+ * UI Interface for UI Callbacks. This could be the VBrowser or another Application with an UI
+ * interface. For example the VRSContext has an optional UI configured.
  */
-public interface UI
-{
+public interface UI {
+
     public static int YES_OPTION = JOptionPane.YES_OPTION;
-    
+
     public static int NO_OPTION = JOptionPane.NO_OPTION;
-    
+
     public static int CANCEL_OPTION = JOptionPane.CANCEL_OPTION;
-    
-    /**
-     * Whether user interaction is possible. Before calling any of the UI method, check this method first. 
-     * @return false for robots and non-interactive scripts/applications, true for interactive applications.  
-     */ 
-    public boolean isEnabled();
-    
-    /** 
-     * Display message dialog or message to print to console.  
-     */ 
-    public void showMessage(String title,String message,boolean modal);
-
-     /**
-     * Simple Yes/No prompter 
-     * @param true for yes, false for no or <code>defaultValue</code> value to return if there is no UI present 
-     *        or it is currently disabled. 
-     */ 
-    public boolean askYesNo(String title,String message, boolean defaultValue);
 
     /**
-     * Simple OK/Cancel prompter.  
-     * @param true for OK, false for cancel or defaultValue value to return if there is no UI present 
-     *        or it is currently disabled. 
-     */ 
-    public boolean askOkCancel(String title,String message, boolean defaultValue);
-
-    /**
-     * Simple Yes/No/Cancel prompter. 
-     * Returns JOptionPane.CANCEL_OPTION if no UI present
-     * @see JOptionPane for return values 
-     */ 
-    public int askYesNoCancel(String title,String message);
-
-    /** 
-     * Ask for password, passphrase or other 'secret' String 
-     */ 
-    public boolean askAuthentication(String message, SecretHolder secretHolder);
-    
-    /**
-     * Ask for a single String input message, like for example a name or other value. 
-     * @param title - title to display
-     * @param message - Input message 
-     * @param optDefaultValue - option default value 
-     * @return String or null 
+     * Whether user interaction is possible. Before calling any of the UI method, check this method
+     * first.
+     * 
+     * @return false for robots and non-interactive scripts/applications, true for interactive
+     *         applications.
      */
-    public String askInput(String title, String message, String optDefaultValue); 
-    
-//    /**
-//     * Simple formatted Input Dialog. Method is wrapper for JOptionPane ! 
-//     * See  JOptionPane.showConfirmDialog() for options.
-//     * 
-//     * @return JOptionPane.OK_OPTION if successful. 
-//     *         Parameter inputFields can contain modified (Swing) objects.  
-//     */ 
-//    public int askInput(String title, Object[] inputFields, int jOptionPaneOption);
-    
+    public boolean isEnabled();
+
+    /**
+     * Display message dialog or message to print to console.
+     */
+    public void showMessage(String title, String message, boolean modal);
+
+    /**
+     * Simple Yes/No prompter
+     * 
+     * @param true for yes, false for no or <code>defaultValue</code> value to return if there is no
+     *        UI present or it is currently disabled.
+     */
+    public boolean askYesNo(String title, String message, boolean defaultValue);
+
+    /**
+     * Simple OK/Cancel prompter.
+     * 
+     * @param true for OK, false for cancel or defaultValue value to return if there is no UI
+     *        present or it is currently disabled.
+     */
+    public boolean askOkCancel(String title, String message, boolean defaultValue);
+
+    /**
+     * Simple Yes/No/Cancel prompter. Returns JOptionPane.CANCEL_OPTION if no UI present
+     * 
+     * @see javax.swing.JOptionPane
+     */
+    public int askYesNoCancel(String title, String message);
+
+    /**
+     * Ask for password, passphrase or other 'secret' String
+     */
+    public boolean askAuthentication(String message, SecretHolder secretHolder);
+
+    /**
+     * Ask for a single String input message, like for example a name or other value.
+     * 
+     * @param title
+     *            - title to display
+     * @param message
+     *            - Input message
+     * @param optDefaultValue
+     *            - option default value
+     * @return String or null
+     */
+    public String askInput(String title, String message, String optDefaultValue);
+
 }

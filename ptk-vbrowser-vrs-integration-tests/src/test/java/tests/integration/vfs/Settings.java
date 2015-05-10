@@ -17,12 +17,11 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  *
  * @author P.T. de Boer
  */
-public class Settings
-{
-    public static enum TestLocation
-    {
-        VFS_LOCALFS_LOCATION,
-        VFS_LOCAL_TEMPDIR_LOCATION,
+public class Settings {
+
+    public static enum TestLocation {
+        VFS_LOCALFS_LOCATION, //
+        VFS_LOCAL_TEMPDIR_LOCATION, //
         VFS_SFTP_LOCALHOST
     }
 
@@ -31,13 +30,11 @@ public class Settings
      */
     private static Settings instance;
 
-    static
-    {
+    static {
         instance = new Settings();
     }
 
-    public static Settings getDefault()
-    {
+    public static Settings getDefault() {
         return instance;
     }
 
@@ -47,17 +44,14 @@ public class Settings
 
     protected static VRSContext staticContext;
 
-    public static VRSContext getStaticTestContext()
-    {
-        if (staticContext == null)
-        {
+    public static VRSContext getStaticTestContext() {
+        if (staticContext == null) {
             staticContext = new VRSContext();
         }
         return staticContext;
     }
 
-    public static Registry getStaticRegistry()
-    {
+    public static Registry getStaticRegistry() {
         return getStaticTestContext().getRegistry();
     }
 
@@ -65,13 +59,11 @@ public class Settings
     // init locations:
     // ========================================================================
 
-    public static VRL getTestLocation(String location)
-    {
+    public static VRL getTestLocation(String location) {
         return getDefault().testLocations.get(TestLocation.valueOf(location));
     }
 
-    public static VRL getTestLocation(TestLocation location)
-    {
+    public static VRL getTestLocation(TestLocation location) {
         return getDefault().testLocations.get(location);
     }
 
@@ -79,8 +71,7 @@ public class Settings
     //
     // ========================================================================
 
-    public static ResourceConfigInfo getServerInfoFor(VRL location, boolean create) throws VrsException
-    {
+    public static ResourceConfigInfo getServerInfoFor(VRL location, boolean create) throws VrsException {
         return VRS.createVRSClient().getResourceSystemInfoFor(location, create);
     }
 
@@ -92,41 +83,35 @@ public class Settings
 
     private String testUserName;
 
-    private Settings()
-    {
+    private Settings() {
         testUserName = GlobalProperties.getGlobalUserName();
         initLocations();
     }
 
-    private void initLocations()
-    {
+    private void initLocations() {
 
-        testLocations.put(TestLocation.VFS_LOCAL_TEMPDIR_LOCATION,
-                new VRL("file", null, "/tmp/" + testUserName + "/localtmpdir"));
+        testLocations
+                .put(TestLocation.VFS_LOCAL_TEMPDIR_LOCATION, new VRL("file", null, "/tmp/" + testUserName + "/localtmpdir"));
 
-        testLocations.put(TestLocation.VFS_LOCALFS_LOCATION,
-                new VRL("file", null, "/tmp/" + testUserName + "/testLocalFS"));
+        testLocations.put(TestLocation.VFS_LOCALFS_LOCATION, new VRL("file", null, "/tmp/" + testUserName + "/testLocalFS"));
 
-        testLocations.put(TestLocation.VFS_SFTP_LOCALHOST,
-                new VRL("sftp", null, "localhost", 22, "/tmp/" + "sftptest" + "/testSftpFS"));
+        testLocations.put(TestLocation.VFS_SFTP_LOCALHOST, new VRL("sftp", null, "localhost", 22, "/tmp/" + "sftptest"
+                + "/testSftpFS"));
 
     }
 
-    public VRL getLocation(TestLocation location)
-    {
+    public VRL getLocation(TestLocation location) {
         return this.testLocations.get(location);
     }
 
-    public String[] getLocationNames()
-    {
+    public String[] getLocationNames() {
         Set<TestLocation> set = this.testLocations.keySet();
         String names[] = new String[set.size()];
         names = set.toArray(names);
         return names;
     }
 
-    public void setUsername(String user)
-    {
+    public void setUsername(String user) {
         this.testUserName = user;
         initLocations();
     }

@@ -25,33 +25,27 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
-public class ResourceTableControler implements ViewNodeActionListener
-{
+public class ResourceTableControler implements ViewNodeActionListener {
     private ResourceTable table;
 
     private BrowserInterface browserController;
 
-    public ResourceTableControler(ResourceTable resourceTable,
-            BrowserInterface browserController)
-    {
+    public ResourceTableControler(ResourceTable resourceTable, BrowserInterface browserController) {
         this.table = resourceTable;
         this.browserController = browserController;
     }
 
-    public void handle(String action, Throwable e)
-    {
+    public void handle(String action, Throwable e) {
         browserController.handleException(action, e);
     }
 
-    public BrowserInterface getBrowserInterface()
-    {
+    public BrowserInterface getBrowserInterface() {
         return browserController;
     }
 
     @Override
-    public void handleNodeActionEvent(ViewNode node, Action action)
-    {
+    public void handleNodeActionEvent(ViewNode node, Action action) {
         // forward to Master Browser:
-        browserController.handleNodeAction(table, node, action); 
+        browserController.handleNodeAction(table, node, action);
     }
 }

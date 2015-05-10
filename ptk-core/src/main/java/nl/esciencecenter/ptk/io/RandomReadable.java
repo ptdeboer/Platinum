@@ -22,17 +22,17 @@ package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 
-public interface RandomReadable extends AutoCloseable
-{
+public interface RandomReadable extends AutoCloseable {
+
     /**
-     * Reads <code>nrBytes</code> from file starting to read from <code>fileOffset</code>. Data is stored into the byte
-     * array buffer[] starting at bufferOffset.
+     * Reads <code>nrBytes</code> from file starting to read from <code>fileOffset</code>. Data is
+     * stored into the byte array buffer[] starting at bufferOffset.
      * 
      * @throws IOException
      * @see java.io.RandomAccessFile#readBytes
      */
-    public int readBytes(long fileOffset, byte buffer[], int bufferOffset,
-            int nrBytes) throws IOException;
+    public int readBytes(long fileOffset, byte buffer[], int bufferOffset, int nrBytes)
+            throws IOException;
 
     /**
      * @return length of random readable resource, -1 if unknown.

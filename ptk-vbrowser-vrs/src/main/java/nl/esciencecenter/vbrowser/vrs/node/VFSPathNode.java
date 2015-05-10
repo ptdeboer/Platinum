@@ -20,15 +20,30 @@
 
 package nl.esciencecenter.vbrowser.vrs.node;
 
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_CREATION_TIME;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_DIRNAME;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_FILE_SIZE;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_HOSTNAME;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISDIR;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISFILE;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISHIDDEN;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISSYMBOLIC_LINK;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_LASTACCESS_TIME;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_MIMETYPE;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_MODIFICATION_TIME;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_NAME;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PATH;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PERMISSIONSTRING;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PORT;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_EXISTS;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_TYPE;
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_SCHEME;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.LinkOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringList;
@@ -46,208 +61,149 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
-
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Default implementation for VFSPaths.
  */
-public abstract class VFSPathNode extends VPathNode implements VFSPath
-{
+public abstract class VFSPathNode extends VPathNode implements VFSPath {
     private static final PLogger logger = PLogger.getLogger(VFSPathNode.class);
 
-    public static final String[] vfsAttributeNames =
-    {
-            ATTR_RESOURCE_TYPE,
-            ATTR_NAME,
-            ATTR_SCHEME,
-            ATTR_HOSTNAME,
-            ATTR_PORT,
-            ATTR_MIMETYPE,
+    public static final String[] vfsAttributeNames = { ATTR_RESOURCE_TYPE,//
+            ATTR_NAME, ATTR_SCHEME,//
+            ATTR_HOSTNAME, ATTR_PORT, ATTR_MIMETYPE,//
             // ATTR_ISREADABLE,
             // ATTR_ISWRITABLE,
-            ATTR_ISHIDDEN,
-            ATTR_ISFILE,
-            ATTR_ISDIR,
+            ATTR_ISHIDDEN,// 
+            ATTR_ISFILE,//
+            ATTR_ISDIR,//
             ATTR_FILE_SIZE,
             // minimal time wich must be supported
-            ATTR_MODIFICATION_TIME,
-            ATTR_ISSYMBOLIC_LINK,
+            ATTR_MODIFICATION_TIME,//
+            ATTR_ISSYMBOLIC_LINK,//
             ATTR_PERMISSIONSTRING
     // implementation specific permissions string
     };
 
-    protected VFSPathNode(VFileSystem fileSystem, VRL vrl)
-    {
+    protected VFSPathNode(VFileSystem fileSystem, VRL vrl) {
         super(fileSystem, vrl);
     }
 
-    public VFileSystem getFileSystem()
-    {
+    public VFileSystem getFileSystem() {
         return (VFileSystem) resourceSystem;
     }
 
     @Override
-    public VFSPath getParent() throws VrsException
-    {
+    public VFSPath getParent() throws VrsException {
         return resolvePath(getDirname());
     }
 
     @Override
-    public VFSPath resolvePath(String relativePath) throws VrsException
-    {
+    public VFSPath resolvePath(String relativePath) throws VrsException {
         VRL resolvedVrl = vrl.resolvePath(relativePath);
         return getFileSystem().resolvePath(resolvedVrl);
     }
 
     @Override
-    public boolean isComposite() throws VrsException
-    {
+    public boolean isComposite() throws VrsException {
         return isDir();
     }
 
     @Override
-    public List<String> getChildResourceTypes() throws VrsException
-    {
-        if (isDir())
-        {
+    public List<String> getChildResourceTypes() throws VrsException {
+        if (isDir()) {
             return new StringList(VRSTypes.FILE_TYPE, VRSTypes.DIR_TYPE);
         }
-
         return null;
     }
 
     @Override
-    public String getResourceType() throws VrsException
-    {
-        if (isDir())
-        {
+    public String getResourceType() throws VrsException {
+        if (isDir()) {
             return FSPath.DIR_TYPE;
-        }
-        else
-        {
+        } else {
             return FSPath.FILE_TYPE;
         }
     }
 
-    public String getName()
-    {
+    public String getName() {
         return getBasename();
     }
 
-    public String getBasename()
-    {
+    public String getBasename() {
         return this.vrl.getBasename();
     }
 
-    public String getDirname()
-    {
+    public String getDirname() {
         return vrl.getDirname();
     }
 
     /**
      * @return path part of VRL as string.
      */
-    public String getPathAsString()
-    {
+    public String getPathAsString() {
         return vrl.getPath();
     }
 
-    public List<AttributeDescription> getResourceAttributeDescriptions()
-    {
+    public List<AttributeDescription> getResourceAttributeDescriptions() {
         List<AttributeDescription> attrs = new ArrayList<AttributeDescription>();
-
-        for (String name : vfsAttributeNames)
-        {
+        for (String name : vfsAttributeNames) {
             attrs.add(new AttributeDescription(name, AttributeType.ANY, true, "File Attribute:" + name));
         }
         return attrs;
     }
 
-    public Attribute getImmutableAttribute(String name) throws VrsException
-    {
+    public Attribute getImmutableAttribute(String name) throws VrsException {
         // extra Immutable VFS Attributes:
-        if (name.compareTo(ATTR_DIRNAME) == 0)
-        {
+        if (name.compareTo(ATTR_DIRNAME) == 0) {
             return new Attribute(name, getVRL().getDirname());
-        }
-        else if (name.compareTo(ATTR_PATH) == 0)
-        {
+        } else if (name.compareTo(ATTR_PATH) == 0) {
             return new Attribute(name, getVRL().getPath());
         }
-
         return super.getImmutableAttribute(name);
-
     }
 
     /**
      * Returns single File Resource Attribute.
      */
-    public Attribute getResourceAttribute(String name) throws VrsException
-    {
-        if (name == null)
-        {
+    public Attribute getResourceAttribute(String name) throws VrsException {
+        //
+        if (name == null) {
             return null;
         }
-
         // Check if super class has this attribute
         Attribute supervalue = super.getResourceAttribute(name);
-
-        if (supervalue != null)
-        {
+        if (supervalue != null) {
             return supervalue;
         }
-
         // --------
         // mutable
         // --------
-
-        if (name.compareTo(ATTR_RESOURCE_EXISTS) == 0)
-        {
+        if (name.compareTo(ATTR_RESOURCE_EXISTS) == 0) {
             return new Attribute(name, exists());
-        }
-        else if (name.compareTo(ATTR_ISDIR) == 0)
-        {
+        } else if (name.compareTo(ATTR_ISDIR) == 0) {
             return new Attribute(name, isDir());
-        }
-        else if (name.compareTo(ATTR_ISFILE) == 0)
-        {
+        } else if (name.compareTo(ATTR_ISFILE) == 0) {
             return new Attribute(name, isFile());
-        }
-        else if (name.compareTo(ATTR_ISSYMBOLIC_LINK) == 0)
-        {
+        } else if (name.compareTo(ATTR_ISSYMBOLIC_LINK) == 0) {
             return new Attribute(name, getFileAttributes().isSymbolicLink());
-        }
-        else if (name.compareTo(ATTR_FILE_SIZE) == 0)
-        {
+        } else if (name.compareTo(ATTR_FILE_SIZE) == 0) {
             return new Attribute(name, getFileAttributes().size());
-        }
-        else if (name.compareTo(ATTR_ISHIDDEN) == 0)
-        {
+        } else if (name.compareTo(ATTR_ISHIDDEN) == 0) {
             return new Attribute(name, isHidden());
-        }
-        else if (name.compareTo(ATTR_MODIFICATION_TIME) == 0)
-        {
-        	FileTime time = getFileAttributes().lastModifiedTime();
-        	
-            if (time != null)
-            {
+        } else if (name.compareTo(ATTR_MODIFICATION_TIME) == 0) {
+            FileTime time = getFileAttributes().lastModifiedTime();
+            if (time != null) {
                 return new Attribute(name, Presentation.createDate(time));
             }
-        }
-        else if (name.compareTo(ATTR_LASTACCESS_TIME) == 0)
-        {
+        } else if (name.compareTo(ATTR_LASTACCESS_TIME) == 0) {
             FileTime time = getFileAttributes().lastAccessTime();
-            if (time != null)
-            {
+            if (time != null) {
                 return new Attribute(name, Presentation.createDate(time));
             }
-        }
-        else if (name.compareTo(ATTR_CREATION_TIME) == 0)
-        {
+        } else if (name.compareTo(ATTR_CREATION_TIME) == 0) {
             FileTime time = getFileAttributes().creationTime();
-            if (time != null)
-            {
+            if (time != null) {
                 return new Attribute(name, Presentation.createDate(time));
             }
         }
@@ -259,71 +215,53 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
         return null;
     }
 
-    public long getLength() throws VrsException
-    {
+    public long getLength() throws VrsException {
         return getFileAttributes().size();
     }
 
     @Override
-    public boolean isDir(LinkOption... linkOptions) throws VrsException
-    {
+    public boolean isDir(LinkOption... linkOptions) throws VrsException {
         return getFileAttributes(linkOptions).isDirectory();
     }
 
     @Override
-    public boolean isFile(LinkOption... linkOptions) throws VrsException
-    {
+    public boolean isFile(LinkOption... linkOptions) throws VrsException {
         return getFileAttributes(linkOptions).isRegularFile();
     }
 
-    public boolean isHidden()
-    {
-    	return false; 
+    public boolean isHidden() {
+        return false;
     }
-    
-    public boolean create() throws VrsException
-    {
-        if (isFile())
-        {
+
+    public boolean create() throws VrsException {
+        if (isFile()) {
             createFile(false);
             return true;
-        }
-        else if (isDir())
-        {
+        } else if (isDir()) {
             mkdir(false);
             return true;
-        }
-        else
-        {
+        } else {
             throw new VrsException("Don't know how to create:" + this);
         }
     }
 
     @Override
-    public VFSPath create(String type, String name) throws VrsException
-    {
+    public VFSPath create(String type, String name) throws VrsException {
         return create(type, name, false);
     }
 
-    public VFSPath create(String type, String name, boolean ignoreExisting) throws VrsException
-    {
-        if (isFile())
-        {
+    public VFSPath create(String type, String name, boolean ignoreExisting) throws VrsException {
+        if (isFile()) {
             throw new VrsException("Files can not create child nodes");
         }
 
         VFSPath path = this.resolvePath(name);
 
-        if (StringUtil.equals(type, VRSTypes.FILE_TYPE))
-        {
+        if (StringUtil.equals(type, VRSTypes.FILE_TYPE)) {
             path.createFile(ignoreExisting);
-        }
-        else if (StringUtil.equals(type, VRSTypes.DIR_TYPE))
-        {
+        } else if (StringUtil.equals(type, VRSTypes.DIR_TYPE)) {
             path.mkdir(ignoreExisting);
-        }
-        else
-        {
+        } else {
             throw new VrsException("Type not supported:" + type);
         }
 
@@ -331,10 +269,8 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
 
     }
 
-    public VFSPath renameTo(VPath other) throws VrsException
-    {
-        if ((other instanceof VFSPath) == false)
-        {
+    public VFSPath renameTo(VPath other) throws VrsException {
+        if ((other instanceof VFSPath) == false) {
             throw new VrsException("Can only rename VFSPaths to other VFSPaths (VPath is not a filesystem path)");
         }
 
@@ -342,25 +278,21 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
     }
 
     @Override
-    public boolean mkdirs(boolean ignoreExisting) throws VrsException
-    {
+    public boolean mkdirs(boolean ignoreExisting) throws VrsException {
         List<VFSPath> paths = new ArrayList<VFSPath>();
 
         // walk up tree:
         VFSPath path = this;
 
-        while (path.isRoot() == false)
-        {
+        while (path.isRoot() == false) {
             VFSPath prev = path;
             path = path.getParent();
-            if (path == null)
-            {
+            if (path == null) {
                 logger.errorPrintf("FIXME: Current path is not root, but getParent() return null!\n");
                 break;
             }
 
-            if (paths.contains(path) || prev.getVRL().equals(path.getVRL()))
-            {
+            if (paths.contains(path) || prev.getVRL().equals(path.getVRL())) {
                 PLogger.getLogger(this.getClass()).errorPrintf(
                         "*** Path Cycle detected, parent path:" + path + " already in path list from:" + this);
                 break;
@@ -369,11 +301,9 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
             paths.add(path);
         }
 
-        for (int i = (paths.size() - 1); i >= 0; i--)
-        {
+        for (int i = (paths.size() - 1); i >= 0; i--) {
             VFSPath dir = paths.get(i);
-            if (dir.exists() == false)
-            {
+            if (dir.exists() == false) {
                 dir.mkdir(false);
             }
         }
@@ -382,33 +312,27 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
     }
 
     @Override
-    public VFSPath renameTo(String nameOrPath) throws VrsException
-    {
+    public VFSPath renameTo(String nameOrPath) throws VrsException {
         // resolve name against parent directory, the names applies to this location.
         VFSPath parentDir = this.getParent();
         VFSPath newPath = parentDir.resolvePath(nameOrPath);
         return this.renameTo(newPath);
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "<VFSPathNode>:[vrl=" + getVRL() + "]";
     }
 
-    public boolean delete() throws VrsException
-    {
+    public boolean delete() throws VrsException {
         return delete(LinkOption.NOFOLLOW_LINKS);
     }
 
-    public boolean delete(boolean recurse) throws VrsException
-    {
+    public boolean delete(boolean recurse) throws VrsException {
         return delete(recurse, LinkOption.NOFOLLOW_LINKS);
     }
 
-    public boolean delete(boolean recurse, LinkOption... linkOptions) throws VrsException
-    {
-        if (recurse == true)
-        {
+    public boolean delete(boolean recurse, LinkOption... linkOptions) throws VrsException {
+        if (recurse == true) {
             deleteContents(this, linkOptions);
         }
 
@@ -418,21 +342,17 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
     /**
      * Recursive delete contents. Does not delete this directory.
      */
-    public static void deleteContents(VFSPath dirPath, LinkOption... linkOptions) throws VrsException
-    {
+    public static void deleteContents(VFSPath dirPath, LinkOption... linkOptions) throws VrsException {
         // add content of current to heap
         List<? extends VFSPath> nodes = dirPath.list();
 
-        if ((nodes == null) || (nodes.size() <= 0))
-        {
+        if ((nodes == null) || (nodes.size() <= 0)) {
             return;
         }
 
-        for (VFSPath node : nodes)
-        {
+        for (VFSPath node : nodes) {
             // Pre emptive interruption!
-            if (Thread.currentThread().isInterrupted())
-            {
+            if (Thread.currentThread().isInterrupted()) {
                 throw new VrsException("Recursive delete was Interrupted!", new InterruptedException("Interrupted!"));
             }
 
@@ -440,38 +360,31 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
             // Assertion that the delete will not go UP the directory!
             // (Yes this has happened).
             // ---
-            if (node.getVRL().isParentOf(dirPath.getVRL()))
-            {
+            if (node.getVRL().isParentOf(dirPath.getVRL())) {
                 throw new VrsException("Refusing to delete parent of current path:" + node);
-            }
-            else if (node.getVRL().equals(dirPath.getVRL()))
-            {
+            } else if (node.getVRL().equals(dirPath.getVRL())) {
                 throw new VrsException("Recursive delete detected. Child node euqals parent:" + node);
             }
 
-            if (node.isDir(linkOptions))
-            {
+            if (node.isDir(linkOptions)) {
                 deleteContents(node, linkOptions);
             }
             node.delete();
         }
     }
 
-    protected void createEmptyFile(VStreamWritable streamWritable) throws VrsException
-    {
-        try
-        {
+    protected void createEmptyFile(VStreamWritable streamWritable) throws VrsException {
+        try {
             OutputStream outps = streamWritable.createOutputStream(false);
-            byte bytes[]=new byte[0];
+            byte bytes[] = new byte[0];
             outps.write(bytes);
             outps.flush();
             outps.close();
-        }
-        catch (IOException e) {
-            throw new VrsException (e.getMessage(),e); 
+        } catch (IOException e) {
+            throw new VrsException(e.getMessage(), e);
         }
     }
-    
+
     // ===================
     // Abstract Interface
     // ===================
@@ -497,8 +410,8 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath
     public abstract boolean isRoot() throws VrsException;
 
     /**
-     * Lists unfiltered and complete contents of this resource. Method should not sort the contents and return the list
-     * as-is.
+     * Lists unfiltered and complete contents of this resource. Method should not sort the contents
+     * and return the list as-is.
      */
     @Override
     public abstract List<? extends VFSPath> list() throws VrsException;

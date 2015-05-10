@@ -26,153 +26,132 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Legacy Java Logger Facade.
- * Refactored to SLF4J Plogger. 
+ * Legacy Java Logger Facade. Refactored to SLF4J Plogger.
+ * 
  * @see PLogger
  */
-public class ClassLogger extends FormattingLogger
-{
+public class ClassLogger extends FormattingLogger {
+
     // ==================
     // Class Fields 
     // ==================
-    
-    private static Map<String,ClassLogger> classLoggers=new Hashtable<String,ClassLogger>(); 
-    
-    private static ClassLogger rootLogger=null; 
-    
+
+    private static Map<String, ClassLogger> classLoggers = new Hashtable<String, ClassLogger>();
+
+    private static ClassLogger rootLogger = null;
+
     // ==================
     // Class Methods 
     // ==================
 
-    public static synchronized ClassLogger getLogger(String name) 
-    {
-        synchronized(classLoggers)
-        {
-            ClassLogger logger=classLoggers.get(name); 
+    public static synchronized ClassLogger getLogger(String name) {
+        synchronized (classLoggers) {
+            ClassLogger logger = classLoggers.get(name);
 
-            if (logger==null)
-            {
-                logger=new ClassLogger(name);
-                classLoggers.put(name,logger);
+            if (logger == null) {
+                logger = new ClassLogger(name);
+                classLoggers.put(name, logger);
 
                 // Important: Since loggers are hierarchical, set parent
                 // of new logger to the root logger for default log messages.
                 logger.setParent(rootLogger);
             }
-            
-            return logger; 
+
+            return logger;
         }
     }
 
-    public static ClassLogger getLogger(Class<?> clazz, ClassLogger parentLogger)
-    {
-        ClassLogger logger=getLogger(clazz);
-        logger.setParent(parentLogger); 
-        return logger; 
+    public static ClassLogger getLogger(Class<?> clazz, ClassLogger parentLogger) {
+        ClassLogger logger = getLogger(clazz);
+        logger.setParent(parentLogger);
+        return logger;
     }
-    
-    public static ClassLogger getLogger(Class<?> clazz)
-    {
-        return getLogger(clazz.getCanonicalName()); 
+
+    public static ClassLogger getLogger(Class<?> clazz) {
+        return getLogger(clazz.getCanonicalName());
     }
-    
-    static
-    {
+
+    static {
         // Toplevel Logging! 
-        Logger javaRootLogger=Logger.getLogger(""); 
-        javaRootLogger.setLevel(Level.SEVERE); 
-        
+        Logger javaRootLogger = Logger.getLogger("");
+        javaRootLogger.setLevel(Level.SEVERE);
+
         //java.util.logging.LogManager.getLogManager().getLogger(null).setLevel(ERROR); 
-        rootLogger=new ClassLogger(DEFAULT_RESOURCEBUNDLENAME); 
-        rootLogger.setLevel(ERROR); 
-        
+        rootLogger = new ClassLogger(DEFAULT_RESOURCEBUNDLENAME);
+        rootLogger.setLevel(ERROR);
+
         // Default root handler which prints out messages to STDERR: 
         rootLogger.addHandler(new StderrLogHandler(System.err));
-        
-        Level lvl=Level.SEVERE;
-        
-        if (lvl!=null)
+
+        Level lvl = Level.SEVERE;
+
+        if (lvl != null)
             rootLogger.setLevel(lvl);
     }
 
-    public static ClassLogger getRootLogger()
-    {
+    public static ClassLogger getRootLogger() {
         return rootLogger;
     }
-    
+
     // ==================
     // Instance 
     // ==================
-    
-    protected ClassLogger(String name, String resourceBundleName)
-    {
+
+    protected ClassLogger(String name, String resourceBundleName) {
         super(name, resourceBundleName);
     }
-    
-    protected ClassLogger(String name)
-    {
+
+    protected ClassLogger(String name) {
         // todo: resourcebundle names 
-        super(name,null);
+        super(name, null);
     }
-    
+
     // ==========================================================================================
     // Backward compatible methods/legacy  
     // ==========================================================================================
 
     // Old style object class top string formatter
-    private String object2classString(Object obj)
-    {
-        String source; 
-        
-        if (obj == null)
-        {
-            source="[NULL]";  
-        }
-        else
-        {
-            if (obj instanceof String)
-            {
+    private String object2classString(Object obj) {
+        String source;
+
+        if (obj == null) {
+            source = "[NULL]";
+        } else {
+            if (obj instanceof String) {
                 // Object is already in string form
-                source=(String)obj;
-            }
-            else
-            {
-                Class<?> clazz=null; 
-                
-                if (obj instanceof Class<?>)
-                {
+                source = (String) obj;
+            } else {
+                Class<?> clazz = null;
+
+                if (obj instanceof Class<?>) {
                     // Object is class name: is a  call
                     // use classname
-                    clazz=(Class<?>)obj; 
-                }
-                else
-                {
+                    clazz = (Class<?>) obj;
+                } else {
                     // instance call from object: get class of object:
-                    clazz=obj.getClass(); 
+                    clazz = obj.getClass();
                 }
-                
-                if (clazz.isAnonymousClass())
-                {
-                    Class<?> supC = clazz.getSuperclass(); 
-                    source="[Anon]"+clazz.getEnclosingClass().getSimpleName()+".<? extends "+supC.getSimpleName()+">"; 
-                }
-                else
-                {
-                    source=clazz.getSimpleName();
+
+                if (clazz.isAnonymousClass()) {
+                    Class<?> supC = clazz.getSuperclass();
+                    source = "[Anon]" + clazz.getEnclosingClass().getSimpleName() + ".<? extends "
+                            + supC.getSimpleName() + ">";
+                } else {
+                    source = clazz.getSimpleName();
                 }
             }
         }
-        
-        return source; 
-    }
-  
-    public void logException(Level level,Object source, Throwable e, String format, Object... args)
-    {
-        if (this.isLoggable(level)==false)
-            return; 
 
-        String srcstr=this.object2classString(source); 
-        this.logException(level, e, srcstr+":"+format, args);
+        return source;
     }
-    
+
+    public void
+            logException(Level level, Object source, Throwable e, String format, Object... args) {
+        if (this.isLoggable(level) == false)
+            return;
+
+        String srcstr = this.object2classString(source);
+        this.logException(level, e, srcstr + ":" + format, args);
+    }
+
 }

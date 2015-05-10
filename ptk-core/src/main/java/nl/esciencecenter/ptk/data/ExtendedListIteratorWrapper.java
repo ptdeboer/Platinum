@@ -25,83 +25,69 @@ import java.util.ListIterator;
 /**
  * Wrapper around default ListIterator to provide ExtendedListIterator functionality:
  */
-public class ExtendedListIteratorWrapper<T> implements ExtendedListIterator<T>
-{
+public class ExtendedListIteratorWrapper<T> implements ExtendedListIterator<T> {
+
     protected ListIterator<T> listIterator;
 
-    public ExtendedListIteratorWrapper(ListIterator<T> iterator)
-    {
+    public ExtendedListIteratorWrapper(ListIterator<T> iterator) {
         listIterator = iterator;
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return listIterator.hasNext();
     }
 
     @Override
-    public T next()
-    {
+    public T next() {
         return listIterator.next();
     }
 
     @Override
-    public boolean hasPrevious()
-    {
+    public boolean hasPrevious() {
 
         return listIterator.hasNext();
     }
 
     @Override
-    public T previous()
-    {
+    public T previous() {
         return listIterator.previous();
     }
 
     @Override
-    public int nextIndex()
-    {
+    public int nextIndex() {
         return listIterator.nextIndex();
     }
 
     @Override
-    public int previousIndex()
-    {
+    public int previousIndex() {
         return listIterator.previousIndex();
     }
 
     @Override
-    public void remove()
-    {
+    public void remove() {
         listIterator.remove();
     }
 
     @Override
-    public void set(T e)
-    {
+    public void set(T e) {
         listIterator.set(e);
     }
 
     @Override
-    public void add(T e)
-    {
+    public void add(T e) {
         listIterator.add(e);
     }
 
     @Override
-    public ExtendedList<T> next(int numElements)
-    {
+    public ExtendedList<T> next(int numElements) {
+
         ExtendedList<T> subList = new ExtendedList<T>(numElements);
 
-        for (int i = 0; i < numElements; i++)
-        {
-            if (listIterator.hasNext())
-            {
+        for (int i = 0; i < numElements; i++) {
+            if (listIterator.hasNext()) {
                 subList.add(listIterator.next());
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
@@ -110,19 +96,15 @@ public class ExtendedListIteratorWrapper<T> implements ExtendedListIterator<T>
     }
 
     @Override
-    public ExtendedList<T> previous(int numElements, boolean keepOriginalOrder)
-    {
+    public ExtendedList<T> previous(int numElements, boolean keepOriginalOrder) {
+
         ExtendedList<T> subList = new ExtendedList<T>(numElements);
 
-        for (int i = 0; i < numElements; i++)
-        {
-            if (listIterator.hasPrevious())
-            {
+        for (int i = 0; i < numElements; i++) {
+            if (listIterator.hasPrevious()) {
                 // Costly Insert O(NxN) if implementation is ArrayList.
                 subList.insert(0, listIterator.previous());
-            }
-            else
-            {
+            } else {
                 break;
             }
         }

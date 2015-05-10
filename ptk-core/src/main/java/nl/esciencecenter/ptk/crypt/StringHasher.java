@@ -33,11 +33,11 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Stateful String Hasher Util class.<br>
- * <strong>Salting</strong>: If a salt is specified the byte value of the salt string is added as extra digest after
- * processing the source text.
+ * <strong>Salting</strong>: If a salt is specified the byte value of the salt string is added as
+ * extra digest after processing the source text.
  */
-public class StringHasher implements Cloneable, Duplicatable<StringHasher>
-{
+public class StringHasher implements Cloneable, Duplicatable<StringHasher> {
+
     public final static String SHA_256 = "SHA-256";
 
     public final static String SHA_1 = "SHA-1";
@@ -52,8 +52,7 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
 
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(StringHasher.class);
     }
 
@@ -63,8 +62,7 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     /**
      * Truncate the hash bytes (digest) and exor the remaining bytes with the beginning.
      */
-    public static byte[] truncate(byte digest[], int maxLen)
-    {
+    public static byte[] truncate(byte digest[], int maxLen) {
         byte subDigest[] = new byte[maxLen];
         for (int i = 0; i < maxLen; i++)
             subDigest[i] = 0; // clear
@@ -86,65 +84,55 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
 
     private Charset charSet = null;
 
-    protected StringHasher()
-    {
+    protected StringHasher() {
 
     }
 
-    public StringHasher(String hashType) throws NoSuchAlgorithmException, UnsupportedEncodingException
-    {
+    public StringHasher(String hashType) throws NoSuchAlgorithmException,
+            UnsupportedEncodingException {
         init(hashType, "UTF8");
     }
 
-    public StringHasher(String hashType, String charSet) throws NoSuchAlgorithmException, UnsupportedEncodingException
-    {
+    public StringHasher(String hashType, String charSet) throws NoSuchAlgorithmException,
+            UnsupportedEncodingException {
         init(hashType, charSet);
     }
 
     @Override
-    public boolean shallowSupported()
-    {
+    public boolean shallowSupported() {
         return false;
     }
 
     @Override
-    public StringHasher duplicate()
-    {
+    public StringHasher duplicate() {
         return clone();
     }
 
     @Override
-    public StringHasher duplicate(boolean shallow)
-    {
+    public StringHasher duplicate(boolean shallow) {
         return clone();
     }
 
-    public StringHasher clone()
-    {
+    public StringHasher clone() {
         StringHasher hasher = new StringHasher();
         hasher.copyFrom(this);
         return hasher;
     }
 
-    protected void init(String hashType, String encoding) throws UnsupportedEncodingException, NoSuchAlgorithmException
-    {
+    protected void init(String hashType, String encoding) throws UnsupportedEncodingException,
+            NoSuchAlgorithmException {
         setEncoding(encoding);
         setHashType(hashType);
     }
 
-    protected void copyFrom(StringHasher other)
-    {
+    protected void copyFrom(StringHasher other) {
         this.charSet = other.charSet;
 
-        if (other.messageDigest != null)
-        {
+        if (other.messageDigest != null) {
             // exception free clone:
-            try
-            {
+            try {
                 this.messageDigest = MessageDigest.getInstance(other.messageDigest.getAlgorithm());
-            }
-            catch (NoSuchAlgorithmException e)
-            {
+            } catch (NoSuchAlgorithmException e) {
                 logger.logException(PLogger.FATAL, e,
                         "Impossible Exception:Already existing MessageDigest Instance returns NoSuchAlgorithmException"
                                 + "of its own algorithm:" + other.messageDigest.getAlgorithm());
@@ -152,64 +140,54 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
         }
     }
 
-    public void setHashType(String hashType) throws NoSuchAlgorithmException
-    {
+    public void setHashType(String hashType) throws NoSuchAlgorithmException {
         messageDigest = MessageDigest.getInstance(hashType);
 
-        if ((StringUtil.equalsIgnoreCase(hashType, MD5)) || (StringUtil.equalsIgnoreCase(hashType, SHA_1)))
+        if ((StringUtil.equalsIgnoreCase(hashType, MD5))
+                || (StringUtil.equalsIgnoreCase(hashType, SHA_1)))
             logger.warnPrintf("Don't use outdated MD5 od SHA-1\n");
     }
 
-    public void setEncoding(String charSetStr) throws UnsupportedEncodingException
-    {
+    public void setEncoding(String charSetStr) throws UnsupportedEncodingException {
         charSet = Charset.forName(charSetStr);
 
         if (charSet == null)
             throw new UnsupportedEncodingException("No such Character Encoding:" + charSetStr);
     }
 
-    public Charset getEncoding()
-    {
+    public Charset getEncoding() {
         return this.charSet;
     }
 
-    public void reset()
-    {
+    public void reset() {
         messageDigest.reset();
     }
 
-    public String createFileChecksum(String checksumType, String filename) throws IOException
-    {
+    public String createFileChecksum(String checksumType, String filename) throws IOException {
+
         reset();
+        byte[] dataBytes = new byte[1024];
+        int nread = 0;
 
         FileInputStream fis = new FileInputStream(filename);
-
-        byte[] dataBytes = new byte[1024];
-
-        int nread = 0;
-        while ((nread = fis.read(dataBytes)) != -1)
-        {
+        while ((nread = fis.read(dataBytes)) != -1) {
             messageDigest.update(dataBytes, 0, nread);
         }
 
         // ignore;
-        try
-        {
+        try {
             fis.close();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             ;
         }
 
         byte[] mdbytes = messageDigest.digest();
-
         return StringUtil.toHexString(mdbytes);
     }
 
     /**
-     * Create hash from provided text. The hash length (in bytes) will be limited to maxhashLen. The remainder of the
-     * hash will be exored with the actual truncated hash.
+     * Create hash from provided text. The hash length (in bytes) will be limited to maxhashLen.<br>
+     * The remainder of the hash will be exored with the actual truncated hash.
      * 
      * @param text
      *            - String to hash
@@ -220,12 +198,10 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
      *            - maximum hash length in bytes or -1.
      * @return hash - in hexidecimal String format, without "0x" prefixed.
      */
-    public String createHashToHexString(String text, String salt, int maxHashLen)
-    {
+    public String createHashToHexString(String text, String salt, int maxHashLen) {
         byte digest[] = _hash(text.getBytes(charSet), true, salt.getBytes(charSet), false);
 
-        if (maxHashLen > 0)
-        {
+        if (maxHashLen > 0) {
             digest = truncate(digest, maxHashLen);
         }
 
@@ -233,8 +209,8 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     }
 
     /**
-     * Create hash from provided text. The hash length (in bytes) will be limited to maxhashLen. The remainder of the
-     * hash will be exored with the actual truncated hash.
+     * Create hash from provided text. The hash length (in bytes) will be limited to maxhashLen. <br>
+     * The remainder of the hash will be exored with the actual truncated hash.
      * 
      * @param text
      *            - String to hash
@@ -242,30 +218,26 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
      *            - maximum hash length in bytes or -1.
      * @return hash - base64 encoded hash value.
      */
-    public String createHashToBase64String(String text, String saltText, int maxHashLen)
-    {
+    public String createHashToBase64String(String text, String saltText, int maxHashLen) {
         byte digest[] = hash(text, true, saltText, false);
 
-        if (maxHashLen > 0)
-        {
+        if (maxHashLen > 0) {
             digest = truncate(digest, maxHashLen);
         }
 
         return StringUtil.base64Encode(digest);
     }
 
-    public String createHashToHexString(String text)
-    {
+    public String createHashToHexString(String text) {
         byte digest[] = hash(text, true, null, false);
         return StringUtil.toHexString(digest, true);
     }
 
     /**
-     * Create Hash from String and return hash value as Base64 encoded String. When using SHA-256 these 32 bytes will be
-     * encode to 48 characters.
+     * Create Hash from String and return hash value as Base64 encoded String.<br>
+     * When using SHA-256 these 32 bytes will be encode to 48 characters.
      */
-    public String createHashToBase64String(String text, String saltText)
-    {
+    public String createHashToBase64String(String text, String saltText) {
         byte digest[] = hash(text, true, saltText, false);
         return StringUtil.base64Encode(digest);
     }
@@ -278,11 +250,10 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
      * @param saltText
      *            - optional salt text to add.
      * @param prefixSalt
-     *            - if true, saltBytes are applied before hashing the actual bytes if false, the source bytes are hashed
-     *            first, then the saltBytes are digested.
+     *            - if true, saltBytes are applied before hashing the actual bytes if false, the
+     *            source bytes are hashed first, then the saltBytes are digested.
      */
-    public byte[] hash(String text, boolean reset, String saltText, boolean prefixSalt)
-    {
+    public byte[] hash(String text, boolean reset, String saltText, boolean prefixSalt) {
         if (text == null)
             throw new NullPointerException("Source text can not be null!");
 
@@ -293,8 +264,9 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
     }
 
     /**
-     * Hash sourceBytes[] and optionally use saltBytes[] either as prefix (prefixSalt==true) or postFix
-     * (prefixSalt=false) and return he resulting bytes. This changed the state of the hasher.
+     * Hash sourceBytes[] and optionally use saltBytes[] either as prefix (prefixSalt==true) or
+     * postFix (prefixSalt=false) and return he resulting bytes. This changed the state of the
+     * hasher.
      * 
      * @param sourceBytes
      *            - actual bytes to create hash from.
@@ -303,19 +275,17 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher>
      * @param saltBytes
      *            - optional salt bytes to add.
      * @param prefixSalt
-     *            - if true, saltBytes are applied before hashing the actual bytes if false, the source bytes are hashed
-     *            first, then the saltBytes are digested.
+     *            - if true, saltBytes are applied before hashing the actual bytes if false, the
+     *            source bytes are hashed first, then the saltBytes are digested.
      */
-    public byte[] hash(byte sourceBytes[], boolean reset, byte saltBytes[], boolean prefixSalt)
-    {
+    public byte[] hash(byte sourceBytes[], boolean reset, byte saltBytes[], boolean prefixSalt) {
         return _hash(sourceBytes, reset, saltBytes, prefixSalt);
     }
 
     /**
      * Hash implementation.
      */
-    protected byte[] _hash(byte sourceBytes[], boolean reset, byte saltBytes[], boolean prefixSalt)
-    {
+    protected byte[] _hash(byte sourceBytes[], boolean reset, byte saltBytes[], boolean prefixSalt) {
         if (reset)
             reset();
 

@@ -33,20 +33,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
-public class CertPanel extends JPanel
-{
+public class CertPanel extends JPanel {
     private static final long serialVersionUID = -392090763524848492L;
 
     public static final int CANCEL = -1;
 
     public static final int OK = 0;
-    
+
     public static final int TEMPORARY = 1;
 
     public static final int NO = 2;
 
     // === instance === // 
-    
+
     private JLabel certInfoLabel;
     private JPanel topBorderPanel;
     private JPanel topPanel;
@@ -61,28 +60,23 @@ public class CertPanel extends JPanel
     private CertPanelListener certPanelListener;
     private boolean viewOnly;
 
-    public CertPanel()
-    {
+    public CertPanel() {
         super();
         initGUI();
     }
 
-    public void exit(int val)
-    {
+    public void exit(int val) {
         this.value = val;
         // this.setVisible(false);
         certPanelListener.optionSelected();
     }
 
-    public void setCertPanelListener(CertPanelListener listener)
-    {
+    public void setCertPanelListener(CertPanelListener listener) {
         this.certPanelListener = listener;
     }
 
-    private void initGUI()
-    {
-        try
-        {
+    private void initGUI() {
+        try {
             BorderLayout thisLayout = new BorderLayout();
             setLayout(thisLayout);
             {
@@ -102,8 +96,7 @@ public class CertPanel extends JPanel
                         upperText = new JTextArea();
                         topBorderPanel.add(upperText, BorderLayout.CENTER);
                         upperText.setText("text");
-                        upperText.setBorder(BorderFactory
-                                .createEtchedBorder(BevelBorder.LOWERED));
+                        upperText.setBorder(BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
                         upperText.setFont(new java.awt.Font("Dialog", 1, 14));
                         upperText.setEditable(false);
                     }
@@ -132,15 +125,13 @@ public class CertPanel extends JPanel
                 {
                     buttonPanel = new JPanel();
                     borderPanel.add(buttonPanel, BorderLayout.SOUTH);
-                    buttonPanel.setBorder(BorderFactory
-                            .createEtchedBorder(BevelBorder.LOWERED));
+                    buttonPanel.setBorder(BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
                     {
                         importButton = new JButton();
                         buttonPanel.add(importButton);
                         importButton.setText("Import");
                         importButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt)
-                            {
+                            public void actionPerformed(ActionEvent evt) {
                                 exit(OK);
                             }
                         });
@@ -150,8 +141,7 @@ public class CertPanel extends JPanel
                         buttonPanel.add(cancelButton);
                         cancelButton.setText("Cancel");
                         cancelButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent evt)
-                            {
+                            public void actionPerformed(ActionEvent evt) {
                                 exit(CANCEL);
                             }
                         });
@@ -165,23 +155,19 @@ public class CertPanel extends JPanel
                 }
             }
             this.setSize(578, 322);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    void setMessageText(String text)
-    {
+    void setMessageText(String text) {
         this.middleText.setText(text);
     }
 
     /**
      * Auto-generated main method to display this JDialog
      */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         JFrame frame = new JFrame();
         CertPanel inst = new CertPanel();
         frame.add(inst);
@@ -204,18 +190,15 @@ public class CertPanel extends JPanel
     // return inst.value;
     // }
 
-    void setQuestion(String text)
-    {
+    void setQuestion(String text) {
         this.upperText.setText(text);
     }
 
-    public int getOption()
-    {
+    public int getOption() {
         return value;
     }
 
-    public void setViewOnly(boolean viewOnly)
-    {
+    public void setViewOnly(boolean viewOnly) {
         this.viewOnly = viewOnly;
         boolean add = (viewOnly == false);
 

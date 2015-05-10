@@ -16,14 +16,14 @@ public class Test_URIFactory
 
         URI result = new URIFactory(baseUri)
                 .setScheme("http")
-                .setUserInfo("henk")
+                .setUserInfo("bob")
                 .setPort(8080)
                 .setHostname("remote")
                 .appendPath("service")
                 .uriResolve("?query#index")
                 .toURI();
 
-        Assert.assertEquals("Chainged URI does not match expected", "http://henk@remote:8080/base/service?query#index", result.toString());
+        Assert.assertEquals("Chainged URI does not match expected", "http://bob@remote:8080/base/service?query#index", result.toString());
 
     }
 

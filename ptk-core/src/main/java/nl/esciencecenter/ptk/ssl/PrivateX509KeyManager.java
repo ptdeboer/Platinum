@@ -20,86 +20,76 @@
 
 package nl.esciencecenter.ptk.ssl;
 
-
-import javax.net.ssl.X509KeyManager;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
-
 import java.net.Socket;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.X509KeyManager;
+
+import nl.esciencecenter.ptk.util.logging.PLogger;
+
 /**
- * Implementation of a X509KeyManager, which always returns one pair of a private key 
- * and certificate chain.
- * It manages a user key which is a private key.  
+ * Implementation of a X509KeyManager, which always returns one pair of a private key and
+ * certificate chain.<br>
+ * It manages a user key which is a private key.
  */
-public class PrivateX509KeyManager implements X509KeyManager 
-{
-   static PLogger log = null;
-   
-   static
-   {
-       log=PLogger.getLogger(PrivateX509KeyManager.class);
-   }
-   
-   private final X509Certificate[] certChain;
+public class PrivateX509KeyManager implements X509KeyManager {
+    static PLogger log = null;
 
-   private final PrivateKey key;
+    static {
+        log = PLogger.getLogger(PrivateX509KeyManager.class);
+    }
 
-   public PrivateX509KeyManager(Certificate[] cchain, PrivateKey key)
-   {
-       this.certChain = new X509Certificate[cchain.length];
-       System.arraycopy(cchain, 0, this.certChain, 0, cchain.length);
-       this.key = key;
-   }
+    private final X509Certificate[] certChain;
 
-   //not used
-   public String[] getClientAliases(String string, Principal[] principals) 
-   {
-       log.debugPrintf("getClientAliases()\n");
-       return null;
-   }
+    private final PrivateKey key;
 
-   /// Intented to be implemented by GUI for user interaction, but we have only one key.
-   public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) 
-   {
-       if (log.isLoggable(PLogger.DEBUG))
-       {
-           log.debugPrintf("chooseClientAlias()\n");
-           for (int i = 0; i < keyType.length; i++) log.debugPrintf("keyType[" + i + "]=" + keyType[i]+"\n");
-           for (int i = 0; i < issuers.length; i++) log.debugPrintf("issuers[" + i + "]=" + issuers[i]+"\n");
-       }
-       
-       return "thealias";
-   }
+    public PrivateX509KeyManager(Certificate[] cchain, PrivateKey key) {
+        this.certChain = new X509Certificate[cchain.length];
+        System.arraycopy(cchain, 0, this.certChain, 0, cchain.length);
+        this.key = key;
+    }
 
-   //not used on a client
-   public String[] getServerAliases(String string, Principal[] principals) 
-   {
-       log.debugPrintf("getServerAliases()\n");
-       return null;
-   }
+    //not used
+    public String[] getClientAliases(String string, Principal[] principals) {
+        log.debugPrintf("getClientAliases()\n");
+        return null;
+    }
 
-   //not used on a client
-   public String chooseServerAlias(String string, Principal[] principals, Socket socket) 
-   {
-       log.debugPrintf("chooseServerAlias()\n");
-       return null;
-   }
+    /// Intented to be implemented by GUI for user interaction, but we have only one key.
+    public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+        if (log.isLoggable(PLogger.DEBUG)) {
+            log.debugPrintf("chooseClientAlias()\n");
+            for (int i = 0; i < keyType.length; i++)
+                log.debugPrintf("keyType[" + i + "]=" + keyType[i] + "\n");
+            for (int i = 0; i < issuers.length; i++)
+                log.debugPrintf("issuers[" + i + "]=" + issuers[i] + "\n");
+        }
 
-   public X509Certificate[] getCertificateChain(String alias) 
-   {
-       log.debugPrintf("getCertificateChain()\n");
-       return certChain;
-   }
+        return "thealias";
+    }
 
-   public PrivateKey getPrivateKey(String alias) 
-   {
-       log.debugPrintf("getPrivateKey()\n");
-       return key;
-   }
+    //not used on a client
+    public String[] getServerAliases(String string, Principal[] principals) {
+        log.debugPrintf("getServerAliases()\n");
+        return null;
+    }
+
+    //not used on a client
+    public String chooseServerAlias(String string, Principal[] principals, Socket socket) {
+        log.debugPrintf("chooseServerAlias()\n");
+        return null;
+    }
+
+    public X509Certificate[] getCertificateChain(String alias) {
+        log.debugPrintf("getCertificateChain()\n");
+        return certChain;
+    }
+
+    public PrivateKey getPrivateKey(String alias) {
+        log.debugPrintf("getPrivateKey()\n");
+        return key;
+    }
 }

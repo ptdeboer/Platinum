@@ -55,7 +55,6 @@ import javax.swing.SwingUtilities;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.exec.ShellChannel;
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.ui.charpane.ColorMap;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
 import nl.esciencecenter.ptk.util.ResourceLoader;
@@ -63,178 +62,154 @@ import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.util.vterm.VTermChannelProvider.TermChannelOptions;
 
+public class VTerm extends JFrame implements Runnable {
+    // ========================================================================
 
-public class VTerm extends JFrame implements  Runnable
-{
     // ========================================================================
-    
-    // ========================================================================
-    
+
     private static PLogger logger;
-    
-    static
-    {
-        logger=PLogger.getLogger(VTerm.class);
+
+    static {
+        logger = PLogger.getLogger(VTerm.class);
         //logger.setLevelToDebug(); 
     }
-    
-	private static final long serialVersionUID = -3209091621707504735L;
 
-	public static int verbose=0; // 0=silent, 1 = error and fixmes,2=debug,3 very debug  
+    private static final long serialVersionUID = -3209091621707504735L;
+
+    public static int verbose = 0; // 0=silent, 1 = error and fixmes,2=debug,3 very debug  
 
     private static final String SESSION_SSH = "SSH";
 
     private static final String SESSION_BASH = "BASH";
 
     private static final String SESSION_TELNET = "TELNET";
-    
+
     private static final String SESSION_SHELLCHANNEL = "SHELLCHANNEL";
 
-    private static final String aboutText = 
-          "<html><center>VLTerm VT100+ Emulator<br>"
-        + "(beta version)<br>"
-        + "(C) VL-e consortium<br>"
-        + "Author Piter T. de Boer<br>"
-        + "Render Engine (C) Piter.NL</center></html>";
-    
+    private static final String aboutText = "<html><center>VLTerm VT100+ Emulator<br>"
+            + "(beta version)<br>" + "(C) VL-e consortium<br>" + "Author Piter T. de Boer<br>"
+            + "Render Engine (C) Piter.NL</center></html>";
+
     // ========================================================================
-    
+
     // ========================================================================
-    
-    public class TermController implements WindowListener,ComponentListener, EmulatorListener, ActionListener
-    {
-		private String shortTitle;
-	
-		private String longTitle;
 
-		public TermController()
-		{
-			
-		}
-		
-		public void componentHidden(ComponentEvent e)
-		{
-			
-		}
+    public class TermController implements WindowListener, ComponentListener, EmulatorListener,
+            ActionListener {
+        private String shortTitle;
 
-		public void componentMoved(ComponentEvent e)
-		{
-		}
+        private String longTitle;
 
-		public void componentResized(ComponentEvent e)
-		{
-			if (e.getSource()==terminalPanel)
-			{
-				sendTermSize(terminalPanel.getColumnCount(),terminalPanel.getRowCount());				 
-			}
-		}
+        public TermController() {
 
-		public void componentShown(ComponentEvent e)
-		{
-			//vlTerm.charPane.startRenderers(); 
-			//vlTerm.charPane.repaint(); 
-		}
+        }
 
-		public void notifyGraphMode(int type, String arg) 
-		{
-			if (type==1)
-				this.shortTitle=arg;
-			else
-				this.longTitle=arg;
-        
-			if (shortTitle==null)
-				shortTitle="";
-			
-			if (longTitle==null)
-				longTitle="";
-        
-          // System.err.println(">>> NR="+type+" => "+token.strArg);  
-          setTitle("["+shortTitle+"] "+longTitle);
-		}
+        public void componentHidden(ComponentEvent e) {
 
-		public void notifyCharSet(String charSet)
-		{
-		}
+        }
 
-		public void actionPerformed(ActionEvent e) 
-		{
-			VTerm.this.actionPerformed(e); 
-		}
+        public void componentMoved(ComponentEvent e) {
+        }
 
-		public void windowActivated(WindowEvent e)
-		{
-		}
+        public void componentResized(ComponentEvent e) {
+            if (e.getSource() == terminalPanel) {
+                sendTermSize(terminalPanel.getColumnCount(), terminalPanel.getRowCount());
+            }
+        }
 
-		public void windowClosed(WindowEvent e)
-		{
-		}
+        public void componentShown(ComponentEvent e) {
+            //vlTerm.charPane.startRenderers(); 
+            //vlTerm.charPane.repaint(); 
+        }
 
-		public void windowClosing(WindowEvent e)
-		{
-		}
+        public void notifyGraphMode(int type, String arg) {
+            if (type == 1)
+                this.shortTitle = arg;
+            else
+                this.longTitle = arg;
 
-		public void windowDeactivated(WindowEvent e)
-		{
-			//vlTerm.charPane.stopRenderers(); 
-		}
+            if (shortTitle == null)
+                shortTitle = "";
 
-		public void windowDeiconified(WindowEvent e)
-		{
-			terminalPanel.activate(); // charPane.startRenderers(); 
-		}
+            if (longTitle == null)
+                longTitle = "";
 
-		public void windowIconified(WindowEvent e)
-		{
-			terminalPanel.inactivate(); // charPane.stopRenderers(); 
-		}
+            // System.err.println(">>> NR="+type+" => "+token.strArg);  
+            setTitle("[" + shortTitle + "] " + longTitle);
+        }
 
-		public void windowOpened(WindowEvent e)
-		{
-			terminalPanel.activate(); // charPane.startRenderers(); 
-		}
+        public void notifyCharSet(String charSet) {
+        }
 
-		public void notifyResized(int columns,int rows) 
-		{
-			// charPane has already been resized: Update frame!
-			VTerm.this.updateFrameSize(); 
-		}
+        public void actionPerformed(ActionEvent e) {
+            VTerm.this.actionPerformed(e);
+        }
+
+        public void windowActivated(WindowEvent e) {
+        }
+
+        public void windowClosed(WindowEvent e) {
+        }
+
+        public void windowClosing(WindowEvent e) {
+        }
+
+        public void windowDeactivated(WindowEvent e) {
+            //vlTerm.charPane.stopRenderers(); 
+        }
+
+        public void windowDeiconified(WindowEvent e) {
+            terminalPanel.activate(); // charPane.startRenderers(); 
+        }
+
+        public void windowIconified(WindowEvent e) {
+            terminalPanel.inactivate(); // charPane.stopRenderers(); 
+        }
+
+        public void windowOpened(WindowEvent e) {
+            terminalPanel.activate(); // charPane.startRenderers(); 
+        }
+
+        public void notifyResized(int columns, int rows) {
+            // charPane has already been resized: Update frame!
+            VTerm.this.updateFrameSize();
+        }
 
     }
-    
+
     // =======================================================================
     //
     // =======================================================================
 
     // options/config: 
-    boolean _saveConfigEnabled=true; 
+    boolean _saveConfigEnabled = true;
 
-    String termType=VT10xEmulatorDefs.TERM_XTERM; 
-    
+    String termType = VT10xEmulatorDefs.TERM_XTERM;
 
     // =======================
     // Session fields
     // =======================
 
-    protected java.net.URI startURI=null;
-    
+    protected java.net.URI startURI = null;
+
     String sessionType = SESSION_SSH;
 
     TermPanel terminalPanel;
-    
+
     Thread thread = null;
-    
+
     private ShellChannel shellChannel;
-    
+
     // 
     private boolean sessionAlive;
-    
+
     // Menu 
     private boolean isResizable = true;
 
     // ==============
     // GUI 
     // ==============
-    
+
     private JMenuBar menu;
     private JCheckBoxMenuItem sshXForwardingCB;
     private JCheckBoxMenuItem channelCompressionCB;
@@ -242,51 +217,46 @@ public class VTerm extends JFrame implements  Runnable
     private JMenuItem startBashMenuItem;
     private JMenuItem closeSessionMenuItem;
     private JMenuItem startSSHMenuItem;
-	private JCheckBoxMenuItem menuTypeVt100CB;
-	private JCheckBoxMenuItem menuTypeXtermCB;
-	private TermController termController;
+    private JCheckBoxMenuItem menuTypeVt100CB;
+    private JCheckBoxMenuItem menuTypeXtermCB;
+    private TermController termController;
     private JCheckBoxMenuItem optionsSyncScrolling;
-    
-    /** Current view properties */ 
-    private Properties sessionProperties=new Properties();
-    
+
+    /** Current view properties */
+    private Properties sessionProperties = new Properties();
+
     VTermChannelProvider termProvider;
-    
-    public VTerm(VTermChannelProvider termProvider)
-    {
-        this.termProvider=termProvider;
-        
-        loadConfigSettings(); 
-        
+
+    public VTerm(VTermChannelProvider termProvider) {
+        this.termProvider = termProvider;
+
+        loadConfigSettings();
+
         // gui uses loaded settings !
         initGui();
-        
-        try
-        {
-            startURI=new URI("ssh",GlobalProperties.getGlobalUserName(),"localhost",22,null,null,null);
-        }
-        catch (URISyntaxException e)
-        {
+
+        try {
+            startURI = new URI("ssh", GlobalProperties.getGlobalUserName(), "localhost", 22, null,
+                    null, null);
+        } catch (URISyntaxException e) {
             e.printStackTrace();
-        } 
+        }
     }
-    
-    void loadConfigSettings()
-    {
-    	this.persistantProperties=loadProperties();
+
+    void loadConfigSettings() {
+        this.persistantProperties = loadProperties();
     }
-    
-    public void initGui()
-    {
+
+    public void initGui() {
         this.setTitle("");
 
         this.setLayout(new BorderLayout());
 
-    	this.termController=new TermController(); 
+        this.termController = new TermController();
 
         {
             terminalPanel = new TermPanel();
-            terminalPanel.initGUI(); 
+            terminalPanel.initGUI();
             this.add(terminalPanel, BorderLayout.CENTER);
         }
 
@@ -296,90 +266,81 @@ public class VTerm extends JFrame implements  Runnable
         }
 
         // Apply loaded config settings to CharPane !
-        this.applyGraphicConfigSettings(); 
-        
+        this.applyGraphicConfigSettings();
+
         //setResizable(this.isResizable);
 
         // Listeners:
         {
-        	this.addWindowListener(new WindowAdapter()
-        	{
-        		public void windowClosing(WindowEvent e)
-        		{
-        			exit(0); 
-        		}
-        	});
-        	
-           	this.terminalPanel.addComponentListener(termController);
-           	this.addComponentListener(termController);
-           	this.addWindowListener(termController);
-        	//this.vlTerm.addTermListener(termPanelListener); 
-        }
-        
-        this.pack(); 
-    }
-    
-    /** 
-     * Apply current configured properties to CharPane. Does reset graphics ! 
-     */ 
-    void applyGraphicConfigSettings()
-    {
-    	// update configuration: 
-    	String propStr = (String) persistantProperties.get("vlterm.syncScrolling");
-    	if (propStr!=null)
-    	{
-    		boolean val=Boolean.parseBoolean(propStr);
-    	 	this.optionsSyncScrolling.setSelected(val); 
-    	 	this.terminalPanel.setSynchronizedScrolling(val); 
-    	}
-    	
-    	// directly set charPane options: do not reset graphics each time !
-    	propStr = (String) persistantProperties.get("vlterm.color.scheme");
-    	if (propStr!=null)
-    	 	this.terminalPanel.updateColorMap(ColorMap.getColorMap(propStr),false);
+            this.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    exit(0);
+                }
+            });
 
-    	propStr = (String) persistantProperties.get("vlterm.font.type");
-    	if (propStr!=null)
-    		this.terminalPanel.updateFontType(propStr,false); 
-    	
-    	propStr = (String) persistantProperties.get("vlterm.font.size");
-    	if (propStr!=null)
-    		this.terminalPanel.updateFontSize(Integer.parseInt(propStr),false); 
-    
-    	propStr = (String) persistantProperties.get("vlterm.font.antiAliasing");
-    	
-    	if (propStr!=null)
-    	{
-    		boolean val=Boolean.parseBoolean(propStr);
-    		this.terminalPanel.getFontInfo().setAntiAliasing(val); 
-    		this.fontAAcheckBox.setSelected(val);  
-    	}
-    	
-    	// reset graphics=initialize graphics
-    	this.terminalPanel.resetGraphics(); 
-    	// this.updateFrameSize(); 
-    }
-    
-    public TermChannelOptions getChannelOptions(String type, boolean autoCreate)
-    {
-        TermChannelOptions options=termProvider.getChannelOptions(type); 
-        if (options!=null)
-        {
-            return options; 
+            this.terminalPanel.addComponentListener(termController);
+            this.addComponentListener(termController);
+            this.addWindowListener(termController);
+            //this.vlTerm.addTermListener(termPanelListener); 
         }
-        
+
+        this.pack();
+    }
+
+    /**
+     * Apply current configured properties to CharPane. Does reset graphics !
+     */
+    void applyGraphicConfigSettings() {
+        // update configuration: 
+        String propStr = (String) persistantProperties.get("vlterm.syncScrolling");
+        if (propStr != null) {
+            boolean val = Boolean.parseBoolean(propStr);
+            this.optionsSyncScrolling.setSelected(val);
+            this.terminalPanel.setSynchronizedScrolling(val);
+        }
+
+        // directly set charPane options: do not reset graphics each time !
+        propStr = (String) persistantProperties.get("vlterm.color.scheme");
+        if (propStr != null)
+            this.terminalPanel.updateColorMap(ColorMap.getColorMap(propStr), false);
+
+        propStr = (String) persistantProperties.get("vlterm.font.type");
+        if (propStr != null)
+            this.terminalPanel.updateFontType(propStr, false);
+
+        propStr = (String) persistantProperties.get("vlterm.font.size");
+        if (propStr != null)
+            this.terminalPanel.updateFontSize(Integer.parseInt(propStr), false);
+
+        propStr = (String) persistantProperties.get("vlterm.font.antiAliasing");
+
+        if (propStr != null) {
+            boolean val = Boolean.parseBoolean(propStr);
+            this.terminalPanel.getFontInfo().setAntiAliasing(val);
+            this.fontAAcheckBox.setSelected(val);
+        }
+
+        // reset graphics=initialize graphics
+        this.terminalPanel.resetGraphics();
+        // this.updateFrameSize(); 
+    }
+
+    public TermChannelOptions getChannelOptions(String type, boolean autoCreate) {
+        TermChannelOptions options = termProvider.getChannelOptions(type);
+        if (options != null) {
+            return options;
+        }
+
         return new TermChannelOptions();
     }
-    
-    public void setChannelOptions(String type, TermChannelOptions options)
-    {
-        termProvider.setChannelOptions(type,options); 
+
+    public void setChannelOptions(String type, TermChannelOptions options) {
+        termProvider.setChannelOptions(type, options);
     }
-    
-    public JMenuBar createMenuBar()
-    {
+
+    public JMenuBar createMenuBar() {
         //ChannelOptions options = getChannelOptions();
-        
+
         JMenuBar menubar = new JMenuBar();
         JMenu menu;
         JMenuItem mitem;
@@ -399,39 +360,38 @@ public class VTerm extends JFrame implements  Runnable
          * 
          * 
          */
-        startBashMenuItem=new JMenuItem("Start BASH Session...");
+        startBashMenuItem = new JMenuItem("Start BASH Session...");
         menu.add(startBashMenuItem);
         startBashMenuItem.addActionListener(termController);
         startBashMenuItem.setActionCommand(SESSION_BASH);
         menu.add(startBashMenuItem);
 
         {
-        	mitem = new JMenuItem("Repaint");
-        	menu.add(mitem);
-        	mitem.addActionListener(termController);
-        	mitem.setActionCommand("Repaint");
+            mitem = new JMenuItem("Repaint");
+            menu.add(mitem);
+            mitem.addActionListener(termController);
+            mitem.setActionCommand("Repaint");
         }
-        
+
         {
-        	mitem = new JMenuItem("Clear Screen");
-        	menu.add(mitem);
-        	mitem.addActionListener(termController);
-        	mitem.setActionCommand("ClearScreen");
+            mitem = new JMenuItem("Clear Screen");
+            menu.add(mitem);
+            mitem.addActionListener(termController);
+            mitem.setActionCommand("ClearScreen");
         }
-        
+
         {
-        	closeSessionMenuItem = new JMenuItem("Terminate Session");
-        	menu.add(closeSessionMenuItem);
-        	closeSessionMenuItem.addActionListener(termController);
-        	closeSessionMenuItem.setActionCommand("Close");
-        	closeSessionMenuItem.setEnabled(false); 
+            closeSessionMenuItem = new JMenuItem("Terminate Session");
+            menu.add(closeSessionMenuItem);
+            closeSessionMenuItem.addActionListener(termController);
+            closeSessionMenuItem.setActionCommand("Close");
+            closeSessionMenuItem.setEnabled(false);
         }
-        
+
         mitem = new JMenuItem("Quit VLTerm");
         menu.add(mitem);
         mitem.addActionListener(termController);
         mitem.setActionCommand("Quit");
-        
 
         // SETTINGS MENU
         {
@@ -447,8 +407,8 @@ public class VTerm extends JFrame implements  Runnable
              * menu.add(mitem); menubar.add(menu);
              */
             {
-                TermChannelOptions sshOptions=getChannelOptions(SESSION_SSH,true);
-                
+                TermChannelOptions sshOptions = getChannelOptions(SESSION_SSH, true);
+
                 JMenu sshmenu = new JMenu("SSH");
                 menu.add(sshmenu);
                 mitem = new JMenuItem("Local Port Forwarding...");
@@ -464,29 +424,29 @@ public class VTerm extends JFrame implements  Runnable
                 channelCompressionCB.addActionListener(termController);
                 channelCompressionCB.setActionCommand("Compression");
                 channelCompressionCB.setState(sshOptions.useChannelCompression);
-                
+
                 sshmenu.add(channelCompressionCB);
-                
+
                 {
                     JMenu xForwardingMenu = new JMenu("X Forwarding");
                     sshmenu.add(xForwardingMenu);
-    
+
                     sshXForwardingCB = new JCheckBoxMenuItem("enable X Forwarding");
                     sshXForwardingCB.addActionListener(termController);
                     sshXForwardingCB.setActionCommand("XForwarding");
                     sshXForwardingCB.setState(sshOptions.useChannelXForwarding);
-                    sshXForwardingCB.setEnabled(true); 
+                    sshXForwardingCB.setEnabled(true);
                     xForwardingMenu.add(sshXForwardingCB);
-    
+
                     mitem = new JMenuItem("X Forwarding Settings");
                     mitem.addActionListener(termController);
                     mitem.setActionCommand("XForwardingSettings");
-                    mitem.setEnabled(false); 
-                    
+                    mitem.setEnabled(false);
+
                     xForwardingMenu.add(mitem);
                 }
             }
-            
+
             {
                 JMenu emulatorMenu = new JMenu("Emulator");
                 menu.add(emulatorMenu);
@@ -495,8 +455,8 @@ public class VTerm extends JFrame implements  Runnable
                 menuTypeVt100CB.addActionListener(termController);
                 menuTypeVt100CB.setActionCommand(VT10xEmulatorDefs.TERM_VT100);
                 emulatorMenu.add(menuTypeVt100CB);
-                menuTypeVt100CB.setEnabled(false); 
-                
+                menuTypeVt100CB.setEnabled(false);
+
                 menuTypeXtermCB = new JCheckBoxMenuItem(VT10xEmulatorDefs.TERM_XTERM);
                 menuTypeXtermCB.addActionListener(termController);
                 menuTypeXtermCB.setActionCommand(VT10xEmulatorDefs.TERM_XTERM);
@@ -515,10 +475,10 @@ public class VTerm extends JFrame implements  Runnable
                     JMenu sizemenu = new JMenu("size");
                     fontmenu.add(sizemenu);
 
-                    String sizes[] = { "7","8", "9", "10", "11", "12","13", "14", "16", "18", "20", "24" };
+                    String sizes[] = { "7", "8", "9", "10", "11", "12", "13", "14", "16", "18",
+                            "20", "24" };
 
-                    for (String s : sizes)
-                    {
+                    for (String s : sizes) {
                         mitem = new JMenuItem(s);
                         mitem.addActionListener(termController);
                         mitem.setActionCommand("fontsize-" + s);
@@ -531,20 +491,11 @@ public class VTerm extends JFrame implements  Runnable
                     fontmenu.add(typemenu);
 
                     // selection of MONO spaced fonts; 
-                    String types[] =  { 
-                    		"Monospaced", 
-                    		"Courier",
-                    		"Courier New",
-                    		"Courier 10 Pitch",
-                    		"Luxi Mono",
-                    		"Liberation Mono",
-                    		"DejaVu Sans Mono",
-                    		"Lucida Sans Typewriter",
-                    		"Andale Mono",
-                    		"Impact"};
+                    String types[] = { "Monospaced", "Courier", "Courier New", "Courier 10 Pitch",
+                            "Luxi Mono", "Liberation Mono", "DejaVu Sans Mono",
+                            "Lucida Sans Typewriter", "Andale Mono", "Impact" };
 
-                    for (String s : types)
-                    {
+                    for (String s : types) {
                         mitem = new JMenuItem(s);
                         mitem.addActionListener(termController);
                         mitem.setActionCommand("fonttype-" + s);
@@ -563,40 +514,39 @@ public class VTerm extends JFrame implements  Runnable
             }
             // Color ->
             {
-                    JMenu colormenu = new JMenu("Colors");
-                    menu.add(colormenu);
-                    {
-                        JMenu schememenu = new JMenu("Scheme");
-                        colormenu.add(schememenu);
-                        
-                        String names[] = ColorMap.getColorMapNames();
-                     
-                        for (int i=0;i<names.length;i++)
-                        {
-                            mitem = new JMenuItem(names[i]);
-                            mitem.addActionListener(termController);
-                            mitem.setActionCommand("colorscheme-" + names[i]);
-                            schememenu.add(mitem);
-                        }
+                JMenu colormenu = new JMenu("Colors");
+                menu.add(colormenu);
+                {
+                    JMenu schememenu = new JMenu("Scheme");
+                    colormenu.add(schememenu);
+
+                    String names[] = ColorMap.getColorMapNames();
+
+                    for (int i = 0; i < names.length; i++) {
+                        mitem = new JMenuItem(names[i]);
+                        mitem.addActionListener(termController);
+                        mitem.setActionCommand("colorscheme-" + names[i]);
+                        schememenu.add(mitem);
                     }
+                }
             }
             // Font-Anti aliasing
             {
-                    optionsSyncScrolling = new JCheckBoxMenuItem("Synchronize Scrolling");
-                    optionsSyncScrolling.addActionListener(termController);
-                    optionsSyncScrolling.setActionCommand("syncScrolling");
-                    optionsSyncScrolling.setState(terminalPanel.getSynchronizedScrolling());
-                    menu.add(optionsSyncScrolling);
+                optionsSyncScrolling = new JCheckBoxMenuItem("Synchronize Scrolling");
+                optionsSyncScrolling.addActionListener(termController);
+                optionsSyncScrolling.setActionCommand("syncScrolling");
+                optionsSyncScrolling.setState(terminalPanel.getSynchronizedScrolling());
+                menu.add(optionsSyncScrolling);
             }
-            
+
             sep = new JSeparator();
             menu.add(sep);
             {
-            	mitem = new JMenuItem("Save");
-            	mitem.addActionListener(termController);
-            	mitem.setActionCommand("SaveSettings");
-            	mitem.setVisible(_saveConfigEnabled); 
-            	menu.add(mitem);
+                mitem = new JMenuItem("Save");
+                mitem.addActionListener(termController);
+                mitem.setActionCommand("SaveSettings");
+                mitem.setVisible(_saveConfigEnabled);
+                menu.add(mitem);
             }
         }
 
@@ -622,350 +572,279 @@ public class VTerm extends JFrame implements  Runnable
         return menubar;
     }
 
-//    public void updateMenuSettings()
-//    {
-//        getChannelOptions().useChannelCompression = compressionCheckBoxMenuItem.getState();
-//        getChannelOptions().userChannelXForwarding  = x11CheckBoxMenuItem.getState();
-//    }
-    
-    public void setTitle(String str)
-    {
-        super.setTitle("VLTerm:"+str);
+    //    public void updateMenuSettings()
+    //    {
+    //        getChannelOptions().useChannelCompression = compressionCheckBoxMenuItem.getState();
+    //        getChannelOptions().userChannelXForwarding  = x11CheckBoxMenuItem.getState();
+    //    }
+
+    public void setTitle(String str) {
+        super.setTitle("VLTerm:" + str);
     }
-      
-    private void exit(int i)
-    {
-    	dispose(); 
+
+    private void exit(int i) {
+        dispose();
     }
-    
-    
+
     @Override
-    public void dispose()
-    {
-    	super.dispose(); 
-    	
+    public void dispose() {
+        super.dispose();
+
         terminateSession();
-        if (terminalPanel!=null)
-        	this.terminalPanel.dispose();
-        
-        this.terminalPanel=null; 
+        if (terminalPanel != null)
+            this.terminalPanel.dispose();
+
+        this.terminalPanel = null;
     }
 
     // after change of graphics: repack main Frame.
 
-    void updateFrameSize()
-    {
-    	Runnable update=new Runnable()
-    	{
-    		public void run()
-    		{
-    	    	terminalPanel.setSize(terminalPanel.getPreferredSize()); 
-    	    	setSize(getPreferredSize());
-    	        pack();
-    		}
-    	};
-    	
-    	SwingUtilities.invokeLater(update); 
+    void updateFrameSize() {
+        Runnable update = new Runnable() {
+            public void run() {
+                terminalPanel.setSize(terminalPanel.getPreferredSize());
+                setSize(getPreferredSize());
+                pack();
+            }
+        };
+
+        SwingUtilities.invokeLater(update);
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
-        Component source=(Component)e.getSource(); 
-        
+        Component source = (Component) e.getSource();
+
         //ChannelOptions options = this.getChannelOptions(); 
-        
-        if (action.compareTo(SESSION_BASH) == 0)
-        {
+
+        if (action.compareTo(SESSION_BASH) == 0) {
             this.sessionType = SESSION_BASH;
             startSession();
-        }
-        else if (action.compareTo(SESSION_TELNET) == 0)
-        {
-            if (thread == null)
-            {
+        } else if (action.compareTo(SESSION_TELNET) == 0) {
+            if (thread == null) {
                 this.sessionType = SESSION_TELNET;
 
-                InputDialog dialog = new InputDialog("Enter username@hostname","", false);
+                InputDialog dialog = new InputDialog("Enter username@hostname", "", false);
 
                 String str = dialog.getText();
 
-                parseLocation("telnet",str);
+                parseLocation("telnet", str);
 
                 startSession();
             }
-        }
-        else if (action.compareTo(SESSION_SSH) == 0)
-        {
-            if (thread == null)
-            {
+        } else if (action.compareTo(SESSION_SSH) == 0) {
+            if (thread == null) {
                 this.sessionType = SESSION_SSH;
-                
-                String sessionstr=this.getConfigProperty("vterm.last.session.ssh"); 
-                
-                if (sessionstr==null)
-            	{
-                	sessionstr=startURI.toString();
-            	}
-                
-                String locstr = JOptionPane.showInputDialog(this,
-                        "Enter username@hostname",sessionstr);
-                
+
+                String sessionstr = this.getConfigProperty("vterm.last.session.ssh");
+
+                if (sessionstr == null) {
+                    sessionstr = startURI.toString();
+                }
+
+                String locstr = JOptionPane.showInputDialog(this, "Enter username@hostname",
+                        sessionstr);
+
                 if (locstr == null)
                     return;
-                
-                this.savePersistantProperty("vterm.last.session.ssh",locstr); 
-                parseLocation("ssh",locstr);
+
+                this.savePersistantProperty("vterm.last.session.ssh", locstr);
+                parseLocation("ssh", locstr);
                 startSession();
 
                 return;
             }
-        }
-        else if (action.equals("XForwardingSettings"))
-        {
-            TermChannelOptions sshOptions=this.getChannelOptions(SESSION_SSH,true); 
-            
-            String display = JOptionPane.showInputDialog(this,
-                    "XDisplay name (hostname:0)", (sshOptions.channelXForwardingHost == null) ? "" : (sshOptions.channelXForwardingHost
-                            + ":" + sshOptions.channelXForwardingPort));
+        } else if (action.equals("XForwardingSettings")) {
+            TermChannelOptions sshOptions = this.getChannelOptions(SESSION_SSH, true);
 
-            if (display == null)
-            {
+            String display = JOptionPane
+                    .showInputDialog(
+                            this,
+                            "XDisplay name (hostname:0)",
+                            (sshOptions.channelXForwardingHost == null) ? ""
+                                    : (sshOptions.channelXForwardingHost + ":" + sshOptions.channelXForwardingPort));
+
+            if (display == null) {
                 sshOptions.useChannelXForwarding = false;
             }
-            
+
             sshOptions.channelXForwardingHost = display.substring(0, display.indexOf(':'));
-            sshOptions.channelXForwardingPort = Integer.parseInt(display
-                    .substring(display.indexOf(':') + 1));
+            sshOptions.channelXForwardingPort = Integer.parseInt(display.substring(display
+                    .indexOf(':') + 1));
 
             // if port= ":0" - ":99" use:6000-6099 else use given port (>=1024)
 
-            if (sshOptions.channelXForwardingPort < 1024)
-            {
+            if (sshOptions.channelXForwardingPort < 1024) {
                 sshOptions.channelXForwardingPort += 6000;
             }
-            
+
             sshOptions.useChannelXForwarding = true;
-            setChannelOptions(SESSION_SSH,sshOptions); 
+            setChannelOptions(SESSION_SSH, sshOptions);
         }
 
-        else if (action.startsWith("fontsize"))
-        {
+        else if (action.startsWith("fontsize")) {
             String strs[] = action.split("-");
 
-            if (strs.length > 1 && strs[1] != null)
-            {
+            if (strs.length > 1 && strs[1] != null) {
                 Integer val = Integer.valueOf(strs[1]);
-                this.terminalPanel.updateFontSize(val,true);
-                
-                this.sessionProperties.setProperty("vlterm.font.size",""+val); 
+                this.terminalPanel.updateFontSize(val, true);
+
+                this.sessionProperties.setProperty("vlterm.font.size", "" + val);
             }
 
             terminalPanel.repaintGraphics(false);
             updateFrameSize();
-        }
-        else if (action.startsWith("fonttype"))
-        {
+        } else if (action.startsWith("fonttype")) {
             String strs[] = action.split("-");
 
-            if (strs.length > 1 && strs[1] != null)
-            {
-                this.terminalPanel.updateFontType(strs[1],true);
-                this.sessionProperties.setProperty("vlterm.font.type",""+strs[1]); 
+            if (strs.length > 1 && strs[1] != null) {
+                this.terminalPanel.updateFontType(strs[1], true);
+                this.sessionProperties.setProperty("vlterm.font.type", "" + strs[1]);
             }
-            
-            terminalPanel.repaintGraphics(false); 
+
+            terminalPanel.repaintGraphics(false);
             updateFrameSize();
-        }
-        else if (action.startsWith("colorscheme"))
-        {
+        } else if (action.startsWith("colorscheme")) {
             String strs[] = action.split("-");
 
-            if (strs.length > 1 && strs[1] != null)
-            {
-                String name=strs[1]; 
-                terminalPanel.updateColorMap(ColorMap.getColorMap(name),true);  
-                this.sessionProperties.setProperty("vlterm.color.scheme",name); 
+            if (strs.length > 1 && strs[1] != null) {
+                String name = strs[1];
+                terminalPanel.updateColorMap(ColorMap.getColorMap(name), true);
+                this.sessionProperties.setProperty("vlterm.color.scheme", name);
             }
-                       
+
             updateFrameSize();
-        }
-        else if (action.startsWith("syncScrolling"))
-        {
-            boolean state= this.optionsSyncScrolling.getState();
-            terminalPanel.setSynchronizedScrolling(state); 
-            this.sessionProperties.setProperty("vlterm.syncScrolling",""+state); 
-        }
-        else if (action.compareTo("font-aa")==0)
-        {
-            boolean val=fontAAcheckBox.getState();
+        } else if (action.startsWith("syncScrolling")) {
+            boolean state = this.optionsSyncScrolling.getState();
+            terminalPanel.setSynchronizedScrolling(state);
+            this.sessionProperties.setProperty("vlterm.syncScrolling", "" + state);
+        } else if (action.compareTo("font-aa") == 0) {
+            boolean val = fontAAcheckBox.getState();
             terminalPanel.getFontInfo().setAntiAliasing(val);
-            this.sessionProperties.setProperty("vlterm.font.antiAliasing",""+val); 
+            this.sessionProperties.setProperty("vlterm.font.antiAliasing", "" + val);
 
-            terminalPanel.repaintGraphics(false); 
+            terminalPanel.repaintGraphics(false);
             updateFrameSize();
         }
-        
-        else if (action.equals("Close"))
-        {
+
+        else if (action.equals("Close")) {
             terminateSession();
-        }
-        else if (action.equals("Repaint"))
-        {
-        	terminalPanel.repaintGraphics(false); 
-        }
-        else if (action.equals("ClearScreen"))
-        {
-        	terminalPanel.clearAll(); 
-        }
-        else if (action.equals("Quit"))
-        {
-            exit(0); 
-        }
-        else if (action.equals("DebugON"))
-        {
-        	PLogger.getRootLogger().setLevelToDebug();  
-        }
-        else if (action.equals("DebugOFF"))
-        {
-            PLogger.getRootLogger().setLevelToError();  
-        }
-        else if (action.equals("About"))
-        {
+        } else if (action.equals("Repaint")) {
+            terminalPanel.repaintGraphics(false);
+        } else if (action.equals("ClearScreen")) {
+            terminalPanel.clearAll();
+        } else if (action.equals("Quit")) {
+            exit(0);
+        } else if (action.equals("DebugON")) {
+            PLogger.getRootLogger().setLevelToDebug();
+        } else if (action.equals("DebugOFF")) {
+            PLogger.getRootLogger().setLevelToError();
+        } else if (action.equals("About")) {
             this.showMessage(aboutText);
+        } else if (action.equals("testscreen")) {
+            terminalPanel.drawTestScreen();
+        } else if (source == this.menuTypeVt100CB) {
+            this.menuTypeVt100CB.setSelected(true);
+            this.menuTypeXtermCB.setSelected(false);
+            this.termType = VT10xEmulatorDefs.TERM_VT100;
+            this.setTermType(this.termType);
+        } else if (source == this.menuTypeXtermCB) {
+            this.menuTypeVt100CB.setSelected(false);
+            this.menuTypeXtermCB.setSelected(true);
+            this.termType = VT10xEmulatorDefs.TERM_XTERM;
+            this.setTermType(this.termType);
+        } else if (action.equals("SaveSettings")) {
+            saveSettings();
         }
-        else if (action.equals("testscreen"))
-        {
-            terminalPanel.drawTestScreen(); 
-        }
-        else if (source==this.menuTypeVt100CB)
-        {
-        	this.menuTypeVt100CB.setSelected(true);
-        	this.menuTypeXtermCB.setSelected(false); 
-        	this.termType=VT10xEmulatorDefs.TERM_VT100; 
-        	this.setTermType(this.termType); 
-        }
-        else if (source==this.menuTypeXtermCB)
-        {
-        	this.menuTypeVt100CB.setSelected(false);
-        	this.menuTypeXtermCB.setSelected(true); 
-        	this.termType=VT10xEmulatorDefs.TERM_XTERM;
-        	this.setTermType(this.termType); 
-        }
-        else if(action.equals("SaveSettings"))
-        {
-        	saveSettings();
-        }	
     }
 
-    protected void openLocation(URI loc) throws IOException
-    {
+    protected void openLocation(URI loc) throws IOException {
         // parse URI: 
-        
-        String scheme=loc.getScheme(); 
-        String host=loc.getHost(); 
-        
-    	if (StringUtil.isEmpty(host))
-    	{
-    	    host="localhost";
-    	}
-    	
-    	String user=loc.getUserInfo(); 
-    	
-    	if (StringUtil.isEmpty(user))
-    	{
-    	    user=GlobalProperties.getGlobalUserName(); 
-    	}
-    	
-    	int port=loc.getPort(); 
-    	if (port<=0)
-    	    port=22; 
-    	
-    	String path=loc.getPath(); 
-    	
-    	try
-        {
-            startURI=new URI(scheme,user,host,port,path,null,null);
+
+        String scheme = loc.getScheme();
+        String host = loc.getHost();
+
+        if (StringUtil.isEmpty(host)) {
+            host = "localhost";
         }
-        catch (URISyntaxException e)
-        {
-           throw new IOException(e.getMessage(),e); 
-        } 
-    	
-    	this.startSession(); 
-	}
-    
-	private void parseLocation(String scheme, String locstr)
-    {
-	    try
-	    {
-	        
-    	    String user; 
-    	    int port=0;
-    	    String host; 
-    	     
+
+        String user = loc.getUserInfo();
+
+        if (StringUtil.isEmpty(user)) {
+            user = GlobalProperties.getGlobalUserName();
+        }
+
+        int port = loc.getPort();
+        if (port <= 0)
+            port = 22;
+
+        String path = loc.getPath();
+
+        try {
+            startURI = new URI(scheme, user, host, port, path, null, null);
+        } catch (URISyntaxException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+
+        this.startSession();
+    }
+
+    private void parseLocation(String scheme, String locstr) {
+        try {
+
+            String user;
+            int port = 0;
+            String host;
+
             if (locstr == null)
                 return;
-    
+
             // user ...@
             int s = locstr.indexOf('@');
-    
-            if (s < 0)
-            {
+
+            if (s < 0) {
                 user = "";
-            }
-            else
-            {
+            } else {
                 user = locstr.substring(0, s);
                 locstr = locstr.substring(s + 1);
             }
-    
+
             // host ... :
             s = locstr.indexOf(':');
-            if (s < 0)
-            {
+            if (s < 0) {
                 host = locstr;
-            }
-            else
-            {
+            } else {
                 host = locstr.substring(0, s);
                 locstr = locstr.substring(s + 1);
                 port = Integer.valueOf(locstr);
             }
-            
-            this.startURI=new URI(scheme,user,host,port,null,null,null); 
-	    }
-	    catch (Exception e)
-	    {
-	        this.showMessage("Invalid Location. Must be user@host[:port]. Value="+locstr);
-	    }
+
+            this.startURI = new URI(scheme, user, host, port, null, null, null);
+        } catch (Exception e) {
+            this.showMessage("Invalid Location. Must be user@host[:port]. Value=" + locstr);
+        }
     }
 
     /**
      * Creates new Thread which invokes run() method.
      */
-    public void startSession()
-    {
+    public void startSession() {
         this.thread = new Thread(this);
         this.thread.start();
-        
-        this.menuUpdateSessionAlive(true); 
+
+        this.menuUpdateSessionAlive(true);
     }
 
-    private void menuUpdateSessionAlive(boolean val)
-    {
-        sessionAlive=val; 
-        
-        if (val==true)
-        {
+    private void menuUpdateSessionAlive(boolean val) {
+        sessionAlive = val;
+
+        if (val == true) {
             startSSHMenuItem.setEnabled(false);
-            startBashMenuItem.setEnabled(false); 
+            startBashMenuItem.setEnabled(false);
             closeSessionMenuItem.setEnabled(true);
-        }
-        else
-        {
+        } else {
             startSSHMenuItem.setEnabled(true);
-            startBashMenuItem.setEnabled(true); 
+            startBashMenuItem.setEnabled(true);
             closeSessionMenuItem.setEnabled(false);
         }
     }
@@ -973,36 +852,31 @@ public class VTerm extends JFrame implements  Runnable
     /**
      * Start session, will only return when session has ended
      */
-    public void run()
-    {
-    	executeSession();
+    public void run() {
+        executeSession();
     }
-    
-    protected void executeSession()
-    {
+
+    protected void executeSession() {
         // ================
         // PRE SESSION !!!
         // ================
-        if (startURI==null)
-        {
+        if (startURI == null) {
             throw new NullPointerException("Start URI is NULL!");
         }
-        
+
         InputStream inps = null;
         OutputStream outps = null;
         InputStream errs = null;
-        
-        // Complete Reset ! 
-        terminalPanel.reset(); 
 
-        logger.infoPrintf(">>> Starting Type=%s\n",sessionType);
+        // Complete Reset ! 
+        terminalPanel.reset();
+
+        logger.infoPrintf(">>> Starting Type=%s\n", sessionType);
         this.sessionAlive = true;
-        
-        if (this.sessionType.compareTo(SESSION_TELNET) == 0)
-        {
-            try
-            {
-                Socket sock = new Socket(startURI.getHost(),startURI.getPort());
+
+        if (this.sessionType.compareTo(SESSION_TELNET) == 0) {
+            try {
+                Socket sock = new Socket(startURI.getHost(), startURI.getPort());
                 inps = sock.getInputStream();
                 outps = sock.getOutputStream();
 
@@ -1017,21 +891,21 @@ public class VTerm extends JFrame implements  Runnable
                 // DOES NOT WORK:
                 //
 
-                byte bytes[] =
-                {
+                byte bytes[] = {
                         // terminal type
-                        IAC, WILL, (byte) 24, IAC, SB, (byte) 24, (byte) 0,
-                        'V', 'T', '1', '0', '0', IAC, SE,
+                        IAC, WILL, (byte) 24, IAC, SB, (byte) 24, (byte) 0, 'V', 'T', '1', '0',
+                        '0', IAC, SE,
                         // terminal speed
-                        IAC, WILL, (byte) 32, IAC, SB, (byte) 32, (byte) 0,
-                        '9', '6', '0', '0', ',', '9', '6', '0', '0', IAC, SE };
+                        IAC, WILL, (byte) 32, IAC, SB, (byte) 32, (byte) 0, '9', '6', '0', '0',
+                        ',', '9', '6', '0', '0', IAC, SE };
 
                 outps.write(bytes);
 
-                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(), inps, outps);
+                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(),
+                        inps, outps);
                 // emulator.setErrorInput(errs);
                 emulator.addListener(this.termController);
-                
+
                 terminalPanel.setEmulator(emulator);
                 terminalPanel.requestFocus();
                 // start input/ouput loop (method will not return)
@@ -1040,119 +914,101 @@ public class VTerm extends JFrame implements  Runnable
 
                 // done:
                 sock.close();
-            }
-            catch (Exception e)
-            {
-                logger.logException(PLogger.ERROR,e,"*** Exception:%s\n",e);
-            }
-            catch (Error e)
-            {
-                logger.logException(PLogger.ERROR,e,"*** Exception:%s\n",e);
+            } catch (Exception e) {
+                logger.logException(PLogger.ERROR, e, "*** Exception:%s\n", e);
+            } catch (Error e) {
+                logger.logException(PLogger.ERROR, e, "*** Exception:%s\n", e);
             }
 
-        }
-        else if (this.sessionType.compareTo(SESSION_BASH) == 0)
-        {
-            
-            try
-            {
-                this.shellChannel=this.termProvider.createChannel(SESSION_BASH,null,null,null,null); 
-                shellChannel.connect(); 
-                
-                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(),shellChannel.getStdout(),shellChannel.getStdin()); 
-                
+        } else if (this.sessionType.compareTo(SESSION_BASH) == 0) {
+
+            try {
+                this.shellChannel = this.termProvider.createChannel(SESSION_BASH, null, null, null,
+                        null);
+                shellChannel.connect();
+
+                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(),
+                        shellChannel.getStdout(), shellChannel.getStdin());
+
                 emulator.setErrorInput(errs);
                 emulator.addListener(this.termController);
                 // emulator.setErrorInput(errs);
 
                 this.terminalPanel.setEmulator(emulator);
                 terminalPanel.requestFocus();
-                
-                startShellProcessWatcher(shellChannel,emulator); 
-                
+
+                startShellProcessWatcher(shellChannel, emulator);
+
                 // start input/output loop (method will not return)
                 emulator.start();
-            }
-            catch (Exception ex)
-            {
-                logger.logException(PLogger.ERROR,ex,"Could start bash: %s\n",ex);
-                showError(ex); 
+            } catch (Exception ex) {
+                logger.logException(PLogger.ERROR, ex, "Could start bash: %s\n", ex);
+                showError(ex);
             }
 
-           // if (bashChannel != null)
-           //     bashChannel.disconnect(); 
+            // if (bashChannel != null)
+            //     bashChannel.disconnect(); 
 
-        }
-        else if (this.sessionType.compareTo(SESSION_SSH) == 0)
-        {
-            TermChannelOptions options = this.getChannelOptions(SESSION_SSH,true); 
-            
-            try
-            {
+        } else if (this.sessionType.compareTo(SESSION_SSH) == 0) {
+            TermChannelOptions options = this.getChannelOptions(SESSION_SSH, true);
+
+            try {
                 // ================================
                 // Only here is SSHChannel visible! 
                 // ================================
-                
-                this.shellChannel = termProvider.createChannel(SESSION_SSH,startURI,startURI.getUserInfo(),null,options); 
+
+                this.shellChannel = termProvider.createChannel(SESSION_SSH, startURI,
+                        startURI.getUserInfo(), null, options);
                 shellChannel.connect();
-                
-                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(),shellChannel.getStdout(), shellChannel.getStdin()); 
-                
+
+                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(),
+                        shellChannel.getStdout(), shellChannel.getStdin());
+
                 this.terminalPanel.setEmulator(emulator);
                 emulator.addListener(this.termController);
-                    
+
                 // set focus to terminal panel:
-                this.terminalPanel.requestFocus();  
-                    
+                this.terminalPanel.requestFocus();
+
                 emulator.reset();
                 // start input/output loop (method will not return)
                 emulator.start();
 
+            } catch (Exception e) {
+                logger.logException(PLogger.ERROR, e, "VLTerm Exception!\n");
+                showError(e);
+            } catch (Error e) {
+                logger.logException(PLogger.ERROR, e, "Internal Error:%s\n", e);
+                showError(e);
             }
-            catch (Exception e)
-            {
-                logger.logException(PLogger.ERROR,e,"VLTerm Exception!\n"); 
-                showError(e); 
-            }
-            catch (Error e)
-            {
-                logger.logException(PLogger.ERROR,e,"Internal Error:%s\n",e);  
-                showError(e); 
-            }
-        }
-        else if (this.sessionType.compareTo(SESSION_SHELLCHANNEL) == 0)
-        {
-            try
-            {
+        } else if (this.sessionType.compareTo(SESSION_SHELLCHANNEL) == 0) {
+            try {
                 // ================================
                 // Use external shell channel 
                 // ================================
-                if (this.shellChannel==null)
-                    throw new IOException("No Shell Channel specified!"); 
+                if (this.shellChannel == null)
+                    throw new IOException("No Shell Channel specified!");
                 // shellChannel.connect();
-                
-                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(),shellChannel.getStdout(), shellChannel.getStdin()); 
-                
+
+                Emulator emulator = new VT10xEmulator(this.terminalPanel.getCharacterTerminal(),
+                        shellChannel.getStdout(), shellChannel.getStdin());
+
                 this.terminalPanel.setEmulator(emulator);
                 emulator.addListener(this.termController);
-                    
+
                 // set focus to terminal panel:
-                this.terminalPanel.requestFocus();  
-                    
+                this.terminalPanel.requestFocus();
+
                 emulator.reset();
                 // start input/ouput loop (method will not return)
                 emulator.start();
 
-            }
-            catch (Exception e)
-            {
-                logger.logException(PLogger.ERROR,e,"VLTerm Exception!\n"); 
-                showError(e); 
-            }
-            catch (Error e)
-            {
-                logger.logException(PLogger.ERROR,e,"Internal Error:%s\n",e);  
-                showError(e); 
+            } catch (Exception e) {
+                logger.logException(PLogger.ERROR, e, "VLTerm Exception!\n");
+                showError(e);
+            } catch (Error e) {
+                logger.logException(PLogger.ERROR, e, "Internal Error:%s\n", e);
+                showError(e);
             }
         }
         // ================
@@ -1162,67 +1018,56 @@ public class VTerm extends JFrame implements  Runnable
         logger.infoPrintf("*** Session Ended: emulator stopped.  ***\n");
 
         terminateSession(); // terminate if still running 
-        menuUpdateSessionAlive(false); 
+        menuUpdateSessionAlive(false);
         repaint();
         showMessage("Session Ended");
     }
 
-    /** Watches a shell process and signals emulator when shell process died. */ 
-    private void startShellProcessWatcher(final ShellChannel shellProc, final Emulator shellEmu) 
-    {
-         Runnable run = new Runnable()
-         {
-             public void run()
-             {
-                 int val = 0;
+    /** Watches a shell process and signals emulator when shell process died. */
+    private void startShellProcessWatcher(final ShellChannel shellProc, final Emulator shellEmu) {
+        Runnable run = new Runnable() {
+            public void run() {
+                int val = 0;
 
-                 try
-                 {
-                     shellProc.waitFor();
-                     val = shellProc.exitValue();
-                 }
-                 catch (InterruptedException e)
-                 {
-                     logger.logException(PLogger.ERROR,e,"*** Interupted *** \n");
-                 }
-                 
-                 if (val==0)
-                     logger.infoPrintf("BASH Stopped normally. Exit value is 0.\n"); 
-                 else
-                     logger.errorPrintf("*** Bash died abnormally. Exit value=%d\n",val); 
-                 
-                 shellEmu.signalTerminate(); 
-             }
-         };
+                try {
+                    shellProc.waitFor();
+                    val = shellProc.exitValue();
+                } catch (InterruptedException e) {
+                    logger.logException(PLogger.ERROR, e, "*** Interupted *** \n");
+                }
 
-         Thread procWatcher = new Thread(run);
-         procWatcher.start();
-	}
+                if (val == 0)
+                    logger.infoPrintf("BASH Stopped normally. Exit value is 0.\n");
+                else
+                    logger.errorPrintf("*** Bash died abnormally. Exit value=%d\n", val);
 
+                shellEmu.signalTerminate();
+            }
+        };
 
-	private void showError(Throwable e)
-    {
-    	ExceptionDialog.show(this,e); 
- 	}
+        Thread procWatcher = new Thread(run);
+        procWatcher.start();
+    }
 
-	class InputDialog implements ActionListener
-    {
+    private void showError(Throwable e) {
+        ExceptionDialog.show(this, e);
+    }
+
+    class InputDialog implements ActionListener {
         String result = null;
 
         Dialog dialog = null;
 
         TextField textf = null;
 
-        InputDialog(String title, String text, boolean passwd)
-        {
+        InputDialog(String title, String text, boolean passwd) {
             super();
             dialog = new Dialog(new Frame(), title, true);
             Button ok = new Button("OK");
             Button cancel = new Button("CANCEL");
             textf = new TextField(20);
             textf.setText(text);
-            if (passwd)
-            {
+            if (passwd) {
                 textf.setEchoCharacter('*');
             }
             dialog.setLayout(new FlowLayout());
@@ -1234,224 +1079,184 @@ public class VTerm extends JFrame implements  Runnable
             dialog.add(cancel);
             dialog.pack();
             dialog.setVisible(true);
-            while (true)
-            {
-                try
-                {
+            while (true) {
+                try {
                     Thread.sleep(1000);
+                } catch (Exception ee) {
                 }
-                catch (Exception ee)
-                {
-                }
-                if (!dialog.isVisible())
-                {
+                if (!dialog.isVisible()) {
                     break;
                 }
             }
         }
 
-        public void actionPerformed(ActionEvent e)
-        {
+        public void actionPerformed(ActionEvent e) {
             String action = e.getActionCommand();
-            if (action.equals("OK"))
-            {
+            if (action.equals("OK")) {
                 result = textf.getText();
-            }
-            else if (action.equals("CANCEL"))
-            {
+            } else if (action.equals("CANCEL")) {
             }
             dialog.setVisible(false);
             return;
         }
 
-        String getText()
-        {
+        String getText() {
             return result;
         }
     }
 
-	protected void setShellChannel(ShellChannel chan)
-    {
-	    this.sessionType=SESSION_SHELLCHANNEL; 
-	    this.shellChannel=chan; 
+    protected void setShellChannel(ShellChannel chan) {
+        this.sessionType = SESSION_SHELLCHANNEL;
+        this.shellChannel = chan;
     }
 
-    void showSplash()
-    {
-       this.terminalPanel.drawSplash();       
+    void showSplash() {
+        this.terminalPanel.drawSplash();
     }
-   
-    public void showMessage(String message)
-    {
+
+    public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
-    
-    protected Emulator getEmulator()
-    {
-        return terminalPanel.getEmulator(); 
+
+    protected Emulator getEmulator() {
+        return terminalPanel.getEmulator();
     }
-    
-    public void terminateSession()
-    {
+
+    public void terminateSession() {
         this.menuUpdateSessionAlive(false);
-        
-        if (getEmulator()!=null)
-        {
+
+        if (getEmulator() != null) {
             this.getEmulator().signalTerminate();
         }
-        
+
         // Terminal; 
-        if (this.terminalPanel!=null)
-        {
-            this.terminalPanel.terminate(); 
-        }
-        
-        // Shell Channel: 
-        try
-        {
-            if (this.shellChannel!=null)
-            {
-                this.shellChannel.disconnect(false);
-            }
-        }
-        catch (IOException e)
-        {
-            logger.logException(PLogger.WARN,e,"Excpetion during disconnect:%s\n",this); 
-        }
-        
-        this.shellChannel=null;
-        thread = null;
-    }
-  
-    /**
-     * Sends emulator the new preferred size. 
-     * Depends on implementation whether this will be respected 
-     * 
-     * @param nr_columns
-     * @param nr_rows
-     */
-	public void sendTermSize(int nr_columns, int nr_rows)
-	{
-	    try
-	    {
-	        if (shellChannel!=null)
-	            this.shellChannel.setTermSize(nr_columns,nr_rows,nr_columns,nr_rows);
-	    }
-	    catch (IOException e)
-        {
-	        logger.logException(PLogger.ERROR,e,"IOException: Couldn't send terminal size\n"); 
+        if (this.terminalPanel != null) {
+            this.terminalPanel.terminate();
         }
 
-		if (this.getEmulator()!=null)
-			this.getEmulator().sendSize(nr_columns,nr_rows);
-	}
-	 /**
-     * Sends getEmulator() the new preferred size. 
-     * Depends on implemenation whether this will be respected 
+        // Shell Channel: 
+        try {
+            if (this.shellChannel != null) {
+                this.shellChannel.disconnect(false);
+            }
+        } catch (IOException e) {
+            logger.logException(PLogger.WARN, e, "Excpetion during disconnect:%s\n", this);
+        }
+
+        this.shellChannel = null;
+        thread = null;
+    }
+
+    /**
+     * Sends emulator the new preferred size. Depends on implementation whether this will be
+     * respected
      * 
      * @param nr_columns
      * @param nr_rows
      */
-	public void setTermType(String type)
-	{
-	    try
-	    {
-    		if (shellChannel!=null)
-                this.shellChannel.setTermType(type);
-		
-	    }
-	    catch (IOException e)
-	    {
-	        logger.logException(PLogger.ERROR,e,"IOException: Couldn't send terminal type:%s\n",type); 
-	    }
-	    
-		// update getEmulator() 
-		if (this.getEmulator()!=null)
-			this.getEmulator().setTermType(type); 
-	}
-	
-	Properties persistantProperties=null; 
-	
-	String getConfigProperty(String name)
-	{
-		if (persistantProperties==null)
-		{
-			persistantProperties=loadProperties();
-		
-			if (persistantProperties==null)
-				return null; 
-		}
-		
-		Object val=persistantProperties.getProperty(name);
-		if (val!=null)
-			return val.toString();
-		
-		return null; 
-	}
-	
-	protected Properties loadProperties()
-    {
-	    try 
-        {
-            URI propFileUri=getPropertiesFileURI();
-            return new ResourceLoader().loadProperties(propFileUri);
+    public void sendTermSize(int nr_columns, int nr_rows) {
+        try {
+            if (shellChannel != null)
+                this.shellChannel.setTermSize(nr_columns, nr_rows, nr_columns, nr_rows);
+        } catch (IOException e) {
+            logger.logException(PLogger.ERROR, e, "IOException: Couldn't send terminal size\n");
         }
-        catch (Exception e) 
-        {
-            logger.logException(PLogger.WARN,e,"VLTerm:Couldn't load config vlterm.prop\n"); 
+
+        if (this.getEmulator() != null)
+            this.getEmulator().sendSize(nr_columns, nr_rows);
+    }
+
+    /**
+     * Sends getEmulator() the new preferred size. Depends on implemenation whether this will be
+     * respected
+     * 
+     * @param nr_columns
+     * @param nr_rows
+     */
+    public void setTermType(String type) {
+        try {
+            if (shellChannel != null)
+                this.shellChannel.setTermType(type);
+
+        } catch (IOException e) {
+            logger.logException(PLogger.ERROR, e, "IOException: Couldn't send terminal type:%s\n",
+                    type);
+        }
+
+        // update getEmulator() 
+        if (this.getEmulator() != null)
+            this.getEmulator().setTermType(type);
+    }
+
+    Properties persistantProperties = null;
+
+    String getConfigProperty(String name) {
+        if (persistantProperties == null) {
+            persistantProperties = loadProperties();
+
+            if (persistantProperties == null)
+                return null;
+        }
+
+        Object val = persistantProperties.getProperty(name);
+        if (val != null)
+            return val.toString();
+
+        return null;
+    }
+
+    protected Properties loadProperties() {
+        try {
+            URI propFileUri = getPropertiesFileURI();
+            return new ResourceLoader().loadProperties(propFileUri);
+        } catch (Exception e) {
+            logger.logException(PLogger.WARN, e, "VLTerm:Couldn't load config vlterm.prop\n");
             return new Properties();
         }
     }
-	
-	/**
-	 *  save persistant property
-	 */ 
-	protected void savePersistantProperty(String name,String value)
-	{
-		if (persistantProperties==null)
-		{
-			persistantProperties=loadProperties();
-		}
-		
-		persistantProperties.put(name,value); 
-		
-		saveConfig();
-	}
-	
-	URI getPropertiesFileURI() throws IOException
-	{
-	    FSUtil fsUtils=FSUtil.getDefault(); 
-	    return fsUtils.getUserHomeDir().resolvePathURI(".vterm/vterm.prop");
-	}
-	
-	void saveConfig()
-	{	
-        URI propFileUri=null;
-        
-		try 
-		{
-		    propFileUri=getPropertiesFileURI();
-		    new ResourceLoader().saveProperties(propFileUri,persistantProperties,"VTerm Properties"); 
-		}
-		catch (Exception e) 
-		{
-		    logger.logException(Level.WARNING,e,"Couldn't write config to:%s\n",propFileUri); 
-		}
-		
-		return; 
-	}
-	
-	/** 
-	 * Save current (view) settings
-	 */ 
-	void saveSettings()
-	{
-		if (persistantProperties==null)
-			persistantProperties=loadProperties();
-		
-		// copy session properties into persistant propereties
-		persistantProperties.putAll(this.sessionProperties);
-		saveConfig(); 
-	}
-  
+
+    /**
+     * save persistant property
+     */
+    protected void savePersistantProperty(String name, String value) {
+        if (persistantProperties == null) {
+            persistantProperties = loadProperties();
+        }
+
+        persistantProperties.put(name, value);
+
+        saveConfig();
+    }
+
+    URI getPropertiesFileURI() throws IOException {
+        FSUtil fsUtils = FSUtil.getDefault();
+        return fsUtils.getUserHomeDir().resolvePathURI(".vterm/vterm.prop");
+    }
+
+    void saveConfig() {
+        URI propFileUri = null;
+
+        try {
+            propFileUri = getPropertiesFileURI();
+            new ResourceLoader().saveProperties(propFileUri, persistantProperties,
+                    "VTerm Properties");
+        } catch (Exception e) {
+            logger.logException(Level.WARNING, e, "Couldn't write config to:%s\n", propFileUri);
+        }
+
+        return;
+    }
+
+    /**
+     * Save current (view) settings
+     */
+    void saveSettings() {
+        if (persistantProperties == null)
+            persistantProperties = loadProperties();
+
+        // copy session properties into persistant propereties
+        persistantProperties.putAll(this.sessionProperties);
+        saveConfig();
+    }
+
 }

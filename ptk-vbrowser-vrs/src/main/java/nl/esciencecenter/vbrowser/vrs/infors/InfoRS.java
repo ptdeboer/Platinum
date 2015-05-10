@@ -30,14 +30,11 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Info Resource System. Browse logical resources and (remote) URLs.
- * 
- * @author Piter T. de Boer
  */
 public class InfoRS extends VResourceSystemNode // implements VStreamCreator
 {
 
-    public static VRL createPathVRL(String path)
-    {
+    public static VRL createPathVRL(String path) {
         path = URIFactory.uripath("/" + path);
         return new VRL("info", null, 0, path);
     }
@@ -46,32 +43,26 @@ public class InfoRS extends VResourceSystemNode // implements VStreamCreator
 
     private VRSClient vrsClient;
 
-    public InfoRS(VRSContext context) throws VrsException
-    {
+    public InfoRS(VRSContext context) throws VrsException {
         super(context, new VRL("info:/"));
-        vrsClient = new VRSClient(context); 
+        vrsClient = new VRSClient(context);
     }
 
-    protected InfoRootNode getRootNode() throws VrsException
-    {
-        if (rootNode == null)
-        {
+    protected InfoRootNode getRootNode() throws VrsException {
+        if (rootNode == null) {
             initRootNode();
         }
 
         return rootNode;
     }
 
-    protected void initRootNode() throws VrsException
-    {
+    protected void initRootNode() throws VrsException {
         rootNode = new InfoRootNode(this);
     }
 
     @Override
-    public InfoRSPathNode resolvePath(VRL vrl) throws VrsException
-    {
-        if (!vrl.getScheme().equals("info"))
-        {
+    public InfoRSPathNode resolvePath(VRL vrl) throws VrsException {
+        if (!vrl.getScheme().equals("info")) {
             throw new VrsException("Can only handle 'info:' nodes:" + vrl);
         }
 
@@ -83,23 +74,19 @@ public class InfoRS extends VResourceSystemNode // implements VStreamCreator
 
         InfoRootNode root = getRootNode();
 
-        if (n == 0 || StringUtil.equals(vrl.getPath(), null, "", "/"))
-        {
+        if (n == 0 || StringUtil.equals(vrl.getPath(), null, "", "/")) {
             return root;
         }
 
         return root.findNode(vrl);
     }
 
-    protected VRSClient getVRSClient()
-    {
+    protected VRSClient getVRSClient() {
         return vrsClient;
     }
-    
-    public VRSContext getVRSContext()
-    {
-        return vrsClient.getVRSContext(); 
+
+    public VRSContext getVRSContext() {
+        return vrsClient.getVRSContext();
     }
-    
 
 }

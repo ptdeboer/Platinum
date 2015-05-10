@@ -12,10 +12,11 @@
 		<echo message="=== Build Component: ${name}: ${target}"/>
 		<echo message="=============================================================="/>
 		<echo message=" project root         = ${project.root}"/>
+		<echo message=" project root lib     = ${project.root.lib}"/>
 		<echo message=" project dist         = ${project.dist}"/>
 		<echo message=" project sourceroot   = ${project.sourcedir}"/>
 		<echo message=" component name       = ${name}"/>
-		<echo message=" component subpath   = ${subpath}"/>
+		<echo message=" component subpath    = ${subpath}"/>
 		<echo message=" component sourcepath = ${sourcepath}"/>
 
 	</target>

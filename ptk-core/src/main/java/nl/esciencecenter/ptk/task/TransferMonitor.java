@@ -21,14 +21,13 @@
 package nl.esciencecenter.ptk.task;
 
 import java.net.URI;
+import java.util.Arrays;
 
 /**
  * Transfer Specific Monitor. Adds more meta fields specific for (VRS) File Transfers.
- * 
- * @author Piter T. de Boer.
  */
-public class TransferMonitor extends TaskMonitorAdaptor
-{
+public class TransferMonitor extends TaskMonitorAdaptor {
+
     private static int transferCounter = 0;
 
     private int transferId = 0;
@@ -47,15 +46,8 @@ public class TransferMonitor extends TaskMonitorAdaptor
 
     /**
      * Create Transfer monitor for specified URIs to destination URI.
-     * 
-     * @param action
-     * @param sourceUris
-     * @param sourceTypes
-     * @param destVri
-     * @param destType
      */
-    public TransferMonitor(String action, URI sourceUris[], URI destVri)
-    {
+    public TransferMonitor(String action, URI sourceUris[], URI destVri) {
         this.transferId = transferCounter++;
         this.actionType = action;
         this.sources = sourceUris;
@@ -64,15 +56,9 @@ public class TransferMonitor extends TaskMonitorAdaptor
 
     /**
      * Create Transfer monitor with optional Resource Types.
-     * 
-     * @param action
-     * @param sourceUris
-     * @param sourceTypes
-     * @param destVri
-     * @param destType
      */
-    public TransferMonitor(String action, URI sourceUris[], String sourceTypes[], URI destVri, String destType)
-    {
+    public TransferMonitor(String action, URI sourceUris[], String sourceTypes[], URI destVri,
+            String destType) {
         this.transferId = transferCounter++;
         this.actionType = action;
         this.sources = sourceUris;
@@ -81,52 +67,43 @@ public class TransferMonitor extends TaskMonitorAdaptor
         this.dest = destVri;
     }
 
-    public String getID()
-    {
+    public String getID() {
         return "transfer:#" + transferId;
     }
 
-    public URI getDestination()
-    {
+    public URI getDestination() {
         return dest;
     }
 
-    public String getDestinationType()
-    {
+    public String getDestinationType() {
         return destType;
     }
 
-    public URI getSource()
-    {
+    public URI getSource() {
         if ((sources != null) && (sources.length > 0))
             return sources[0];
         return null;
     }
 
-    public URI[] getSources()
-    {
+    public URI[] getSources() {
         return sources;
     }
 
-    public int getTotalSources()
-    {
+    public int getTotalSources() {
         if (sources != null)
             return sources.length;
         return 0;
     }
 
-    public int getSourcesDone()
-    {
+    public int getSourcesDone() {
         return sourcesDone;
     }
 
-    public void updateSourcesDone(int done)
-    {
+    public void updateSourcesDone(int done) {
         this.sourcesDone = done;
     }
 
-    public String getActionType()
-    {
+    public String getActionType() {
         return actionType;
     }
 
@@ -135,14 +112,20 @@ public class TransferMonitor extends TaskMonitorAdaptor
     // ===
 
     /**
-     * During a transfer, more source might be added by the ongoing transfer process.
+     * During a transfer, more sources might be added by the on going transfer process.
      * 
      * @param sources
      *            - new full list of sources.
      */
-    protected void updateSources(URI sources[])
-    {
+    protected void updateSources(URI sources[]) {
         this.sources = sources;
+    }
+
+    @Override
+    public String toString() {
+        return "TransferMonitor:[transferId:" + transferId + ",sources:" + Arrays.toString(sources)
+                + ",sourceTypes:" + Arrays.toString(sourceTypes) + ",dest:" + dest + ",destType:"
+                + destType + ",actionType:" + actionType + ",sourcesDone:" + sourcesDone + "]";
     }
 
 }

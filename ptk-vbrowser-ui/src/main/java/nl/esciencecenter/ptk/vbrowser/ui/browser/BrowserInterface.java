@@ -35,12 +35,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Master Browser Interface. Interface methods for the ViewNodeContainer to invoke.
- * 
- * @author Piter T. de Boer
+ * Master Browser Interface.
  */
-public interface BrowserInterface
-{
+public interface BrowserInterface {
     /**
      * Returns master platform this browser is associated with.
      */
@@ -53,19 +50,23 @@ public interface BrowserInterface
 
     /**
      * Create custom pop-up menu for specified ViewComponent and optional selected ViewNode. <br>
-     * If a user right-clicks on a ViewNode or on the under laying canvas (ViewNodeContainer) this method is called.
+     * If a user right-clicks on a ViewNode or on the under laying canvas (ViewNodeContainer) this
+     * method is called.
      * 
      * @param viewComponent
-     *            - actual ViewComponent the event is coming from. For example an IconPanel or ResourceTree.
+     *            - actual ViewComponent the event is coming from. For example an IconPanel or
+     *            ResourceTree.
      * @param viewNode
      *            - effective selected ViewNode on which the menu click occurs.
      * @param canvasMenu
-     *            - whether this is a canvas click on a ViewNodeContainer or an actual ViewNode. If true the
-     *            viewComponent must be a ViewNodeContainer. Multi-selection actions are currently canvas menus actions,
-     *            since the menu should apply to the selection and not the clicked-on ViewNode.
+     *            - whether this is a canvas click on a ViewNodeContainer or an actual ViewNode. If
+     *            true the viewComponent must be a ViewNodeContainer. Multi-selection actions are
+     *            currently canvas menus actions, since the menu should apply to the selection and
+     *            not the clicked-on ViewNode.
      * @return
      */
-    public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode, boolean canvasMenu);
+    public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode,
+            boolean canvasMenu);
 
     /**
      * Is invoked after an action from the pop-up menu has been called.
@@ -99,7 +100,8 @@ public interface BrowserInterface
      *            - list of resource locations.
      * @return true - if drop succeed and has finished.
      */
-    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris);
+    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode,
+            DropAction dropAction, List<VRL> vris);
 
     /**
      * Return task source/task watcher for backgrounded tasks originating from this browser.<br>
@@ -108,7 +110,5 @@ public interface BrowserInterface
      * @return
      */
     public ITaskSource getTaskSource();
-
-
 
 }

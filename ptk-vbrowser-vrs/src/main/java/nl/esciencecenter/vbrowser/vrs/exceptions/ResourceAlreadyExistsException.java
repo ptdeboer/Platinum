@@ -20,19 +20,17 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-
 /**
  * File or directory already exists.
  */
-public class ResourceAlreadyExistsException extends ResourceException
-{
+public class ResourceAlreadyExistsException extends ResourceException {
+
     private static final long serialVersionUID = 1829852296515159771L;
 
     /**
      * Public constructor which holds original system exception.
      */
-    public ResourceAlreadyExistsException(String message, Throwable cause)
-    {
+    public ResourceAlreadyExistsException(String message, Throwable cause) {
         super(message, cause, ALREADY_EXISTS);
     };
 

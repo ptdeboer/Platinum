@@ -47,8 +47,8 @@ import nl.esciencecenter.ptk.net.URIUtil;
 /**
  * Wrapper around nio.file.Path interface.
  */
-public class FSPath
-{
+public class FSPath {
+
     public static final String DIR_TYPE = "Dir";
 
     public static final String FILE_SCHEME = "file";
@@ -70,33 +70,28 @@ public class FSPath
     /** Holds posix attributes, if the are supported. Is null otherwise. */
     protected PosixFileAttributes posixAttrs;
 
-    protected FSPath(FSPathProvider fsHandler, Path path)
-    {
+    protected FSPath(FSPathProvider fsHandler, Path path) {
         this.fsHandler = fsHandler;
         init(path);
     }
 
-    private void init(Path path)
-    {
+    private void init(Path path) {
         this._path = path;
     }
 
-    protected Path path()
-    {
+    protected Path path() {
         return _path;
     }
-    
+
     // ==========================
     // Create/Delete/Rename
     // ==========================
 
-    public FSPath create() throws IOException
-    {
+    public FSPath create() throws IOException {
         byte bytes[] = new byte[0];
 
         // Default way to create a file is by writing zero bytes:
-        try (OutputStream outps = this.fsHandler.createOutputStream(this, false)) 
-        {
+        try (OutputStream outps = this.fsHandler.createOutputStream(this, false)) {
             outps.write(bytes);
             // no need to call outps.close(); 
         }
@@ -104,43 +99,36 @@ public class FSPath
         return this;
     }
 
-    public FSPath createDir(String subdir) throws IOException, FileURISyntaxException
-    {
+    public FSPath createDir(String subdir) throws IOException, FileURISyntaxException {
         FSPath dir = resolvePath(subdir);
         dir.mkdir();
         return dir;
     }
 
-    public FSPath createFile(String filepath) throws IOException, FileURISyntaxException
-    {
+    public FSPath createFile(String filepath) throws IOException, FileURISyntaxException {
         FSPath file = resolvePath(filepath);
         file.create();
         return file;
     }
 
-    public boolean delete(LinkOption... linkOptions) throws IOException
-    {
+    public boolean delete(LinkOption... linkOptions) throws IOException {
         Files.delete(_path);
         return true;
     }
 
-    public boolean exists(LinkOption... linkOptions)
-    {
-        if (linkOptions == null)
-        {
+    public boolean exists(LinkOption... linkOptions) {
+        if (linkOptions == null) {
             return Files.exists(_path);
-        }
-        else
-        {
+        } else {
             return Files.exists(_path, linkOptions);
         }
     }
 
-    public FSPath renameTo(String relativeOrAbsolutePath) throws IOException
-    {
+    public FSPath renameTo(String relativeOrAbsolutePath) throws IOException {
         FSPath other = this.resolvePath(relativeOrAbsolutePath);
 
         Path targetPath = other._path;
+        @SuppressWarnings("unused")
         Path actualPath = Files.move(this._path, targetPath);
         // no errrors, assume path is renamed.
         return other;
@@ -153,12 +141,10 @@ public class FSPath
     /**
      * Returns creation time in milli seconds since EPOCH, if supported. Returns -1 otherwise.
      */
-    public FileTime getAccessTime() throws IOException
-    {
+    public FileTime getAccessTime() throws IOException {
         BasicFileAttributes attrs = this.getBasicAttributes();
 
-        if (attrs == null)
-        {
+        if (attrs == null) {
             return null;
         }
 
@@ -168,43 +154,31 @@ public class FSPath
     /**
      * Returns last part of the path including extension.
      */
-    public String getBasename()
-    {
+    public String getBasename() {
         return getBasename(true);
     }
 
-    public String getBasename(boolean includeExtension)
-    {
+    public String getBasename(boolean includeExtension) {
         String fileName = _path.getFileName().toString();
 
-        if (includeExtension)
-        {
+        if (includeExtension) {
             return fileName;
-        }
-        else
-        {
+        } else {
             return URIFactory.stripExtension(fileName);
         }
     }
 
-    public BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException
-    {
-        try
-        {
-            if (basicAttrs == null)
-            {
+    public BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException {
+        try {
+            if (basicAttrs == null) {
                 basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class, linkOptions);
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             // Auto dereference in the case of a borken link:
-            if (isBrokenLink())
-            {
-                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-            }
-            else
-            {
+            if (isBrokenLink()) {
+                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class,
+                        LinkOption.NOFOLLOW_LINKS);
+            } else {
                 throw e;
             }
         }
@@ -212,30 +186,25 @@ public class FSPath
         return basicAttrs;
     }
 
-    public FileTime getCreationTime() throws IOException
-    {
+    public FileTime getCreationTime() throws IOException {
         BasicFileAttributes attrs = this.getBasicAttributes();
 
-        if (attrs == null)
-        {
+        if (attrs == null) {
             return null;
         }
 
         return attrs.creationTime();
     }
 
-    public String getDirname()
-    {
+    public String getDirname() {
         return URIFactory.dirname(_path.toUri().getPath());
     }
 
-    public String getExtension()
-    {
+    public String getExtension() {
         return URIFactory.extension(_path.toUri().getPath());
     }
 
-    public long getFileSize() throws IOException
-    {
+    public long getFileSize() throws IOException {
         BasicFileAttributes attrs = this.getBasicAttributes();
 
         if (attrs == null)
@@ -244,54 +213,44 @@ public class FSPath
         return attrs.size();
     }
 
-    public String getHostname()
-    {
+    public String getHostname() {
         return _path.toUri().getHost();
     }
 
-    public FileTime getModificationTime() throws IOException
-    {
+    public FileTime getModificationTime() throws IOException {
         BasicFileAttributes attrs = this.getBasicAttributes();
 
-        if (attrs == null)
-        {
+        if (attrs == null) {
             return null;
         }
 
         return attrs.lastModifiedTime();
     }
 
-    public long getModificationTimeMillies() throws IOException
-    {
+    public long getModificationTimeMillies() throws IOException {
         FileTime time = getModificationTime();
-        if (time == null)
-        {
+        if (time == null) {
             return -1;
-        }
-        else
-        {
+        } else {
             return time.toMillis();
         }
     }
 
-    public FSPath getParent()
-    {
+    public FSPath getParent() {
         return new FSPath(fsHandler, _path.getParent());
     }
 
     /**
      * @return Return actual nio.file.path
      */
-    public Path getPath()
-    {
+    public Path getPath() {
         return _path;
     }
 
     /**
      * @return absolute and normalized URI style path as String.
      */
-    public String getPathname()
-    {
+    public String getPathname() {
         return getPathname(false);
     }
 
@@ -302,49 +261,36 @@ public class FSPath
      *            if this path is a directory, end with a "/"
      * @return absolute and normalized URI style path as directory path ending with "/"
      */
-    public String getPathname(boolean dirPath)
-    {
+    public String getPathname(boolean dirPath) {
         String pathStr = _path.toUri().getPath();
-        if (dirPath)
-        {
+        if (dirPath) {
             dirPath = this.isDirectory(this.fsHandler.linkOptions());
         }
 
-        if (pathStr.endsWith("/"))
-        {
-            if (dirPath)
-            {
+        if (pathStr.endsWith("/")) {
+            if (dirPath) {
                 return pathStr;
-            }
-            else
-            {
+            } else {
                 return pathStr.substring(0, pathStr.length() - 1);
             }
-        }
-        else
-        {
-            if (dirPath)
-            {
+        } else {
+            if (dirPath) {
                 return pathStr + "/";
-            }
-            else
-            {
+            } else {
                 return pathStr;
             }
         }
 
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return _path.toUri().getPort();
     }
 
     /**
      * Returns symbolic link target or NULL
      */
-    public FSPath getSymbolicLinkTarget() throws IOException
-    {
+    public FSPath getSymbolicLinkTarget() throws IOException {
         if (this.isSymbolicLink() == false)
             return null;
 
@@ -353,8 +299,7 @@ public class FSPath
         return new FSPath(fsHandler, target);
     }
 
-    public URI getURI()
-    {
+    public URI getURI() {
         return _path.toUri();
     }
 
@@ -362,28 +307,15 @@ public class FSPath
      * Return encoded (web) URL.
      * <p>
      * This method uses toUri().toURL() which encodes the paths in the URL.<br>
-     * <strong>note:</strong> as URLs do not do encoding nor decoding of special characters, use the file URI (toURI())
-     * to ensure consistency between encoded and decoded paths.
+     * <strong>note:</strong> as URLs do not do encoding nor decoding of special characters, use the
+     * file URI (toURI()) to ensure consistency between encoded and decoded paths.
      * 
      * @return encoded URI compatible URL.
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    public URL getWebURL() throws MalformedURLException
-    {
+    public URL getWebURL() throws MalformedURLException {
         return _path.toUri().toURL();
-    }
-
-    /**
-     * @return Returns decoded file URI as URL.
-     * @see URIFactory#toFileURL()
-     * @throws MalformedURLException
-     * @throws URISyntaxException
-     */
-    public URL getFileURL() throws MalformedURLException, URISyntaxException
-    {
-        // use uri factory:
-        return new URIFactory(_path.toUri()).toFileURL();
     }
 
     /**
@@ -392,65 +324,49 @@ public class FSPath
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    public URL getDirURL() throws MalformedURLException, URISyntaxException
-    {
+    public URL getDirURL() throws MalformedURLException, URISyntaxException {
         // use uri factory:
         return new URIFactory(_path.toUri()).toDirURL();
     }
 
-    public boolean isBrokenLink() throws IOException
-    {
-        if (isSymbolicLink() == false)
-        {
+    public boolean isBrokenLink() throws IOException {
+        if (isSymbolicLink() == false) {
             return false;
         }
-
         return (getSymbolicLinkTarget().exists() == false);
     }
 
-    public boolean isDirectory(LinkOption... linkOptions)
-    {
-        if (linkOptions == null)
-        {
+    public boolean isDirectory(LinkOption... linkOptions) {
+        if (linkOptions == null) {
             return Files.isDirectory(_path, fsHandler.linkOptions());
-        }
-        else
-        {
+        } else {
             return Files.isDirectory(_path, linkOptions);
         }
     }
 
-    public boolean isFile(LinkOption... linkOptions)
-    {
+    public boolean isFile(LinkOption... linkOptions) {
         return Files.isRegularFile(_path, linkOptions);
     }
 
-    public boolean isHidden()
-    {
-        // Windows has a different way to hide files.
-        // Use default UNIX way to indicate hidden files.
+    public boolean isHidden() {
         return this.getBasename().startsWith(".");
     }
 
     /**
      * Whether this file points to a local file. Currently only local files are supported.
      */
-    public boolean isLocal()
-    {
+    public boolean isLocal() {
         return true;
     }
 
-    public boolean isRoot()
-    {
+    public boolean isRoot() {
         String path = this.getPathname();
 
-        if ("/".equals(path))
-        {
+        if ("/".equals(path)) {
             return true;
         }
 
-        if (isFileSystemRoot())
-        {
+        if (isFileSystemRoot()) {
             return true;
         }
 
@@ -462,19 +378,15 @@ public class FSPath
      * 
      * @throws IOException
      */
-    public boolean isSymbolicLink()
-    {
+    public boolean isSymbolicLink() {
         return Files.isSymbolicLink(_path);
     }
 
-    public boolean isFileSystemRoot()
-    {
+    public boolean isFileSystemRoot() {
         List<FSPath> roots = this.fsHandler.listRoots();
 
-        for (FSPath root : roots)
-        {
-            if (root._path.normalize().toString().equals(_path.normalize().toString()))
-            {
+        for (FSPath root : roots) {
+            if (root._path.normalize().toString().equals(_path.normalize().toString())) {
                 return true;
             }
         }
@@ -485,58 +397,46 @@ public class FSPath
     // Directory methods
     // ==========================
 
-    public String[] list() throws IOException
-    {
+    public String[] list() throws IOException {
         DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path);
-        try
-        {
+        try {
             Iterator<Path> dirIterator = dirStream.iterator();
             ArrayList<String> list = new ArrayList<String>();
 
-            while (dirIterator.hasNext())
-            {
+            while (dirIterator.hasNext()) {
                 list.add(dirIterator.next().getFileName().toString());
             }
 
             return list.toArray(new String[0]);
-        }
-        finally
-        {
+        } finally {
             dirStream.close();
         }
     }
 
-    public FSPath[] listNodes() throws IOException
-    {
+    public FSPath[] listNodes() throws IOException {
         DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path);
-        try
-        {
+        try {
             Iterator<Path> dirIterator = dirStream.iterator();
             ArrayList<FSPath> list = new ArrayList<FSPath>();
 
-            while (dirIterator.hasNext())
-            {
+            while (dirIterator.hasNext()) {
                 list.add(new FSPath(fsHandler, dirIterator.next()));
             }
 
             return list.toArray(new FSPath[0]);
 
-        }
-        finally
-        {
+        } finally {
             dirStream.close();
         }
 
     }
 
-    public FSPath mkdir() throws IOException
-    {
+    public FSPath mkdir() throws IOException {
         Files.createDirectory(_path);
         return this;
     }
 
-    public FSPath mkdirs() throws IOException
-    {
+    public FSPath mkdirs() throws IOException {
         Files.createDirectories(_path);
         return this;
     }
@@ -545,20 +445,15 @@ public class FSPath
     // Resolve Methods
     // ==================
 
-    public FSPath resolvePath(String relativePath) throws IOException
-    {
-        FSPath file = this.fsHandler.newFSPath(resolvePathURI(relativePath));
+    public FSPath resolvePath(String relativePath) throws IOException {
+        FSPath file = this.fsHandler.resolvePath(resolvePathURI(relativePath));
         return file;
     }
 
-    public URI resolvePathURI(String relPath) throws FileURISyntaxException
-    {
-        try
-        {
+    public URI resolvePathURI(String relPath) throws FileURISyntaxException {
+        try {
             return URIUtil.resolvePathURI(getURI(), relPath);
-        }
-        catch (URISyntaxException e)
-        {
+        } catch (URISyntaxException e) {
             throw new FileURISyntaxException(e.getMessage(), relPath, e);
         }
     }
@@ -570,37 +465,27 @@ public class FSPath
     /**
      * @return Posix File Attributes if supported by the file system.
      */
-    public PosixFileAttributes getPosixAttributes() throws IOException
-    {
-        try
-        {
-            if (posixAttrs == null)
-            {
+    public PosixFileAttributes getPosixAttributes() throws IOException {
+        try {
+            if (posixAttrs == null) {
                 posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class);
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             // auto dereference in the case of a borken link:
-            if (isBrokenLink())
-            {
-                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-            }
-            else
-            {
+            if (isBrokenLink()) {
+                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class,
+                        LinkOption.NOFOLLOW_LINKS);
+            } else {
                 throw e;
             }
-        }
-        catch (UnsupportedOperationException e)
-        {
+        } catch (UnsupportedOperationException e) {
             return null;
         }
 
         return posixAttrs;
     }
 
-    public int getUnixFileMode() throws IOException
-    {
+    public int getUnixFileMode() throws IOException {
         PosixFileAttributes attrs;
         if ((attrs = getPosixAttributes()) == null)
             return 0;
@@ -610,25 +495,21 @@ public class FSPath
         return FSUtil.toUnixFileMode(perms);
     }
 
-    public void setUnixFileMode(int mode) throws IOException
-    {
+    public void setUnixFileMode(int mode) throws IOException {
         Files.setPosixFilePermissions(_path, FSUtil.fromUnixFileMode(mode));
     }
 
-    public String getGroupName() throws IOException
-    {
+    public String getGroupName() throws IOException {
         PosixFileAttributes attrs;
 
-        if ((attrs = this.getPosixAttributes()) == null)
-        {
+        if ((attrs = this.getPosixAttributes()) == null) {
             return null;
         }
 
         return attrs.group().getName();
     }
 
-    public String getOwnerName() throws IOException
-    {
+    public String getOwnerName() throws IOException {
         PosixFileAttributes attrs;
 
         if ((attrs = this.getPosixAttributes()) == null)
@@ -641,13 +522,11 @@ public class FSPath
     // IO Methods
     // =======================
 
-    public InputStream createInputStream() throws IOException
-    {
+    public InputStream createInputStream() throws IOException {
         return fsHandler.createInputStream(this);
     }
 
-    public OutputStream createOutputStream(boolean append) throws IOException
-    {
+    public OutputStream createOutputStream(boolean append) throws IOException {
         return fsHandler.createOutputStream(this, append);
     }
 
@@ -655,20 +534,17 @@ public class FSPath
     // Misc.
     // =======================
 
-    public boolean sync()
-    {
+    public boolean sync() {
         this.basicAttrs = null;
         this.posixAttrs = null;
         return true;
     }
 
-    public java.io.File toJavaFile()
-    {
+    public java.io.File toJavaFile() {
         return _path.toFile();
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "FSPath:[uri=" + this.getURI().toString() + "]";
     }
 

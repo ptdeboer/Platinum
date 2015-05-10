@@ -10,41 +10,37 @@ import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ViewerTests
-{
+public class ViewerTests {
     private static PluginRegistry viewerRegistry;
 
-    public static PluginRegistry getViewerRegistry()
-    {
-        if (viewerRegistry == null)
-        {
-            viewerRegistry = new PluginRegistry(new ViewerResourceLoader(VRS.createVRSClient(), null));
+    public static PluginRegistry getViewerRegistry() {
+        if (viewerRegistry == null) {
+            viewerRegistry = new PluginRegistry(new ViewerResourceLoader(VRS.createVRSClient(),
+                    null));
         }
 
         return viewerRegistry;
     }
 
-    public static ViewerFrame startViewer(Class<? extends ViewerPlugin> class1, VRL vrl) throws VrsException
-    {
+    public static ViewerFrame startViewer(Class<? extends ViewerPlugin> class1, VRL vrl)
+            throws VrsException {
         ViewerPlugin newViewer = getViewerRegistry().createViewer(class1);
         ViewerFrame frame = createViewerFrame(newViewer, true);
 
-        ViewerContext context=new ViewerContext(getViewerRegistry(),null, vrl, true);
+        ViewerContext context = new ViewerContext(getViewerRegistry(), null, vrl, true);
         context.setViewerEventDispatcher(new ViewerEventDispatcher(true));
         newViewer.initViewer(context);
-        
+
         newViewer.startViewer(vrl, null);
         frame.setVisible(true);
 
         return frame;
     }
 
-    public static ViewerFrame createViewerFrame(ViewerPlugin newViewer, boolean initViewer)
-    {
+    public static ViewerFrame createViewerFrame(ViewerPlugin newViewer, boolean initViewer) {
 
         ViewerFrame frame = new ViewerFrame(newViewer);
-        if (initViewer)
-        {
+        if (initViewer) {
             newViewer.initViewer(new ViewerContext(getViewerRegistry()));
         }
         frame.pack();
@@ -54,10 +50,10 @@ public class ViewerTests
         return frame;
     }
 
-    public static void testViewer(Class<? extends ViewerPlugin> class1, VRL vrl) throws VrsException
-    {
+    public static void testViewer(Class<? extends ViewerPlugin> class1, VRL vrl)
+            throws VrsException {
         ViewerFrame frame = startViewer(class1, vrl);
-        System.out.printf("ViewerFrame is visible:%s\n",frame.isVisible());
+        System.out.printf("ViewerFrame is visible:%s\n", frame.isVisible());
     }
 
 }

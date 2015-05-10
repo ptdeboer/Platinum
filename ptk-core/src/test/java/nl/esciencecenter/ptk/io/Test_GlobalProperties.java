@@ -21,6 +21,7 @@
 package nl.esciencecenter.ptk.io;
 
 import java.io.File;
+import java.net.UnknownHostException;
 
 import nl.esciencecenter.ptk.GlobalProperties;
 
@@ -31,7 +32,7 @@ public class Test_GlobalProperties
 {
 	
 	@Test
-	public void testArchitectureInfo()
+	public void testArchitectureInfo() throws UnknownHostException
 	{
 	    // Basically test whether methods work Exception free on tested platforms: 
 

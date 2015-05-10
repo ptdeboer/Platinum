@@ -1,6 +1,7 @@
 #!/bin/bash 
 ###
 # (C) 2012-2014 Netherlands eScience Center
+# (C) 2015 Piter.NL 
 #
 # file  : vbrowser.sh: 
 # info  : VBrowser startup script. 
@@ -11,9 +12,10 @@
 # settings 
 
 # defaults: 
-VBROWSER_JAR="vbrowser.jar"
-JAVA=java 
-VBROWSER_CLASS=nl.esciencecenter.ptk.vbrowser.ui.StartVBrowser
+VERSION="1.1.0-SNAPSHOT" 
+BOOTSTRAP_JAR="ptk-vbrowser-start-${VERSION}.jar"
+JAVA=java
+VBROWSER_CLASS=nl.esciencecenter.ptk.vbrowser.ui.StartVRSBrowser
 
 ##
 # VBROWSER_SYSCONFDIR 
@@ -64,12 +66,13 @@ export VBROWSER_INSTALL VBROWSER_SYSCONFDIR
 
 echo "VBROWSER_INSTALL     ="$VBROWSER_INSTALL 
 echo "VBROWSER_SYSCONFDIR  ="$VBROWSER_SYSCONFDIR 
+echo "BOOTSTRAP_JAR        ="$BOOTSTRAP_JAR 
 echo "JAVA_HOME            ="$JAVA_HOME 
 echo "CLASSPATH            ="$CLASSPATH
 echo "VBROWSER_CLASS       ="$VBROWSER_CLASS
 echo "Command line options ="$OPTS
 
 # bootstrap class sets up real enviromment: 
-echo "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/bootstrapper.jar" "$VBROWSER_CLASS" $OPTS
-"$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/bootstrapper.jar" "$VBROWSER_CLASS" $OPTS
+echo "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/${BOOTSTRAP_JAR}" "$VBROWSER_CLASS" $OPTS
+"$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/${BOOTSTRAP_JAR}" "$VBROWSER_CLASS" $OPTS
 

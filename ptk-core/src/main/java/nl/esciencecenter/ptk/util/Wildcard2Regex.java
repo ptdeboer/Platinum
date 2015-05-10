@@ -23,25 +23,23 @@ package nl.esciencecenter.ptk.util;
 /**
  * Source code from: http://www.rgagnon.com/javadetails/java-0515.html
  * <p>
- * If you find this article useful, consider making a small donation to show your support for this Web site and its
- * content.
+ * If you find this article useful, consider making a small donation to show your support for this
+ * Web site and its content.
  * <p>
  * Written and compiled by R Gagnon (C)1998-2005
  * <p>
  * Bugfixed and updated by Piter T. de Boer.
  */
-public class Wildcard2Regex
-{
+public class Wildcard2Regex {
 
-    public static String wildcardToRegex(String wildcard)
-    {
+    public static String wildcardToRegex(String wildcard) {
+
         StringBuffer s = new StringBuffer(wildcard.length());
         s.append('^');
-        for (int i = 0, is = wildcard.length(); i < is; i++)
-        {
+
+        for (int i = 0, is = wildcard.length(); i < is; i++) {
             char c = wildcard.charAt(i);
-            switch (c)
-            {
+            switch (c) {
                 case '*':
                     s.append(".*");
                     break;
@@ -73,8 +71,7 @@ public class Wildcard2Regex
         return (s.toString());
     }
 
-    public Wildcard2Regex()
-    {
+    public Wildcard2Regex() {
     }
 
 } // class

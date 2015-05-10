@@ -30,144 +30,116 @@ import nl.esciencecenter.ptk.web.PutMonitor;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.content.AbstractContentBody;
 
-/** 
- * File Body which uses FSNodes. 
- * Based on Apache FileBody. 
- * Example how to upload custom Object types. 
- * Since FSNode can be sub-classed, any file type can be uploaded using this Content Body Type.  
+/**
+ * File Body which uses FSNodes. <br>
+ * Based on Apache FileBody. Example how to upload custom Object types. Since FSNode can be
+ * sub-classed, any file type can be uploaded using this Content Body Type.
  */
-public class FSNodeBody  extends AbstractContentBody 
-{
-    private final FSPath fsNode; 
-    
-    private long totalWritten=0;
+public class FSNodeBody extends AbstractContentBody {
 
-    private PutMonitor putMonitor=null;
-    
-    private int defaultChunkSize=4096; 
-    
-    public FSNodeBody(final FSPath node, final String mimeType, PutMonitor putMonitor) 
-    {
+    private final FSPath fsNode;
+
+    private long totalWritten = 0;
+
+    private PutMonitor putMonitor = null;
+
+    private int defaultChunkSize = 4096;
+
+    public FSNodeBody(final FSPath node, final String mimeType, PutMonitor putMonitor) {
         super(mimeType);
-        this.putMonitor=putMonitor; 
-        
-        if (node == null) 
-        {
+        this.putMonitor = putMonitor;
+
+        if (node == null) {
             throw new IllegalArgumentException("File may not be null");
         }
-        
+
         this.fsNode = node;
     }
-    
-    public FSNodeBody(final FSPath node) 
-    {
-        this(node, "application/octet-stream",null);
+
+    public FSNodeBody(final FSPath node) {
+        this(node, "application/octet-stream", null);
     }
-    
-    public FSNodeBody(final FSPath node, PutMonitor putMonitor) 
-    {
-        this(node, "application/octet-stream",putMonitor);
+
+    public FSNodeBody(final FSPath node, PutMonitor putMonitor) {
+        this(node, "application/octet-stream", putMonitor);
     }
-    
-    public InputStream getInputStream() throws IOException 
-    {
-        return fsNode.createInputStream(); 
+
+    public InputStream getInputStream() throws IOException {
+        return fsNode.createInputStream();
     }
 
     @Override
-    public void writeTo(final OutputStream out) throws IOException 
-    {
-        if (out == null) 
-        {
+    public void writeTo(final OutputStream out) throws IOException {
+        if (out == null) {
             throw new IllegalArgumentException("Output stream may not be null");
         }
-        
-        InputStream in = fsNode.createInputStream(); 
-        
-        try
-        {
+
+        InputStream in = fsNode.createInputStream();
+
+        try {
             byte[] tmp = new byte[defaultChunkSize];
-            
-            int numRead=0;
-            
-            while ((numRead = in.read(tmp)) >=0 )
-            {
+
+            int numRead = 0;
+
+            while ((numRead = in.read(tmp)) >= 0) {
                 out.write(tmp, 0, numRead);
-                
-                if (numRead==0)
-                {
+
+                if (numRead == 0) {
                     // micro sleep: allow IO to happen when thread sleeps. 
-                    try
-                    {
+                    try {
                         Thread.sleep(1);
-                    }
-                    catch (InterruptedException e)
-                    {
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-                
-                totalWritten+=numRead; 
-                logPrintf("Total written=%d\n",totalWritten);
 
-                if (putMonitor!=null)
-                {
+                totalWritten += numRead;
+                logPrintf("Total written=%d\n", totalWritten);
+
+                if (putMonitor != null) {
                     putMonitor.bytesWritten(totalWritten);
                 }
             }
-            
+
             out.flush();
-            
-            if (putMonitor!=null)
-            {
+
+            if (putMonitor != null) {
                 putMonitor.bytesWritten(totalWritten);
-                putMonitor.putDone(); 
+                putMonitor.putDone();
             }
-            
-            logPrintf("Done: Total written=%d\n",totalWritten); 
-        } 
-        finally
-        {
+
+            logPrintf("Done: Total written=%d\n", totalWritten);
+        } finally {
             in.close();
         }
     }
 
-    public String getTransferEncoding()
-    {
+    public String getTransferEncoding() {
         return MIME.ENC_BINARY;
     }
 
-    public String getCharset() 
-    {
+    public String getCharset() {
         return null;
     }
 
-    public long getContentLength() 
-    {
-        try
-        {
+    public long getContentLength() {
+        try {
             return this.fsNode.getFileSize();
-        }
-        catch (IOException e)
-        {
-            return 0; 
+        } catch (IOException e) {
+            return 0;
         }
     }
-    
-    public String getFilename()
-    {
+
+    public String getFilename() {
         return this.fsNode.getBasename();
     }
-    
-    public long getProgress()
-    {
-        return totalWritten; 
+
+    public long getProgress() {
+        return totalWritten;
     }
-    
-    protected void logPrintf(String format,Object... args)
-    {
+
+    protected void logPrintf(String format, Object... args) {
         // Delegate to monitor: 
     }
-    
-}
 
+}

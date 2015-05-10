@@ -24,111 +24,91 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 /**
- * ComboBox adaptor. Manages a default ComboBoxModel,. 
+ * ComboBox adaptor. Manages a default ComboBoxModel,.
  */
-public class SelectionComboBox<T> extends JComboBox<T>
-{
+public class SelectionComboBox<T> extends JComboBox<T> {
     private static final long serialVersionUID = 407894204251955357L;
-    
+
     boolean optionsEditable = false; // whether options are editable
 
-    public SelectionComboBox()
-    {
+    public SelectionComboBox() {
         super();
         init();
     }
 
-    public SelectionComboBox(T[] vals)
-    {
+    public SelectionComboBox(T[] vals) {
         super();
         setValues(vals);
     }
 
-    private void init()
-    {
+    private void init() {
         DefaultComboBoxModel<T> model = new DefaultComboBoxModel<T>();
         setModel(model);
     }
 
-    public DefaultComboBoxModel<T> getModel()
-    {
+    public DefaultComboBoxModel<T> getModel() {
         return (DefaultComboBoxModel<T>) super.getModel();
     }
 
-    public void setValues(T[] values)
-    {
-        if (values==null)
-        {
-            throw new NullPointerException("Cannot set null values. Please use empty array values[0] instead."); 
+    public void setValues(T[] values) {
+        if (values == null) {
+            throw new NullPointerException(
+                    "Cannot set null values. Please use empty array values[0] instead.");
         }
         this.setModel(new DefaultComboBoxModel<T>(values));
     }
 
-    public boolean hasValue(T val)
-    {
+    public boolean hasValue(T val) {
         return (getModel().getIndexOf(val) >= 0);
     }
 
-    public void addValue(T enumVal)
-    {
+    public void addValue(T enumVal) {
         getModel().addElement(enumVal);
     }
 
-    public void removeValue(T enumVal)
-    {
+    public void removeValue(T enumVal) {
         getModel().removeElement(enumVal);
     }
 
-    public void setValue(T txt)
-    {
+    public void setValue(T txt) {
         getModel().setSelectedItem(txt);
     }
 
-    public String getName()
-    {
+    public String getName() {
         return super.getName();
     }
 
-    public void updateFrom(T value)
-    {
+    public void updateFrom(T value) {
         this.setValue(value);
     }
 
-    public void setEditable(boolean flag)
-    {
+    public void setEditable(boolean flag) {
         super.setEditable(flag);
     }
 
     /**
-     * Selectable => drop down option is 'selectable'. optionsEditable = drop down selection entries are editable as
-     * well !
+     * Selectable => drop down option is 'selectable'. optionsEditable = drop down selection entries
+     * are editable as well !
      */
-    public void setEditable(boolean selectable, boolean optionsEditable)
-    {
+    public void setEditable(boolean selectable, boolean optionsEditable) {
         this.setEnabled(selectable);
         this.setEditable(optionsEditable);
     }
 
-    
-    public Object getSelectedItem()
-    {
+    public Object getSelectedItem() {
         return super.getSelectedItem();
     }
-    
-    public String getSelectedItemString()
-    {
+
+    public String getSelectedItemString() {
         Object obj = super.getSelectedItem();
-        if (obj == null)
-        {
+        if (obj == null) {
             return null;
         }
-        return obj.toString(); 
+        return obj.toString();
     }
 
-    public void setSelectedItem(Object value)
-    {
-        if (value == null)
-        {
+    public void setSelectedItem(Object value) {
+        if (value == null) {
             this.setEnabled(false);
             return;
         }

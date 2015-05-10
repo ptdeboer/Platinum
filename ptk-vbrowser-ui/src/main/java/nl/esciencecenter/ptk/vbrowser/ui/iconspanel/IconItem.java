@@ -50,8 +50,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Icon Item. Combines Icon with a label.
  */
-public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
-{
+public class IconItem extends JLabel implements ViewNodeComponent, FocusListener {
     private static final long serialVersionUID = 4212206705193994742L;
 
     private FontInfo fontInfo;
@@ -64,13 +63,11 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
     private UIViewModel uiModel;
 
-    public IconItem(ViewNodeContainer parent, UIViewModel uiModel, ViewNode item)
-    {
+    public IconItem(ViewNodeContainer parent, UIViewModel uiModel, ViewNode item) {
         init(parent, uiModel, item);
     }
 
-    private void init(ViewNodeContainer parent, UIViewModel uiModel, ViewNode node)
-    {
+    private void init(ViewNodeContainer parent, UIViewModel uiModel, ViewNode node) {
         this.viewNode = node;
         this.uiModel = uiModel;
 
@@ -90,8 +87,7 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
         }
 
         // Label placement:
-        if (uiModel.getIconLabelPlacement() == UIViewModel.UIDirection.VERTICAL)
-        {
+        if (uiModel.getIconLabelPlacement() == UIViewModel.UIDirection.VERTICAL) {
             if (visible)
                 this.setIconTextGap(8);
             else
@@ -102,9 +98,7 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
             this.setVerticalTextPosition(JLabel.BOTTOM);
             this.setHorizontalTextPosition(JLabel.CENTER);
-        }
-        else
-        {
+        } else {
             this.setIconTextGap(4);
             this.setVerticalAlignment(JLabel.CENTER);
             this.setHorizontalAlignment(JLabel.LEFT);
@@ -120,22 +114,20 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
     }
 
-    public void setViewComponentEventAdapter(ViewContainerEventAdapter handler)
-    {
+    public void setViewComponentEventAdapter(ViewContainerEventAdapter handler) {
         // IconItem handles focus event, VCEAdaptor handles mouse events (?)
         // this.addFocusListener(handler);
         this.addMouseListener(handler);
     }
 
-    protected void initDND(TransferHandler transferHandler, DragGestureListener dragListener)
-    {
+    protected void initDND(TransferHandler transferHandler, DragGestureListener dragListener) {
         // One For All: Transfer Handler:
         // icon.setTransferHandler(VTransferHandler.getDefault());
 
         // reuse draglistener from iconsPanel:
         DragSource dragSource = DragSource.getDefaultDragSource();
-        dragSource.createDefaultDragGestureRecognizer(
-                this, DnDConstants.ACTION_COPY_OR_MOVE, dragListener);
+        dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE,
+                dragListener);
 
         dragSource.addDragSourceListener(new ViewNodeDragSourceListener());
 
@@ -148,8 +140,7 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
     }
 
-    public void updateLabelText(String text, boolean hasFocus)
-    {
+    public void updateLabelText(String text, boolean hasFocus) {
         if (text == null)
             text = "";
 
@@ -177,10 +168,8 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
         int currentLineWidth = 0;
 
-        while (i < len)
-        {
-            switch (text.charAt(i))
-            {
+        while (i < len) {
+            switch (text.charAt(i)) {
             // filter out special HTML characters:
             // only a small set needs to be filtered:
                 case '/':
@@ -205,8 +194,7 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
             }
 
             currentLineWidth += charWidth;
-            if (currentLineWidth > max_icon_width)
-            {
+            if (currentLineWidth > max_icon_width) {
                 htmlText += "<br>"; // Hard Break!
                 currentLineWidth = 0;
             }
@@ -223,34 +211,27 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
     }
 
-    public void updateFocusBorder(boolean hasFocus)
-    {
+    public void updateFocusBorder(boolean hasFocus) {
         Border focusBorder;
 
-        if (hasFocus)
-        {
+        if (hasFocus) {
             focusBorder = new EtchedBorder();
-        }
-        else
-        {
+        } else {
             focusBorder = new EmptyBorder(2, 2, 2, 2);
         }
 
         this.setBorder(focusBorder);
     }
 
-    public ViewNode getViewNode()
-    {
+    public ViewNode getViewNode() {
         return this.viewNode;
     }
 
-    public boolean hasLocator(VRL locator)
-    {
+    public boolean hasLocator(VRL locator) {
         return this.viewNode.getVRL().equals(locator);
     }
 
-    public void updateFocus(boolean hasFocus)
-    {
+    public void updateFocus(boolean hasFocus) {
         updateIcon(selected, hasFocus);
         updateLabelText(viewNode.getName(), hasFocus);
         // updateFocusBorder(hasFocus);
@@ -258,78 +239,61 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
     }
 
     @Override
-    public UIViewModel getUIViewModel()
-    {
+    public UIViewModel getUIViewModel() {
         return this.uiModel;
     }
 
-    public boolean hasViewNode(ViewNode node)
-    {
+    public boolean hasViewNode(ViewNode node) {
         return this.viewNode.equals(node);
     }
 
-    public boolean requestFocus(boolean value)
-    {
+    public boolean requestFocus(boolean value) {
         // forward to focus subsystem !
         return this.requestFocusInWindow();
     }
 
     @Override
-    public void focusGained(FocusEvent e)
-    {
+    public void focusGained(FocusEvent e) {
         this.updateFocus(true);
     }
 
     @Override
-    public void focusLost(FocusEvent e)
-    {
+    public void focusLost(FocusEvent e) {
         this.updateFocus(false);
     }
 
     @Override
-    public ViewNodeContainer getViewContainer()
-    {
+    public ViewNodeContainer getViewContainer() {
         // parent MUST be IconPanel;
         Container parent = this.getParent();
         return (IconsPanel) parent;
     }
 
-    public void setSelected(boolean val)
-    {
+    public void setSelected(boolean val) {
         this.selected = val;
         updateIcon(selected, false);
         this.repaint();
     }
 
-    protected void updateIcon(boolean isSelected, boolean hasFocus)
-    {
-        if (isSelected)
-        {
-            if (hasFocus)
-            {
+    protected void updateIcon(boolean isSelected, boolean hasFocus) {
+        if (isSelected) {
+            if (hasFocus) {
                 setIcon(viewNode.getIcon(ViewNode.SELECTED_FOCUS_ICON));
                 // textLabel.setOpaque(true);
                 // prev_label_color=textLabel.getForeground();
                 setForeground(uiModel.getFontHighlightColor());
-            }
-            else
-            {
+            } else {
                 setIcon(viewNode.getIcon(ViewNode.SELECTED_ICON));
                 // textLabel.setOpaque(true);
                 // prev_label_color=textLabel.getForeground();
                 setForeground(uiModel.getFontHighlightColor());
             }
-        }
-        else
-        {
-            if (hasFocus)
-            {
+        } else {
+            if (hasFocus) {
                 setIcon(viewNode.getIcon(ViewNode.FOCUS_ICON));
                 // textLabel.setOpaque(false);
                 setForeground(uiModel.getFontHighlightColor());
-            }
-            else
-            {
+            } else {
                 setIcon(viewNode.getIcon());
                 // textLabel.setOpaque(false);
                 setForeground(uiModel.getFontColor());
@@ -337,13 +301,11 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
         }
     }
 
-    public boolean isSelected()
-    {
+    public boolean isSelected() {
         return this.selected;
     }
 
-    public Dimension getPreferredSize()
-    {
+    public Dimension getPreferredSize() {
         Dimension size = super.getPreferredSize();
         return size;
     }

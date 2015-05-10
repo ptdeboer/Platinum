@@ -46,8 +46,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * Mini Status Panel
  */
-public class SubTaskPanel extends JPanel implements ActionListener
-{
+public class SubTaskPanel extends JPanel implements ActionListener {
     private static final long serialVersionUID = -6694878602014623166L;
 
     private JTextField titleTextField;
@@ -70,33 +69,27 @@ public class SubTaskPanel extends JPanel implements ActionListener
 
     private boolean showTransfersSpeeds = true;
 
-    public SubTaskPanel()
-    {
+    public SubTaskPanel() {
         super();
         initGUI();
     }
 
-    public SubTaskPanel(boolean init)
-    {
+    public SubTaskPanel(boolean init) {
         super();
-        if (init)
-        {
+        if (init) {
             initGUI();
         }
     }
 
-    public SubTaskPanel(ITaskMonitor monitor)
-    {
+    public SubTaskPanel(ITaskMonitor monitor) {
         super();
         initGUI();
         setMonitor(monitor);
     }
 
-    protected void initGUI()
-    {
+    protected void initGUI() {
 
-        try
-        {
+        try {
             BorderLayout thisLayout = new BorderLayout();
             thisLayout.setHgap(8);
             thisLayout.setVgap(8);
@@ -118,25 +111,24 @@ public class SubTaskPanel extends JPanel implements ActionListener
                 // 80));
                 {
                     titleTextField = new JTextField();
-                    transferInfo.add(getStatusPanel(), new CellConstraints("2, 3, 3, 1, default, default"));
-                    transferInfo.add(titleTextField, new CellConstraints("2, 2, 2, 1, default, default"));
+                    transferInfo.add(getStatusPanel(), new CellConstraints(
+                            "2, 3, 3, 1, default, default"));
+                    transferInfo.add(titleTextField, new CellConstraints(
+                            "2, 2, 2, 1, default, default"));
                     titleTextField.setText("(Sub) Transfer Action Task");
                     titleTextField.setBackground(new java.awt.Color(229, 229, 229));
                     titleTextField.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
                 }
 
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // annoying
         // this.setAlwaysOnTop(true);
     }
-    
-    public void setMonitor(ITaskMonitor monitor)
-    {
+
+    public void setMonitor(ITaskMonitor monitor) {
         this.taskMonitor = monitor;
         this.monitorStats = new MonitorStats(taskMonitor);
         // update at start to initialize fields:
@@ -144,32 +136,25 @@ public class SubTaskPanel extends JPanel implements ActionListener
     }
 
     /**
-     *Whether speeds in [GMK]B/s should be shown 
+     * Whether speeds in [GMK]B/s should be shown
      */
-    public void setShowTransferSpeed(boolean val)
-    {
+    public void setShowTransferSpeed(boolean val) {
         this.showTransfersSpeeds = val;
     }
 
-    ActionTask updateTask = new ActionTask(TaskWatcher.getTaskWatcher(), "Monitor Updater Task")
-    {
+    ActionTask updateTask = new ActionTask(TaskWatcher.getTaskWatcher(), "Monitor Updater Task") {
 
-        public void doTask()
-        {
-            while (taskMonitor.isDone() == false)
-            {
+        public void doTask() {
+            while (taskMonitor.isDone() == false) {
                 update();
 
                 //if (taskMonitor.isDone())
                 //{
                 // ; // 
                 //}
-                try
-                {
+                try {
                     Thread.sleep(100);// 10fps
-                }
-                catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     PLogger.getLogger(this.getClass()).errorPrintf("Interrupted!\n");
                 }
             }
@@ -179,33 +164,27 @@ public class SubTaskPanel extends JPanel implements ActionListener
         }
 
         @Override
-        public void stopTask()
-        {
+        public void stopTask() {
             // vfstransfer must stop the transfer.
             // task.setMustStop();
         }
     };
 
-    public void start()
-    {
+    public void start() {
         startUpdater();
     }
 
-    protected void startUpdater()
-    {
+    protected void startUpdater() {
         updateTask.startTask();
     }
 
-    public void stop()
-    {
-        if (this.updateTask.isAlive())
-        {
+    public void stop() {
+        if (this.updateTask.isAlive()) {
             this.updateTask.signalTerminate();
         }
     }
 
-    protected void update()
-    {
+    protected void update() {
         if (taskMonitor == null)
             return;
 
@@ -221,29 +200,26 @@ public class SubTaskPanel extends JPanel implements ActionListener
         this.statusPanel.setProgressText(getTotalProgressText());
         this.statusPanel.setProgress(getTotalProgress());
 
-        if (this.taskMonitor.isDone())
-        {
+        if (this.taskMonitor.isDone()) {
             // this.cancelButton.setEnabled(false);
             // this.okButton.setEnabled(true);
         }
     }
 
-    private double getTotalProgress()
-    {
-        TaskStats stats=taskMonitor.getTaskStats(); 
-        if (stats.todo<=0)
-            return 0.0d; 
+    private double getTotalProgress() {
+        TaskStats stats = taskMonitor.getTaskStats();
+        if (stats.todo <= 0)
+            return 0.0d;
         return ((double) stats.done) / stats.todo;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return this.titleTextField.getText();
     }
 
-    private String getTimers()
-    {
-        String timestr = Presentation.createRelativeTimeString(monitorStats.getTotalDoneTime(), false);
+    private String getTimers() {
+        String timestr = Presentation.createRelativeTimeString(monitorStats.getTotalDoneTime(),
+                false);
 
         long eta = monitorStats.getETA();
 
@@ -258,44 +234,38 @@ public class SubTaskPanel extends JPanel implements ActionListener
 
     }
 
-    protected Container getContentPane()
-    {
+    protected Container getContentPane() {
         return this;
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
-        
+    public void actionPerformed(ActionEvent e) {
+
     }
 
     /** return progress information */
-    public String getTotalProgressText()
-    {
+    public String getTotalProgressText() {
         ITaskMonitor info = taskMonitor;
 
         String progstr = "";
 
-        TaskStats totalStats=info.getTaskStats();
-        
-        if (info.isDone())
-        {
+        TaskStats totalStats = info.getTaskStats();
+
+        if (info.isDone()) {
             // Final Times
             String str = "Done:" + (totalStats.done) + " of " + sizeString(totalStats.todo);
             if (showTransfersSpeeds)
                 str += " (" + getTotalSpeedString() + ")";
-            str += " in " + Presentation.createRelativeTimeString(monitorStats.getTotalDoneTime(), false);
+            str += " in "
+                    + Presentation.createRelativeTimeString(monitorStats.getTotalDoneTime(), false);
 
             return str;
         }
 
         // Print total transfer info:
-        if (totalStats.todo <= 0)
-        {
+        if (totalStats.todo <= 0) {
             progstr += "(?) ";
-        }
-        else
-        {
-            progstr += percentage3(totalStats.done,totalStats.todo) + "% ";
+        } else {
+            progstr += percentage3(totalStats.done, totalStats.todo) + "% ";
         }
 
         // delta time busy
@@ -314,33 +284,29 @@ public class SubTaskPanel extends JPanel implements ActionListener
         return progstr;
     }
 
-    private String getTotalSpeedString()
-    {
+    private String getTotalSpeedString() {
         return sizeString((int) monitorStats.getTotalSpeed()) + "B/s";
     }
 
     /** return progress information */
-    public String getCurrentProgressText()
-    {
+    public String getCurrentProgressText() {
         ITaskMonitor info = taskMonitor;
 
         String progstr = "";
 
-        if (info.isDone())
-        {
+        if (info.isDone()) {
             return "Done.";
         }
         String subTask = monitorStats.getCurrentSubTaskName();
 
         // Print Current transfer info:
 
-        if (monitorStats.getSubTaskTodo(subTask) <= 0)
-        {
+        if (monitorStats.getSubTaskTodo(subTask) <= 0) {
             progstr = "(?) ";
-        }
-        else
-        {
-            progstr += percentage3(monitorStats.getSubTaskDone(subTask), monitorStats.getSubTaskTodo(subTask)) + "% ";
+        } else {
+            progstr += percentage3(monitorStats.getSubTaskDone(subTask),
+                    monitorStats.getSubTaskTodo(subTask))
+                    + "% ";
         }
 
         long delta = getSubTaskDoneLastUpdateTime() - getSubTaskStartTime();
@@ -354,8 +320,7 @@ public class SubTaskPanel extends JPanel implements ActionListener
         return progstr;
     }
 
-    public long getSubTaskStartTime()
-    {
+    public long getSubTaskStartTime() {
         TaskStats subStats = this.taskMonitor.getSubTaskStats(taskMonitor.getCurrentSubTaskName());
 
         if (subStats == null)
@@ -364,8 +329,7 @@ public class SubTaskPanel extends JPanel implements ActionListener
         return subStats.startTimeMillies;
     }
 
-    public long getSubTaskDoneLastUpdateTime()
-    {
+    public long getSubTaskDoneLastUpdateTime() {
         TaskStats subStats = this.taskMonitor.getSubTaskStats(taskMonitor.getCurrentSubTaskName());
 
         if (subStats == null)
@@ -375,8 +339,7 @@ public class SubTaskPanel extends JPanel implements ActionListener
     }
 
     /** Return percentage in 3 chars */
-    private String percentage3(double x, double y)
-    {
+    private String percentage3(double x, double y) {
         double perc = (x * 1000) / y;
 
         // 100%
@@ -394,23 +357,19 @@ public class SubTaskPanel extends JPanel implements ActionListener
 
     }
 
-    private String sizeString(long size)
-    {
+    private String sizeString(long size) {
         if (size < 0)
             return "?";
 
         return presentation.sizeString(size, true, 1, 1);
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         stop();
     }
 
-    private ProgresPanel getStatusPanel()
-    {
-        if (statusPanel == null)
-        {
+    private ProgresPanel getStatusPanel() {
+        if (statusPanel == null) {
             statusPanel = new ProgresPanel();
             statusPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         }

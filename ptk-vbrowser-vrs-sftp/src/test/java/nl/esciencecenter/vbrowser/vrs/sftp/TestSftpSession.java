@@ -38,7 +38,7 @@ public class TestSftpSession {
 
         SftpChannel channel = session.createSftpChannel();
         channel.connect();
-        List<SftpEntry> entries= channel.list(".");
+        List<SftpEntry> entries = channel.list(".");
 
         for (int i = 0; i < entries.size(); i++) {
             System.out.printf(" - %s\n", entries.get(i));

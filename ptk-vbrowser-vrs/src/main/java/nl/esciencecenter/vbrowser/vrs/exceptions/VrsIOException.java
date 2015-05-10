@@ -25,28 +25,23 @@ import java.io.IOException;
 /**
  * Chained IO Exception
  */
-public class VrsIOException extends VrsException 
-{
+public class VrsIOException extends VrsException {
     private static final long serialVersionUID = -789106405456659909L;
 
-    public VrsIOException(IOException e)
-    {
-        super(e.getMessage(),e); 
+    public VrsIOException(IOException e) {
+        super(e.getMessage(), e);
     }
 
-    public VrsIOException(String message, IOException ex)
-    {
-        super(message,ex); 
+    public VrsIOException(String message, IOException ex) {
+        super(message, ex);
     }
 
-    public VrsIOException(String message, Throwable ex)
-    {
-        super(message,ex); 
+    public VrsIOException(String message, Throwable ex) {
+        super(message, ex);
     }
 
-    public VrsIOException(String message, Exception e, String exceptionName)
-    {
-        super(message,e,exceptionName); 
+    public VrsIOException(String message, Exception e, String exceptionName) {
+        super(message, e, exceptionName);
     }
-    
+
 }

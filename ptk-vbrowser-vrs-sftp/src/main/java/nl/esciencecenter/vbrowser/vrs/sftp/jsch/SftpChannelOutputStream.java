@@ -25,47 +25,40 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Private SftpChannel+ SftpOutputStream combination. 
- * Autocloses both OutputStream and SftpChannel. 
+ * Private SftpChannel+ SftpOutputStream combination. Autocloses both OutputStream and SftpChannel.
  */
-public class SftpChannelOutputStream extends OutputStream implements AutoCloseable
-{
+public class SftpChannelOutputStream extends OutputStream implements AutoCloseable {
+
     private OutputStream outps = null;
 
     private SftpChannel channel;
 
-    public SftpChannelOutputStream(OutputStream outps, SftpChannel outputChannel)
-    {
+    public SftpChannelOutputStream(OutputStream outps, SftpChannel outputChannel) {
         this.outps = outps;
         this.channel = outputChannel;
     }
 
     @Override
-    public void write(int b) throws IOException
-    {
+    public void write(int b) throws IOException {
         outps.write(b);
     }
 
     @Override
-    public void write(byte bytes[]) throws IOException
-    {
+    public void write(byte bytes[]) throws IOException {
         outps.write(bytes);
     }
 
     @Override
-    public void write(byte bytes[], int offset, int len) throws IOException
-    {
+    public void write(byte bytes[], int offset, int len) throws IOException {
         outps.write(bytes, offset, len);
     }
 
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         outps.close();
         channel.disconnect();
     }
 
-    public void flush() throws IOException
-    {
+    public void flush() throws IOException {
         outps.flush();
     }
 

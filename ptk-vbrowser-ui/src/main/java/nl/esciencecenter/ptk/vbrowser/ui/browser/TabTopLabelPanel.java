@@ -37,32 +37,26 @@ import javax.swing.plaf.basic.BasicButtonUI;
 
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMethod;
 
-public class TabTopLabelPanel extends JPanel
-{
+public class TabTopLabelPanel extends JPanel {
+
     private static final long serialVersionUID = 5566174001482465094L;
 
-    public static enum TabButtonType
-    {
+    public static enum TabButtonType {
         Delete, Add
     };
 
-    private final static MouseListener buttonMouseListener = new MouseAdapter()
-    {
-        public void mouseEntered(MouseEvent e)
-        {
+    private final static MouseListener buttonMouseListener = new MouseAdapter() {
+        public void mouseEntered(MouseEvent e) {
             Component component = e.getComponent();
-            if (component instanceof AbstractButton)
-            {
+            if (component instanceof AbstractButton) {
                 AbstractButton button = (AbstractButton) component;
                 button.setBorderPainted(true);
             }
         }
 
-        public void mouseExited(MouseEvent e)
-        {
+        public void mouseExited(MouseEvent e) {
             Component component = e.getComponent();
-            if (component instanceof AbstractButton)
-            {
+            if (component instanceof AbstractButton) {
                 AbstractButton button = (AbstractButton) component;
                 button.setBorderPainted(false);
             }
@@ -75,14 +69,12 @@ public class TabTopLabelPanel extends JPanel
 
         TabButtonType type;
 
-        public TabButton(TabButtonType buttonType)
-        {
+        public TabButton(TabButtonType buttonType) {
             int size = 17;
             this.type = buttonType;
 
             setPreferredSize(new Dimension(size, size));
-            switch (type)
-            {
+            switch (type) {
                 case Delete:
                     setToolTipText("Close this tab");
                     this.setIcon(new ImageIcon(MiniIcons.getTabDeleteImage()));
@@ -113,12 +105,10 @@ public class TabTopLabelPanel extends JPanel
             // addActionListener(this);
         }
 
-        public void updateUI()
-        {
+        public void updateUI() {
         }
 
-        public TabContentPanel getTabPanel()
-        {
+        public TabContentPanel getTabPanel() {
             return TabTopLabelPanel.this.getTabPanel();
         }
     }
@@ -129,16 +119,15 @@ public class TabTopLabelPanel extends JPanel
 
     private TabContentPanel tabPane;
 
-    private JLabel tabLabel; 
-    
-    public TabTopLabelPanel(final TabContentPanel pane, final BrowserFrame.TabButtonHandler buttonHandler)
-    {
+    private JLabel tabLabel;
+
+    public TabTopLabelPanel(final TabContentPanel pane,
+            final BrowserFrame.TabButtonHandler buttonHandler) {
 
         // unset default FlowLayout' gaps
         super(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-        if (pane == null)
-        {
+        if (pane == null) {
             throw new NullPointerException("Tab pane or Parent TabbedPane is null");
         }
 
@@ -151,7 +140,7 @@ public class TabTopLabelPanel extends JPanel
             this.tabLabel = new JLabel(pane.getName());
             add(tabLabel);
         }
-        
+
         // add more space between the label and the button
         tabLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         // tab button
@@ -173,19 +162,16 @@ public class TabTopLabelPanel extends JPanel
         setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
     }
 
-    TabContentPanel getTabPanel()
-    {
+    TabContentPanel getTabPanel() {
         return this.tabPane;
     }
 
-    public void setEnableAddButton(boolean value)
-    {
+    public void setEnableAddButton(boolean value) {
         addButton.setVisible(value);
     }
 
-    public void setTabLabelText(String text)
-    {
-        tabLabel.setText(text); 
+    public void setTabLabelText(String text) {
+        tabLabel.setText(text);
     }
-    
+
 }

@@ -31,26 +31,18 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * RingBufferStreamTransferer copies data from in InputStream to an OutputStream. <br>
- * It uses a circular (ring) buffer to transfer bytes from the InputStream to the OutputStream. It starts the reader in
- * a background thread while waiting for the reader to fill the buffer and starting writing the data in current thread.
- * This parallel read/write will better use the available bandwidth by both reading and writing in parallel.
- * <p>
- * 
- * @author P.T. de Boer
+ * It uses a circular buffer to transfer bytes from the InputStream to the OutputStream. It starts
+ * the reader in a background thread while waiting for the reader to fill the buffer and starting
+ * writing the data in current thread. This parallel read/write will better use the available
+ * bandwidth by both reading and writing in parallel.
  */
-public class RingBufferStreamTransferer
-{
-    String streamCopySubTaskName = "Performing StreamCopy";
+public class RingBufferStreamTransferer {
 
-    // === static ===
+    private static final PLogger logger = PLogger.getLogger(RingBufferStreamTransferer.class);
 
-    private PLogger logger;
+    // === instance ===
 
-    {
-        logger = PLogger.getLogger(RingBufferStreamTransferer.class);
-    }
-
-    // === static ===
+    private String streamCopySubTaskName = "Performing StreamCopy";
 
     // data buffer: acces is synchronized.
     // This object is also used as general mutex.
@@ -73,8 +65,8 @@ public class RingBufferStreamTransferer
     private long writeTime = 0;
 
     /**
-     * Optional Transfer info. Class will update current transfer by updating the nr of bytes currently transferred by
-     * this buffer.
+     * Optional Transfer info. Class will update current transfer by updating the nr of bytes
+     * currently transferred by this buffer.
      */
     ITaskMonitor transferInfo = null;
 
@@ -94,30 +86,27 @@ public class RingBufferStreamTransferer
     /**
      * Creates new RingBuffer using as internal buffer with size "size"
      */
-    public RingBufferStreamTransferer(int size)
-    {
+    public RingBufferStreamTransferer(int size) {
         init(size);
     }
 
     /**
      * Creates new RingBuffer using as internal buffer with size "size"
      */
-    public RingBufferStreamTransferer(int size, InputStream input, OutputStream output)
-    {
+    public RingBufferStreamTransferer(int size, InputStream input, OutputStream output) {
         init(size);
         this.setInputStream(input);
         this.setOutputstream(output);
     }
 
-    private void init(int size)
-    {
+    private void init(int size) {
         this.buffer = new byte[size];
         this.bufferSize = size;
     }
 
-    Boolean readerWait = new Boolean(true);
+    private Boolean readerWait = new Boolean(true);
 
-    Boolean writerWait = new Boolean(true);
+    private Boolean writerWait = new Boolean(true);
 
     private OutputStream outputStream = null;
 
@@ -130,8 +119,7 @@ public class RingBufferStreamTransferer
     /**
      * Sets the OutputStream to write to. Can be called only once.
      */
-    public void setOutputstream(OutputStream outp)
-    {
+    public void setOutputstream(OutputStream outp) {
         if (this.outputStream != null)
             throw new Error("Cannot set OutputStream twice!");
 
@@ -141,8 +129,7 @@ public class RingBufferStreamTransferer
     /**
      * Sets the InputStream to read from. Can be called only once
      */
-    public void setInputStream(InputStream inp)
-    {
+    public void setInputStream(InputStream inp) {
         if (this.inputStream != null)
             throw new Error("Cannot set InputStream twice!");
 
@@ -150,36 +137,31 @@ public class RingBufferStreamTransferer
     }
 
     /**
-     * Limits the nr of bytes thats get written each write iteration. If the OutputStream can not efficiently (or not at
-     * all!) handle big writes, limit the maximum with this method.
+     * Limits the nr of bytes thats get written each write iteration. If the OutputStream can not
+     * efficiently (or not at all!) handle big writes, limit the maximum with this method.
      */
-    public void setMaxWriteChunkSize(int size)
-    {
+    public void setMaxWriteChunkSize(int size) {
         this.writeChunkSize = size;
     }
 
     /**
-     * Limits the nr of bytes thats get read each read iteration. If the InputStream can not efficiently (or not at
-     * all!) handle big reads, limit the maximum with this method. Usually the 'read()' method already reads the nr.
-     * bytes it can handle per read (which it returns).
+     * Limits the nr of bytes thats get read each read iteration. If the InputStream can not
+     * efficiently (or not at all!) handle big reads, limit the maximum with this method. Usually
+     * the 'read()' method already reads the nr. bytes it can handle per read (which it returns).
      */
-    public void setMaxReadChunkSize(int size)
-    {
+    public void setMaxReadChunkSize(int size) {
         this.readChunkSize = size;
     }
 
     /**
      * Starts read loop. Is started in the background by startTransfer().
      */
-    protected void readLoop() throws Exception
-    {
+    protected void readLoop() throws Exception {
         int buflen = buffer.length;
 
-        try
-        {
+        try {
             // do loop while there is data left
-            while ((unknownSize == true) || (totalRead < nrToTransfer))
-            {
+            while ((unknownSize == true) || (totalRead < nrToTransfer)) {
                 if (mustStop())
                     throw new InterruptedException("Transfer interrupted!");
 
@@ -187,8 +169,7 @@ public class RingBufferStreamTransferer
                 int delta = 0;
 
                 // Do buffer calculations in MuTex'd time:
-                synchronized (buffer)
-                {
+                synchronized (buffer) {
                     delta = buflen; // ? istr.available();
                     int free = buflen - (int) (totalRead - nrWritten); // free
                                                                        // space
@@ -222,16 +203,13 @@ public class RingBufferStreamTransferer
                 logger.debugPrintf("reader: delta     =%d\n", delta);
 
                 // new data to tranfer ?
-                if (delta > 0)
-                {
+                if (delta > 0) {
                     long startTime = System.currentTimeMillis();
 
                     int n = inputStream.read(buffer, start, delta);
 
-                    if (n < 0)
-                    {
-                        if (unknownSize == true)
-                        {
+                    if (n < 0) {
+                        if (unknownSize == true) {
                             // EOF when reading from unknown InputStream:
                             // We know the size now, update nrToTransfer to
                             // current
@@ -242,21 +220,16 @@ public class RingBufferStreamTransferer
 
                             unknownSize = false;
                             nrToTransfer = totalRead;
+                        } else {
+                            logger.errorPrintf("Got EOF while reading %d bytes from inputstream\n",
+                                    nrToTransfer);
+                            throw new IOException("Failed to read expected number of bytes: read="
+                                    + totalRead + " while expected=" + nrToTransfer);
                         }
-                        else
-                        {
-                            logger.errorPrintf("Got EOF while reading %d bytes from inputstream\n", nrToTransfer);
-                            throw new IOException("Failed to read expected number of bytes: read=" + totalRead
-                                    + " while expected=" + nrToTransfer);
-                        }
-                    }
-                    else if (n > 0)
-                    {
+                    } else if (n > 0) {
                         // MUTEX save: field is only updated by reader:
                         totalRead += n; // update totalRead;
-                    }
-                    else if (n == 0)
-                    {
+                    } else if (n == 0) {
                         logger.debugPrintf("read(): Got 0 bytes ...\n");
                         // ok, try again could be time out.
                     }
@@ -265,17 +238,13 @@ public class RingBufferStreamTransferer
                     logger.debugPrintf("reader: after read, nrRead=%s\n", totalRead);
 
                     // notify writer there is data (if writer is waiting)
-                    synchronized (writerWait)
-                    {
+                    synchronized (writerWait) {
                         writerWait.notify();
                     }
-                }
-                else if ((unknownSize == true) || (totalRead < nrToTransfer))
-                {
+                } else if ((unknownSize == true) || (totalRead < nrToTransfer)) {
                     // Wait for writer to free space.
                     // Wait for .1 second max. or until writer notifies reader.
-                    synchronized (readerWait)
-                    {
+                    synchronized (readerWait) {
                         readerWait.wait(100);
                     }
                 }
@@ -286,16 +255,13 @@ public class RingBufferStreamTransferer
             logger.debugPrintf("reader total nrWritten =%d\n", nrWritten);
             logger.debugPrintf("reader nrToTransfer    =%d\n", nrToTransfer);
 
-        }
-        catch (Throwable err)
-        {
+        } catch (Throwable err) {
             logger.logException(PLogger.ERROR, err, "Exception:%s\n", err);
             // Signal Strop:
             this.cancelTransfer = true;
             // notify writer since there is a read error !
 
-            synchronized (writerWait)
-            {
+            synchronized (writerWait) {
                 writerWait.notify();
             }
 
@@ -304,13 +270,11 @@ public class RingBufferStreamTransferer
 
     }
 
-    public void setStop(boolean val)
-    {
+    public void setStop(boolean val) {
         cancelTransfer = val;
     }
 
-    protected boolean mustStop()
-    {
+    protected boolean mustStop() {
         // ActionTask.mustStop() is called
         if (cancelTransfer == true)
             return true;
@@ -322,14 +286,11 @@ public class RingBufferStreamTransferer
         return false;
     }
 
-    void writeLoop() throws IOException
-    {
+    protected void writeLoop() throws IOException {
         int buflen = buffer.length;
 
-        try
-        {
-            while ((unknownSize == true) || (nrWritten < nrToTransfer))
-            {
+        try {
+            while ((unknownSize == true) || (nrWritten < nrToTransfer)) {
                 if (mustStop())
                     throw new InterruptedException("Transfer interrupted!");
 
@@ -337,8 +298,7 @@ public class RingBufferStreamTransferer
                 int start = 0;
 
                 // Do buffer calculations in MuTex'd time:
-                synchronized (buffer)
-                {
+                synchronized (buffer) {
                     // nr bytes to be written
                     delta = (int) (totalRead - nrWritten);
                     // start in cicular buffer
@@ -358,8 +318,7 @@ public class RingBufferStreamTransferer
                 logger.debugPrintf("writer delta     =%d\n", delta);
 
                 // data to write ?
-                if (delta > 0)
-                {
+                if (delta > 0) {
                     long startTime = System.currentTimeMillis();
 
                     outputStream.write(buffer, start, delta);
@@ -369,23 +328,18 @@ public class RingBufferStreamTransferer
                     // MUTEX safe: field is only updated by writer:
                     nrWritten += delta;
 
-                    if (transferInfo != null)
-                    {
+                    if (transferInfo != null) {
                         // update current transfer:
                         transferInfo.updateSubTaskDone(streamCopySubTaskName, nrWritten);
                     }
                     // notify reader that buffer is empty
-                    synchronized (readerWait)
-                    {
+                    synchronized (readerWait) {
                         readerWait.notify();
                     }
-                }
-                else if ((unknownSize == true) || (nrWritten < nrToTransfer))
-                {
+                } else if ((unknownSize == true) || (nrWritten < nrToTransfer)) {
                     // Wait for reader to fill buffer.
                     // wait for .1 second or until reader notifies writer.
-                    synchronized (writerWait)
-                    {
+                    synchronized (writerWait) {
                         writerWait.wait(100);
                     }
                 }
@@ -399,19 +353,15 @@ public class RingBufferStreamTransferer
             // in the case the reader still is waiting for the writer
             // to finish :
 
-            synchronized (readerWait)
-            {
+            synchronized (readerWait) {
                 readerWait.notify();
             }
-        }
-        catch (Throwable err)
-        {
+        } catch (Throwable err) {
             logger.logException(PLogger.ERROR, err, "Exception:%s\n", err);
             // Signal Strop:
             this.cancelTransfer = true;
             // notify reader since there is a read error !
-            synchronized (readerWait)
-            {
+            synchronized (readerWait) {
                 readerWait.notify();
             }
             // rethrow
@@ -423,8 +373,7 @@ public class RingBufferStreamTransferer
     /**
      * Transfer upto numTranfer bytes, or -1 for all.
      */
-    public void startTransfer(long numTransfer) throws Exception
-    {
+    public void startTransfer(long numTransfer) throws Exception {
         // =============================================================
         // Pre Transfer
         // =============================================================
@@ -433,21 +382,17 @@ public class RingBufferStreamTransferer
 
         // fixed streamcopy or unknown.
 
-        if (numTransfer >= 0)
-        {
+        if (numTransfer >= 0) {
             this.nrToTransfer = numTransfer;
             this.unknownSize = false;
-        }
-        else
-        {
+        } else {
             // copy all (Stream Copy)
             this.nrToTransfer = -1;
             this.unknownSize = true;
         }
 
         // update transferinfo
-        if (this.transferInfo != null)
-        {
+        if (this.transferInfo != null) {
             transferInfo.startSubTask(streamCopySubTaskName, numTransfer);
             // set to 0 if unknown; !
             if (numTransfer < 0)
@@ -455,18 +400,16 @@ public class RingBufferStreamTransferer
         }
 
         // start reader in background:
-        readerTask = new ActionTask(nl.esciencecenter.ptk.task.TaskWatcher.getTaskWatcher(), "RingBuffer.readerTask")
-        {
+        readerTask = new ActionTask(nl.esciencecenter.ptk.task.TaskWatcher.getTaskWatcher(),
+                "RingBuffer.readerTask") {
 
             @Override
-            public void doTask() throws Exception
-            {
+            public void doTask() throws Exception {
                 readLoop();
             }
 
             @Override
-            public void stopTask()
-            {
+            public void stopTask() {
                 setStop(true);
             }
         };
@@ -485,12 +428,9 @@ public class RingBufferStreamTransferer
         // =============================================================
 
         // join tasks:
-        try
-        {
+        try {
             readerTask.join();
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             throw e;
         }
         // after transfer make sure all streams are flushes and closed !
@@ -521,8 +461,7 @@ public class RingBufferStreamTransferer
         // if (this.transferInfo!=null)
         // transferInfo.addLogText("Total stream transfer speed="+totalSpeedStr+"\n");
 
-        if (readerTask.hasException())
-        {
+        if (readerTask.hasException()) {
             Throwable e = readerTask.getException();
             if (e instanceof Exception)
                 throw (Exception) e;
@@ -531,28 +470,23 @@ public class RingBufferStreamTransferer
         }
     }
 
-    public void setTaskMonitor(ITaskMonitor transfer)
-    {
+    public void setTaskMonitor(ITaskMonitor transfer) {
         this.transferInfo = transfer;
     }
 
-    public int getReadChunkSize()
-    {
+    public int getReadChunkSize() {
         return this.readChunkSize;
     }
 
-    public int getWriteChunkSize()
-    {
+    public int getWriteChunkSize() {
         return this.writeChunkSize;
     }
 
-    public int getCopyBufferSize()
-    {
+    public int getCopyBufferSize() {
         return this.bufferSize;
     }
 
-    public long getTotalWritten()
-    {
+    public long getTotalWritten() {
         return this.nrWritten;
     }
 

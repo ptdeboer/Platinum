@@ -25,67 +25,68 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Private SftpChannel+ SftpInputStream combination. 
- * Autocloses both InputStream and SftpChannel. 
+ * Private SftpChannel+ SftpInputStream combination. Autocloses both InputStream and SftpChannel.
  */
-public class SftpChannelInputStream extends InputStream implements AutoCloseable
-{
+public class SftpChannelInputStream extends InputStream implements AutoCloseable {
+
     private InputStream inps = null;
 
     private SftpChannel channel;
 
-    // private int numRead = 0;
+    private long numRead = 0;
 
-    public SftpChannelInputStream(SftpChannel newChannel, InputStream inps)
-    {
+    public SftpChannelInputStream(SftpChannel newChannel, InputStream inps) {
         this.inps = inps;
         this.channel = newChannel;
     }
 
-    public int read() throws IOException
-    {
-        return inps.read();
+    public int read() throws IOException {
+        int val = inps.read();
+        numRead++;
+        return val;
     }
 
-    public int read(byte buffer[]) throws IOException
-    {
-        return inps.read(buffer);
+    public int read(byte buffer[]) throws IOException {
+        int val = inps.read(buffer);
+        if (val > 0)
+            numRead += val;
+        return val;
     }
 
-    public int read(byte buffer[], int offset, int len) throws IOException
-    {
-        return inps.read(buffer, offset, len);
+    public int read(byte buffer[], int offset, int len) throws IOException {
+        int val = inps.read(buffer, offset, len);
+        if (val > 0)
+            numRead += val;
+        return val;
     }
 
-    public void reset() throws IOException
-    {
+    public void reset() throws IOException {
         inps.reset();
     }
 
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         inps.close();
         channel.close();
     }
 
-    public int available() throws IOException
-    {
+    public int available() throws IOException {
         return inps.available();
     }
 
-    public boolean markSupported()
-    {
+    public boolean markSupported() {
         return inps.markSupported();
     }
 
-    public void mark(int limit)
-    {
+    public void mark(int limit) {
         inps.mark(limit);
     }
 
-    public long skip(long len) throws IOException
-    {
+    public long skip(long len) throws IOException {
         return inps.skip(len);
+    }
+
+    public long getNumRead() {
+        return numRead;
     }
 
 }

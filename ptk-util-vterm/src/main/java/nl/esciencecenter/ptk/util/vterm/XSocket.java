@@ -32,119 +32,97 @@ import java.net.Socket;
  * redirects IP Socket to X (unix) socket: 
  * 
  */
-public class XSocket
-{
-	private ServerSocket sock;
+public class XSocket {
+    private ServerSocket sock;
 
-	public XSocket(int port)
-	{
-		try
-		{
-			sock=new java.net.ServerSocket(port);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public boolean terminate=false; 
-	
-	/** Start accepting connections and redirect each incoming connection */ 
-	public void listen(boolean background)
-	{
-		
-		// listen thread:
-		
-		while (terminate==false)
-		{
-			Socket clientsock;
-			
-			try
-			{
-				clientsock = this.sock.accept();
-				redirect(clientsock); 
-			}
-			catch (IOException e)
-			{
-				Error("Error in accept:"+e); 
-				e.printStackTrace();
-			}
-			
-		}
-	}
+    public XSocket(int port) {
+        try {
+            sock = new java.net.ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	private void redirect(final Socket clientsock) throws IOException
-	{
-		Debug(1,"redirect:"+clientsock);
-		
-		//final SocketChannel channel = clientsock.getChannel();
-		final InputStream inps=clientsock.getInputStream(); 
-		File file=new File("/tmp/.X11-unix/X0");
-		// fails:
-		final RandomAccessFile rafile=new RandomAccessFile(file,"rw"); 
+    public boolean terminate = false;
 
-		if (inps==null)
-		{
-			Error("NULL Channel after getChannel:"+clientsock);
-			return; 
-		}
-		
-		Runnable reader=new Runnable()
-		{
-			public void run()
-			{
-				Debug(1,"Started reader for:"+clientsock); 
-				
-				byte buffer[]=new byte[1024]; 
-				
-				while (terminate==false)
-				{
-					try
-					{
-						int val=inps.read(buffer); 
-						
-						Debug(1,"Reader received val="+val); 
-						rafile.write(buffer,0,val); 
-					}
-					catch (IOException e)
-					{
-						System.err.println("Exception:e"); 
-						e.printStackTrace();
-						terminate=true; 
-					}
-						
-				} 
-				
-				Debug(1,"Stopped redirecting:"+sock); 
-			}
+    /** Start accepting connections and redirect each incoming connection */
+    public void listen(boolean background) {
 
-		
-		};
-		
-		Thread thread=new Thread(reader,"XSocket reader"); 
-		thread.start(); 
-		
-	}
+        // listen thread:
 
-	private void Debug(int level, String msg)
-	{
-//		if (level<=1) 
-//			Global.infoPrintln(this,msg); 
-//		else
-//			Global.debugPrintln(this,msg); 
-	}
-	
-	private void Error(String msg)
-	{
-//		Global.debugPrintln(this+"Error:",msg);
-//		Global.errorPrintln(this+"Error:",msg); 
-	}
+        while (terminate == false) {
+            Socket clientsock;
 
-	public static void main(String args[])
-	{
-		XSocket sock=new XSocket(6001); 
-		sock.listen(true); 
-		
-	}
+            try {
+                clientsock = this.sock.accept();
+                redirect(clientsock);
+            } catch (IOException e) {
+                Error("Error in accept:" + e);
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void redirect(final Socket clientsock) throws IOException {
+        Debug(1, "redirect:" + clientsock);
+
+        //final SocketChannel channel = clientsock.getChannel();
+        final InputStream inps = clientsock.getInputStream();
+        File file = new File("/tmp/.X11-unix/X0");
+        // fails:
+        final RandomAccessFile rafile = new RandomAccessFile(file, "rw");
+
+        if (inps == null) {
+            Error("NULL Channel after getChannel:" + clientsock);
+            return;
+        }
+
+        Runnable reader = new Runnable() {
+            public void run() {
+                Debug(1, "Started reader for:" + clientsock);
+
+                byte buffer[] = new byte[1024];
+
+                while (terminate == false) {
+                    try {
+                        int val = inps.read(buffer);
+
+                        Debug(1, "Reader received val=" + val);
+                        rafile.write(buffer, 0, val);
+                    } catch (IOException e) {
+                        System.err.println("Exception:e");
+                        e.printStackTrace();
+                        terminate = true;
+                    }
+
+                }
+
+                Debug(1, "Stopped redirecting:" + sock);
+            }
+
+        };
+
+        Thread thread = new Thread(reader, "XSocket reader");
+        thread.start();
+
+    }
+
+    private void Debug(int level, String msg) {
+        //		if (level<=1) 
+        //			Global.infoPrintln(this,msg); 
+        //		else
+        //			Global.debugPrintln(this,msg); 
+    }
+
+    private void Error(String msg) {
+        //		Global.debugPrintln(this+"Error:",msg);
+        //		Global.errorPrintln(this+"Error:",msg); 
+    }
+
+    public static void main(String args[]) {
+        XSocket sock = new XSocket(6001);
+        sock.listen(true);
+
+    }
 }

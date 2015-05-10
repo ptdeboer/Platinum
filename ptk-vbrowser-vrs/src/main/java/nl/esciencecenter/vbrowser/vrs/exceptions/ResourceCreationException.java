@@ -20,12 +20,11 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-
 /**
  * Couldn't create Resource.
  */
-public class ResourceCreationException extends ResourceException
-{
+public class ResourceCreationException extends ResourceException {
+
     public static final String CREATION_FAILED = "Resource Creation Failed.";
 
     private static final long serialVersionUID = 1829852296515159771L;
@@ -33,8 +32,7 @@ public class ResourceCreationException extends ResourceException
     /**
      * Public constructor which holds original system exception.
      */
-    public ResourceCreationException(String message, Throwable cause)
-    {
+    public ResourceCreationException(String message, Throwable cause) {
         super(message, cause, CREATION_FAILED);
     };
 

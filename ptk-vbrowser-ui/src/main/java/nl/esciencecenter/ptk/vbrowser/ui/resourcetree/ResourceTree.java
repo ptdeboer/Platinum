@@ -48,17 +48,15 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
 
-/** 
- * Actual Swing JTree 'View' Component.  
+/**
+ * Actual Swing JTree 'View' Component.
  */
-public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
-{
+public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll {
     private static final long serialVersionUID = -3310437371919331098L;
 
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(PLogger.class);
     }
 
@@ -66,12 +64,10 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     //
     // ========================================================================
 
-    public class FocusFollower extends MouseMotionAdapter
-    {
+    public class FocusFollower extends MouseMotionAdapter {
         private ResourceTreeNode prevNode;
 
-        public void mouseMoved(MouseEvent e)
-        {
+        public void mouseMoved(MouseEvent e) {
             if (prevNode != null)
                 ResourceTree.this.toggleFocus(prevNode, false);
 
@@ -107,25 +103,21 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
      * @param uiModel
      *            ViewModel which holds UI properties
      */
-    public ResourceTree(BrowserInterface browser, ProxyDataSource viewNodeSource)
-    {
+    public ResourceTree(BrowserInterface browser, ProxyDataSource viewNodeSource) {
         init(browser, viewNodeSource);
     }
 
-    public BrowserPlatform getPlatform()
-    {
+    public BrowserPlatform getPlatform() {
         return this.getBrowserInterface().getPlatform();
     }
 
-    public void populate(ResourceTreeNode node)
-    {
+    public void populate(ResourceTreeNode node) {
         logger.debugPrintf("ResourceTree:populate():%s\n", node.getVRI());
 
         this.dataUpdater.updateChilds(node);
     }
 
-    private void init(BrowserInterface browser, ProxyDataSource viewNodeSource)
-    {
+    private void init(BrowserInterface browser, ProxyDataSource viewNodeSource) {
         // default model
         this.uiModel = UIViewModel.createTreeViewModel();
 
@@ -183,8 +175,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         initDND();
     }
 
-    private void initDND()
-    {
+    private void initDND() {
 
         // drop: DropTarget AND Tranferhandler need to be set !
         this.setDropTarget(new ResourceTreeDropTarget(this));
@@ -195,43 +186,36 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         this.dgListener = new ViewNodeContainerDragListener();
         // this.dsListener = MyDragSourceListener.getDefault();
         // component, action, listener
-        this.dragSource.createDefaultDragGestureRecognizer(
-                this, DnDConstants.ACTION_COPY_OR_MOVE, this.dgListener);
+        this.dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE,
+                this.dgListener);
     }
 
-    public boolean isFocusable()
-    {
+    public boolean isFocusable() {
         return true;
     }
 
-    public ResourceTreeModel getModel()
-    {
+    public ResourceTreeModel getModel() {
         return (ResourceTreeModel) super.getModel();
     }
 
-    public ResourceTreeUpdater getDataProducer()
-    {
+    public ResourceTreeUpdater getDataProducer() {
         return this.dataUpdater;
     }
 
-    public int getIconSize()
-    {
+    public int getIconSize() {
         return getUIViewModel().getIconSize();
     }
 
-    public UIViewModel getUIViewModel()
-    {
+    public UIViewModel getUIViewModel() {
         return uiModel;
     }
 
-    public JComponent getComponent()
-    {
+    public JComponent getComponent() {
         return this;
     }
 
     /** Used for Mouse Events : */
-    public ViewNode getNodeUnderPoint(Point p)
-    {
+    public ViewNode getNodeUnderPoint(Point p) {
         ResourceTreeNode rtnode = this.getRTNodeUnderPoint(p);
         if (rtnode != null)
             return rtnode.getViewItem();
@@ -240,8 +224,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     /** Used for Mouse Events : */
-    public ResourceTreeNode getRTNodeUnderPoint(Point p)
-    {
+    public ResourceTreeNode getRTNodeUnderPoint(Point p) {
         if (p == null)
             return null;
 
@@ -249,8 +232,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 
         TreePath path = getPathForLocation(p.x, p.y);
 
-        if ((path == null) || (clickRow < 0))
-        {
+        if ((path == null) || (clickRow < 0)) {
             // no node under mouse click
             return null;
         }
@@ -258,16 +240,12 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return getNode(path);
     }
 
-    public ResourceTreeNode getNode(TreePath path)
-    {
+    public ResourceTreeNode getNode(TreePath path) {
         Object o = path.getLastPathComponent();
 
-        if (o == null)
-        {
+        if (o == null) {
             logger.debugPrintf("No Node found at tree path:" + path);
-        }
-        else if (o instanceof ResourceTreeNode)
-        {
+        } else if (o instanceof ResourceTreeNode) {
             // instanceof returns false when o==null, so here o exists.
             return (ResourceTreeNode) o;
         }
@@ -275,18 +253,15 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return null;
     }
 
-    public ResourceTreeNode getRootRTNode()
-    {
+    public ResourceTreeNode getRootRTNode() {
         return this.getModel().getRoot();
     }
 
-    public ViewNode getViewNode()
-    {
+    public ViewNode getViewNode() {
         return this.getModel().getRoot().getViewItem();
     }
 
-    public ResourceTreeNode[] getRTSelection()
-    {
+    public ResourceTreeNode[] getRTSelection() {
         TreePath paths[] = getSelectionPaths();
 
         if (paths == null)
@@ -294,8 +269,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 
         ArrayList<ResourceTreeNode> nodes = new ArrayList<ResourceTreeNode>(paths.length);
 
-        for (TreePath path : paths)
-        {
+        for (TreePath path : paths) {
             ResourceTreeNode node = this.getNode(path);
             if (node != null)
                 nodes.add(node);
@@ -306,41 +280,35 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return nodes.toArray(_nodes);
     }
 
-    public void setRoot(ProxyDataSource viewNodeSource, boolean update, boolean showAsRoot)
-    {
+    public void setRoot(ProxyDataSource viewNodeSource, boolean update, boolean showAsRoot) {
         this.setRootVisible(showAsRoot);
         this.setShowsRootHandles(showAsRoot == false);
         this.setDataSource(viewNodeSource, update);
     }
 
-    protected void setDataSource(ProxyDataSource viewNodeSource, boolean update)
-    {
+    protected void setDataSource(ProxyDataSource viewNodeSource, boolean update) {
         this.getUpdater().setDataSource(viewNodeSource, update);
     }
 
-    public ResourceTreeUpdater getUpdater()
-    {
+    public ResourceTreeUpdater getUpdater() {
         return this.dataUpdater;
     }
 
     // === Selection Methods === //
 
-    public void clearSelection()
-    {
+    public void clearSelection() {
         // this is called by SelectionModel
         super.clearSelection();
     }
 
-    public void clearNodeSelection()
-    {
+    public void clearNodeSelection() {
         // this is called by ViewNodeCompoent handler, but selection
         // is already cleared by the JTree's SelectionModel !
 
         // super.clearSelection();
     }
 
-    public ViewNode[] getNodeSelection()
-    {
+    public ViewNode[] getNodeSelection() {
         ResourceTreeNode[] rtnodes = this.getRTSelection();
         if (rtnodes == null)
             return null;
@@ -353,24 +321,20 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     @Override
-    public void setNodeSelection(ViewNode node, boolean isSelected)
-    {
+    public void setNodeSelection(ViewNode node, boolean isSelected) {
         // selection already done by selection model
         logger.debugPrintf("updateSelection %s=%s\n", node, isSelected);
     }
 
     @Override
-    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode, boolean selected)
-    {
+    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode, boolean selected) {
         // selection already done by selection model
         logger.debugPrintf("selection range=[%s,%s]=%s\n", firstNode, lastNode, selected);
     }
 
-    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu)
-    {
+    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu) {
         // allowed during testing
-        if (this.controller.getBrowserInterface() == null)
-        {
+        if (this.controller.getBrowserInterface() == null) {
             logger.warnPrintf("getActionMenuFor() no browser registered.");
             return null;
         }
@@ -379,28 +343,22 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     @Override
-    public boolean requestFocus(boolean value)
-    {
+    public boolean requestFocus(boolean value) {
         if (value)
             return this.requestFocusInWindow();
         return false;
     }
 
     @Override
-    public boolean requestNodeFocus(ViewNode node, boolean value)
-    {
+    public boolean requestNodeFocus(ViewNode node, boolean value) {
         // done by focus follower;
         return false;
     }
 
-    public void toggleFocus(ResourceTreeNode rtnode, boolean value)
-    {
-        if (rtnode == null)
-        {
+    public void toggleFocus(ResourceTreeNode rtnode, boolean value) {
+        if (rtnode == null) {
             ; // unset focus
-        }
-        else
-        {
+        } else {
             rtnode.setHasFocus(value);
             this.getModel().uiFireNodeChanged(rtnode);
         }
@@ -408,20 +366,17 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     @Override
-    public ViewNodeContainer getViewContainer()
-    {
+    public ViewNodeContainer getViewContainer() {
         // ResourceTree has no parent:
         return null;
     }
 
-    public void repaintNode(ResourceTreeNode node)
-    {
+    public void repaintNode(ResourceTreeNode node) {
         // forward repaint request to model:
         this.getModel().uiFireNodeChanged(node);
     }
 
-    public ViewNode getCurrentSelectedNode()
-    {
+    public ViewNode getCurrentSelectedNode() {
         ViewNode[] nodes = this.getNodeSelection();
 
         if ((nodes == null) || (nodes.length <= 0))
@@ -433,8 +388,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     private int autoScrollMargin = 12;
 
     @Override
-    public void autoscroll(Point p)
-    {
+    public void autoscroll(Point p) {
         int realrow = getRowForLocation(p.x, p.y);
         Rectangle outer = getBounds();
         realrow = (p.y + outer.y <= autoScrollMargin ? realrow < 1 ? 0 : realrow - 1
@@ -443,8 +397,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     @Override
-    public Insets getAutoscrollInsets()
-    {
+    public Insets getAutoscrollInsets() {
         Rectangle outer = getBounds();
         Rectangle inner = getParent().getBounds();
 
@@ -455,13 +408,11 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     @Override
-    public BrowserInterface getBrowserInterface()
-    {
+    public BrowserInterface getBrowserInterface() {
         return controller.getBrowserInterface();
     }
 
-    public ProxyDataSource getDataSource()
-    {
-        return dataUpdater.getDataSource(); 
+    public ProxyDataSource getDataSource() {
+        return dataUpdater.getDataSource();
     }
 }

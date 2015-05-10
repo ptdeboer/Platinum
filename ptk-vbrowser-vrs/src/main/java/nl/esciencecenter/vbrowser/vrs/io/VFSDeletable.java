@@ -22,8 +22,8 @@ package nl.esciencecenter.vbrowser.vrs.io;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
-public interface VFSDeletable extends VDeletable
-{
+public interface VFSDeletable extends VDeletable {
+
     /**
      * Delete this resource, throws Exception if deletion failed.
      * 

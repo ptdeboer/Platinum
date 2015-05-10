@@ -28,8 +28,8 @@ import nl.esciencecenter.ptk.data.StringHolder;
 /**
  * Default Adaptor for ITaskMonitor interface.
  */
-public class TaskMonitorAdaptor implements ITaskMonitor
-{
+public class TaskMonitorAdaptor implements ITaskMonitor {
+
     private static int instanceCounter = 0;
 
     // === //
@@ -40,7 +40,6 @@ public class TaskMonitorAdaptor implements ITaskMonitor
 
     protected Map<String, TaskStats> subTaskStats = new Hashtable<String, TaskStats>();
 
-    // === status ===
     protected boolean isCancelled = false;
 
     protected String currentSubTaskName = null;
@@ -55,78 +54,64 @@ public class TaskMonitorAdaptor implements ITaskMonitor
 
     private TaskLogger taskLogger = null;
 
-    public TaskMonitorAdaptor()
-    {
+    public TaskMonitorAdaptor() {
         init();
     }
 
-    public TaskMonitorAdaptor(String taskName, long todo)
-    {
+    public TaskMonitorAdaptor(String taskName, long todo) {
         init();
-        startTask(taskName,todo); 
+        startTask(taskName, todo);
     }
 
-    private void init()
-    {
+    private void init() {
         this.taskLogger = new TaskLogger("TaskLogger");
         id = instanceCounter++;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return "" + id;
     }
 
     /** Optional Parent */
-    public void setParent(ITaskMonitor parent)
-    {
+    public void setParent(ITaskMonitor parent) {
         this.parent = parent;
     }
 
     @Override
-    public boolean isCancelled()
-    {
+    public boolean isCancelled() {
         return isCancelled;
     }
 
     @Override
-    public void updateSubTaskDone(String taskName, long done)
-    {
+    public void updateSubTaskDone(String taskName, long done) {
         if (taskName == null)
             return;
         TaskStats subTask = this.subTaskStats.get(taskName);
-        if (subTask == null)
-        {
-            // auto create stats ? 
+        if (subTask == null) {
             return;
         }
-        
+
         subTask.updateDone(done);
-        // subTask.doneLastUpdateTimeMillies=System.currentTimeMillis();
     }
 
-    protected TaskStats createSubTask(String name, long todo)
-    {
+    protected TaskStats createSubTask(String name, long todo) {
         TaskStats subTask = new TaskStats(name, todo);
         subTaskStats.put(name, subTask);
         return subTask;
     }
 
     @Override
-    public void startSubTask(String taskName, long todo)
-    {
+    public void startSubTask(String taskName, long todo) {
         this.currentSubTaskName = taskName;
         TaskStats subTask = this.subTaskStats.get(taskName);
-        if (subTask == null)
-        {
+        if (subTask == null) {
             subTask = createSubTask(taskName, todo);
         }
         subTask.markStart();
     }
 
     @Override
-    public void endSubTask(String taskName)
-    {
+    public void endSubTask(String taskName) {
         if (taskName == null)
             return;
         TaskStats subTask = this.subTaskStats.get(taskName);
@@ -136,57 +121,46 @@ public class TaskMonitorAdaptor implements ITaskMonitor
         subTask.markEnd();
     }
 
-    // @Override
-    public void startTask(String taskName, long numTodo)
-    {
+    @Override
+    public void startTask(String taskName, long numTodo) {
         this.taskStats.name = taskName;
         this.taskStats.todo = numTodo;
         this.taskStats.markStart();
     }
 
     @Override
-    public void updateTaskDone(long numDone)
-    {
+    public void updateTaskDone(long numDone) {
         this.taskStats.updateDone(numDone);
     }
 
     @Override
-    public void endTask(String name)
-    {
+    public void endTask(String name) {
         this.taskStats.markEnd();
         this.wakeAll();
     }
 
-    protected void wakeAll()
-    {
-        synchronized (waitMutex)
-        {
+    protected void wakeAll() {
+        synchronized (waitMutex) {
             this.waitMutex.notifyAll();
         }
     }
 
-    public void waitForCompletion() throws InterruptedException
-    {
+    public void waitForCompletion() throws InterruptedException {
         waitForCompletion(0);
     }
 
     /**
-     * This method will block until the setDone() method is called or the specified time has passed. This method is
-     * simalar to: {@link java.lang.Object#wait(long)}
+     * This method will block until the setDone() method is called or the specified time has passed.
+     * This method is simalar to: {@link java.lang.Object#wait(long)}
      */
-    public void waitForCompletion(int timeout) throws InterruptedException
-    {
+    public void waitForCompletion(int timeout) throws InterruptedException {
         if (isDone())
             return;
 
-        synchronized (waitMutex)
-        {
-            try
-            {
+        synchronized (waitMutex) {
+            try {
                 waitMutex.wait(timeout);
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 throw e;
                 // could start wait cycle again, but reason of interrupt is
                 // unknown here.
@@ -196,24 +170,21 @@ public class TaskMonitorAdaptor implements ITaskMonitor
     }
 
     @Override
-    public boolean isDone()
-    {
+    public boolean isDone() {
         if (taskStats.isDone)
             this.wakeAll(); // extra wakeup incase previous was missed! (Rare)
         return taskStats.isDone;
     }
 
     @Override
-    public void setIsCancelled()
-    {
+    public void setIsCancelled() {
         this.isCancelled = true;
     }
 
     /**
      * Add informative text (for end user).
      */
-    public void logPrintf(String format, Object... args)
-    {
+    public void logPrintf(String format, Object... args) {
         // Do not synchronize here: it might deadlock threads.
         {
             // sloppy code!
@@ -228,82 +199,58 @@ public class TaskMonitorAdaptor implements ITaskMonitor
      * 
      * @return - String holding all the log events as single String.
      */
-    public String getLogText()
-    {
+    public String getLogText() {
         StringHolder holder = new StringHolder();
         getLogText(false, 0, holder);
         return holder.value;
     }
 
-    public int getLogText(boolean clearLogBuffer, int logEventOffset, StringHolder logTextHolder)
-    {
+    public int getLogText(boolean clearLogBuffer, int logEventOffset, StringHolder logTextHolder) {
         return taskLogger.getLogText(clearLogBuffer, logEventOffset, logTextHolder);
     }
 
     @Override
-    public TaskStats getTaskStats()
-    {
+    public TaskStats getTaskStats() {
         return this.taskStats;
     }
 
     @Override
-    public TaskStats getSubTaskStats(String name)
-    {
+    public TaskStats getSubTaskStats(String name) {
         if (name == null)
             return null;
         return this.subTaskStats.get(name);
     }
 
-    public long getStartTime()
-    {
+    public long getStartTime() {
         return taskStats.startTimeMillies;
     }
 
-    public long getStopTime()
-    {
+    public long getStopTime() {
         return this.taskStats.stopTimeMillies;
     }
 
     @Override
-    public String getTaskName()
-    {
+    public String getTaskName() {
         return this.taskStats.name;
     }
 
     @Override
-    public String getCurrentSubTaskName()
-    {
+    public String getCurrentSubTaskName() {
         return this.currentSubTaskName;
     }
 
     @Override
-    public boolean hasError()
-    {
+    public boolean hasError() {
         return (this.exception != null);
     }
 
     @Override
-    public Throwable getException()
-    {
+    public Throwable getException() {
         return this.exception;
     }
 
     @Override
-    public void setException(Throwable tr)
-    {
+    public void setException(Throwable tr) {
         this.exception = tr;
     }
-
-    // @Override
-    // public void addMonitorListener(ITaskMonitorListener listener)
-    // {
-    // this.listeners.add(listener);
-    // }
-    //
-    // @Override
-    // public void removeMonitorListener(ITaskMonitorListener listener)
-    // {
-    // this.listeners.remove(listener);
-    // }
-
 }

@@ -25,21 +25,18 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
-public class IconsPanelController implements ViewNodeActionListener
-{
+public class IconsPanelController implements ViewNodeActionListener {
     private BrowserInterface browser;
 
     private IconsPanel iconsPanel;
 
-    public IconsPanelController(BrowserInterface browser, IconsPanel iconsPanel)
-    {
+    public IconsPanelController(BrowserInterface browser, IconsPanel iconsPanel) {
         this.browser = browser;
         this.iconsPanel = iconsPanel;
     }
 
     @Override
-    public void handleNodeActionEvent(ViewNode node, Action action)
-    {
+    public void handleNodeActionEvent(ViewNode node, Action action) {
         this.browser.handleNodeAction(iconsPanel, node, action);
     }
 

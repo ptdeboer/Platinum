@@ -27,13 +27,14 @@ import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
-import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAlreadyExistsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotEmptyException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
@@ -42,124 +43,95 @@ import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.node.VFSPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable
-{
+public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable {
+
     private static final PLogger logger = PLogger.getLogger(LocalFSPathNode.class);
 
-    private LocalFileSystem localfs;
+    protected LocalFileSystem localfs;
 
-    FSPath fsNode;
+    protected FSPath fsNode;
 
-    protected LocalFSPathNode(LocalFileSystem fileSystem, FSPath node)
-    {
+    protected LocalFSPathNode(LocalFileSystem fileSystem, FSPath node) {
         super(fileSystem, new VRL(node.getURI()));
         this.localfs = fileSystem;
         this.fsNode = node;
     }
 
     @Override
-    public boolean isRoot()
-    {
+    public boolean isRoot() {
         return fsNode.isRoot();
     }
 
     @Override
-    public boolean isDir(LinkOption... linkOptions)
-    {
+    public boolean isDir(LinkOption... linkOptions) {
         return fsNode.isDirectory(linkOptions);
     }
 
     @Override
-    public boolean isFile(LinkOption... linkOptions)
-    {
+    public boolean isFile(LinkOption... linkOptions) {
         return fsNode.isFile(linkOptions);
     }
 
     @Override
-    public boolean exists(LinkOption... linkOptions)
-    {
+    public boolean exists(LinkOption... linkOptions) {
         return fsNode.exists(linkOptions);
     }
 
     @Override
-    public List<VFSPath> list() throws VrsException
-    {
+    public List<VFSPath> list() throws VrsException {
         logger.debugPrintf("list():%s\n", this);
 
-        try
-        {
+        try {
             FSPath nodes[];
             nodes = fsNode.listNodes();
             ArrayList<VFSPath> pathNodes = new ArrayList<VFSPath>();
-            for (FSPath node : nodes)
-            {
+            for (FSPath node : nodes) {
                 logger.debugPrintf(" - adding:%s\n", node);
                 pathNodes.add(new LocalFSPathNode(localfs, node));
             }
             return pathNodes;
 
-        }
-        catch (java.nio.file.AccessDeniedException e)
-        {
+        } catch (java.nio.file.AccessDeniedException e) {
             throw new ResourceAccessDeniedException(e.getMessage(), e);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to list path:" + getVRL(), e);
         }
     }
 
     @Override
-    public VFSFileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException
-    {
-        try
-        {
+    public VFSFileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException {
+        try {
             return new LocalFileAttributes(fsNode.getBasicAttributes(linkOptions));
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to get FileAttributes from:" + getVRL(), e);
         }
     }
 
-    public OutputStream createOutputStream(boolean append) throws VrsException
-    {
-        try
-        {
+    public OutputStream createOutputStream(boolean append) throws VrsException {
+        try {
             return fsNode.createOutputStream(append);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create OutputStream from:" + getVRL(), e);
         }
     }
 
-    public InputStream createInputStream() throws VrsException
-    {
-        try
-        {
+    public InputStream createInputStream() throws VrsException {
+        try {
             return fsNode.createInputStream();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create InputStream from:" + getVRL(), e);
         }
     }
 
     @Override
-    public boolean createFile(boolean ignoreExisting) throws VrsException
-    {
-        try
-        {
-            if ((ignoreExisting == false) && exists())
-            {
+    public boolean createFile(boolean ignoreExisting) throws VrsException {
+        try {
+            if ((ignoreExisting == false) && exists()) {
                 throw new ResourceCreationException("File already exists:" + getVRL(), null);
             }
 
             fsNode = fsNode.create();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create file:" + getVRL(), e);
         }
 
@@ -167,56 +139,42 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     }
 
     @Override
-    public boolean mkdir(boolean ignoreExisting) throws VrsException
-    {
-        try
-        {
-            if (fsNode.exists())
-            {
-                if (ignoreExisting)
-                {
+    public boolean mkdir(boolean ignoreExisting) throws VrsException {
+        try {
+            if (fsNode.exists()) {
+                if (ignoreExisting) {
                     return true;
-                }
-                else
-                {
-                    throw new ResourceCreationException("mkdir(): directory already exists:" + this.fsNode.getPath(), null);
+                } else {
+                    throw new ResourceAlreadyExistsException("mkdir(): directory already exists:"
+                            + this.fsNode.getPath(), null);
                 }
 
             }
             fsNode.mkdir();
-        }
-        catch (IOException e)
-        {
-            throw LocalFileSystem.convertException(this,"Failed to create directory:" + getVRL(), e);
+        } catch (IOException e) {
+            throw LocalFileSystem.convertException(this, "Failed to create directory:" + getVRL(), e);
         }
 
         return true;
     }
 
-    public boolean delete() throws VrsException
-    {
+    public boolean delete() throws VrsException {
         return delete(LinkOption.NOFOLLOW_LINKS);
     }
 
     @Override
-    public boolean delete(LinkOption... options) throws VrsException
-    {
-        try
-        {
-            if (fsNode.isDirectory(options))
-            {
+    public boolean delete(LinkOption... options) throws VrsException {
+        try {
+            if (fsNode.isDirectory(options)) {
                 String[] nodes = fsNode.list();
 
-                if ((nodes != null) && (nodes.length > 0))
-                {
+                if ((nodes != null) && (nodes.length > 0)) {
                     throw new ResourceNotEmptyException("Directory is not empty:" + fsNode, null);
                 }
             }
 
             fsNode.delete(options);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't delete:" + getVRL(), e);
         }
 
@@ -224,62 +182,45 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     }
 
     @Override
-    public VFSPath renameTo(VFSPath other) throws VrsException
-    {
-        try
-        {
+    public VFSPath renameTo(VFSPath other) throws VrsException {
+        try {
             String newPath = fsNode.renameTo(other.getVRL().getPath()).getPathname();
             return this.resolvePath(newPath);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't rename:" + getVRL(), e);
         }
 
     }
 
     @Override
-    public boolean sync()
-    {
+    public boolean sync() {
         return fsNode.sync();
     }
 
     @Override
-    public long fileLength(LinkOption... linkOptions) throws VrsException
-    {
-        try
-        {
+    public long fileLength(LinkOption... linkOptions) throws VrsException {
+        try {
             return fsNode.getFileSize();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't get file size of:" + getVRL(), e);
         }
     }
 
     @Override
-    public RandomReadable createRandomReadable() throws VrsException
-    {
-        try
-        {
+    public RandomReadable createRandomReadable() throws VrsException {
+        try {
             return this.localfs.getFSUtil().createRandomReader(fsNode);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't create RandomReadable from:" + getVRL(), e);
         }
 
     }
 
     @Override
-    public RandomWritable createRandomWritable() throws VrsException
-    {
-        try
-        {
+    public RandomWritable createRandomWritable() throws VrsException {
+        try {
             return this.localfs.getFSUtil().createRandomWriter(fsNode);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't create RandomWriter from:" + getVRL(), e);
         }
     }

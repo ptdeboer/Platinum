@@ -27,40 +27,36 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 
-/** 
- * Manages all the embedded viewers inside and outside the VBrowser. 
+/**
+ * Manages all the embedded viewers inside and outside the VBrowser.
  */
-public class ViewerManager
-{
+public class ViewerManager {
+
     private ProxyBrowserController browser;
 
     protected boolean filterOctetStreamMimeType = true;
 
-    public ViewerManager(ProxyBrowserController proxyBrowser)
-    {
+    public ViewerManager(ProxyBrowserController proxyBrowser) {
         browser = proxyBrowser;
     }
 
-    public PluginRegistry getViewerRegistry()
-    {
+    public PluginRegistry getViewerRegistry() {
         return browser.getPlatform().getViewerRegistry();
     }
-    
-    public ViewerPlugin createViewerFor(String resourceType, String mimeType, String optViewerClass) throws ProxyException
-    {
-        PluginRegistry registry = getViewerRegistry(); 
+
+    public ViewerPlugin
+            createViewerFor(String resourceType, String mimeType, String optViewerClass)
+                    throws ProxyException {
+        PluginRegistry registry = getViewerRegistry();
 
         Class<?> clazz = null;
 
-        if (optViewerClass != null)
-        {
+        if (optViewerClass != null) {
             clazz = loadViewerClass(optViewerClass);
         }
 
-        if ((clazz == null) && (mimeType != null))
-        {
-            if (clazz == null)
-            {
+        if ((clazz == null) && (mimeType != null)) {
+            if (clazz == null) {
                 clazz = registry.getMimeTypeViewerClass(mimeType);
             }
         }
@@ -68,13 +64,11 @@ public class ViewerManager
         if (clazz == null)
             return null;
 
-        if (ViewerPlugin.class.isAssignableFrom(clazz) == false)
-        {
+        if (ViewerPlugin.class.isAssignableFrom(clazz) == false) {
             throw new ProxyException("Viewer Class is not a ViewerPlugin class:" + clazz);
         }
 
-        if (ProxyViewer.class.isAssignableFrom(clazz))
-        {
+        if (ProxyViewer.class.isAssignableFrom(clazz)) {
             // skip internal viewers for now, need different constructor.
             return null;
         }
@@ -83,21 +77,17 @@ public class ViewerManager
         return viewer;
     }
 
-    private Class<?> loadViewerClass(String optViewerClass)
-    {
-        try
-        {
+    private Class<?> loadViewerClass(String optViewerClass) {
+        try {
             return this.getClass().getClassLoader().loadClass(optViewerClass);
-        }
-        catch (ClassNotFoundException e)
-        {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context, boolean initViewer)
-    {
+    public ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context,
+            boolean initViewer) {
         return ViewerFrame.createViewerFrame(viewer, context, initViewer);
     }
 }

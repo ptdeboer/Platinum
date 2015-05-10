@@ -39,15 +39,14 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Content Factory and Resource Manager for the various embedded Viewers.
  */
-public class ViewerResourceLoader
-{
+public class ViewerResourceLoader {
     private static PLogger logger = PLogger.getLogger(ViewerResourceLoader.class);
 
     // ========
     // Instance
     // ======== 
     private VRSClient vrsClient;
-    
+
     private ResourceLoader resourceLoader;
 
     private VRL viewersConfigDir;
@@ -56,76 +55,64 @@ public class ViewerResourceLoader
 
     // === //
 
-    public ViewerResourceLoader(VRSClient vrsClient, VRL viewersConfigDir)
-    {
-        this.vrsClient=vrsClient;
+    public ViewerResourceLoader(VRSClient vrsClient, VRL viewersConfigDir) {
+        this.vrsClient = vrsClient;
         this.resourceLoader = vrsClient.createResourceLoader();
         logger.infoPrintf("ViewerConfigDir=%s\n", viewersConfigDir);
         this.viewersConfigDir = viewersConfigDir;
     }
 
-    public void setResourceLoader(ResourceLoader resourceLoader)
-    {
+    public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
-    protected void setViewerConfigDir(VRL configDir)
-    {
+    protected void setViewerConfigDir(VRL configDir) {
         this.viewersConfigDir = configDir;
     }
 
-    public VRL getViewerConfigDir()
-    {
+    public VRL getViewerConfigDir() {
         return viewersConfigDir;
     }
 
-    public InputStream openInputStream(VRL uri) throws Exception
-    {
+    public InputStream openInputStream(VRL uri) throws Exception {
         // register/cache streams ?
         return vrsClient.createInputStream(uri);
     }
 
-    public ResourceLoader getResourceLoader()
-    {
+    public ResourceLoader getResourceLoader() {
         return resourceLoader;
     }
 
-    public void writeText(VRL vrl, String txt, String encoding) throws Exception
-    {
+    public void writeText(VRL vrl, String txt, String encoding) throws Exception {
         resourceLoader.writeTextTo(vrl.toURI(), txt, encoding);
     }
-    
-    public String readText(VRL vrl, String textEncoding) throws Exception
-    {
+
+    public String readText(VRL vrl, String textEncoding) throws Exception {
         return resourceLoader.readText(vrl.toURI(), textEncoding);
     }
 
     /**
-     * Legacy method. 
+     * Legacy method.
      */
-    public boolean hasReplicas(VRL vrl)
-    {
+    public boolean hasReplicas(VRL vrl) {
         return false;
     }
-    
+
     /**
-     * Legacy method. 
+     * Legacy method.
      */
-    public VRL[] getReplicas(VRL vrl)
-    {
+    public VRL[] getReplicas(VRL vrl) {
         return null;
     }
 
-    public Properties loadProperties(VRL vrl) throws Exception
-    {
+    public Properties loadProperties(VRL vrl) throws Exception {
         if (vrl == null)
             return null;
 
         return resourceLoader.loadProperties(vrl.toURI());
     }
 
-    public void saveProperties(VRL vrl, Properties properties) throws Exception
-    {
+    public void saveProperties(VRL vrl, Properties properties) throws Exception {
         logger.infoPrintf("Saving Properties to:" + vrl);
         if (vrl == null)
             return;
@@ -133,63 +120,54 @@ public class ViewerResourceLoader
         resourceLoader.saveProperties(vrl.toURI(), properties);
     }
 
-    public void syncReadBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
-    {
+    public void syncReadBytes(RandomReadable reader, long fileOffset, byte[] buffer,
+            int bufferOffset, int numBytes) throws IOException {
         // delegate to IOUtil
         IOUtil.syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
         // reader.close();
     }
 
-    public void syncWriteBytes(RandomWritable writer, long fileOffset, byte[] buffer, int bufferOffset, int numBytes) throws IOException
-    {
+    public void syncWriteBytes(RandomWritable writer, long fileOffset, byte[] buffer,
+            int bufferOffset, int numBytes) throws IOException {
         writer.writeBytes(fileOffset, buffer, bufferOffset, numBytes);
     }
 
-    public CertificateStore getCertificateStore() throws CertificateStoreException
-    {
-        if (this.certificateStore == null)
-        {
+    public CertificateStore getCertificateStore() throws CertificateStoreException {
+        if (this.certificateStore == null) {
             certificateStore = CertificateStore.getDefault(true);
         }
         return certificateStore;
     }
 
-    public void setCertificateStore(CertificateStore store)
-    {
+    public void setCertificateStore(CertificateStore store) {
         this.certificateStore = store;
     }
-    
-    public String getMimeType(String path)
-    {
+
+    public String getMimeType(String path) {
         return MimeTypes.getDefault().getMimeType(path);
     }
-    
-    public RandomReadable createRandomReader(VRL loc) throws Exception
-    {
+
+    public RandomReadable createRandomReader(VRL loc) throws Exception {
         return vrsClient.createRandomReader(vrsClient.openPath(loc));
     }
 
-    public RandomWritable createRandomWriter(VRL loc) throws Exception
-    {
+    public RandomWritable createRandomWriter(VRL loc) throws Exception {
         return vrsClient.createRandomWriter(vrsClient.openPath(loc));
     }
 
     /**
-     * @Deprecated Must use connected URL to determine reported mimetype from server. 
+     * @Deprecated Must use connected URL to determine reported mimetype from server.
      */
     @Deprecated
-    public String getMimeTypeOf(VRL vrl) throws VrsException
-    {
+    public String getMimeTypeOf(VRL vrl) throws VrsException {
         return MimeTypes.getDefault().getMimeType(vrl.getPath());
     }
 
-    /** 
-     * Warning: VRSClient might not be visible in future interface definitions. 
+    /**
+     * Warning: VRSClient might not be visible in future interface definitions.
      */
-    public VRSClient getVRSClient()
-    {
+    public VRSClient getVRSClient() {
         return this.vrsClient;
     }
-
 
 }

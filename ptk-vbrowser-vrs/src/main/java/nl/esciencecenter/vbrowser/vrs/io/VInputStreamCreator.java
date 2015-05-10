@@ -25,8 +25,8 @@ import java.io.InputStream;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public interface VInputStreamCreator
-{
+public interface VInputStreamCreator {
+
     public InputStream createInputStream(VRL vrl) throws VrsException;
-    
+
 }

@@ -22,45 +22,38 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
-/** 
- * Fixed Config Node.
- * Hold global VRS configuration and settings.  
+/**
+ * Fixed Config Node. Hold global VRS configuration and settings.
  */
-public class InfoConfigNode extends InfoRSPathNode
-{
-    protected SystemInfosNode infosNode=null;
-    
-    public InfoConfigNode(InfoRootNode infoRootNode) throws VrsException
-    {
-        super(infoRootNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE));
-        init(); 
-    }
+public class InfoConfigNode extends InfoRSPathNode {
+    protected ResourceConfigInfosNode infosNode = null;
 
-    public InfoConfigNode(InfoConfigNode parentNode, String subName) throws VrsException
-    {
-        super(parentNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE + "/" + subName));
+    public InfoConfigNode(InfoRootNode infoRootNode) throws VrsException {
+        super(infoRootNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE));
         init();
     }
 
-    public String getIconURL(int size)
-    {
+    public InfoConfigNode(InfoConfigNode parentNode, String subName) throws VrsException {
+        super(parentNode, InfoRSConstants.INFOCONFIGNODE, InfoRS.createPathVRL(InfoRSConstants.INFOCONFIGNODE + "/"
+                + subName));
+        init();
+    }
+
+    public String getIconURL(int size) {
         return "info/configure-128.png";
     }
 
-    public String getName()
-    {
+    public String getName() {
         return "Config";
     }
 
-    protected void init() throws VrsException
-    {
-        initChilds(); 
+    protected void init() throws VrsException {
+        initChilds();
     }
-    
-    protected void initChilds() throws VrsException
-    {
-        this.infosNode=new SystemInfosNode(this); 
-        this.addSubNode(infosNode);  
+
+    protected void initChilds() throws VrsException {
+        this.infosNode = new ResourceConfigInfosNode(this);
+        this.addSubNode(infosNode);
     }
 
 }

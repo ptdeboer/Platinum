@@ -25,37 +25,32 @@ import java.io.IOException;
 /**
  * Super class of all VRS Exceptions.
  * <p>
- * The Class VrsException provides more high-level information about the
- * Exception which occurred and hides the original System Exception.
+ * The Class VrsException provides more high-level information about the Exception which occurred
+ * and hides the original System Exception.
  * <p>
- * It it recommend to wrap low level exceptions and nested them into more descriptive Exceptions 
- * providing extra information from the underlying implementation. 
- * <br>
+ * It it recommend to wrap low level exceptions and nested them into more descriptive Exceptions
+ * providing extra information from the underlying implementation. <br>
  */
-public class VrsException extends Exception
-{
+public class VrsException extends Exception {
     private static final long serialVersionUID = 1338724960830976888L;
 
     // ===============
     // Factory
     // ===============
 
-    public static VrsException newChainedException(Throwable exception)
-    {
+    public static VrsException newChainedException(Throwable exception) {
         return new VrsException(exception.getMessage(), exception);
     }
 
-    public static VrsException create(String message, Throwable cause,String exceptionName)
-    {
-        return new VrsException(message, cause,exceptionName);
+    public static VrsException create(String message, Throwable cause, String exceptionName) {
+        return new VrsException(message, cause, exceptionName);
     }
 
     /**
-     * Factory method to create a chained IOException. In java 1.5 there is no
-     * constructor to do that !
+     * Factory method to create a chained IOException. In java 1.5 there is no constructor to do
+     * that !
      */
-    public static IOException createIOException(String message, Throwable e)
-    {
+    public static IOException createIOException(String message, Throwable e) {
         IOException ex = new IOException(message);
         ex.initCause(e);
         return ex;
@@ -66,46 +61,41 @@ public class VrsException extends Exception
     // ===============
 
     /**
-     *  Short Human Readable Error Description of this Exception. 
+     * Short Human Readable Error Description of this Exception.
      */
-    protected String name = "Exception"; 
+    protected String name = "Exception";
 
-    /** 
+    /**
      * Default contructor. For subclasses only.
      */
-    protected VrsException()
-    {
+    protected VrsException() {
         super();
     };
 
-    protected void setName(String newName)
-    {
+    protected void setName(String newName) {
         this.name = newName;
     }
 
     // ===
     // Public Constructors ***
     // ===
-    
-    public VrsException(Throwable cause)
-    {
+
+    public VrsException(Throwable cause) {
         super(cause);
     };
 
-    /** 
-     * Most basic implementation of the VlException. 
+    /**
+     * Most basic implementation of the VlException.
      */
-    public VrsException(String message)
-    {
+    public VrsException(String message) {
         super(message);
         this.name = "Exception";
     };
 
-    /** 
+    /**
      * Public constructor which holds original system exception.
      */
-    public VrsException(String message, Throwable cause)
-    {
+    public VrsException(String message, Throwable cause) {
         super(message, cause);
         this.name = "Exception";
     };
@@ -115,28 +105,21 @@ public class VrsException extends Exception
     // ===
 
     /** Named Exception */
-    protected VrsException(String message, Throwable cause, String optName)
-    {
+    protected VrsException(String message, Throwable cause, String optName) {
         super(message, cause);
         this.name = optName;
     };
 
-    public String toString()
-    {
+    public String toString() {
         String message_txt = "";
-
         Throwable parent = null;
         Throwable current = this;
         int index = 0;
 
-        do
-        {
-            if (index == 0)
-            {
+        do {
+            if (index == 0) {
                 message_txt = name + ":" + getMessage();
-            }
-            else
-            {
+            } else {
                 message_txt += "\n--- Nested Exception Caused By [" + index + "] ---\n";
                 message_txt += current.getClass().getName() + ":" + current.getMessage();
             }
@@ -151,35 +134,30 @@ public class VrsException extends Exception
         return (message_txt);
     }
 
-    public String toStringPlusStacktrace()
-    {
+    public String toStringPlusStacktrace() {
         return this.toString() + "\n ---Stack Trace --- \n" + getChainedStackTraceText(this);
     }
-    
+
     /**
      * Returns human readable name of Vrs Exception. If not set, this the name of the Exception
-     * subclass. Set to to for example "Acces Denied" or "Authentication Error". 
+     * subclass. Set to to for example "Acces Denied" or "Authentication Error".
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     /**
      * Returns the stacktrace, including nested Exceptions as single String
      */
-    public static String getChainedStackTraceText(Throwable e)
-    {
+    public static String getChainedStackTraceText(Throwable e) {
         String text = "";
-
         Throwable parent = null;
         Throwable current = e;
         int index = 0;
 
         // === get whole exception chain:
 
-        do
-        {
+        do {
             if (index > 0)
                 text += "--- Nested Exception Caused By: ---\n";
 

@@ -46,14 +46,12 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
 /**
  * Character Terminal Render Engine. Developed by Piter.NL !
  */
-public class CharPane extends JComponent implements ICharacterTerminal, ActionListener
-{
+public class CharPane extends JComponent implements ICharacterTerminal, ActionListener {
     private static final long serialVersionUID = -2591231291812285066L;
 
     public static final int MAX_CHARSETS = 16;
 
-    public static class CharSets
-    {
+    public static class CharSets {
         public final static String CHARSET_US = ICharacterTerminal.VT_CHARSET_US;
 
         public final static String CHARSET_UK = ICharacterTerminal.VT_CHARSET_UK;
@@ -72,8 +70,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(CharPane.class);
     }
 
@@ -83,8 +80,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     /**
      * UNsynchronized text buffer contains Matrix of StyleChars
      */
-    public class TextBuffer
-    {
+    public class TextBuffer {
         private StyleChar[][] textBuffer;
 
         // real size including current rows;
@@ -99,18 +95,15 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
         private int nrRows;
 
-        public TextBuffer(int cols, int rows)
-        {
+        public TextBuffer(int cols, int rows) {
             init(cols, rows, 100);
         }
 
-        public TextBuffer(int numCs, int numRs, int numVRs)
-        {
+        public TextBuffer(int numCs, int numRs, int numVRs) {
             init(numCs, numRs, numVRs);
         }
 
-        private void init(int cols, int rows, int virtualSize)
-        {
+        private void init(int cols, int rows, int virtualSize) {
             // all defaults:
 
             this.virtualSize = virtualSize;
@@ -130,8 +123,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
             this.bufferChanged = true;
         }
 
-        public void clearAll()
-        {
+        public void clearAll() {
             for (int y = 0; y < nrRows; y++)
                 for (int x = 0; x < nr_columns; x++)
                     textBuffer[y][x].clear();
@@ -140,8 +132,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
 
         /** Puts actual object into text array. Doesn't copy object ! */
-        protected void put(int x, int y, StyleChar newChar)
-        {
+        protected void put(int x, int y, StyleChar newChar) {
             // if (checkBounds(x,y)==false)
             // return;
 
@@ -150,8 +141,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
             this.bufferChanged = true;
         }
 
-        public boolean checkBounds(int x, int y)
-        {
+        public boolean checkBounds(int x, int y) {
             boolean val = true;
 
             if (textBuffer == null)
@@ -164,8 +154,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                 val = false;
             else if (x >= textBuffer[y].length)
                 val = false;
-            else if (textBuffer[y][x] == null)
-            {
+            else if (textBuffer[y][x] == null) {
                 // Error("NULL StyleChar at:"+x+","+y);
                 val = false;
             }
@@ -177,8 +166,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
 
         /** Returns actual object in text array */
-        public StyleChar get(int x, int y)
-        {
+        public StyleChar get(int x, int y) {
             if (checkBounds(x, y) == false)
                 return null;
 
@@ -186,16 +174,14 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
 
         /** Copies values from StyleChar. Does not store object */
-        public void set(int x, int y, StyleChar schar)
-        {
+        public void set(int x, int y, StyleChar schar) {
             if (checkBounds(x, y) == false)
                 return;
 
             textBuffer[y][x].copyFrom(schar);
         }
 
-        public void resize(int newCs, int newRs, boolean keepContents)
-        {
+        public void resize(int newCs, int newRs, boolean keepContents) {
             StyleChar oldbuffer[][] = this.textBuffer;
 
             int offset = 0;
@@ -207,11 +193,9 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
             // int offy=textBuffer.length-numRs;
             if (keepContents)
                 for (int y = 0; y < newCs; y++)
-                    for (int x = 0; x < newCs; x++)
-                    {
+                    for (int x = 0; x < newCs; x++) {
                         // copy values from old buffer:
-                        if (oldbuffer != null)
-                        {
+                        if (oldbuffer != null) {
                             int sourcey = y + offset;
                             if ((sourcey < oldbuffer.length) && (x < oldbuffer[sourcey].length))
                                 textBuffer[y][x].copyFrom(oldbuffer[sourcey][x]);
@@ -221,8 +205,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
             this.bufferChanged = true;
         }
 
-        public void needsRepaint(int x, int y, boolean val)
-        {
+        public void needsRepaint(int x, int y, boolean val) {
             if (checkBounds(x, y) == false)
                 return;
 
@@ -232,8 +215,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                 this.bufferChanged = true;
         }
 
-        public void clear(int x, int y)
-        {
+        public void clear(int x, int y) {
             if (checkBounds(x, y) == false)
                 return;
 
@@ -242,8 +224,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
 
         /** Copy [dest]=[source] */
-        public void copy(int destx, int desty, int sourcex, int sourcey)
-        {
+        public void copy(int destx, int desty, int sourcex, int sourcey) {
             if (checkBounds(sourcex, sourcey) == false)
                 return;
             if (checkBounds(destx, desty) == false)
@@ -254,23 +235,19 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
             this.bufferChanged = true;
         }
 
-        public void setChanged(boolean val)
-        {
+        public void setChanged(boolean val) {
             this.bufferChanged = val;
         }
 
-        public boolean hasChanged()
-        {
+        public boolean hasChanged() {
             return bufferChanged;
         }
 
-        public Dimension getSize()
-        {
+        public Dimension getSize() {
             return new Dimension(nrColumns, nrRows);
         }
 
-        public void dispose()
-        {
+        public void dispose() {
             this.textBuffer = null; // nullify object references.
         }
     }
@@ -396,20 +373,17 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     // Object
     // ========================================================================
 
-    public CharPane()
-    {
+    public CharPane() {
         init();
     }
 
-    public CharPane(int columns, int rows)
-    {
+    public CharPane(int columns, int rows) {
         this.nr_columns = columns;
         this.nr_rows = rows;
         init();
     }
 
-    private void init()
-    {
+    private void init() {
         this.setLayout(null);
         this.setFocusable(true);
         // unset focuskeys, must get TAB chars:
@@ -431,31 +405,26 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /** Start timers and renderer thread is not running */
-    public void startRenderers()
-    {
+    public void startRenderers() {
         logger.debugPrintf(">>> STARTED <<<\n");
 
         this.mustStop = false;
 
-        if (renderTask == null)
-        {
+        if (renderTask == null) {
             // background render thread: must not use Swing Event Thread !
             renderTask = new Runnable() {
-                public void run()
-                {
+                public void run() {
                     doRender();
                 }
             };
         }
 
-        if ((renderThread == null) || (renderThread.isAlive() == false))
-        {
+        if ((renderThread == null) || (renderThread.isAlive() == false)) {
             renderThread = new Thread(renderTask);
             renderThread.start();
         }
 
-        if ((refreshTimer == null) || (refreshTimer.isRunning() == false))
-        {
+        if ((refreshTimer == null) || (refreshTimer.isRunning() == false)) {
             // timer
             refreshTimer = new Timer(10, this);
             refreshTimer.setInitialDelay(100); // animate 10 per second (blink)
@@ -463,29 +432,21 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
     }
 
-    private void doRender()
-    {
-        while (this.mustStop == false)
-        {
-            synchronized (this.textBufferMutex)
-            {
-                if (this.currentBuffer != null)
-                {
+    private void doRender() {
+        while (this.mustStop == false) {
+            synchronized (this.textBufferMutex) {
+                if (this.currentBuffer != null) {
                     // check whether complete buffer need to be render or a part:
-                    if (this.paintCompleteTextBuffer || this.currentBuffer.hasChanged())
-                    {
+                    if (this.paintCompleteTextBuffer || this.currentBuffer.hasChanged()) {
                         // change *before* repaint
                         // to detect new changes while painting
                         currentBuffer.setChanged(false);
 
                         boolean succesfull = false;
-                        try
-                        {
+                        try {
                             // at startup image might not be displayed yet
                             succesfull = paintTextBuffer();
-                        }
-                        catch (Throwable e)
-                        {
+                        } catch (Throwable e) {
                             // Logger.
                             succesfull = false;
                         }
@@ -500,12 +461,9 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                 }
             }
 
-            try
-            {
+            try {
                 Thread.sleep(10);
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 logger.debugPrintf("***Interrupted:%s\n", e);
             }
 
@@ -514,28 +472,24 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /**
-     * Initialize Backing Image. Since the parent is used to as image source, it must be diplayable, so this method
-     * fails when the parent isn't visible. !
+     * Initialize Backing Image. Since the parent is used to as image source, it must be diplayable,
+     * so this method fails when the parent isn't visible. !
      * 
      * @return
      */
-    private boolean initTextBufferImage()
-    {
+    private boolean initTextBufferImage() {
         // block paint: will be back for breakfast:
 
-        synchronized (paintImageMutex)
-        {
+        synchronized (paintImageMutex) {
             // image = new BufferedImage(getTermWidth(), getTermHeight(),BufferedImage.TYPE_INT_ARGB);
             Container parent = this.getParent();
 
-            if ((parent == null) || (parent.isDisplayable() == false))
-            {
+            if ((parent == null) || (parent.isDisplayable() == false)) {
                 logger.warnPrintf("Parent NULL or Image source not displayable (yet).\n");
                 return false;
             }
 
-            if (parent.isVisible() == false)
-            {
+            if (parent.isVisible() == false) {
                 logger.warnPrintf("Image source not Visible (yet)!\n");
                 return false;
             }
@@ -551,14 +505,12 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         return true;
     }
 
-    public void drawTestScreen()
-    {
+    public void drawTestScreen() {
         this.setDrawStyle(0);
 
         for (int i = 0; i < 2; i++)
             for (int y = 0; y < 4; y++)
-                for (int x = 0; x < 8; x++)
-                {
+                for (int x = 0; x < 8; x++) {
                     this.setDrawForeground(x);
                     this.setDrawBackground(y + i * 4);
                     putString("VLe", 16 + (x + i * 8) * 3, 1 + y);
@@ -566,11 +518,9 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
         int n = 64; //
         int m = 13;
-        for (int c = 0; c < n; c++)
-        {
+        for (int c = 0; c < n; c++) {
             this.setDrawStyle(c);
-            for (int i = 0; i < m; i++)
-            {
+            for (int i = 0; i < m; i++) {
                 int index = c * m + i;
                 int x = 1 + index % 78; // 6x13=78
                 int y = 9 + index / 78;
@@ -587,13 +537,11 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         // graphics
         this.setCharSet(1, CharPane.VT_CHARSET_GRAPHICS);
         this.setCharSet(1);
-        for (int y = 0; y < 2; y++)
-        {
+        for (int y = 0; y < 2; y++) {
             if (y % 2 == 1)
                 this.addDrawStyle(StyleChar.STYLE_BOLD);
 
-            for (int x = 0; x < 16; x++)
-            {
+            for (int x = 0; x < 16; x++) {
                 int c = 'j' + x;
                 if (x == 15)
                     c = 'a';// checkered
@@ -611,8 +559,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /** Initialize font&font metrics */
-    private void initFont(FontInfo finfo)
-    {
+    private void initFont(FontInfo finfo) {
         String fontType = finfo.getFontFamily();
         int fontStyle = finfo.getFontStyle();
         int fontSize = finfo.getFontSize();
@@ -640,24 +587,20 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         dummyImage.flush();
     }
 
-    public void setFont(FontInfo info)
-    {
+    public void setFont(FontInfo info) {
         this.initFont(info);
         resetGraphics();
     }
 
     /** Clear text buffer, doesn't do repaint */
-    public void clearText()
-    {
-        synchronized (textBufferMutex)
-        {
+    public void clearText() {
+        synchronized (textBufferMutex) {
             this.currentBuffer.clearAll();
         }
     }
 
     /** Clear text, state and Reset Graphics */
-    public void reset()
-    {
+    public void reset() {
         this.stopRenderers();
         setDrawStyle(0);
         setCharSet(0);
@@ -671,8 +614,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /** Clear text + reset graphics */
-    public void clear()
-    {
+    public void clear() {
         // clear text + reset graphics
         this.clearText();
         this.resetGraphics();
@@ -680,39 +622,33 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /**
-     * Reset Graphics Recalculate font metrics, image size and repaint complete text buffer. Keeps text in text buff
-     * Muste be invoked when Font or Character attributes are changed
+     * Reset Graphics Recalculate font metrics, image size and repaint complete text buffer. Keeps
+     * text in text buff Muste be invoked when Font or Character attributes are changed
      */
-    public void resetGraphics()
-    {
+    public void resetGraphics() {
         initFont(this.fontInfo);
         // setBackground(fontInfo.getBackground());
         // setForeground(fontInfo.getForeground());
 
         // PASS(paintImageMutex)
         // DANGEROUS: check double mutex locking !
-        synchronized (paintImageMutex)
-        {
+        synchronized (paintImageMutex) {
             ;
         }
 
-        synchronized (textBufferMutex)
-        {
+        synchronized (textBufferMutex) {
             // resize does refresh contents and initializes text image!
             this.resizeTextBuffers(this.nr_columns, this.nr_rows);
         }
     }
 
-    public void update(Graphics g)
-    {
+    public void update(Graphics g) {
         paint(g);
     }
 
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g) {
         // Claim Paint mutex to block other threads if applicable...
-        synchronized (paintImageMutex)
-        {
+        synchronized (paintImageMutex) {
             // paint text image:
             Rectangle clip = g.getClipBounds();
 
@@ -733,25 +669,21 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
         // Post painting: Notify waiting threads:
 
-        synchronized (paintImageMutex)
-        {
+        synchronized (paintImageMutex) {
             paintImageMutex.notifyAll();
         }
     }
 
     /** Paint textBuffer in offscreen image buffer */
-    public boolean paintTextBuffer()
-    {
+    public boolean paintTextBuffer() {
         return paintTextBuffer(0, 0, this.nr_columns, this.nr_rows);
     }
 
     /**
      * Paints region [x1,y1] to [x2,y2] - includes x2 if x1==x1 - includes y2 if y1==y2
      */
-    protected boolean paintTextBuffer(int x1, int y1, int x2, int y2)
-    {
-        if (currentImage == null)
-        {
+    protected boolean paintTextBuffer(int x1, int y1, int x2, int y2) {
+        if (currentImage == null) {
             // at startup the window might not be visible yet.
             if (initTextBufferImage() == false)
                 return false;
@@ -766,16 +698,13 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         // This speed up the Swing painting thread but slows down the rendering.
         // ===========
 
-        if (this.optionRendererWaitForPaint)
-        {
-            synchronized (paintImageMutex)
-            {
+        if (this.optionRendererWaitForPaint) {
+            synchronized (paintImageMutex) {
                 ; //
             }
         }
 
-        synchronized (textBufferMutex)
-        {
+        synchronized (textBufferMutex) {
             // Concurrency!
             // keep current: reset global
             boolean paintAll = (this.paintCompleteTextBuffer || this.optionAlwaysPaintCompleteTextBuffer);
@@ -813,27 +742,23 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
             // imageGraphics.setColor(this.background_color);
             // imageGraphics.fillRect(0,0,getTermWidth(),getTermHeight());
 
-            if (graphics instanceof Graphics2D)
-            {
+            if (graphics instanceof Graphics2D) {
                 updateRenderingHints((Graphics2D) graphics);
             }
             graphics.setFont(fontPlain);
             graphics.setColor(this.colorMap.getForeground());
 
-            for (int y = y1; y < y2; y++)
-            {
+            for (int y = y1; y < y2; y++) {
                 // whether next character already has been cleared:
                 boolean paintBackgroundAheadDone = false;
 
-                for (int x = x1; x < x2; x++)
-                {
+                for (int x = x1; x < x2; x++) {
                     int xpos = x * charwidth;
                     int ypos = y * charheight;
 
                     StyleChar sChar = currentBuffer.get(x, y);
 
-                    if (sChar == null)
-                    {
+                    if (sChar == null) {
                         logger.errorPrintf("NULL char at:%d,%d\n", x, y);
                         continue;
                         // return false;
@@ -855,8 +780,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                     boolean paintBackground = true;
                     boolean paintBackgroundAhead = false;
 
-                    if (sChar.isItalic() || sChar.isUberBold())
-                    {
+                    if (sChar.isItalic() || sChar.isUberBold()) {
                         // clear next char
                         paintBackgroundAhead = true;
                     }
@@ -873,8 +797,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                     {
                         StyleChar nextChar = currentBuffer.get(x + 1, y);
 
-                        if (nextChar != null)
-                        {
+                        if (nextChar != null) {
                             // clear neighbour background:
                             renderChar(graphics, nextChar, xpos + charwidth, ypos, true, false);
                             // form next drawing that field already has been cleared.
@@ -888,8 +811,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                     this.currentBuffer.needsRepaint(x, y, false); // has been drawn
 
                     // check/update cursor:
-                    if ((showCursor) && (x == cursorX) && (y == cursorY))
-                    {
+                    if ((showCursor) && (x == cursorX) && (y == cursorY)) {
                         // System.err.println("paintCursor="+x+","+y);
                         // draw cursor:
                         graphics.setXORMode(this.colorMap.getForeground());
@@ -903,43 +825,37 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
 
         // notify waiting threads:
-        synchronized (textBufferMutex)
-        {
+        synchronized (textBufferMutex) {
             textBufferMutex.notifyAll();
         }
 
         return true;
     }
 
-    private void updateRenderingHints(Graphics2D graphics)
-    {
+    private void updateRenderingHints(Graphics2D graphics) {
         if (this.renderingHints == null)
             return;
 
         Key[] keys = renderingHints.keySet().toArray(new Key[0]);
-        for (Key key : keys)
-        {
+        for (Key key : keys) {
             Object value = renderingHints.get(key);
             graphics.setRenderingHint(key, value);
         }
     }
 
-    public Dimension getPreferredSize()
-    {
+    public Dimension getPreferredSize() {
         // make sure layout manager respects current image size.
         return getImageSize();
     }
 
-    public Dimension getMaximumSize()
-    {
+    public Dimension getMaximumSize() {
         // make sure layout manager respects current image size.
         return getImageSize();
     }
 
     /** Render single character in imageGraphics */
     private void renderChar(Graphics imageGraphics, StyleChar sChar, int xpos, int ypos,
-            boolean paintBackground, boolean paintForeground)
-    {
+            boolean paintBackground, boolean paintForeground) {
         int style = sChar.style;
 
         // check indexed colors!
@@ -953,8 +869,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         if (bg == null)
             bg = this.colorMap.getBackground();
 
-        if ((style & StyleChar.STYLE_INVERSE) > 0)
-        {
+        if ((style & StyleChar.STYLE_INVERSE) > 0) {
             // swap bg/fg
             Color c = fg;
             fg = bg;
@@ -978,8 +893,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         int charWidth = getCharWidth();
 
         // Paint background
-        if (paintBackground)
-        {
+        if (paintBackground) {
             imageGraphics.setColor(bg);
             imageGraphics.fillRect(xpos, ypos, charWidth, charHeight);
         }
@@ -987,13 +901,10 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         if (paintForeground == false)
             return;
 
-        if (sChar.isChar(' '))
-        {
+        if (sChar.isChar(' ')) {
             // background image ?
             // ; space already drawn.
-        }
-        else
-        {
+        } else {
             boolean isGraphicsChar = isGraphicsCharSet(sChar.charSet);
             if (isGraphicsChar && this.optionUseOwnGraphicsCharsetRenderer)
                 renderGraphicsChar(imageGraphics, fg, bg, xpos, ypos, charWidth, charHeight, sChar);
@@ -1003,9 +914,8 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
     }
 
-    private void renderGraphicsChar(Graphics imageGraphics, Color fg, Color bg,
-            int xpos, int ypos, int charWidth, int charHeight, StyleChar schar)
-    {
+    private void renderGraphicsChar(Graphics imageGraphics, Color fg, Color bg, int xpos, int ypos,
+            int charWidth, int charHeight, StyleChar schar) {
 
         String org = "abcdefghi" + "jklmnopqrstuvwxyz";
         String graphs = "▒␉␌␍␊°±␤␋" + "┘┐┌└┼⎺⎻─⎼⎽├┤┴┬│≤≥";
@@ -1028,21 +938,8 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         int endx = xpos + charWidth;
         int endy = ypos + charHeight;
 
-        double alphaBlends[][] = {
-                {},
-                {
-                        1.0
-                },
-                {
-                        1.0, 0.5
-                },
-                {
-                        1.0, 0.75, 0.5
-                },
-                {
-                        1.0, 0.9, 0.5, 0.25
-                },
-        };
+        double alphaBlends[][] = { {}, { 1.0 }, { 1.0, 0.5 }, { 1.0, 0.75, 0.5 },
+                { 1.0, 0.9, 0.5, 0.25 }, };
         // size and attributes
         int size = 1;
         // Fat Pipes instead of thin lines;
@@ -1060,8 +957,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
         boolean notSupported = false;
 
-        switch (c)
-        {
+        switch (c) {
             case 'u': // ┤
                 lowerLine = true;
             case 'j': // ┘
@@ -1138,19 +1034,16 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         if (notSupported)
             renderPlainChar(imageGraphics, fg, bg, xpos, ypos, charWidth, charHeight, schar);
 
-        for (int i = 0; i < size; i++)
-        {
+        for (int i = 0; i < size; i++) {
             Color drawFG = fg;
 
-            if (optionFatGraphicPipes)
-            {
+            if (optionFatGraphicPipes) {
                 drawFG = ColorMap.blendColor(bg, fg, alphaBlends[size][i], true);
             }
 
             imageGraphics.setColor(drawFG);
 
-            if (leftLine)
-            {
+            if (leftLine) {
                 if (upperLine)
                     imageGraphics.drawLine(xpos, midhy - i, midlx - i, midhy - i);
                 else
@@ -1162,8 +1055,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                     imageGraphics.drawLine(xpos, midly + i, midlx, midly + i);
             }
 
-            if (rightLine)
-            {
+            if (rightLine) {
                 if (upperLine)
                     imageGraphics.drawLine(midrx + i, midhy - i, endx, midhy - i);
                 else
@@ -1175,8 +1067,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                     imageGraphics.drawLine(midrx, midly + i, endx, midly + i);
             }
 
-            if (upperLine)
-            {
+            if (upperLine) {
                 if (leftLine)
                     imageGraphics.drawLine(midlx - i, ypos, midlx - i, midhy - i);
                 else
@@ -1188,8 +1079,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
                     imageGraphics.drawLine(midrx + i, ypos, midrx + i, midhy);
 
             }
-            if (lowerLine)
-            {
+            if (lowerLine) {
                 if (leftLine)
                     imageGraphics.drawLine(midlx - i, midly + i, midlx - i, endy);
                 else
@@ -1205,8 +1095,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     private void renderPlainChar(Graphics imageGraphics, Color fg, Color bg, int xpos, int ypos,
-            int charWidth, int charHeight, StyleChar schar)
-    {
+            int charWidth, int charHeight, StyleChar schar) {
         int style = schar.style;
         byte bytes[] = schar.charBytes;
         int numBytes = schar.numBytes;
@@ -1216,12 +1105,9 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         int imgy = ypos + charHeight - line_space - fontDescent;// text center start above lower border
 
         String encoded;
-        try
-        {
+        try {
             encoded = new String(bytes, 0, numBytes, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             // fixme("Cannot decode UTF-* string");
             // Global.warnPrintln(this,"Couldn't decode byte sequence!:");//+bytes[0]);
             encoded = "" + bytes[0]; // skip rest
@@ -1250,8 +1136,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
         Graphics2D g2d = (Graphics2D) imageGraphics;
 
-        if (this.fontInfo.getRenderingHints() != null)
-        {
+        if (this.fontInfo.getRenderingHints() != null) {
             g2d.setRenderingHints(fontInfo.getRenderingHints());
         }
 
@@ -1260,8 +1145,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         // =========================
 
         // slow :
-        if (uberbold)
-        {
+        if (uberbold) {
             Color shadedFG = ColorMap.blendColor(bg, fg, 0.5, true);
 
             imageGraphics.setColor(shadedFG);
@@ -1272,34 +1156,27 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
             imageGraphics.setColor(fg);
             imageGraphics.drawString(encoded, imgx, imgy);
 
-        }
-        else
-        {
+        } else {
             imageGraphics.drawString(encoded, imgx, imgy);
         }
 
         // add line:
-        if ((style & StyleChar.STYLE_UNDERSCORE) > 0)
-        {
+        if ((style & StyleChar.STYLE_UNDERSCORE) > 0) {
             imageGraphics.drawLine(imgx, imgy, imgx + this.fontCharWidth, imgy);
         }
     }
 
-    public Color resolveColor(int index)
-    {
+    public Color resolveColor(int index) {
         if ((index < 0) || (index >= colorMap.size()))
             return null;
 
         return this.colorMap.get(index);
     }
 
-    private String checkCharSet(String charset, String str)
-    {
-        if (isGraphicsCharSet(charset))
-        {
+    private String checkCharSet(String charset, String str) {
+        if (isGraphicsCharSet(charset)) {
             String graph = "";
-            for (int i = 0; i < str.length(); i++)
-            {
+            for (int i = 0; i < str.length(); i++) {
                 graph += this.CharSet1(str.charAt(i));
             }
             return graph;
@@ -1308,8 +1185,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         return str;
     }
 
-    private boolean isGraphicsCharSet(String charset)
-    {
+    private boolean isGraphicsCharSet(String charset) {
         if (charset == null)
             return false;
 
@@ -1319,53 +1195,43 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         return false;
     }
 
-    public Dimension getImageSize()
-    {
+    public Dimension getImageSize() {
         return new Dimension(getImageWidth(), getImageHeight());
     }
 
-    public int getImageWidth()
-    {
+    public int getImageWidth() {
         return fontCharWidth * nr_columns;
     }
 
-    public int getImageHeight()
-    {
+    public int getImageHeight() {
         return getLineHeight() * nr_rows;
     }
 
-    public int getCharWidth()
-    {
+    public int getCharWidth() {
         return fontCharWidth;
     }
 
-    public int getCharHeight()
-    {
+    public int getCharHeight() {
         return fontCharHeight;
     }
 
     /** Return nr of columns */
-    public int getColumnCount()
-    {
+    public int getColumnCount() {
         return nr_columns;
     }
 
     /** Returns nr of rows */
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return nr_rows;
     }
 
-    public void setCursor(int x, int y)
-    {
-        if (x < 0)
-        {
+    public void setCursor(int x, int y) {
+        if (x < 0) {
             logger.errorPrintf("new cursor X<0:%d\n", x);
             x = 0;
         }
 
-        if (y < 0)
-        {
+        if (y < 0) {
             logger.errorPrintf("new cursor Y<0:%d\n", y);
             y = 0;
         }
@@ -1390,22 +1256,20 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /**
-     * Request and schedule repaint. Actual repaint might occur later. Multiple repaint requests are gathered and the
-     * hasChanged field is set to true to merge/combine repaints.
+     * Request and schedule repaint. Actual repaint might occur later. Multiple repaint requests are
+     * gathered and the hasChanged field is set to true to merge/combine repaints.
      * 
      * @param x
      *            position of char which needs to be repainted
      * @param y
      *            position of char which needs to be repainted
      */
-    private void characterChanged(int x, int y)
-    {
+    private void characterChanged(int x, int y) {
         this.currentBuffer.needsRepaint(x, y, true);
     }
 
     /** Clear area from [x1,y1] (inclusive) to [x2,y2] (exclusive) */
-    public void clearArea(int x1, int y1, int x2, int y2)
-    {
+    public void clearArea(int x1, int y1, int x2, int y2) {
         // Debug("Clear:"+"x1="+x1+","+"y1="+y1+","+"x2="+x2+","+"y2="+y2);
         // avoid empty lines:
         if (y2 == y1)
@@ -1415,22 +1279,18 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         if (x2 == x1)
             x2++;
 
-        if (x2 > this.nr_columns)
-        {
+        if (x2 > this.nr_columns) {
             logger.debugPrintf("***Overflow: x2 > nr_columns:%d>%d\n", x2, nr_columns);
             x2 = nr_columns;
         }
 
-        if (y2 > this.nr_rows)
-        {
+        if (y2 > this.nr_rows) {
             logger.debugPrintf("***Overflow: y2 > nr_rows:%d>%d\n", y2, nr_rows);
             y2 = nr_rows;
         }
 
-        for (int y = y1; y < y2; y++)
-        {
-            for (int x = x1; x < x2; x++)
-            {
+        for (int y = y1; y < y2; y++) {
+            for (int x = x1; x < x2; x++) {
                 // clear means: put space char using current draw style:
                 this.putChar(' ', x, y);
                 // characterChanged(x,y);
@@ -1440,16 +1300,13 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         // this.charsChanged=true;
     }
 
-    public void move(int startX, int startY, int width, int height, int toX,
-            int toY)
-    {
+    public void move(int startX, int startY, int width, int height, int toX, int toY) {
         move(startX, startY, width, height, toX, toY, null);
     }
 
     // not fully tested yet. If filler==null => clear values
-    public void move(int startX, int startY, int width, int height, int toX,
-            int toY, StyleChar filler)
-    {
+    public void move(int startX, int startY, int width, int height, int toX, int toY,
+            StyleChar filler) {
         int beginx = 0;
         int stepx = 1;
         int endx = width;
@@ -1459,23 +1316,20 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         int endy = height;
 
         // reverse horizontal move
-        if (toX > startX)
-        {
+        if (toX > startX) {
             beginx = width - 1;
             stepx = -1;
             endx = -1;
         }
 
         // reverse vertical move
-        if (toY > startY)
-        {
+        if (toY > startY) {
             beginy = height - 1;
             stepy = -1;
             endy = -1;
         }
 
-        synchronized (textBufferMutex)
-        {
+        synchronized (textBufferMutex) {
             for (int j = beginy; j != endy; j += stepy)
                 // rows
                 for (int i = beginx; i != endx; i += stepx) // columns
@@ -1490,8 +1344,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
     }
 
-    public void scrollRegion(int startline, int endline, int lines, boolean up)
-    {
+    public void scrollRegion(int startline, int endline, int lines, boolean up) {
         if (up)
             move(0, startline + lines, nr_columns, endline - startline - lines, 0, startline);
         else
@@ -1499,97 +1352,77 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /** Method blocks until current text image is painted by Swing */
-    public void syncPainted()
-    {
+    public void syncPainted() {
         // wait for current textbuffer to be painted !
         // use paintMutex
-        synchronized (paintImageMutex)
-        {
-            try
-            {
+        synchronized (paintImageMutex) {
+            try {
                 paintImageMutex.wait(1000);
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
     /** String Encoding */
-    public String getEncoding()
-    {
+    public String getEncoding() {
         return this.characterEncoding;
     }
 
     /** String Encoding: Does not reset graphics */
-    public void setEncoding(String encoding)
-    {
+    public void setEncoding(String encoding) {
         this.characterEncoding = encoding;
     }
 
-    public void writeChar(int c)
-    {
+    public void writeChar(int c) {
         String str = "" + (char) c;
         this.putChar(str.getBytes(), getCursorX(), getCursorY());
         moveCursor(1, 0);
     }
 
-    public void putChar(int c, int x, int y)
-    {
+    public void putChar(int c, int x, int y) {
         String str = "" + (char) c;
         this.putChar(getBytes(str), x, y);
     }
 
-    public byte[] getBytes(String str)
-    {
-        try
-        {
+    public byte[] getBytes(String str) {
+        try {
             return str.getBytes(getEncoding());
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return str.getBytes();
     }
 
-    public void writeString(String str)
-    {
+    public void writeString(String str) {
         for (int i = 0; i < str.length(); i++)
             writeChar(str.charAt(i));
     }
 
-    public void putString(String str, int x, int y)
-    {
+    public void putString(String str, int x, int y) {
         setCursor(x, y);
         for (int i = 0; i < str.length(); i++)
             writeChar(str.charAt(i));
     }
 
-    public void writeChar(byte bytes[])
-    {
+    public void writeChar(byte bytes[]) {
         checkAutoWrap();
 
         putChar(bytes, getCursorX(), getCursorY(), true);
     }
 
-    public void putChar(byte bytes[], int x, int y)
-    {
+    public void putChar(byte bytes[], int x, int y) {
         putChar(bytes, x, y, false);
     }
 
-    public StyleChar getStyleChar(int x, int y)
-    {
+    public StyleChar getStyleChar(int x, int y) {
         return this.currentBuffer.get(x, y);
     }
 
     // master method. Write single UTF encoded char at position x,y
-    public void putChar(byte bytes[], int x, int y, boolean autoIncrement)
-    {
+    public void putChar(byte bytes[], int x, int y, boolean autoIncrement) {
 
-        if (currentBuffer.checkBounds(x, y) == false)
-        {
+        if (currentBuffer.checkBounds(x, y) == false) {
             logger.warnPrintf("checkBounds(): out of bounds (x,y)=%d,%d\n", x, y);
             return;
         }
@@ -1598,19 +1431,15 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         int ypos = y;
 
         // synchronize per put to allow paint event to come between puts.
-        synchronized (textBufferMutex)
-        {
+        synchronized (textBufferMutex) {
             // moveCursor(0,0); // does boundaray checking !
 
             StyleChar sChar;
-            if ((sChar = this.currentBuffer.get(xpos, ypos)) == null)
-            {
+            if ((sChar = this.currentBuffer.get(xpos, ypos)) == null) {
                 // happens during asynchronize resize events!
                 // Swing resize the current text buffer but the emulator still appends chars.
                 logger.warnPrintf("No character at position: %d,%d\n", xpos, ypos);
-            }
-            else
-            {
+            } else {
                 sChar.setBytes(bytes);
                 sChar.charSet = getCharSet();
 
@@ -1632,8 +1461,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
     }
 
-    public void moveCursor(int dx, int dy)
-    {
+    public void moveCursor(int dx, int dy) {
         int xpos = getCursorX();
         int ypos = getCursorY();
 
@@ -1645,23 +1473,19 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         // checkAutoWrap();
     }
 
-    private void checkAutoWrap()
-    {
+    private void checkAutoWrap() {
         int xpos = getCursorX();
         int ypos = getCursorY();
 
         // PRE check:
-        if ((xpos >= this.nr_columns) && (wraparound == true))
-        {
+        if ((xpos >= this.nr_columns) && (wraparound == true)) {
             xpos = 0;
             ypos++;
         }
 
-        if (ypos >= this.nr_rows)
-        {
+        if (ypos >= this.nr_rows) {
             ypos = nr_rows - 1;
-            if (autoscroll == true)
-            {
+            if (autoscroll == true) {
                 logger.debugPrintf(">>> autoscroll I <<<\n");
                 scrollRegion(0, this.nr_rows, 1, true); // scroll whole screen up!
             }
@@ -1670,24 +1494,20 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         setCursor(xpos, ypos);
     }
 
-    public String getCharSet()
-    {
+    public String getCharSet() {
         return charSets[charSet]; // may be null;
     }
 
-    private char CharSet1(char c)
-    {
+    private char CharSet1(char c) {
         // linear lookup, could use mapping tables:
-        for (int i = 0; i < graphOrg.length(); i++)
-        {
+        for (int i = 0; i < graphOrg.length(); i++) {
             if (graphOrg.charAt(i) == c)
                 return graphSet1.charAt(i);
         }
         return c;
     }
 
-    public void beep()
-    {
+    public void beep() {
         Toolkit.getDefaultToolkit().beep();
     }
 
@@ -1697,50 +1517,41 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     // }
 
     /** Returns Character Height+ line_spacing + descent */
-    public int getLineHeight()
-    {
+    public int getLineHeight() {
         return this.fontCharHeight + line_space + fontDescent;
     }
 
-    public void setDrawStyle(int style)
-    {
+    public void setDrawStyle(int style) {
         this.drawStyle = style;
 
         // style=0 is reset colors as well.
-        if (style == 0)
-        {
+        if (style == 0) {
             this.drawBackgroundIndex = -1;
             this.drawForegroundIndex = -1;
         }
     }
 
-    public int getDrawStyle()
-    {
+    public int getDrawStyle() {
         return drawStyle;
     }
 
-    public int getCursorY()
-    {
+    public int getCursorY() {
         return this.cursorY;
     }
 
-    public int getCursorX()
-    {
+    public int getCursorX() {
         return this.cursorX;
     }
 
-    public void addDrawStyle(int style)
-    {
+    public void addDrawStyle(int style) {
         setDrawStyle(getDrawStyle() | style);
     }
 
-    public void setDrawBackground(int nr)
-    {
+    public void setDrawBackground(int nr) {
         this.drawBackgroundIndex = nr;
     }
 
-    public void setDrawForeground(int nr)
-    {
+    public void setDrawForeground(int nr) {
         this.drawForegroundIndex = nr;
     }
 
@@ -1781,83 +1592,69 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     // }
 
     /** Set Auto wrap when character are drawn beyoned the line lenght */
-    public void setWrapAround(boolean value)
-    {
+    public void setWrapAround(boolean value) {
 
         this.wraparound = value;
     }
 
-    public boolean getWrapAround()
-    {
+    public boolean getWrapAround() {
         return wraparound;
     }
 
-    public boolean getAutoScroll()
-    {
+    public boolean getAutoScroll() {
         return autoscroll;
     }
 
-    public void setAutoScroll(boolean auto)
-    {
+    public void setAutoScroll(boolean auto) {
         this.autoscroll = auto;
     }
 
-    public void setCharSet(int nr)
-    {
+    public void setCharSet(int nr) {
         logger.debugPrintf("setCharSet:#%d\n", nr);
         this.charSet = nr;
     }
 
     /** Set Font size: Does not reset graphics */
-    public void setFontSize(int i)
-    {
+    public void setFontSize(int i) {
         this.fontInfo.setFontSize(i);
         // updateFont();
     }
 
     /** Set Font type: Does not reset graphics */
-    public void setFontType(String type)
-    {
+    public void setFontType(String type) {
         this.fontInfo.setFontFamily(type);
         // updateFont();
     }
 
     /** Set Character Set: Does not reset graphics */
-    public void setCharSet(int i, String str)
-    {
+    public void setCharSet(int i, String str) {
         logger.debugPrintf("setCharSet: #%d=%s\n", i, str);
         charSets[i] = str;
     }
 
     /** Set Colormap: Does not reset graphics */
-    public void setColorMap(ColorMap colorMap)
-    {
+    public void setColorMap(ColorMap colorMap) {
         this.colorMap = colorMap;
     }
 
-    public FontInfo getFontInfo()
-    {
+    public FontInfo getFontInfo() {
         return this.fontInfo;
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         stopRenderers();
-        if (this.currentImage != null)
-        {
+        if (this.currentImage != null) {
             this.currentImage.flush();
             this.currentImage = null;
         }
         this.renderTask = null;
         this.renderThread = null;
 
-        if (this.fullBuffer != null)
-        {
+        if (this.fullBuffer != null) {
             this.fullBuffer.dispose();
             this.fullBuffer = null;
         }
-        if (this.altTextBuffer != null)
-        {
+        if (this.altTextBuffer != null) {
             this.altTextBuffer.dispose();
             this.altTextBuffer = null;
         }
@@ -1865,8 +1662,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         this.currentBuffer = null;
     }
 
-    public void stopRenderers()
-    {
+    public void stopRenderers() {
         logger.debugPrintf(">>> STOPPED <<<\n");
 
         this.mustStop = true;
@@ -1880,11 +1676,11 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /**
-     * After a resize by the parent container, this method can be called to update the internal size to match the actual
-     * component size. If not the charPane will keep its current size and the contents will be clipped.
+     * After a resize by the parent container, this method can be called to update the internal size
+     * to match the actual component size. If not the charPane will keep its current size and the
+     * contents will be clipped.
      */
-    public void resizeTextBuffersToAWTSize(Dimension size)
-    {
+    public void resizeTextBuffersToAWTSize(Dimension size) {
         int cols = size.width / this.getCharWidth();
         int rows = size.height / this.getLineHeight();
 
@@ -1896,8 +1692,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /** Update character pane size given the new column and row count. */
-    public void resizeTextBuffers(int cols, int rows)
-    {
+    public void resizeTextBuffers(int cols, int rows) {
         this.nr_rows = rows;
         this.nr_columns = cols;
 
@@ -1912,18 +1707,15 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         this.repaint();
     }
 
-    public void setColumns(int columns)
-    {
+    public void setColumns(int columns) {
         resizeTextBuffers(columns, this.nr_rows);
     }
 
     // actual resize:
-    private void _resizeTextBuffers(int numCs, int numRs)
-    {
+    private void _resizeTextBuffers(int numCs, int numRs) {
         logger.debugPrintf("resizeTextBuffer:%d,%d\n", numCs, numRs);
 
-        synchronized (this.textBufferMutex)
-        {
+        synchronized (this.textBufferMutex) {
             if (fullBuffer == null)
                 this.fullBuffer = new TextBuffer(numCs, numRs);// add virtual buffer
             else
@@ -1939,26 +1731,21 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         }
 
         // block paints:
-        synchronized (paintImageMutex)
-        {
+        synchronized (paintImageMutex) {
             this.initTextBufferImage();
         }
     }
 
-    public void pageUp()
-    {
+    public void pageUp() {
         // virtual page up!
     }
 
-    public void pageDown()
-    {
+    public void pageDown() {
 
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
-        if (e.getSource() == refreshTimer)
-        {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == refreshTimer) {
             doAnimation();
         }
     }
@@ -1967,8 +1754,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
 
     private boolean slowScroll;
 
-    public void doAnimation()
-    {
+    public void doAnimation() {
         Dimension size = this.currentBuffer.getSize();
 
         int div = 8; // slowdown
@@ -1980,13 +1766,10 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         int alpha = (int) (128 + 127 * val);
 
         for (int x = 0; x < size.width; x++)
-            for (int y = 0; y < size.height; y++)
-            {
+            for (int y = 0; y < size.height; y++) {
                 StyleChar c = currentBuffer.get(x, y);
-                if ((c != null) && (c.hasStyle(StyleChar.STYLE_BLINK)))
-                {
-                    if (c.alpha != alpha)
-                    {
+                if ((c != null) && (c.hasStyle(StyleChar.STYLE_BLINK))) {
+                    if (c.alpha != alpha) {
                         c.setAlpha(alpha); // updates changes
                         currentBuffer.needsRepaint(x, y, true);// update
                     }
@@ -1997,8 +1780,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
     }
 
     /** Options */
-    public String getOption(String optStr)
-    {
+    public String getOption(String optStr) {
         if (optStr == null)
             return null;
 
@@ -2008,32 +1790,27 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         return null;
     }
 
-    public void setOption(String name, String value)
-    {
+    public void setOption(String name, String value) {
         if ((name == null) || (value == null))
             return;
 
-        if (name.compareTo(CharPane.OPTION_ALWAYS_SYNCHRONIZED_SCROLLING) == 0)
-        {
+        if (name.compareTo(CharPane.OPTION_ALWAYS_SYNCHRONIZED_SCROLLING) == 0) {
             this.optionAlwaysSynchronizedScrolling = new Boolean(value);
         }
 
     }
 
-    public void setEnableCursor(boolean value)
-    {
+    public void setEnableCursor(boolean value) {
         this.showCursor = value;
     }
 
-    public boolean setAltScreenBuffer(boolean useAlt)
-    {
+    public boolean setAltScreenBuffer(boolean useAlt) {
         // extra buffer can mess up painting thread -> check mutex handling.
         if (this.optionSupportAltScreenBuffer == false)
             return false;
 
         // only swap between render events !
-        synchronized (this.textBufferMutex)
-        {
+        synchronized (this.textBufferMutex) {
             if (useAlt)
                 this.currentBuffer = this.altTextBuffer;
             else
@@ -2045,8 +1822,7 @@ public class CharPane extends JComponent implements ICharacterTerminal, ActionLi
         return true;
     }
 
-    public void setSlowScroll(boolean value)
-    {
+    public void setSlowScroll(boolean value) {
         this.slowScroll = value;
     }
 

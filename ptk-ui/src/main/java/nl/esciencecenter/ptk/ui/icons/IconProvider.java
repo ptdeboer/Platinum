@@ -49,11 +49,10 @@ import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
- * Simple Icon provider class which searched for icons in both user and
- * installation directories. Also checks and searches for mimetype icon
+ * Simple Icon provider class which searched for icons in both user and installation directories.
+ * Also checks and searches for mimetype icon
  */
-public class IconProvider
-{
+public class IconProvider {
     // ==========================================================================
     // Class
     // ==========================================================================
@@ -64,14 +63,12 @@ public class IconProvider
 
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(IconProvider.class);
         // logger.setLevelToDebug();
     }
 
-    public static synchronized IconProvider getDefault()
-    {
+    public static synchronized IconProvider getDefault() {
         if (source == null)
             source = new JFrame();
 
@@ -81,13 +78,11 @@ public class IconProvider
         return instance;
     }
 
-
     // helper method 
-    public static boolean isIco(String urlStr)
-    {
-        return urlStr.toLowerCase().endsWith(".ico"); 
+    public static boolean isIco(String urlStr) {
+        return urlStr.toLowerCase().endsWith(".ico");
     }
-    
+
     // ==========================================================================
     // Instance
     // ==========================================================================
@@ -126,53 +121,43 @@ public class IconProvider
     // private static IconRenderer iconRenderer=new IconRenderer();
 
     /** IconProvider with optional AWT Image Source and custom resource loader. */
-    public IconProvider(Component source, ResourceLoader resourceLoader)
-    {
+    public IconProvider(Component source, ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
         this.iconRenderer = new ImageRenderer(source);
         initDefaultImages();
     }
 
     /** IconProvider with optional AWT Image Source and custom (url) search path */
-    public IconProvider(Component source, URL urls[])
-    {
+    public IconProvider(Component source, URL urls[]) {
         this.resourceLoader = new ResourceLoader(urls);
         this.iconRenderer = new ImageRenderer(source);
         initDefaultImages();
     }
 
-    private void initDefaultImages()
-    {
-        try
-        {
+    private void initDefaultImages() {
+        try {
             this.brokenImage = getImage(brokenimage_url);
             this.miniLinkImage = getImage(link_icon_url);
             this.iconRenderer.setLinkImage(miniLinkImage);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.logException(PLogger.ERROR, e, "Couldn't initiliaze default icons\n");
         }
     }
 
-    public void setMimeIconPath(String mimeiconpath)
-    {
+    public void setMimeIconPath(String mimeiconpath) {
         mime_icons_theme_path = mimeiconpath;
     }
 
-    public ClassLoader getClassLoader()
-    {
+    public ClassLoader getClassLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
 
     /** Return broken image icon */
-    public Icon getBrokenIcon()
-    {
+    public Icon getBrokenIcon() {
         return this.createImageIcon(this.brokenImage);
     }
 
-    public Icon getMiniLinkIcon()
-    {
+    public Icon getMiniLinkIcon() {
         return this.createImageIcon(this.miniLinkImage);
     }
 
@@ -189,24 +174,23 @@ public class IconProvider
      * <li>III) Scales to size, optionally adds link icon and performs grey out.
      * </ul>
      */
-    public Icon createDefaultIcon(String iconUrl, boolean isComposite, boolean isLink, String mimetype, int size,
-            boolean greyOut, boolean focus)
-    {
-        logger.debugPrintf("createDefaultIcon [size=%d, greyOut=%b, focus=%b, isComposite=%b, isLink=%b]\n", 
-                size, greyOut,focus, isComposite, isLink);
+    public Icon createDefaultIcon(String iconUrl, boolean isComposite, boolean isLink,
+            String mimetype, int size, boolean greyOut, boolean focus) {
+        logger.debugPrintf(
+                "createDefaultIcon [size=%d, greyOut=%b, focus=%b, isComposite=%b, isLink=%b]\n",
+                size, greyOut, focus, isComposite, isLink);
 
         // for plugins, must use classLoader of plugin class !
         ClassLoader classLoader = getClassLoader();
 
         // custom Icon URL:
-        if (StringUtil.isEmpty(iconUrl) == false)
-        {
+        if (StringUtil.isEmpty(iconUrl) == false) {
             logger.debugPrintf("createDefaultIcon: I)");
 
-            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut, focus);
+            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size),
+                    greyOut, focus);
 
-            if (icon != null)
-            {
+            if (icon != null) {
                 logger.debugPrintf("createDefaultIcon: I) not NULL\n");
                 return icon;
             }
@@ -216,8 +200,8 @@ public class IconProvider
         // default mimetype for Composite nodes.
         // Set to null to trigger 'default' icons further in this method:
         //
-        if ((mimetype != null) && (isComposite) && (mimetype.compareToIgnoreCase("application/octet-stream") == 0))
-        {
+        if ((mimetype != null) && (isComposite)
+                && (mimetype.compareToIgnoreCase("application/octet-stream") == 0)) {
             mimetype = null;
         }
 
@@ -225,16 +209,15 @@ public class IconProvider
         // MimeType Icons
         // =============================================================================
 
-        if ((iconUrl == null) && (mimetype != null))
-        {
+        if ((iconUrl == null) && (mimetype != null)) {
             iconUrl = createMimeTypeIconPath(mimetype);
 
             // try again using full (theme) mimetype path: ./<themes
             // path>/iconURL
-            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut, focus);
+            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size),
+                    greyOut, focus);
 
-            if (icon != null)
-            {
+            if (icon != null) {
                 logger.debugPrintf("createDefaultIcon: using theme mimetype IIb):%s\n", iconUrl);
                 return icon;
             }
@@ -246,31 +229,29 @@ public class IconProvider
 
         logger.debugPrintf("createDefaultIcon: III):%s\n", iconUrl);
 
-        if (isComposite)
-        {
+        if (isComposite) {
             iconUrl = folder_icon_url;
-        }
-        else
-        {
+        } else {
             iconUrl = file_icon_url;
         }
 
         logger.debugPrintf("createDefaultIcon: IV):%s\n", iconUrl);
 
-        Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut, focus);
+        Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut,
+                focus);
 
         if (icon != null)
             return icon;
 
-        return createIcon(classLoader, file_icon_url, isLink, new Dimension(size, size), greyOut, focus);
+        return createIcon(classLoader, file_icon_url, isLink, new Dimension(size, size), greyOut,
+                focus);
     }
 
     /**
-     * Returns Icon or broken image icon. Creates ImageIcon directly from URL,
-     * works with animated GIFs as the icon is not changed
+     * Returns Icon or broken image icon. Creates ImageIcon directly from URL, works with animated
+     * GIFs as the icon is not changed
      */
-    public Icon createIconOrBroken(ClassLoader optClassLoader, String url)
-    {
+    public Icon createIconOrBroken(ClassLoader optClassLoader, String url) {
         logger.debugPrintf("createIconOrDefault:%s\n", url);
         // Find image and create icon. No Rendering!
 
@@ -298,43 +279,35 @@ public class IconProvider
     /**
      * Resolve Icon URL and create icon.
      * 
-     * @see IconProvider#createIcon(ClassLoader, String, boolean, Dimension,
-     *      boolean)
+     * @see IconProvider#createIcon(ClassLoader, String, boolean, Dimension, boolean)
      */
-    public Icon createIcon(String iconURL)
-    {
+    public Icon createIcon(String iconURL) {
         return this.createIcon(null, iconURL, false, null, false, false);
     }
 
     /**
-     * Resolve Icon URL and creates icon. Renders it to the specified size.
-     * Caches result.
+     * Resolve Icon URL and creates icon. Renders it to the specified size. Caches result.
      * 
-     * @see IconProvider#createIcon(ClassLoader, String, boolean, Dimension,
-     *      boolean)
+     * @see IconProvider#createIcon(ClassLoader, String, boolean, Dimension, boolean)
      */
-    public Icon createIcon(String iconurl, int size)
-    {
+    public Icon createIcon(String iconurl, int size) {
         return this.createIcon(null, iconurl, false, new Dimension(size, size), false, false);
     }
 
     /**
      * Find icon or return null
      */
-    public Icon createIcon(ClassLoader extraLoader, String iconURL)
-    {
+    public Icon createIcon(ClassLoader extraLoader, String iconURL) {
         return this.createIcon(extraLoader, iconURL, false, null, false, false);
     }
 
     /**
-     * Create icon specified bu the iconURL string. Optionally scale icon, add a
-     * mini linkicon or perform a grey out. The resulted icon image is cached
-     * for reuse, but the returned Icon object is always a new Icon Object.
-     * Warning: Method does NOT yet work with animated Icons !
+     * Create icon specified bu the iconURL string. Optionally scale icon, add a mini linkicon or
+     * perform a grey out. The resulted icon image is cached for reuse, but the returned Icon object
+     * is always a new Icon Object. Warning: Method does NOT yet work with animated Icons !
      */
-    public Icon createIcon(ClassLoader optClassLoader, String iconURL, boolean showAsLink, Dimension prefSize,
-            boolean greyOut, boolean focus)
-    {
+    public Icon createIcon(ClassLoader optClassLoader, String iconURL, boolean showAsLink,
+            Dimension prefSize, boolean greyOut, boolean focus) {
         logger.debugPrintf("createIcon(): %s{%b,%s,%b}\n", iconURL, showAsLink, prefSize, greyOut);
 
         if (iconURL == null)
@@ -342,40 +315,35 @@ public class IconProvider
 
         Image image = getImageFromHash(iconURL, showAsLink, prefSize, greyOut, focus);
 
-        if (image != null)
-        {
-            logger.debugPrintf("Returning icon created from hashed image: %s{%b,%s,%b}\n", iconURL, showAsLink,
-                    prefSize, greyOut);
+        if (image != null) {
+            logger.debugPrintf("Returning icon created from hashed image: %s{%b,%s,%b}\n", iconURL,
+                    showAsLink, prefSize, greyOut);
             return createImageIcon(image);
         }
 
         image = findImage(optClassLoader, iconURL);
 
         // get default broken icon ?
-        if (image == null)
-        {
+        if (image == null) {
             logger.debugPrintf("createIcon: null icon for:%s\n", iconURL);
             return null;
         }
 
         image = iconRenderer.renderIconImage(image, showAsLink, prefSize, greyOut, focus);
 
-        if (image != null)
-        {
+        if (image != null) {
             putImageToHash(image, iconURL, showAsLink, prefSize, greyOut, focus);
             return createImageIcon(image);
-        }
-        else
-        {
-            logger.debugPrintf("createIcon: *** Error: renderIcon failed for non null icon:%s\n", iconURL);
+        } else {
+            logger.debugPrintf("createIcon: *** Error: renderIcon failed for non null icon:%s\n",
+                    iconURL);
         }
 
         return null;
     }
 
     /** Create Icon from Image, result is NOT cached */
-    public Icon createImageIcon(Image image)
-    {
+    public Icon createImageIcon(Image image) {
         // NULL Pointer save:
         if (image == null)
             return null;
@@ -384,32 +352,25 @@ public class IconProvider
     }
 
     /**
-     * Try to find a specified image, but do no throw an (IOL)Exception if it
-     * can't be found. Method will return 'null' if the case an image can't be
-     * found.
+     * Try to find a specified image, but do no throw an (IOL)Exception if it can't be found. Method
+     * will return 'null' if the case an image can't be found.
      */
-    public Image findImage(ClassLoader extraLoader, String iconURL)
-    {
+    public Image findImage(ClassLoader extraLoader, String iconURL) {
         URL resolvedurl = resourceLoader.resolveUrl(extraLoader, iconURL);
 
         // return url
-        if (resolvedurl != null)
-        {
+        if (resolvedurl != null) {
             logger.debugPrintf("findIcon:found Icon:%s\n", resolvedurl);
 
             // Basic checks whether the icon is a valid icon ?
-            try
-            {
+            try {
                 Image image = loadImage(resolvedurl, true);
 
-                if (image != null)
-                {
+                if (image != null) {
                     logger.debugPrintf("findIcon:returning non null icon:%s\n", resolvedurl);
                     return image;
                 }
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 logger.logException(PLogger.DEBUG, e, "Exception when loading image:%s\n", iconURL);
             }
 
@@ -420,8 +381,7 @@ public class IconProvider
         return null;
     }
 
-    public String createMimeTypeIconPath(String mimetype)
-    {
+    public String createMimeTypeIconPath(String mimetype) {
         // tranform mimetype "<type>/<subtype>" into filename
         // "<type>-<subtype>"
 
@@ -441,25 +401,21 @@ public class IconProvider
     /**
      * Loads (icon) image or throw IOException if it can't be found.
      */
-    public Image loadImage(URL url) throws IOException
-    {
+    public Image loadImage(URL url) throws IOException {
         return loadImage(url, true);
     }
 
     /**
-     * Load imageIcon, optionally uses cache. Use this method only for relative
-     * small icons and NOT for big images as the image are put into the cache
-     * for reuse.
+     * Load imageIcon, optionally uses cache. Use this method only for relative small icons and NOT
+     * for big images as the image are put into the cache for reuse.
      * 
      * @throws IOException
      */
-    public Image loadImage(URL url, boolean useCache) throws IOException
-    {
+    public Image loadImage(URL url, boolean useCache) throws IOException {
         // get/create "raw" icon from cache;
         Image image = null;
 
-        if (useCache)
-        {
+        if (useCache) {
             image = this.getImageFromHash("raw-" + url.toString(), false, null, false, false);
             if (image != null)
                 return image;
@@ -468,44 +424,36 @@ public class IconProvider
         logger.infoPrintf("loading new icon image:%s\n", url);
         String urlStr = url.toString().toLowerCase();
         // Direct .ico support: do not use resource loader to resolve icons
-        if (urlStr.endsWith(".ico"))
-        {
+        if (urlStr.endsWith(".ico")) {
             image = getIcoImage(url);
-        }
-        else
-        {
+        } else {
             // Uses java 1.5 ImageIO!
             image = getImage(url);
         }
 
-        if (image != null)
-        {
+        if (image != null) {
             if (useCache)
                 this.putImageToHash(image, "raw-" + url.toString(), false, null, false, false);
 
             return image;
-        }
-        else
-        {
+        } else {
             throw new IOException("ImageIO Returned NULL image for url:" + url);
         }
     }
 
-    private void putImageToHash(Image image, String iconURL, boolean showAsLink, Dimension size, boolean greyOut,
-            boolean focus)
-    {
+    private void putImageToHash(Image image, String iconURL, boolean showAsLink, Dimension size,
+            boolean greyOut, boolean focus) {
         if (image == null)
             return;
 
-        synchronized (this.iconHash)
-        {
+        synchronized (this.iconHash) {
             String id = createHashID(iconURL, showAsLink, size, greyOut, focus);
             this.iconHash.put(id, image);
         }
     }
 
-    private String createHashID(String iconURL, boolean showAsLink, Dimension size, boolean greyOut, boolean focus)
-    {
+    private String createHashID(String iconURL, boolean showAsLink, Dimension size,
+            boolean greyOut, boolean focus) {
         String sizeStr = "-";
         if (size != null)
             sizeStr = size.height + "-" + size.width;
@@ -513,13 +461,13 @@ public class IconProvider
         return iconURL + "-" + showAsLink + "-" + sizeStr + "-" + greyOut + "-" + focus;
     }
 
-    private Image getImageFromHash(String iconURL, boolean showAsLink, Dimension size, boolean greyOut, boolean focus)
-    {
-        synchronized (this.iconHash)
-        {
+    private Image getImageFromHash(String iconURL, boolean showAsLink, Dimension size,
+            boolean greyOut, boolean focus) {
+        synchronized (this.iconHash) {
             String id = createHashID(iconURL, showAsLink, size, greyOut, focus);
             Image image = this.iconHash.get(id);
-            logger.debugPrintf("> getIconFromHash:%s for '%s'\n", ((image != null) ? "HIT" : "MISS"), id);
+            logger.debugPrintf("> getIconFromHash:%s for '%s'\n",
+                    ((image != null) ? "HIT" : "MISS"), id);
             return image;
         }
     }
@@ -527,168 +475,143 @@ public class IconProvider
     /**
      * Clear Icon Cache.
      */
-    public void clearCache()
-    {
+    public void clearCache() {
         this.iconHash.clear();
     }
 
-    public Icon getFileIcon(int size)
-    {
+    public Icon getFileIcon(int size) {
         return this.createIcon(this.file_icon_url, size);
     }
 
-    public Icon getFolderIcon(int size)
-    {
+    public Icon getFolderIcon(int size) {
         return this.createIcon(this.folder_icon_url, size);
     }
 
-    public Icon getHomeFolderIcon(int size)
-    {
+    public Icon getHomeFolderIcon(int size) {
         return this.createIcon(this.home_icon_url, size);
     }
 
-    public Icon getIconOrBroken(String iconUrl)
-    {
+    public Icon getIconOrBroken(String iconUrl) {
         return this.createIcon(iconUrl);
     }
 
-    /** 
+    /**
      * Read PROPRIATIARY: .ico file and return Icon Image
-     */ 
-    public BufferedImage getIcoImage(URL iconurl) throws IOException
-    {
-        try
-        {
-            InputStream inps=resourceLoader.createInputStream(iconurl);
+     */
+    public BufferedImage getIcoImage(URL iconurl) throws IOException {
+        try {
+            InputStream inps = resourceLoader.createInputStream(iconurl);
             List<BufferedImage> icoImages = ICODecoder.read(inps);
-            
-            BufferedImage biggestImage=null; 
-            int biggestSize=0; 
-            
-            for (BufferedImage im:icoImages) 
-            {
+
+            BufferedImage biggestImage = null;
+            int biggestSize = 0;
+
+            for (BufferedImage im : icoImages) {
                 // use surface metrics to get 'biggest' image
-                int size= im.getWidth()*im.getHeight(); 
-                if (size>biggestSize)
-                {
-                    biggestSize=size; 
-                    biggestImage=im; 
+                int size = im.getWidth() * im.getHeight();
+                if (size > biggestSize) {
+                    biggestSize = size;
+                    biggestImage = im;
                 }
             }
-            
-            try { inps.close(); } catch (IOException e) {} ;  // ignore
-            
-            return  biggestImage;  
-            
-        }
-        catch (Exception e)
-        {
-            throw new IOException("Read error:"+iconurl,e); 
+
+            try {
+                inps.close();
+            } catch (IOException e) {
+            }
+            ; // ignore
+
+            return biggestImage;
+
+        } catch (Exception e) {
+            throw new IOException("Read error:" + iconurl, e);
         }
     }
 
-    public Icon getMiniBrokenImageIcon()
-    {
+    public Icon getMiniBrokenImageIcon() {
         // create image on the fly:
-        String imageStr=
-                 ".x............x.\n"
-                +"xRx..........xRx\n"
-                +"xRRx........xRRx\n"
-                +".xRRx......xRRx.\n"
-                +"..xRRx....xRRx..\n"
-                +"...xRRx..xRRx...\n"
-                +"....xRRxxRRx....\n"
-                +".....xRRRRx.....\n"
-                +".....xRRRRx.....\n"
-                +"....xRRxxRRx....\n"
-                +"...xRRx..xRRx...\n"
-                +"..xRRx....xRRx..\n" 
-                +".xRRx......xRRx.\n" 
-                +"xRRx........xRRx\n" 
-                +"xRx..........xRx\n" 
-                +".x............x.\n"; 
-        
-        Map<String,java.awt.Color> colorMap=new HashMap<String,java.awt.Color>();
+        String imageStr = ".x............x.\n" + "xRx..........xRx\n" + "xRRx........xRRx\n"
+                + ".xRRx......xRRx.\n" + "..xRRx....xRRx..\n" + "...xRRx..xRRx...\n"
+                + "....xRRxxRRx....\n" + ".....xRRRRx.....\n" + ".....xRRRRx.....\n"
+                + "....xRRxxRRx....\n" + "...xRRx..xRRx...\n" + "..xRRx....xRRx..\n"
+                + ".xRRx......xRRx.\n" + "xRRx........xRRx\n" + "xRx..........xRx\n"
+                + ".x............x.\n";
+
+        Map<String, java.awt.Color> colorMap = new HashMap<String, java.awt.Color>();
         colorMap.put(".", Color.WHITE);
-        colorMap.put("R",Color.RED); 
-        colorMap.put("x",Color.BLACK); 
-        Image image=new ImageRenderer(null).createImage(imageStr,colorMap,Color.WHITE,' '); 
-        return new ImageIcon(image);  
+        colorMap.put("R", Color.RED);
+        colorMap.put("x", Color.BLACK);
+        Image image = new ImageRenderer(null).createImage(imageStr, colorMap, Color.WHITE, ' ');
+        return new ImageIcon(image);
     }
-    
+
     /**
-     * Returns image as icon. Does not cache result. 
-     * Use IconProvider to create icons.  
-     * @throws IOException 
-     * @throws MalformedURLException 
+     * Returns image as icon. Does not cache result. Use IconProvider to create icons.
+     * 
+     * @throws IOException
+     * @throws MalformedURLException
      */
-    public ImageIcon getIcon(URL url) throws MalformedURLException, IOException
-    {
-        return new ImageIcon(getImage(url)); 
+    public ImageIcon getIcon(URL url) throws MalformedURLException, IOException {
+        return new ImageIcon(getImage(url));
     }
-    
+
     /**
-     * Returns image as icon. Does not cache result. 
-     * Use IconProvider to create icons.  
-     * @throws IOException 
-     * @throws MalformedURLException 
+     * Returns image as icon. Does not cache result. Use IconProvider to create icons.
+     * 
+     * @throws IOException
+     * @throws MalformedURLException
      */
-    public ImageIcon getIcon(String iconUrl) throws IOException
-    {
-        return new ImageIcon(getImage(iconUrl));  
+    public ImageIcon getIcon(String iconUrl) throws IOException {
+        return new ImageIcon(getImage(iconUrl));
     }
-    
-    /** 
+
+    /**
      * Load (a)synchronously an image specified by URI.
-     *  
-     * @throws IOException 
+     * 
+     * @throws IOException
      */
-    public Image getImage(URI location) throws IOException
-    {
-        return getImage(location.toURL()); 
+    public Image getImage(URI location) throws IOException {
+        return getImage(location.toURL());
     }
 
     /**
-     * Find image and return it. 
-     * Resolves URL string to absolute URL.
-     * @throws IOException if url is invalid 
+     * Find image and return it. Resolves URL string to absolute URL.
+     * 
+     * @throws IOException
+     *             if url is invalid
      */
-    public Image getImage(String url) throws IOException
-    {
-        URL resolvedURL=resourceLoader.resolveUrl(null,url);
-        
-        if (resolvedURL==null)
-            throw new IOException("Couldn't resolve url:"+url); 
-        
-        return this.getImage(resolvedURL);  
+    public Image getImage(String url) throws IOException {
+        URL resolvedURL = resourceLoader.resolveUrl(null, url);
+
+        if (resolvedURL == null)
+            throw new IOException("Couldn't resolve url:" + url);
+
+        return this.getImage(resolvedURL);
     }
 
     /**
-     * Find image and return it. 
-     * @throws IOException if url is invalid 
+     * Find image and return it.
+     * 
+     * @throws IOException
+     *             if url is invalid
      */
-    public Image getImage(URL url) throws IOException
-    {
-        if (url==null)
-            return null; 
-        
+    public Image getImage(URL url) throws IOException {
+        if (url == null)
+            return null;
+
         // .ico support ! 
-      if (isIco(url.toString())) 
-      {
-          logger.debugPrintf("getImage(): loading .ico image:%s\n",url);
-          return getIcoImage(url); 
-      }
-      
-      try
-      {
+        if (isIco(url.toString())) {
+            logger.debugPrintf("getImage(): loading .ico image:%s\n", url);
+            return getIcoImage(url);
+        }
+
+        try {
             Image image;
             image = ImageIO.read(url);
             return image;
-      }
-      catch (IOException e)
-      {
-            throw new IOException("Failed to read image:"+url,e); 
-      } 
+        } catch (IOException e) {
+            throw new IOException("Failed to read image:" + url, e);
+        }
     }
-    
+
 }

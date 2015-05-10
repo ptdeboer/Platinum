@@ -27,46 +27,33 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+public class WebRSFactory implements VResourceSystemFactory {
 
-public class WebRSFactory implements VResourceSystemFactory
-{
-	
-    public static String webSchemes[]={VRS.HTTP_SCHEME,VRS.HTTPS_SCHEME}; 
-//
-//	@Override
-//	public VResourceSystem createNewResourceSystem(VRSContext context, ServerInfo info,VRL location)
-//			throws VrsException 
-//	{
-//		return WebResourceSystem.getClientFor(context,info,location); 
-//	}
+    public static String webSchemes[] = { VRS.HTTP_SCHEME, VRS.HTTPS_SCHEME };
 
     @Override
-    public String[] getSchemes()
-    {
-        return webSchemes; 
+    public String[] getSchemes() {
+        return webSchemes;
     }
 
     @Override
-    public String createResourceSystemId(VRL vrl)
-    {
-        int port=vrl.getPort(); 
-        if (port<=0)
-        {
-            port=VRS.getDefaultPort(vrl.getScheme());
+    public String createResourceSystemId(VRL vrl) {
+        int port = vrl.getPort();
+        if (port <= 0) {
+            port = VRS.getDefaultPort(vrl.getScheme());
         }
-        return vrl.getScheme()+":"+vrl.getHostname()+":"+port;  
+        return vrl.getScheme() + ":" + vrl.getHostname() + ":" + port;
     }
 
     @Override
-    public ResourceConfigInfo updateResourceInfo(VRSContext context,ResourceConfigInfo info, VRL vrl)
-    {
-        return info; 
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info, VRL vrl) {
+        return info;
     }
 
     @Override
-    public nl.esciencecenter.vbrowser.vrs.VResourceSystem createResourceSystemFor(VRSContext context,ResourceConfigInfo info,VRL vrl) throws VrsException
-    {
-        return new WebResourceSystem(context,info); 
+    public nl.esciencecenter.vbrowser.vrs.VResourceSystem createResourceSystemFor(VRSContext context,
+            ResourceConfigInfo info, VRL vrl) throws VrsException {
+        return new WebResourceSystem(context, info);
     }
 
 }

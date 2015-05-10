@@ -26,83 +26,79 @@ import java.util.Date;
 
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Basic Attribute Types.  
+/**
+ * Basic Attribute Types.
  */
-public enum AttributeType
-{	
-	ANY("Any",Object.class), 
-	BOOLEAN("Boolean",Boolean.class), 
-    INT("Integer",Integer.class), 
-    LONG("Long",Long.class), 
-    FLOAT("Float",Float.class), 
-    DOUBLE("Double",Double.class),
-    STRING("String",String.class),
-    /** Enum type stores its values as String */ 
-    ENUM("Enum",String.class),
-    /** Store date time as unified date-time string */ 
-    DATETIME("DateTime",String.class), 
-    VRL("VRL",VRL.class)
-    ;
-	
-	// === // 
-	
-    private final String enumName;
-    
-    private final Class<? extends Object> storageClass;
-	
-	private AttributeType(String name,Class<?> storageClass)
-	{
-		this.enumName=name;
-		this.storageClass=storageClass; 
-	}
+public enum AttributeType {
 
-    public String getName()
-    {
-        return this.enumName; 
+    ANY("Any", Object.class), // 
+    BOOLEAN("Boolean", Boolean.class), // 
+    INT("Integer", Integer.class), //
+    LONG("Long", Long.class), // 
+    FLOAT("Float", Float.class), // 
+    DOUBLE("Double", Double.class), //
+    STRING("String", String.class), //
+    /** Enum type stores its values as String */
+    ENUM("Enum", String.class), //
+    /** Store date time as unified date-time string */
+    DATETIME("DateTime", String.class), // 
+    VRL("VRL", VRL.class)//
+    ;
+
+    // === // 
+
+    private final String enumName;
+
+    private final Class<? extends Object> storageClass;
+
+    private AttributeType(String name, Class<?> storageClass) {
+        this.enumName = name;
+        this.storageClass = storageClass;
     }
-    
-    public Class<? extends Object> getStorageClass()
-    {
-        return this.storageClass;  
+
+    public String getName() {
+        return this.enumName;
     }
-	
-	public static AttributeType getObjectType(Object object,AttributeType defaultType) 
-    {
-        if (object==null)
-            return AttributeType.ANY; 
-        
+
+    public Class<? extends Object> getStorageClass() {
+        return this.storageClass;
+    }
+
+    public static AttributeType getObjectType(Object object, AttributeType defaultType) {
+        if (object == null)
+            return AttributeType.ANY;
+
         if (object instanceof Integer)
             return AttributeType.INT;
-        
+
         if (object instanceof Boolean)
             return AttributeType.BOOLEAN;
-        
+
         if (object instanceof Long)
             return AttributeType.LONG;
-        
+
         if (object instanceof Float)
             return AttributeType.FLOAT;
-        
+
         if (object instanceof Double)
             return AttributeType.DOUBLE;
-        
+
         if (object instanceof String)
             return AttributeType.STRING;
-        
+
         if (object instanceof Date)
             return AttributeType.DATETIME;
-        
+
         if (object instanceof VRL)
             return AttributeType.VRL;
-        
+
         if (object instanceof URL)
             return AttributeType.VRL;
-        
+
         if (object instanceof URI)
-            return AttributeType.VRL; 
-        
-        return defaultType; 
+            return AttributeType.VRL;
+
+        return defaultType;
     }
 
 }

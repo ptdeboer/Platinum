@@ -46,29 +46,17 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Implementation of an Image Viewer.<br>
  */
-public class ImageViewer extends EmbeddedViewer
-{
+public class ImageViewer extends EmbeddedViewer {
     private static final long serialVersionUID = 5768234709523116729L;
 
     /** The mimetypes I can view */
-    private static String mimeTypes[] =
-    {
-            "image/gif",
-            "image/jpeg",
-            "image/bmp",
-            "image/png"
-    };
+    private static String mimeTypes[] = { "image/gif", "image/jpeg", "image/bmp", "image/png" };
 
-    private static double zoomOutFactors[] =
-    {
-            0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1
-    };
+    private static double zoomOutFactors[] = { 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 };
 
-    private static double zoomInFactors[] =
-    {
+    private static double zoomInFactors[] = {
             // 100,125,150,200,300,400,500,600,800,1000%
-            1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 4, 5, 6, 7, 8, 9, 10
-    };
+            1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 4, 5, 6, 7, 8, 9, 10 };
 
     // ====================================================================
     //
@@ -92,13 +80,11 @@ public class ImageViewer extends EmbeddedViewer
     // private JLabel imageLabel; // store image in Label Component
 
     @Override
-    public String[] getMimeTypes()
-    {
+    public String[] getMimeTypes() {
         return mimeTypes;
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         {
             this.setSize(800, 600);
 
@@ -133,21 +119,18 @@ public class ImageViewer extends EmbeddedViewer
     }
 
     @Override
-    public void doInitViewer()
-    {
+    public void doInitViewer() {
         initGui();
     }
 
     @Override
-    public void doStopViewer()
-    {
+    public void doStopViewer() {
         // this.muststop=true;
         // this.imagePane.signalStop();
     }
 
     @Override
-    public void doDisposeViewer()
-    {
+    public void doDisposeViewer() {
         // Help the garbage collector, images can be big:
         this.imagePane.dispose();
         this.remove(imagePane);
@@ -158,41 +141,32 @@ public class ImageViewer extends EmbeddedViewer
     }
 
     @Override
-    public String getViewerName()
-    {
+    public String getViewerName() {
         // remove html color codes:
         return "ImageViewer";
     }
 
     @Override
-    public void doStartViewer(VRL vrl, String optionalMethod)
-    {
+    public void doStartViewer(VRL vrl, String optionalMethod) {
         doUpdate(vrl);
     }
 
-    public void doUpdate(VRL vrl)
-    {
-        try
-        {
+    public void doUpdate(VRL vrl) {
+        try {
             loadImage(vrl);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             notifyException("Failed to load image:" + vrl, e);
         }
     }
 
-    public void loadImage(VRL vrl) throws Exception
-    {
-        if (vrl == null)
-        {
+    public void loadImage(VRL vrl) throws Exception {
+        if (vrl == null) {
             return;
         }
 
         notifyBusy(true);
 
-        try
-        {
+        try {
 
             // load image and wait:
             // this.imagePane.loadImage(location,true);
@@ -204,36 +178,28 @@ public class ImageViewer extends EmbeddedViewer
             this.fitToScreen = false;
 
             this.zoomIndex = 0;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new VrsException(e);
-        }
-        finally
-        {
+        } finally {
             notifyBusy(false);
         }
     }
 
-    public void loadImage(VRL vrl, boolean wait) throws Exception
-    {
+    public void loadImage(VRL vrl, boolean wait) throws Exception {
         InputStream inps = getResourceHandler().openInputStream(vrl);
 
         Image image;
         image = ImageIO.read(inps);
 
-        try
-        {
+        try {
             inps.close();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             ;
         }
 
-        if (image == null)
-        {
-            throw new IOException("Failed to load image: Image loader returned NULL for:" + vrl.toURI());
+        if (image == null) {
+            throw new IOException("Failed to load image: Image loader returned NULL for:"
+                    + vrl.toURI());
         }
 
         imagePane.setImage(image, wait);
@@ -274,16 +240,14 @@ public class ImageViewer extends EmbeddedViewer
     /**
      * I manage my own scrollpane for panning/autoscrolling
      */
-    public boolean haveOwnScrollPane()
-    {
+    public boolean haveOwnScrollPane() {
         return true;
     }
 
     /**
      * Get ScrollPane ViewPosition
      */
-    public Point getViewPosition()
-    {
+    public Point getViewPosition() {
         JViewport viewP = this.scrollPane.getViewport();
         return viewP.getViewPosition();
     }
@@ -291,8 +255,7 @@ public class ImageViewer extends EmbeddedViewer
     /**
      * Set ScrollPane ViewPosition
      */
-    public void setViewPosition(int newx, int newy)
-    {
+    public void setViewPosition(int newx, int newy) {
         // /UIGlobal.debugPrintf(this,"moveViewPoint:"+newx+","+newy);
 
         JViewport viewP = this.scrollPane.getViewport();
@@ -325,22 +288,18 @@ public class ImageViewer extends EmbeddedViewer
 
     private Thread zoomThread = null;
 
-    public void zoomIn()
-    {
+    public void zoomIn() {
         this.fitToScreen = false;
-        if (zoomIndex < zoomInFactors.length)
-        {
+        if (zoomIndex < zoomInFactors.length) {
             zoomIndex++;
             doZoom();
         }
     }
 
-    public void zoomOut()
-    {
+    public void zoomOut() {
         this.fitToScreen = false;
 
-        if (zoomIndex > -zoomOutFactors.length)
-        {
+        if (zoomIndex > -zoomOutFactors.length) {
             zoomIndex--;
             doZoom();
         }
@@ -351,13 +310,11 @@ public class ImageViewer extends EmbeddedViewer
     /**
      * Perform Zoom: Schedule background task to do the zooming
      */
-    protected void doZoom()
-    {
+    protected void doZoom() {
         double zoomFactor = 1.0;
 
         final Image sourceImage = this.orgImage;
-        if (sourceImage == null)
-        {
+        if (sourceImage == null) {
             errorPrintf("doZoom(): NULL source image!\n");
             return;
         }
@@ -365,28 +322,22 @@ public class ImageViewer extends EmbeddedViewer
         int h = sourceImage.getHeight(null);
         int w = sourceImage.getWidth(null);
 
-        if (fitToScreen == true)
-        {
+        if (fitToScreen == true) {
             double aspect = (double) w / (double) h;
 
             Dimension targetSize = this.scrollPane.getSize();
             double targetAspect = ((double) targetSize.width) / (double) targetSize.height;
 
-            if (aspect > targetAspect)
-            {
+            if (aspect > targetAspect) {
                 // fit width
                 w = targetSize.width;
                 h = (int) (targetSize.width / aspect);
-            }
-            else
-            {
+            } else {
                 // fit height
                 h = targetSize.height;
                 w = (int) (targetSize.height * aspect);
             }
-        }
-        else
-        {
+        } else {
             if (zoomIndex > 0)
                 zoomFactor = zoomInFactors[zoomIndex - 1];
 
@@ -406,13 +357,10 @@ public class ImageViewer extends EmbeddedViewer
         if ((currentSize.width == newWidth) && (currentSize.height == newHeight))
             return;
 
-        synchronized (zoomTaskMutex)
-        {
-            if (zoomTask != null)
-            {
+        synchronized (zoomTaskMutex) {
+            if (zoomTask != null) {
                 // check if previous zoom thread is stil active:
-                if ((zoomThread != null) && (zoomThread.isAlive() == true))
-                {
+                if ((zoomThread != null) && (zoomThread.isAlive() == true)) {
                     // flag zoom not done !
                     this.doMoreZoom = true;
                     // IGlobal.infoPrintln(this,"Warning: Previous zoom task still running");
@@ -425,32 +373,27 @@ public class ImageViewer extends EmbeddedViewer
                 this.zoomThread = null;
             }
 
-            zoomTask = new Runnable()
-            {
-                public void run()
-                {
-                    if ((newHeight <= 0) || (newWidth <= 0))
-                    {
+            zoomTask = new Runnable() {
+                public void run() {
+                    if ((newHeight <= 0) || (newWidth <= 0)) {
                         // UIGlobal.infoPrintln(this,"*** Warning: zoomIn cancelled: image not ready");
                         return;
                     }
 
                     notifyBusy(true);
 
-                    Image tempImage = sourceImage.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
+                    Image tempImage = sourceImage.getScaledInstance(newWidth, newHeight,
+                            Image.SCALE_FAST);
 
                     notifyBusy(false);
 
                     ImageWaiter w = new ImageWaiter(tempImage);
 
-                    try
-                    {
+                    try {
                         // Wait for ALL bits doesn't work anymore ???
                         w.waitForCompletion(false);
                         updateNewZoomImage(tempImage);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         notifyException("Failed to zoom", e);
                     }
 
@@ -467,17 +410,12 @@ public class ImageViewer extends EmbeddedViewer
         }// synchronized(zoomTaskMutex);
     }
 
-    private void checkMoreZoom()
-    {
-        Runnable checkZoomTask = new Runnable()
-        {
-            public void run()
-            {
+    private void checkMoreZoom() {
+        Runnable checkZoomTask = new Runnable() {
+            public void run() {
 
-                synchronized (zoomTaskMutex)
-                {
-                    if (doMoreZoom == true)
-                    {
+                synchronized (zoomTaskMutex) {
+                    if (doMoreZoom == true) {
                         doMoreZoom = false;
                         doZoom();
                     }
@@ -488,45 +426,36 @@ public class ImageViewer extends EmbeddedViewer
         SwingUtilities.invokeLater(checkZoomTask);
     }
 
-    protected void updateNewZoomImage(Image img) throws Exception
-    {
+    protected void updateNewZoomImage(Image img) throws Exception {
         // new image, image should already be done !
         // no checking needed
 
         this.imagePane.setImage(img, false);
     }
 
-    public void resetZoom()
-    {
+    public void resetZoom() {
         this.zoomIndex = 0;
         this.fitToScreen = false;
         this.doZoom();
     }
 
-    public void toggleFitToScreen()
-    {
+    public void toggleFitToScreen() {
         fitToScreen = (fitToScreen == false);
         doZoom();
     }
 
-    public void reset()
-    {
+    public void reset() {
         this.resetZoom();
     }
 
     @Override
-    public Map<String, List<String>> getMimeMenuMethods()
-    {
+    public Map<String, List<String>> getMimeMenuMethods() {
         // Use HashMapList to keep order of menu entries: first is default(!)
 
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
-        for (int i = 0; i < mimeTypes.length; i++)
-        {
-            List<String> list = new StringList(new String[]
-            {
-                    "view:View Image"
-            });
+        for (int i = 0; i < mimeTypes.length; i++) {
+            List<String> list = new StringList(new String[] { "view:View Image" });
             mappings.put(mimeTypes[i], list);
         }
 

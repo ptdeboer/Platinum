@@ -23,21 +23,22 @@ package nl.esciencecenter.vbrowser.vrs.io;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
-/** 
+/**
  * Virtual Paths which can renamed to actual VPaths implement this interface.
- * @see VRenamable 
- * @author Piter T. de Boer
+ * 
+ * @see VRenamable
  */
-public interface VPathRenamable extends VRenamable 
-{
+public interface VPathRenamable extends VRenamable {
     // explicit inheritance from VRenamable 
     public VPath renameTo(String newNameOrPath) throws VrsException;
 
     /**
-     * Rename this (virtual) path to another (virtual path. 
-     * @param other - Other VPath to rename this path to.
-     * @return other path if rename was succesfull.  
-     */ 
-    public VPath renameTo(VPath other) throws VrsException; 
-    
+     * Rename this (virtual) path to another (virtual path.
+     * 
+     * @param other
+     *            - Other VPath to rename this path to.
+     * @return other path if rename was succesfull.
+     */
+    public VPath renameTo(VPath other) throws VrsException;
+
 }

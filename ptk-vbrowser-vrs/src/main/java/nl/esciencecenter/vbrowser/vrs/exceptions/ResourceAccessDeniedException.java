@@ -23,8 +23,8 @@ package nl.esciencecenter.vbrowser.vrs.exceptions;
 /**
  * Access denied or wrong permissions.
  */
-public class ResourceAccessDeniedException extends ResourceException
-{
+public class ResourceAccessDeniedException extends ResourceException {
+
     private static final long serialVersionUID = 1829852296515159771L;
 
     /**
@@ -33,8 +33,7 @@ public class ResourceAccessDeniedException extends ResourceException
      * @param sourcePath
      * @param object
      */
-    public ResourceAccessDeniedException(String message, Throwable cause)
-    {
+    public ResourceAccessDeniedException(String message, Throwable cause) {
         super(message, cause, ACCES_DENIED);
     };
 

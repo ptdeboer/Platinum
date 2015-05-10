@@ -20,8 +20,6 @@
 
 package nl.esciencecenter.vbrowser.vrs.event;
 
-
-public interface VRSEventListener 
-{
-	void notifyVRSEvent(VRSEvent e); 
+public interface VRSEventListener {
+    void notifyVRSEvent(VRSEvent e);
 }

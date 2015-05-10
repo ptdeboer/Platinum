@@ -24,43 +24,37 @@ import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
-/** 
- * ActionTask Watcher for VRSTasks. 
- *  
+/**
+ * ActionTask Watcher for VRSTasks.
+ * 
  */
-public class VRSTaskWatcher extends TaskWatcher
-{
-    private static PLogger logger=PLogger.getLogger(TaskWatcher.class); 
-    
-    private static VRSTaskWatcher instance=null;
-    
-    public static VRSTaskWatcher getTaskWatcher()
-    {
-        if (instance==null)
-        {
-            instance=new VRSTaskWatcher("VRSTaskWatcher");
+public class VRSTaskWatcher extends TaskWatcher {
+    private static PLogger logger = PLogger.getLogger(TaskWatcher.class);
+
+    private static VRSTaskWatcher instance = null;
+
+    public static VRSTaskWatcher getTaskWatcher() {
+        if (instance == null) {
+            instance = new VRSTaskWatcher("VRSTaskWatcher");
         }
-        
-        return instance; 
+
+        return instance;
     }
-    
-    public VRSTaskWatcher(String name)
-    {   
-        super(name); 
+
+    public VRSTaskWatcher(String name) {
+        super(name);
     }
-    
+
     @Override
-    public void notifyTaskStarted(ActionTask actionTask)
-    {
+    public void notifyTaskStarted(ActionTask actionTask) {
         logger.errorPrintf("+++ notifyTaskStarted:%s\n", actionTask);
-        super.notifyTaskStarted(actionTask); 
+        super.notifyTaskStarted(actionTask);
     }
-    
+
     @Override
-    public void notifyTaskTerminated(ActionTask actionTask)
-    {
+    public void notifyTaskTerminated(ActionTask actionTask) {
         logger.errorPrintf("--- notifyTaskTerminated:%s\n", actionTask);
-        super.notifyTaskTerminated(actionTask); 
+        super.notifyTaskTerminated(actionTask);
     }
 
 }

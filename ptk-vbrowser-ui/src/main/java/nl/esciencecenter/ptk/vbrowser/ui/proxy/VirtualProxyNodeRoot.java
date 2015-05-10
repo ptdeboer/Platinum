@@ -30,178 +30,152 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Virtual Root in tje info resource system to start browsing. 
- * Multiple ProxyNode can be add to this rootNode. 
+/**
+ * Virtual Root Info Node to start browsing. Multiple ProxyNodes can be added to this (virtual)
+ * rootNode.
  */
-public class VirtualProxyNodeRoot extends ProxyNode
-{
-    protected String name="Root"; 
-    
-    protected List<ProxyNode> childs=new ArrayList<ProxyNode>();
-    
-    protected String iconUrl=null; 
-        
-    protected VirtualProxyNodeRoot(ProxyFactory factory, VRL proxyLocation)
-    {
+public class VirtualProxyNodeRoot extends ProxyNode {
+
+    protected String name = "Root";
+
+    protected List<ProxyNode> childs = new ArrayList<ProxyNode>();
+
+    protected String iconUrl = null;
+
+    protected VirtualProxyNodeRoot(ProxyFactory factory, VRL proxyLocation) {
         super(factory, proxyLocation);
     }
 
     @Override
-    protected String doGetName() throws ProxyException
-    {
-        return name; 
+    protected String doGetName() throws ProxyException {
+        return name;
     }
 
     @Override
-    protected String doGetResourceType() throws ProxyException
-    {
-        return "Root"; 
+    protected String doGetResourceType() throws ProxyException {
+        return "Root";
     }
 
     @Override
-    protected String doGetResourceStatus() throws ProxyException
-    {
+    protected String doGetResourceStatus() throws ProxyException {
         return null;
     }
 
     @Override
-    protected String doGetMimeType() throws ProxyException
-    {
+    protected String doGetMimeType() throws ProxyException {
         return null;
     }
 
     @Override
-    protected boolean doGetIsComposite() throws ProxyException
-    {
-        return true; 
+    protected boolean doGetIsComposite() throws ProxyException {
+        return true;
     }
 
     @Override
-    protected List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException
-    {
-        return ProxyNode.subrange(childs,offset,range); 
+    protected List<? extends ProxyNode>
+            doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException {
+        return ProxyNode.subrange(childs, offset, range);
     }
 
     @Override
-    protected ProxyNode doGetParent() throws ProxyException
-    {
+    protected ProxyNode doGetParent() throws ProxyException {
         return this;
     }
 
     @Override
-    protected List<String> doGetChildTypes() throws ProxyException
-    {
-        StringList list=new StringList(); 
-        
-        for (int i=0;i<childs.size();i++)
-        {
-            list.add(childs.get(i).getResourceType()); 
+    protected List<String> doGetChildTypes() throws ProxyException {
+        StringList list = new StringList();
+
+        for (int i = 0; i < childs.size(); i++) {
+            list.add(childs.get(i).getResourceType());
         }
-        return list; 
+        return list;
     }
 
     @Override
-    protected List<String> doGetAttributeNames() throws ProxyException
-    {
+    protected List<String> doGetAttributeNames() throws ProxyException {
         return null;
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(String names[]) throws ProxyException
-    {
+    protected List<Attribute> doGetAttributes(String names[]) throws ProxyException {
         return null;
     }
 
     @Override
-    protected Presentation doGetPresentation()
-    {
+    protected Presentation doGetPresentation() {
         return null;
     }
 
-    public void addChild(ProxyNode node)
-    {
-        if (childs==null)
-            childs=new ArrayList<ProxyNode>(); 
-        
-       this.childs.add(node); 
+    public void addChild(ProxyNode node) {
+        if (childs == null)
+            childs = new ArrayList<ProxyNode>();
+
+        this.childs.add(node);
     }
 
-    public void setChilds(List<ProxyNode> nodes)
-    {
-       this.childs=new ArrayList<ProxyNode>(nodes);
+    public void setChilds(List<ProxyNode> nodes) {
+        this.childs = new ArrayList<ProxyNode>(nodes);
     }
 
-    public boolean hasChild(VRL locator)
-    {
-        return (this.getChild(locator)!=null); 
+    public boolean hasChild(VRL locator) {
+        return (this.getChild(locator) != null);
     }
 
-    public ProxyNode getChild(VRL locator)
-    {
-        for (ProxyNode node:this.childs)
-        {
-            if (node.hasLocator(locator))
-            {
+    public ProxyNode getChild(VRL locator) {
+        for (ProxyNode node : this.childs) {
+            if (node.hasLocator(locator)) {
                 return node;
             }
         }
-        
-        return null; 
+
+        return null;
     }
 
     @Override
-    protected String doGetIconURL(String status, int size) throws ProxyException
-    {
-        return iconUrl; 
+    protected String doGetIconURL(String status, int size) throws ProxyException {
+        return iconUrl;
     }
 
     @Override
-    protected boolean doIsResourceLink()
-    {
+    protected boolean doIsResourceLink() {
         return false;
     }
 
     @Override
-    protected VRL doGetResourceLinkVRL()
-    {
+    protected VRL doGetResourceLinkVRL() {
         return null;
     }
 
     @Override
-    protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException
-    {
-        throw new ProxyException("Virtual root cannot create new nodes."); 
+    protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException {
+        throw new ProxyException("Virtual root cannot create new nodes.");
     }
 
     @Override
-    protected void doDelete(boolean recurse) throws ProxyException
-    {
-        throw new ProxyException("Virtual root cannot be deleted."); 
+    protected void doDelete(boolean recurse) throws ProxyException {
+        throw new ProxyException("Virtual root cannot be deleted.");
     }
 
     @Override
-    protected ProxyNode doRenameTo(String newName) throws ProxyException
-    {
-        this.name=newName; 
-        return this; 
+    protected ProxyNode doRenameTo(String newName) throws ProxyException {
+        this.name = newName;
+        return this;
     }
 
     @Override
-    protected boolean doExists() throws ProxyException
-    {
-        return true; 
+    protected boolean doExists() throws ProxyException {
+        return true;
     }
 
     @Override
-    protected ResourceConfigInfo doGetResourceConfigInfo()
-    {
+    protected ResourceConfigInfo doGetResourceConfigInfo() {
         return null;
     }
 
     @Override
-    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException
-    {
+    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info)
+            throws ProxyException {
         return null;
     }
 

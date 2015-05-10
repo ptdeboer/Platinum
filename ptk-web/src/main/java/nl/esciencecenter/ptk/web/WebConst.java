@@ -20,40 +20,40 @@
 
 package nl.esciencecenter.ptk.web;
 
-public class WebConst
-{
-    public static final int HTTP_PORT=80; 
-    
-    public static final int HTTPS_PORT=443;    
-    
-    public static final String HTTP_SCHEME="http";
-    
-    public static final String HTTPS_SCHEME="https"; 
-    
-    public static final String COOKIE_JSESSIONID="JSESSIONID";
-    
-    public static final String SESSION_EXPIRATION_TIME="SESSION_EXPIRATION_TIME";
+public class WebConst {
 
-    public static final String CHARSET_ISO_8859_1 =  "ISO-8859-1";
-    
-    public static final String MIMETYPE_TEXT_PLAIN="text/plain";
-    
-    public static final String MIMETYPE_TEXT_HTML="text/html"; 
+    public static final int HTTP_PORT = 80;
 
-    public static final String MIMETYPE_APP_JSON="application/json"; 
+    public static final int HTTPS_PORT = 443;
 
-    /** 
-     * MimeType for CSV which can be mapped to MS Excel MimeType: 
+    public static final String HTTP_SCHEME = "http";
+
+    public static final String HTTPS_SCHEME = "https";
+
+    public static final String COOKIE_JSESSIONID = "JSESSIONID";
+
+    public static final String SESSION_EXPIRATION_TIME = "SESSION_EXPIRATION_TIME";
+
+    public static final String CHARSET_ISO_8859_1 = "ISO-8859-1";
+
+    public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
+
+    public static final String MIMETYPE_TEXT_HTML = "text/html";
+
+    public static final String MIMETYPE_APP_JSON = "application/json";
+
+    /**
+     * MimeType for CSV which can be mapped to MS Excel MimeType:
      */
-    public static final String MIMETYPE_CSV_MS_EXCEL="application/vnd.ms-excel";
-    
-    /** Scheme Types */ 
-    public static enum Schemes {HTTP,HTTPS}
+    public static final String MIMETYPE_CSV_MS_EXCEL = "application/vnd.ms-excel";
 
+    /** Scheme Types */
+    public static enum Schemes {
+        HTTP, HTTPS
+    }
 
-    public static String getHTTPStatusString(int httpStatus)
-    {
-        return ""+httpStatus; 
-    }; 
-    
+    public static String getHTTPStatusString(int httpStatus) {
+        return "" + httpStatus;
+    };
+
 }

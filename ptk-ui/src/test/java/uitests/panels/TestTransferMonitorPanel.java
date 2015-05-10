@@ -15,7 +15,7 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */ 
+ */
 // source: 
 
 package uitests.panels;
@@ -29,73 +29,65 @@ import nl.esciencecenter.ptk.task.TransferMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TransferMonitorDialog;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TransferMonitorPanel;
 
-public class TestTransferMonitorPanel
-{
+public class TestTransferMonitorPanel {
 
     /**
      * Auto-generated main method to display this JDialog
-     * @throws URISyntaxException 
+     * 
+     * @throws URISyntaxException
      */
-     public static void main(String[] args) throws URISyntaxException
-     {
-    	 int max=1000*1024; 
-         int dif=50*1024;
-         int step=1024; 
-         int numSources= max/dif; 
+    public static void main(String[] args) throws URISyntaxException {
+        int max = 1000 * 1024;
+        int dif = 50 * 1024;
+        int step = 1024;
+        int numSources = max / dif;
 
-         URI uris[]=new URI[numSources]; 
-         for (int i=0;i<numSources;i++)
-        	 uris[i]=new URI("file","host","/source/file_"+i); 
+        URI uris[] = new URI[numSources];
+        for (int i = 0; i < numSources; i++)
+            uris[i] = new URI("file", "host", "/source/file_" + i);
 
-         JFrame frame = new JFrame();
-         // dimmy:
-         TransferMonitor transfer=new TransferMonitor("Transfer", 
-                 new URI[]{new URI("file","host","/source")},
-                 new URI("file","host","/dest"));
-         
-         TransferMonitorPanel inst = new TransferMonitorPanel(transfer);
-                 
-         frame.add(inst); 
-         frame.pack(); 
-         frame.setVisible(true); 
-         
-         transfer.startTask("TransferTask",max); 
-         
-         for (int i=0;i<=max;i+=step)
-         {
-             if (transfer.isCancelled())
-             {
-                 transfer.logPrintf("\n*** CANCELLED ***\n"); 
-                 break; 
-             }
-                
-             if ((i%dif)==0)
-             {
-                 transfer.startSubTask("Transfer #"+i/dif, dif); 
-                 transfer.logPrintf("--- New Transfer ---\n -> nr="+i/dif+"\n");  
-             }
-             
-             transfer.updateTaskDone(i);
-             transfer.updateSourcesDone(i/dif); 
-             transfer.updateSubTaskDone(transfer.getCurrentSubTaskName(), i%dif); 
-             // do update self!
-             inst.update(false); 
-             
-             try
-            {
-                Thread.sleep(50);
+        JFrame frame = new JFrame();
+        // dimmy:
+        TransferMonitor transfer = new TransferMonitor("Transfer", new URI[] { new URI("file",
+                "host", "/source") }, new URI("file", "host", "/dest"));
+
+        TransferMonitorPanel inst = new TransferMonitorPanel(transfer);
+
+        frame.add(inst);
+        frame.pack();
+        frame.setVisible(true);
+
+        transfer.startTask("TransferTask", max);
+
+        for (int i = 0; i <= max; i += step) {
+            if (transfer.isCancelled()) {
+                transfer.logPrintf("\n*** CANCELLED ***\n");
+                break;
             }
-            catch (InterruptedException e)
-            {
+
+            if ((i % dif) == 0) {
+                transfer.startSubTask("Transfer #" + i / dif, dif);
+                transfer.logPrintf("--- New Transfer ---\n -> nr=" + i / dif + "\n");
+            }
+
+            transfer.updateTaskDone(i);
+            transfer.updateSourcesDone(i / dif);
+            transfer.updateSubTaskDone(transfer.getCurrentSubTaskName(), i % dif);
+            // do update self!
+            inst.update(false);
+
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            } 
-         }
-         
-         inst.update(true); 
-         
-         transfer.endTask(transfer.getTaskName());
-         
-     }
-     
+            }
+        }
+
+        inst.update(true);
+
+        transfer.endTask(transfer.getTaskName());
+
+    }
+
 }

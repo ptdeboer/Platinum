@@ -32,10 +32,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Root Resource to start browsing from.<br>
- * 
  */
-public class InfoRootNode extends InfoResourceNode
-{
+public class InfoRootNode extends InfoResourceNode {
     private static final PLogger logger = PLogger.getLogger(InfoRootNode.class);
 
     // ========
@@ -50,20 +48,17 @@ public class InfoRootNode extends InfoResourceNode
 
     protected boolean autoSaveConfig = true;
 
-    public InfoRootNode(InfoRS infoRS) throws VrsException
-    {
+    public InfoRootNode(InfoRS infoRS) throws VrsException {
         super(infoRS, InfoRSConstants.INFOSYSTEMROOTNODE, new VRL(VRS.INFORS_SCHEME, null, 0, "/"));
         infors = infoRS;
         init();
     }
 
-    protected void init() throws VrsException
-    {
+    protected void init() throws VrsException {
         initChilds();
     }
 
-    protected void initChilds() throws VrsException
-    {
+    protected void initChilds() throws VrsException {
         this.subNodes.clear();
 
         this.addSubNode(getConfigNode());
@@ -73,28 +68,23 @@ public class InfoRootNode extends InfoResourceNode
     /**
      * Root node has top level recursive find node method.
      */
-    public InfoRSPathNode findNode(VRL vrl) throws VrsException
-    {
+    public InfoRSPathNode findNode(VRL vrl) throws VrsException {
         String paths[] = vrl.getPathElements();
 
-        if (paths == null)
-        {
+        if (paths == null) {
             return this;
         }
 
         int n = paths.length;
 
-        if (n == 0)
-        {
+        if (n == 0) {
             return this;
         }
 
-        if (n > 0)
-        {
+        if (n > 0) {
             InfoRSPathNode node = this.findSubNode(vrl, true);
 
-            if (node != null)
-            {
+            if (node != null) {
                 return node;
             }
         }
@@ -102,57 +92,47 @@ public class InfoRootNode extends InfoResourceNode
         throw new VrsException("Node not found:" + vrl);
     }
 
-    protected LocalSystem getLocalSystem() throws VrsException
-    {
-        if (localSystem == null)
-        {
+    protected LocalSystem getLocalSystem() throws VrsException {
+        if (localSystem == null) {
             initLocalSystem();
         }
 
         return localSystem;
     }
 
-    protected InfoConfigNode getConfigNode() throws VrsException
-    {
-        if (configNode == null)
-        {
+    protected InfoConfigNode getConfigNode() throws VrsException {
+        if (configNode == null) {
             initConfigNode();
         }
 
         return configNode;
     }
 
-    protected void initLocalSystem() throws VrsException
-    {
+    protected void initLocalSystem() throws VrsException {
         localSystem = new LocalSystem(this);
     }
 
-    protected void initConfigNode() throws VrsException
-    {
+    protected void initConfigNode() throws VrsException {
         configNode = new InfoConfigNode(this);
     }
 
-    public List<String> getChildResourceTypes()
-    {
+    public List<String> getChildResourceTypes() {
         // Root Node support default InfoRS types:
         return defaultFolderChildTypes;
     }
 
     @Override
-    public boolean isResourceLink()
-    {
+    public boolean isResourceLink() {
         return false;
     }
 
     @Override
-    public VRL getTargetVRL()
-    {
+    public VRL getTargetVRL() {
         return null;
     }
 
     @Override
-    public boolean isResourceFolder()
-    {
+    public boolean isResourceFolder() {
         return true;
     }
 
@@ -165,18 +145,15 @@ public class InfoRootNode extends InfoResourceNode
      * 
      * @return persistant Info Nodes as XML String.
      */
-    public String toXML() throws VrsException
-    {
+    public String toXML() throws VrsException {
         XMLData xmlData = new XMLData(this.getVRSContext());
         String xml = xmlData.toXML(this);
         return xml;
     }
 
-    public VRL getPersistantConfigVRL()
-    {
+    public VRL getPersistantConfigVRL() {
         VRL configVrl = this.getVRSContext().getPersistantConfigLocation();
-        if (configVrl == null)
-        {
+        if (configVrl == null) {
             logger.errorPrintf("Persistant configuration enabled, but no persistant save location defined\n");
             return null;
         }
@@ -185,83 +162,65 @@ public class InfoRootNode extends InfoResourceNode
         return rootConfigVrl;
     }
 
-    protected void save()
-    {
+    protected void save() {
         // check autosave
-        if ((this.getVRSContext().hasPersistantConfig() == false) || (autoSaveConfig == false))
-        {
+        if ((this.getVRSContext().hasPersistantConfig() == false) || (autoSaveConfig == false)) {
             logger.debugPrintf("save():hasPersistantConfig=False\n");
             return;
         }
 
         VRL saveVrl = getPersistantConfigVRL();
 
-        try
-        {
+        try {
             saveTo(saveVrl);
             logger.infoPrintf("Saved to %s\n", saveVrl);
-        }
-        catch (VrsException e)
-        {
+        } catch (VrsException e) {
             logger.logException(PLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, saveVrl);
         }
     }
 
-    protected void saveTo(VRL configVrl) throws VrsException
-    {
+    protected void saveTo(VRL configVrl) throws VrsException {
         logger.infoPrintf("Saving InfoRootNode to:%s\n", configVrl);
 
         VRSClient vrsClient = this.infors.getVRSClient();
-        try
-        {
+        try {
             String xml = toXML();
             xml = XMLData.prettyFormat(xml, 3);
 
             VFSPath path = vrsClient.openVFSPath(configVrl);
             VFSPath dir = path.getParent();
 
-            if (dir.exists() == false)
-            {
+            if (dir.exists() == false) {
                 logger.infoPrintf("Creating new config dir:%s\n", dir);
                 dir.mkdirs(true);
             }
 
             vrsClient.createResourceLoader().writeTextTo(configVrl.toURI(), xml);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new VrsException(e.getMessage(), e);
         }
     }
 
-    protected void load()
-    {
-        if (this.getVRSContext().hasPersistantConfig() == false)
-        {
+    protected void load() {
+        if (this.getVRSContext().hasPersistantConfig() == false) {
             return;
         }
 
         VRL loadVrl = getPersistantConfigVRL();
 
-        try
-        {
+        try {
             loadFrom(loadVrl);
-        }
-        catch (VrsException e)
-        {
+        } catch (VrsException e) {
             logger.logException(PLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, loadVrl);
         }
     }
 
-    protected void loadFrom(VRL loadVrl) throws VrsException
-    {
+    protected void loadFrom(VRL loadVrl) throws VrsException {
         VRSClient vrsClient = this.infors.getVRSClient();
 
-        try
-        {
+        try {
             VFSPath path = vrsClient.openVFSPath(loadVrl);
-            if (path.exists() == false)
-            {
+            if (path.exists() == false) {
                 logger.infoPrintf("Root config XML file not found:%s", loadVrl);
                 return;
             }
@@ -270,15 +229,12 @@ public class InfoRootNode extends InfoResourceNode
             XMLData data = new XMLData(this.getVRSContext());
             data.addXMLResourceNodesTo(this, xml);
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new VrsException("Failed to load config from:" + loadVrl + ".\n" + e.getMessage(), e);
         }
     }
 
-    public void loadPersistantConfig()
-    {
+    public void loadPersistantConfig() {
         this.load();
     }
 

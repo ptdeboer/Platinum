@@ -23,51 +23,48 @@ package nl.esciencecenter.ptk.data;
 /**
  * Integer holder class for VAR Integer types.
  */
-public class IntegerHolder implements VARHolder<Integer>
-{
+public class IntegerHolder implements VARHolder<Integer> {
+
     public Integer value = null;
 
-    public IntegerHolder(Integer val)
-    {
+    public IntegerHolder(Integer val) {
         this.value = val;
     }
 
-    public IntegerHolder()
-    {
+    public IntegerHolder() {
     }
 
-    public int intValue()
-    {
+    /**
+     * @return autoboxed primitive int value of Integer Object.
+     * @throws NullPointerException
+     *             if Integer Object is not defined.
+     */
+    public int intValue() {
         if (value != null)
             return value;
 
         throw new NullPointerException("Value in IntegerHolder is NULL");
-
     }
 
     /**
      * Returns Holder value or defValue if holder does not contain any value.
      */
-    public int intValue(int defValue)
-    {
+    public int intValue(int defValue) {
         if (value != null)
             return value;
 
         return defValue;
     }
 
-    public boolean isSet()
-    {
+    public boolean isSet() {
         return (value != null);
     }
 
-    public Integer get()
-    {
+    public Integer get() {
         return this.value;
     }
 
-    public void set(Integer val)
-    {
+    public void set(Integer val) {
         this.value = val;
     }
 

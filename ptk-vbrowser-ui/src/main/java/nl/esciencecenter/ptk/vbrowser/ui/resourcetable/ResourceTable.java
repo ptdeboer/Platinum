@@ -58,8 +58,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * 
  * @author Piter T. de Boer
  */
-public class ResourceTable extends JTable implements UIDisposable, ViewNodeContainer
-{
+public class ResourceTable extends JTable implements UIDisposable, ViewNodeContainer {
     private static final long serialVersionUID = -8190587704685619938L;
 
     private static final PLogger logger = PLogger.getLogger(ResourceTable.class);
@@ -84,8 +83,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     private boolean columnSortOrderIsReversed;
 
-    public ResourceTable()
-    {
+    public ResourceTable() {
         // defaults
         super(new ResourceTableModel(false));
 
@@ -94,29 +92,24 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         init();
     }
 
-    public ResourceTable(BrowserInterface browserController, ResourceTableModel dataModel)
-    {
+    public ResourceTable(BrowserInterface browserController, ResourceTableModel dataModel) {
         // defaults
         super(dataModel);
         this.controller = new ResourceTableControler(this, browserController);
         init();
     }
 
-    public ResourceTableModel getModel()
-    {
+    public ResourceTableModel getModel() {
         return (ResourceTableModel) super.getModel();
     }
 
-    public void setDataModel(ResourceTableModel dataModel)
-    {
+    public void setDataModel(ResourceTableModel dataModel) {
         this.setModel(dataModel);
         initColumns();
     }
 
-    private void init()
-    {
-        if (this.uiModel == null)
-        {
+    private void init() {
+        if (this.uiModel == null) {
             this.uiModel = UIViewModel.createTableModel();
         }
 
@@ -137,80 +130,67 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         this.addMouseListener(mouseHandler);
     }
 
-    public TableMouseListener getTableMouseHandler()
-    {
+    public TableMouseListener getTableMouseHandler() {
         return mouseHandler;
     }
 
     /**
      * (re)Created columns from headers taken from DataModel
      */
-    public void initColumns()
-    {
+    public void initColumns() {
         // Use Header from DataModel
         String headers[] = getModel().getHeaders();
 
         logger.infoPrintf("initColumns(): getHeaders() = %s\n", headers.toString());
 
-        if ((headers == null) || (headers.length <= 0))
-        {
+        if ((headers == null) || (headers.length <= 0)) {
             // Use all attribute names.
             headers = getModel().getAllAttributeNames();
-            logger.infoPrintf("initColumns(): getAllHeaders() = %s\n", new StringList(headers).toString());
+            logger.infoPrintf("initColumns(): getAllHeaders() = %s\n",
+                    new StringList(headers).toString());
         }
 
-        if ((headers == null) || (headers.length <= 0))
-        {
+        if ((headers == null) || (headers.length <= 0)) {
             headers = new String[0]; // empty but not null
         }
 
         initColumns(headers);
     }
 
-    public boolean isEditable()
-    {
+    public boolean isEditable() {
         return isEditable;
     }
 
-    public void setEditable(boolean val)
-    {
+    public void setEditable(boolean val) {
         this.isEditable = val;
     }
 
-    private void updateCellEditors()
-    {
+    private void updateCellEditors() {
         // set cell editors:
         TableColumnModel cmodel = getColumnModel();
 
         int nrcs = cmodel.getColumnCount();
 
-        for (int i = 0; i < nrcs; i++)
-        {
+        for (int i = 0; i < nrcs; i++) {
             TableColumn column = cmodel.getColumn(i);
             Object obj = getModel().getValueAt(0, i);
 
-            if (obj instanceof Attribute)
-            {
+            if (obj instanceof Attribute) {
                 Attribute attr = (Attribute) obj;
 
-                if (attr.isEditable() == true)
-                {
-                    switch (attr.getType())
-                    {
+                if (attr.isEditable() == true) {
+                    switch (attr.getType()) {
                     // both boolean and enum use same select box
                         case ENUM:
-                        case BOOLEAN:
-                        {
+                        case BOOLEAN: {
                             // debug("setting celleditor to EnumCellEditor of columnr:"+i);
                             column.setCellEditor(new EnumCellEditor(attr.getEnumValues()));
                             break;
                         }
-                        case STRING:
-                        {
+                        case STRING: {
                             column.setCellEditor(new DefaultCellEditor(new JTextField()));
                         }
-                        default:
-                        {
+                        default: {
                             break;
                         }
                     }
@@ -219,29 +199,25 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         }
     }
 
-    public MouseListener getMouseListener()
-    {
+    public MouseListener getMouseListener() {
         return this.mouseHandler;
     }
 
-    public ResourceTableModel getResourceTableModel()
-    {
+    public ResourceTableModel getResourceTableModel() {
         TableModel model = super.getModel();
 
-        if (model instanceof ResourceTableModel)
-        {
+        if (model instanceof ResourceTableModel) {
             return (ResourceTableModel) model;
         }
 
-        throw new Error("Resource Table NOT initialized with compatible Table Model!:" + model.getClass());
+        throw new Error("Resource Table NOT initialized with compatible Table Model!:"
+                + model.getClass());
     }
 
-    private void initColumns(String[] headers)
-    {
+    private void initColumns(String[] headers) {
         TableColumnModel columnModel = new DefaultTableColumnModel();
 
-        for (int i = 0; i < headers.length; i++)
-        {
+        for (int i = 0; i < headers.length; i++) {
             String headerName = headers[i];
             // debug("Creating new column:"+headers[i]);
             TableColumn column = createColumn(i, headerName);
@@ -251,22 +227,19 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         }
 
         this.setColumnModel(columnModel);
-        if (this.isEditable)
-        {
+        if (this.isEditable) {
             this.updateCellEditors();
         }
-        
+
         // fist update columns 
         updatePresentation();
         // now register updater: 
         columnModel.addColumnModelListener(new TableColumnUpdater(this));
     }
 
-    protected void updatePresentation()
-    {
+    protected void updatePresentation() {
         Presentation pres = getPresentation();
-        if (pres == null)
-        {
+        if (pres == null) {
             logger.warnPrintf("*** updatePresentation(): NO Presentation!\n");
             return;
         }
@@ -275,32 +248,26 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         setAutoResizeMode(pres.getColumnsAutoResizeMode());
         TableColumnModel model = this.getColumnModel();
 
-        if (model != null)
-        {
-            for (int i = 0; i < model.getColumnCount(); i++)
-            {
+        if (model != null) {
+            for (int i = 0; i < model.getColumnCount(); i++) {
                 TableColumn column = model.getColumn(i);
                 Object colName = column.getIdentifier();
                 String headerName = colName.toString();
-                
 
-                column.setResizable(pres.getAttributeFieldResizable(headerName,true));
+                column.setResizable(pres.getAttributeFieldResizable(headerName, true));
                 // update column width from presentation
                 Integer prefWidth = pres.getAttributePreferredWidth(headerName);
-                if (prefWidth == null)
-                {
+                if (prefWidth == null) {
                     prefWidth = headerName.length() * 10;// 10 points font ?
                 }
-                
+
                 column.setPreferredWidth(prefWidth);
             }
         }
 
-
     }
 
-    private TableColumn createColumn(int modelIndex, String headerName)
-    {
+    private TableColumn createColumn(int modelIndex, String headerName) {
         // one renderer per column
         ResourceTableCellRenderer renderer = new ResourceTableCellRenderer();
 
@@ -312,40 +279,33 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         // update presentation
         Presentation pres = getPresentation();
         Integer size = null;
-        if (pres != null)
-        {
+        if (pres != null) {
             size = pres.getAttributePreferredWidth(headerName);
         }
 
-        if (size != null)
-        {
+        if (size != null) {
             column.setWidth(size);
-        }
-        else
-        {
+        } else {
             column.setWidth(defaultColumnWidth);
         }
 
         return column;
     }
 
-    public int getDataModelHeaderIndex(String name)
-    {
+    public int getDataModelHeaderIndex(String name) {
         return getModel().getHeaderIndex(name);
     }
 
     /**
      * Get the header names as shown, thus in the order as used in the VIEW model (Not dataModel).
      */
-    public StringList getColumnHeaders()
-    {
+    public StringList getColumnHeaders() {
         // get columns headers as currently shown in the VIEW model
         TableColumnModel colModel = this.getColumnModel();
         int len = colModel.getColumnCount();
         StringList names = new StringList(len);
 
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             names.add(colModel.getColumn(i).getHeaderValue().toString());
         }
 
@@ -353,14 +313,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     }
 
     /**
-     * Insert new column after specified 'headerName'. This will insert a new headername but use the current header as
-     * viewed as new order so the new headers and column order is the same as currently viewed. This because the user
-     * might have switched columns in the VIEW order of the table.
+     * Insert new column after specified 'headerName'. This will insert a new headername but use the
+     * current header as viewed as new order so the new headers and column order is the same as
+     * currently viewed. This because the user might have switched columns in the VIEW order of the
+     * table.
      */
-    public void insertColumn(String headerName, String newName, boolean insertBefore)
-    {
-        if (this.getHeaderModel().isEditable() == false)
-        {
+    public void insertColumn(String headerName, String newName, boolean insertBefore) {
+        if (this.getHeaderModel().isEditable() == false) {
             return;
         }
 
@@ -377,10 +336,8 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         this.dataProducer.updateColumn(newName);
     }
 
-    public void removeColumn(String headerName, boolean updatePresentation)
-    {
-        if (this.getHeaderModel().isEditable() == false)
-        {
+    public void removeColumn(String headerName, boolean updatePresentation) {
+        if (this.getHeaderModel().isEditable() == false) {
             return;
         }
 
@@ -391,8 +348,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         // Triggers restructure, and KEEP the current view order of Columns.
         this.getModel().setHeaders(viewHeaders);
 
-        if ((updatePresentation) && (this.getPresentation() != null))
-        {
+        if ((updatePresentation) && (this.getPresentation() != null)) {
             // Keep headers in persistant Presentation.
             this.getPresentation().setPreferredContentAttributeNames(viewHeaders);
             storePresentation();
@@ -402,16 +358,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     }
 
-    public HeaderModel getHeaderModel()
-    {
+    public HeaderModel getHeaderModel() {
         return this.getModel().getHeaderModel();
     }
 
-    public void tableChanged(TableModelEvent e)
-    {
+    public void tableChanged(TableModelEvent e) {
 
-        if (e == null || e.getFirstRow() == TableModelEvent.HEADER_ROW)
-        {
+        if (e == null || e.getFirstRow() == TableModelEvent.HEADER_ROW) {
             initColumns();
         }
         super.tableChanged(e);
@@ -420,18 +373,15 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     /**
      * Has visible column (Must exist in columnmodel!)
      */
-    public boolean hasColumn(String headerName)
-    {
+    public boolean hasColumn(String headerName) {
         Enumeration<TableColumn> enumeration = getColumnModel().getColumns();
         TableColumn aColumn;
         // int index = 0;
 
-        while (enumeration.hasMoreElements())
-        {
+        while (enumeration.hasMoreElements()) {
             aColumn = (TableColumn) enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
-            if (StringUtil.equals(headerName, aColumn.getHeaderValue().toString()))
-            {
+            if (StringUtil.equals(headerName, aColumn.getHeaderValue().toString())) {
                 return true;
             }
             // index++;
@@ -443,16 +393,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     /**
      * Has visible column (Must exist in columnmodel!)
      */
-    public TableColumn getColumnByHeader(String headerName)
-    {
+    public TableColumn getColumnByHeader(String headerName) {
         Enumeration<TableColumn> enumeration = getColumnModel().getColumns();
 
-        while (enumeration.hasMoreElements())
-        {
+        while (enumeration.hasMoreElements()) {
             TableColumn col = (TableColumn) enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
-            if (StringUtil.equals(headerName, col.getHeaderValue().toString()))
-            {
+            if (StringUtil.equals(headerName, col.getHeaderValue().toString())) {
                 return col;
             }
         }
@@ -463,8 +410,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     /**
      * Return row Key under Point point. Might return NULL
      */
-    public String getKeyUnder(Point point)
-    {
+    public String getKeyUnder(Point point) {
         if (point == null)
             return null;
         int row = rowAtPoint(point);
@@ -473,22 +419,18 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         return getModel().getRowKey(row);
     }
 
-    public Presentation getPresentation()
-    {
+    public Presentation getPresentation() {
         return this._presentation;
     }
 
-    public void setPresentation(Presentation presentation, boolean updateUI)
-    {
+    public void setPresentation(Presentation presentation, boolean updateUI) {
         this._presentation = presentation;
-        if (updateUI)
-        {
+        if (updateUI) {
             this.updatePresentation();
         }
     }
 
-    public void dispose()
-    {
+    public void dispose() {
     }
 
     /**
@@ -496,22 +438,17 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
      * 
      * @throws ProxyException
      */
-    public void setDataSource(ProxyDataSource dataSource, boolean update)
-    {
+    public void setDataSource(ProxyDataSource dataSource, boolean update) {
         ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
 
-        try
-        {
+        try {
             // Copy current presentation from source.
             Presentation presentation = dataSource.getPresentation();
-            if (presentation != null)
-            {
+            if (presentation != null) {
                 setPresentation(presentation.duplicate(true), true);
             }
-        }
-        catch (ProxyException e)
-        {
+        } catch (ProxyException e) {
             this.controller.handle("Couldn't get presentation!", e);
             e.printStackTrace();
         }
@@ -526,15 +463,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
      * 
      * @throws ProxyException
      */
-    public void setDataSource(ProxyNode proxyNode, boolean update)
-    {
+    public void setDataSource(ProxyNode proxyNode, boolean update) {
         ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
 
         // copy current presentation from source.
         Presentation presentation = proxyNode.getPresentation();
-        if (presentation != null)
-        {
+        if (presentation != null) {
             setPresentation(presentation.duplicate(true), true);
         }
 
@@ -543,26 +478,19 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     }
 
-    public void setDataProducer(ResourceTableUpdater producer, boolean update)
-    {
+    public void setDataProducer(ResourceTableUpdater producer, boolean update) {
         this.dataProducer = producer;
         if (update == false)
             return;
 
-        if (dataProducer != null)
-        {
+        if (dataProducer != null) {
             // recreate table
-            try
-            {
+            try {
                 this.dataProducer.createTable(true, true);
-            }
-            catch (ProxyException e)
-            {
+            } catch (ProxyException e) {
                 handle("DataProducer failed to create actual Table", e);
             }
-        }
-        else
-        {
+        } else {
             this.removeAll();
         }
     }
@@ -570,36 +498,30 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     /**
      * Returns root ViewNode if Model supports this.
      */
-    public ViewNode getRootViewNode()
-    {
+    public ViewNode getRootViewNode() {
         return this.getModel().getRootViewNode();
     }
 
     /**
      * Returns root ViewNode of row key, if model supports this.
      */
-    public ViewNode getViewNodeByKey(String key)
-    {
+    public ViewNode getViewNodeByKey(String key) {
         return this.getModel().getViewNode(key);
     }
 
     @Override
-    public UIViewModel getUIViewModel()
-    {
+    public UIViewModel getUIViewModel() {
         return this.uiModel;
     }
 
     @Override
-    public ViewNode getViewNode()
-    {
+    public ViewNode getViewNode() {
         return this.getModel().getRootViewNode();
     }
 
     @Override
-    public boolean requestFocus(boolean value)
-    {
-        if (value == true)
-        {
+    public boolean requestFocus(boolean value) {
+        if (value == true) {
             return this.requestFocusInWindow();
         }
 
@@ -607,24 +529,20 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     }
 
     @Override
-    public ViewNodeContainer getViewContainer()
-    {
+    public ViewNodeContainer getViewContainer() {
         return this;
     }
 
     @Override
-    public ViewNode getNodeUnderPoint(Point p)
-    {
+    public ViewNode getNodeUnderPoint(Point p) {
         String key = this.getKeyUnder(p);
         return getViewNodeByKey(key);
     }
 
     @Override
-    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu)
-    {
+    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu) {
         // allowed during testing
-        if (this.controller.getBrowserInterface() == null)
-        {
+        if (this.controller.getBrowserInterface() == null) {
             logger.warnPrintf("getActionMenuFor() no browser registered.");
             return null;
         }
@@ -633,19 +551,16 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     }
 
     @Override
-    public void clearNodeSelection()
-    {
+    public void clearNodeSelection() {
         logger.errorPrintf("FIXME:clearNodeSelection()\n");
     }
 
     @Override
-    public ViewNode[] getNodeSelection()
-    {
+    public ViewNode[] getNodeSelection() {
         logger.debugPrintf("getNodeSelection()\n");
 
         int[] rowNrs = getSelectedRows();
-        if ((rowNrs == null) || (rowNrs.length <= 0))
-        {
+        if ((rowNrs == null) || (rowNrs.length <= 0)) {
             logger.debugPrintf("getNodeSelection()=NULL\n");
             return null; // nothing selected
         }
@@ -656,8 +571,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
         ArrayList<ViewNode> nodes = new ArrayList<ViewNode>();
 
-        for (String key : keys)
-        {
+        for (String key : keys) {
             nodes.add(model.getViewNode(key));
         }
 
@@ -666,20 +580,17 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     }
 
     @Override
-    public void setNodeSelection(ViewNode node, boolean isSelected)
-    {
+    public void setNodeSelection(ViewNode node, boolean isSelected) {
         logger.debugPrintf("getNodeSelection() %s:%s\n", isSelected, node);
 
         int[] rowNrs = getSelectedRows();
-        if ((rowNrs == null) || (rowNrs.length <= 0))
-        {
+        if ((rowNrs == null) || (rowNrs.length <= 0)) {
             logger.errorPrintf("getNodeSelection()=NULL\n");
-            if (isSelected)
-            {
-                logger.errorPrintf("***FIXME: node should be selected, but selected rows is EMPTY for node:%s\n", node);
-            }
-            else
-            {
+            if (isSelected) {
+                logger.errorPrintf(
+                        "***FIXME: node should be selected, but selected rows is EMPTY for node:%s\n",
+                        node);
+            } else {
                 logger.debugPrintf("No selection, node is already unselected:%s\n", node);
             }
             return;
@@ -688,25 +599,22 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         String nodeKey = this.getModel().createRowKey(node);
         int rowIndex = this.getModel().getRowIndex(nodeKey);
 
-        for (int i = 0; i < rowNrs.length; i++)
-        {
-            if (rowNrs[i] == rowIndex)
-            {
-                if (isSelected)
-                {
-                    logger.debugPrintf("Selected node is in selection range (row#=%d):%s\n", rowNrs[i], node);
+        for (int i = 0; i < rowNrs.length; i++) {
+            if (rowNrs[i] == rowIndex) {
+                if (isSelected) {
+                    logger.debugPrintf("Selected node is in selection range (row#=%d):%s\n",
+                            rowNrs[i], node);
                     return;
                 }
             }
         }
 
-        if (isSelected == false)
-        {
+        if (isSelected == false) {
             logger.debugPrintf("setNodeSelection():OK node is not in selected rows:%s\n", node);
-        }
-        else
-        {
-            logger.errorPrintf("***FIXME:setNodeSelection(): Row should already be selected but isn't:%s\n", node);
+        } else {
+            logger.errorPrintf(
+                    "***FIXME:setNodeSelection(): Row should already be selected but isn't:%s\n",
+                    node);
         }
 
         // Rows AND columns -> SpreadSheet export
@@ -714,91 +622,77 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     }
 
     @Override
-    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode,
-            boolean isSelected)
-    {
-        logger.errorPrintf("FIXME:setNodeSelectionRange(): check range: [%s,%s]\n", firstNode, lastNode);
+    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode, boolean isSelected) {
+        logger.errorPrintf("FIXME:setNodeSelectionRange(): check range: [%s,%s]\n", firstNode,
+                lastNode);
     }
 
     @Override
-    public boolean requestNodeFocus(ViewNode node, boolean value)
-    {
+    public boolean requestNodeFocus(ViewNode node, boolean value) {
         logger.errorPrintf("FIXME:requestNodeFocus():focus=%s, for:%s\n", value, node);
         return false;
     }
 
-    public ResourceTableUpdater getDataProducer()
-    {
+    public ResourceTableUpdater getDataProducer() {
         return this.dataProducer;
     }
 
-    private void handle(String action, ProxyException e)
-    {
+    private void handle(String action, ProxyException e) {
         controller.handle(action, e);
     }
 
-    public void doSortColumn(String name, boolean reverse)
-    {
+    public void doSortColumn(String name, boolean reverse) {
         this.getResourceTableModel().doSortColumn(name, reverse);
         this.sortColumnName = name;
         this.columnSortOrderIsReversed = reverse;
     }
 
-    public boolean getColumnSortOrderIsReversed()
-    {
+    public boolean getColumnSortOrderIsReversed() {
         return this.columnSortOrderIsReversed;
     }
 
-    public String getSortColumnName()
-    {
+    public String getSortColumnName() {
         return sortColumnName;
     }
 
-    public UIProperties getGuiSettings()
-    {
+    public UIProperties getGuiSettings() {
         return getBrowserInterface().getPlatform().getGuiSettings();
     }
 
     @Override
-    public BrowserInterface getBrowserInterface()
-    {
+    public BrowserInterface getBrowserInterface() {
         return controller.getBrowserInterface();
     }
 
-    public ProxyDataSource getDataSource()
-    {
-        if (this.dataProducer == null)
-        {
+    public ProxyDataSource getDataSource() {
+        if (this.dataProducer == null) {
             return null;
         }
-        
+
         return this.dataProducer.getDataSource();
     }
 
-    public void columnMarginChanged(String name, int w)
-    {
+    public void columnMarginChanged(String name, int w) {
         // buggy, during resizes invalid values are submitted. 
         //logger.errorPrintf("FIXME: columnMarginChanged():%s=%d\n", name, w);
         this.getPresentation().setAttributePreferredWidth(name, w);
         storePresentation();
     }
 
-    public void updateAutoResizeMode(int mode)
-    {
+    public void updateAutoResizeMode(int mode) {
         logger.debugPrintf("updateAutoResizeMode():%d\n", mode);
         super.setAutoResizeMode(mode);
         this.getPresentation().setColumnsAutoResizeMode(mode);
         storePresentation();
     }
 
-    protected void storePresentation()
-    {
-        ViewNode viewNode=this.getViewNode(); 
-        VRL vrl=viewNode.getVRL(); 
-        String resourceType=viewNode.getResourceType(); 
-        
+    protected void storePresentation() {
+        ViewNode viewNode = this.getViewNode();
+        VRL vrl = viewNode.getVRL();
+        String resourceType = viewNode.getResourceType();
+
         // still buggy:
-        VRSPresentation.storePresentation(vrl,resourceType,getPresentation()); 
+        VRSPresentation.storePresentation(vrl, resourceType, getPresentation());
         //logger.errorPrintf("--- presentation ---\n%s\n", getPresentation());
     }
 }

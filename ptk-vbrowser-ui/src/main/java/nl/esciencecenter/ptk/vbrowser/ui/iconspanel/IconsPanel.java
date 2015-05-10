@@ -52,14 +52,12 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable
-{
+public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable {
     private static final long serialVersionUID = -8822489309726132852L;
 
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(IconsPanel.class);
     }
 
@@ -82,13 +80,11 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     private ViewNodeContainerDragListener dragListener;
 
-    public IconsPanel(BrowserInterface browser, ProxyDataSource viewNodeSource)
-    {
+    public IconsPanel(BrowserInterface browser, ProxyDataSource viewNodeSource) {
         init(browser, viewNodeSource);
     }
 
-    private void init(BrowserInterface browser, ProxyDataSource dataSource)
-    {
+    private void init(BrowserInterface browser, ProxyDataSource dataSource) {
         this.masterBrowser = browser;
         this.uiModel = UIViewModel.createIconsModel(48);
         this.iconsPanelUpdater = new IconsPanelUpdater(this, dataSource);
@@ -110,8 +106,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         initDND();
     }
 
-    private void initDND()
-    {
+    private void initDND() {
         // [DnD]
         // Important:
         // IconsPanel is dragsource for ALL icons it contains
@@ -122,7 +117,8 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
                                                             // ?;
         // this.dsListener = MyDragSourceListener.getDefault();
         // component, action, listener
-        dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, dragListener);
+        dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE,
+                dragListener);
 
         // IconPanel canvas can receive contents !
         this.setTransferHandler(getPlatform().getTransferHandler());
@@ -137,18 +133,15 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     }
 
-    public BrowserPlatform getPlatform()
-    {
+    public BrowserPlatform getPlatform() {
         return this.masterBrowser.getPlatform();
     }
 
-    public boolean isFocusable()
-    {
+    public boolean isFocusable() {
         return true;
     }
 
-    private void initGui()
-    {
+    private void initGui() {
         // layoutmanager:
         this.layoutManager = new IconLayoutManager(this.uiModel);
         this.setLayout(layoutManager);
@@ -156,30 +149,25 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         this.setBackground(uiModel.getCanvasBGColor());
     }
 
-    public void updateUIModel(UIViewModel model)
-    {
+    public void updateUIModel(UIViewModel model) {
         this.uiModel = model;
         this.layoutManager.setUIModel(model);
         this.iconsPanelUpdater.updateRoot();
     }
 
-    public IconListModel getModel()
-    {
+    public IconListModel getModel() {
         return this.iconModel;
     }
 
-    public UIViewModel getUIViewModel()
-    {
+    public UIViewModel getUIViewModel() {
         return this.uiModel;
     }
 
-    public JComponent getComponent()
-    {
+    public JComponent getComponent() {
         return this;
     }
 
-    public IconItem getComponent(int index)
-    {
+    public IconItem getComponent(int index) {
         // downcast from Component:
         return (IconItem) super.getComponent(index);
     }
@@ -187,10 +175,8 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     /**
      * Set Root Node and update UI
      */
-    public void setDataSource(ProxyNode node, boolean update)
-    {
-        if (node == null)
-        {
+    public void setDataSource(ProxyNode node, boolean update) {
+        if (node == null) {
             setDataSource((ProxyNodeDataSourceProvider) null, true); // reset/clear
             return;
         }
@@ -199,14 +185,12 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         this.setDataSource(dataSource, update);
     }
 
-    public void setDataSource(ProxyNodeDataSourceProvider dataSource, boolean update)
-    {
+    public void setDataSource(ProxyNodeDataSourceProvider dataSource, boolean update) {
         this.iconsPanelUpdater.setDataSource(dataSource, update);
     }
 
     @Override
-    public void intervalAdded(ListDataEvent e)
-    {
+    public void intervalAdded(ListDataEvent e) {
         logger.debugPrintf("intervalAdded():[%d,%d]\n", e.getIndex0(), e.getIndex1());
         int start = e.getIndex0();
         int end = e.getIndex1();
@@ -215,33 +199,28 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public void contentsChanged(ListDataEvent e)
-    {
+    public void contentsChanged(ListDataEvent e) {
         logger.debugPrintf("contentsChanged():[%d,%d]\n", e.getIndex0(), e.getIndex1());
         updateAll();
     }
 
-    protected void updateAll()
-    {
+    protected void updateAll() {
         uiUpdate(true, 0, -1);
     }
 
     @Override
-    public void intervalRemoved(ListDataEvent e)
-    {
+    public void intervalRemoved(ListDataEvent e) {
         logger.errorPrintf("intervalRemoved():[%d,%d]\n", e.getIndex0(), e.getIndex1());
 
         int start = e.getIndex0();
         int end = e.getIndex1(); // inclusive
 
-        for (int i = start; i <= end; i++)
-        {
+        for (int i = start; i <= end; i++) {
             delete(i);
         }
     }
 
-    protected void delete(int index)
-    {
+    protected void delete(int index) {
         // remove and leave empty spot:
         Component comp = this.getComponent(index);
         this.remove(comp);
@@ -249,15 +228,11 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     }
 
-    private void uiUpdate(final boolean clear, final int start, final int _end)
-    {
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable updater = new Runnable()
-            {
+    private void uiUpdate(final boolean clear, final int start, final int _end) {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable updater = new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     uiUpdate(clear, start, _end);
                 };
             };
@@ -279,8 +254,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
         // Appends range at END of component list !
         // Assumes the range [start,end] has NOT been added yet
-        for (int i = start; i <= end; i++)
-        {
+        for (int i = start; i <= end; i++) {
             IconItem comp = getModel().getElementAt(i);
             // check anyway
             if (this.hasComponent(comp) == false)
@@ -292,15 +266,11 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         this.repaint();
     }
 
-    public void uiRepaint()
-    {
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable updater = new Runnable()
-            {
+    public void uiRepaint() {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable updater = new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     repaint();
                 };
             };
@@ -312,10 +282,8 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         this.repaint();
     }
 
-    public boolean hasComponent(IconItem theComp)
-    {
-        for (Component comp : this.getComponents())
-        {
+    public boolean hasComponent(IconItem theComp) {
+        for (Component comp : this.getComponents()) {
             if (comp.equals(theComp))
                 return true;
         }
@@ -324,24 +292,20 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public ViewNode getViewNode()
-    {
+    public ViewNode getViewNode() {
         return this.iconsPanelUpdater.getRootNode();
     }
 
     @Override
-    public ViewNode getNodeUnderPoint(Point p)
-    {
+    public ViewNode getNodeUnderPoint(Point p) {
         Component comp = this.getComponentAt(p);
 
-        if (comp instanceof IconItem)
-        {
+        if (comp instanceof IconItem) {
             return ((IconItem) comp).getViewNode();
         }
 
         // Canvas Select:
-        if (comp == this)
-        {
+        if (comp == this) {
             return this.getViewNode();
         }
 
@@ -349,21 +313,17 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public void clearNodeSelection()
-    {
-        for (IconItem item : this.getIconItems())
-        {
+    public void clearNodeSelection() {
+        for (IconItem item : this.getIconItems()) {
             item.setSelected(false);
         }
     }
 
     @Override
-    public ViewNode[] getNodeSelection()
-    {
+    public ViewNode[] getNodeSelection() {
         Vector<ViewNode> items = new Vector<ViewNode>();
 
-        for (IconItem item : this.getIconItems())
-        {
+        for (IconItem item : this.getIconItems()) {
             if (item.isSelected())
                 items.add(item.getViewNode());
         }
@@ -375,8 +335,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public void setNodeSelection(ViewNode node, boolean isSelected)
-    {
+    public void setNodeSelection(ViewNode node, boolean isSelected) {
         logger.debugPrintf("updateSelection %s=%s\n", node, isSelected);
         if (node == null)
             return; // canvas click;
@@ -386,28 +345,23 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
             item.setSelected(isSelected);
     }
 
-    public IconItem getIconItem(VRL locator)
-    {
-        for (IconItem item : this.getIconItems())
-        {
+    public IconItem getIconItem(VRL locator) {
+        for (IconItem item : this.getIconItems()) {
             if (item.hasLocator(locator))
                 return item;
         }
         return null;
     }
 
-    public IconItem getIconItem(ViewNode node)
-    {
-        for (IconItem item : this.getIconItems())
-        {
+    public IconItem getIconItem(ViewNode node) {
+        for (IconItem item : this.getIconItems()) {
             if (item.hasViewNode(node))
                 return item;
         }
         return null;
     }
 
-    public IconItem[] getIconItems()
-    {
+    public IconItem[] getIconItems() {
         ArrayList<IconItem> itemList = new ArrayList<IconItem>();
         // filter out icon items;
         Component[] comps = this.getComponents();
@@ -424,29 +378,24 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public void setNodeSelectionRange(ViewNode node1, ViewNode node2, boolean selected)
-    {
+    public void setNodeSelectionRange(ViewNode node1, ViewNode node2, boolean selected) {
         logger.debugPrintf("setSelectionRange:[%s,%s]=%s\n", node1, node2, selected);
 
         boolean mark = false;
 
         // mark range [node1,node2] (inclusive)
         // mark range [node2,node1] (inclusive)
-        for (IconItem item : this.getIconItems())
-        {
+        for (IconItem item : this.getIconItems()) {
             boolean last = false;
 
             // check both directions !
-            if (mark == false)
-            {
+            if (mark == false) {
                 if (item.hasViewNode(node1))
                     mark = true;
 
                 if (item.hasViewNode(node2))
                     mark = true;
-            }
-            else
-            {
+            } else {
                 if (item.hasViewNode(node1))
                     mark = false;
 
@@ -464,31 +413,26 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu)
-    {
+    public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu) {
         return this.masterBrowser.createActionMenuFor(this, node, canvasMenu);
     }
 
-    public void addIconItem(IconItem item)
-    {
+    public void addIconItem(IconItem item) {
         // add + update
         super.add(item);
         item.setViewComponentEventAdapter(this.viewComponentHandler);
     }
 
     @Override
-    public boolean requestFocus(boolean value)
-    {
+    public boolean requestFocus(boolean value) {
         if (value == true)
             return this.requestFocusInWindow();
         return false;
     }
 
     @Override
-    public boolean requestNodeFocus(ViewNode node, boolean value)
-    {
-        if (value == true)
-        {
+    public boolean requestNodeFocus(ViewNode node, boolean value) {
+        if (value == true) {
             IconItem item = this.getIconItem(node);
             // forward request to focus subsystem!
             if (item != null)
@@ -499,34 +443,28 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public ViewNodeContainer getViewContainer()
-    {
+    public ViewNodeContainer getViewContainer() {
         return null;
     }
 
-    public BrowserInterface getMasterBrowser()
-    {
+    public BrowserInterface getMasterBrowser() {
         return this.masterBrowser;
     }
 
-    public ProxyDataSource getDataSource()
-    {
+    public ProxyDataSource getDataSource() {
         return this.iconsPanelUpdater.getDataSource();
     }
 
-    public DragGestureListener getDragGestureListener()
-    {
+    public DragGestureListener getDragGestureListener() {
         return this.dragListener;
     }
 
     @Override
-    public void dispose()
-    {
+    public void dispose() {
     }
 
     @Override
-    public BrowserInterface getBrowserInterface()
-    {
+    public BrowserInterface getBrowserInterface() {
         return this.masterBrowser;
     }
 }

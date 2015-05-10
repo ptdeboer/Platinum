@@ -22,27 +22,22 @@ package nl.esciencecenter.vbrowser.vrs.webrs;
 
 import nl.esciencecenter.vbrowser.vrs.VRS;
 
-
 /**
- * Singleton class to provide https *only* resources.  
- * WebRSFactory covers both https and http resources. 
- * 
- * @author Piter T. de Boer
+ * Singleton class to provide https *only* resources. <br>
+ * WebRSFactory covers both https and http resources.
  */
-public class WebRSFactorySsl extends WebRSFactory
-{
-    String schemes[]={VRS.HTTPS_SCHEME}; 
+public class WebRSFactorySsl extends WebRSFactory {
+
+    String schemes[] = { VRS.HTTPS_SCHEME };
 
     //@Override
-    public String getName()
-    {
+    public String getName() {
         return "HTTPS";
     }
 
     @Override
-    public String[] getSchemes()
-    {
-        return schemes; 
+    public String[] getSchemes() {
+        return schemes;
     }
-    
+
 }

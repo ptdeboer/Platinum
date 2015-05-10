@@ -25,168 +25,135 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Collection of sort and other list manipulation methods 
+ * Collection of sort and other list manipulation methods
  */
-public class SortUtil
-{
+public class SortUtil {
 
-    public static class StringComparer implements Comparer<String>
-    {
+    public static class StringComparer implements Comparer<String> {
+
         public boolean ignoreCase;
+
         public boolean reverseOrder;
 
-        public StringComparer()
-        {
-            this.ignoreCase=false; 
-            this.reverseOrder=false; 
-        }
-        
-        public StringComparer(boolean ignoreCase)
-        {
-            this.ignoreCase=ignoreCase; 
-            this.reverseOrder=false; 
+        public StringComparer() {
+            this.ignoreCase = false;
+            this.reverseOrder = false;
         }
 
-        public StringComparer(boolean ignoreCase,boolean reverseOrder)
-        {
-            this.ignoreCase=ignoreCase; 
-            this.reverseOrder=reverseOrder; 
+        public StringComparer(boolean ignoreCase) {
+            this.ignoreCase = ignoreCase;
+            this.reverseOrder = false;
         }
 
-        public int compare(String o1, String o2)
-        {
-            if (o1 == null)
-            {
-                if (o2 == null)
-                {
+        public StringComparer(boolean ignoreCase, boolean reverseOrder) {
+            this.ignoreCase = ignoreCase;
+            this.reverseOrder = reverseOrder;
+        }
+
+        public int compare(String o1, String o2) {
+            //
+            if (o1 == null) {
+                if (o2 == null) {
                     return 0;
-                }
-                else
-                {
+                } else {
                     return -1;
                 }
-            }
-            else if (o2 == null)
-            {
+            } else if (o2 == null) {
                 return 1;
-            }
-            else
-            {
+            } else {
                 ; // continue
             }
-            
+            //
             String str1 = o1.toString();
             String str2 = o2.toString();
-
-            int result; 
-            
-            if (ignoreCase)
-            {
+            int result;
+            //
+            if (ignoreCase) {
                 result = str1.compareToIgnoreCase(str2);
-            }
-            else
-            {
+            } else {
                 result = str1.compareTo(str2);
             }
-            
-            if (reverseOrder)
-            {
-                result=-result;
+            if (reverseOrder) {
+                result = -result;
             }
-            
-            return result; 
+            //
+            return result;
         }
     }
 
-    public static class IntegerComparer implements Comparer<Integer>
-    {
+    public static class IntegerComparer implements Comparer<Integer> {
         @Override
-        public int compare(Integer i1, Integer i2)
-        {
-            if (i1==null)
-                if (i2==null)
+        public int compare(Integer i1, Integer i2) {
+            if (i1 == null) {
+                if (i2 == null) {
                     return 0;
-                else
-                    return -1; // null > not null 
-            
-            return ((Integer)i1).compareTo((Integer)i2); 
+                } else {
+                    return -1; // null > not null
+                }
+            }
+            return ((Integer) i1).compareTo((Integer) i2);
         }
     }
-    
-    /** 
-     * Sort by name. 
+
+    /**
+     * Sort by name.
      */
-    public static int[] qsort(List<String> list, boolean ignoreCase)
-    {
+    public static int[] qsort(List<String> list, boolean ignoreCase) {
         if (list == null)
             return null;
-
         StringComparer comparer = new StringComparer();
         comparer.ignoreCase = ignoreCase;
         QSort<String> qsort = new QSort<String>(comparer);
         return qsort.sort(list);
     }
-    
-    /** 
-     * In place sorting 
-     */ 
-    public static int[] qsort(List<Integer> list) 
-    {
+
+    /**
+     * In place sorting if Integer List.
+     */
+    public static int[] qsort(List<Integer> list) {
         if (list == null)
             return null;
-
         IntegerComparer comparer = new IntegerComparer();
         QSort<Integer> qsort = new QSort<Integer>(comparer);
-        
         return qsort.sort(list);
     }
-    
-    /** 
-     * Returns set of unique integers from an Integer List. 
-     * Set alreadySorted==true for already sorted lists. 
-     * Implementation type of Set<> is LinkedHashSet. 
+
+    /**
+     * Returns set of unique integers from an Integer List. Set alreadySorted==true for already
+     * sorted lists. Implementation type of Set<> is LinkedHashSet.
      */
-    public static Set<Integer> unique(List<Integer> list,boolean alreadySorted)
-    {
-        if (list==null)
-            return null;
-        
-        if (list.size()==0)
-            return new LinkedHashSet<Integer>(0); 
-            
-        if (alreadySorted==false)
-        {
-            qsort(list); 
-        }
-        
-        Set<Integer> uniqueSet=new LinkedHashSet<Integer>();
-        // first
-        int k=list.get(0);
-        uniqueSet.add(k); 
-        
-        for (int i=1;i<list.size();i++)
-        {
-            if (list.get(i)>k)
-            {
-                k=list.get(i);
-                uniqueSet.add(k); 
-            }
-        }
-        
-        return uniqueSet;
-    }       
-        
-    /** 
-     * In place sorting 
-     */ 
-    public static <T> int[] qsort(List<T> list,Comparer<T> comparer) 
-    {
+    public static Set<Integer> unique(List<Integer> list, boolean alreadySorted) {
+        //
         if (list == null)
             return null;
-        
+        if (list.size() == 0)
+            return new LinkedHashSet<Integer>(0);
+        if (alreadySorted == false) {
+            qsort(list);
+        }
+        //
+        Set<Integer> uniqueSet = new LinkedHashSet<Integer>();
+        // first
+        int k = list.get(0);
+        uniqueSet.add(k);
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i) > k) {
+                k = list.get(i);
+                uniqueSet.add(k);
+            }
+        }
+        //
+        return uniqueSet;
+    }
+
+    /**
+     * In place sorting of generelized list.
+     */
+    public static <T> int[] qsort(List<T> list, Comparer<T> comparer) {
+        if (list == null)
+            return null;
         QSort<T> qsort = new QSort<T>(comparer);
-        
         return qsort.sort(list);
     }
-    
+
 }

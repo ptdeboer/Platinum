@@ -15,7 +15,7 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */ 
+ */
 // source: 
 
 package nl.esciencecenter.ptk.browser.uitest.fsnode;
@@ -35,66 +35,56 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableUpdater;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 
+public class ShowProxyNodeTable {
+    public static void main(String args[]) {
+        try {
+            BrowserPlatform platform = BrowserPlatform.getInstance("testbrowser");
 
-public class ShowProxyNodeTable
-{
-    public static void main(String args[])
-    {
-        try 
-        {
-            BrowserPlatform platform=BrowserPlatform.getInstance("testbrowser"); 
-            
-            ProxyFactory fac = new FSNodeProxyFactory(platform);  
-            
-            platform.registerProxyFactory(fac); 
-            
+            ProxyFactory fac = new FSNodeProxyFactory(platform);
+
+            platform.registerProxyFactory(fac);
+
             final ProxyNode node = fac.openLocation("file:/home/");
-            
-            Runnable runnable=new Runnable()
-            {
-                public void run()
-                {
-                    try
-                    {
-                        JFrame frame=new JFrame(); 
-                        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    try {
+                        JFrame frame = new JFrame();
+                        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                         {
-                            JPanel panel=new JPanel();
+                            JPanel panel = new JPanel();
                             panel.setLayout(new BorderLayout());
                             frame.add(panel);
-                            
+
                             {
                                 JScrollPane scrollPanel = new JScrollPane();
                                 panel.add(scrollPanel, BorderLayout.CENTER);
                                 {
-                                	ResourceTableModel model = new ResourceTableModel(true); 
-                                    ResourceTable table=new ResourceTable(null,model);
-                                    table.setDataProducer(new ResourceTableUpdater(null,node,model),true); 
+                                    ResourceTableModel model = new ResourceTableModel(true);
+                                    ResourceTable table = new ResourceTable(null, model);
+                                    table.setDataProducer(new ResourceTableUpdater(null, node,
+                                            model), true);
                                     scrollPanel.setViewportView(table);
                                 }
                             }
                         }
-                        
-                        frame.setSize(new Dimension(700,300)); 
-                        frame.pack(); 
-                        frame.setVisible(true); 
-                    }
-                    catch (Exception e)
-                    {
+
+                        frame.setSize(new Dimension(700, 300));
+                        frame.pack();
+                        frame.setVisible(true);
+                    } catch (Exception e) {
                         e.printStackTrace();
-                    } 
-                   
+                    }
+
                 }
             };
-            
-            SwingUtilities.invokeLater(runnable);       
-           
-        }
-        catch (Exception e) 
-        {
+
+            SwingUtilities.invokeLater(runnable);
+
+        } catch (Exception e) {
             e.printStackTrace();
-        } 
-        
-   }
+        }
+
+    }
 }

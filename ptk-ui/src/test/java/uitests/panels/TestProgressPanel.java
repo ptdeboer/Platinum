@@ -15,7 +15,7 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */ 
+ */
 // source: 
 
 package uitests.panels;
@@ -27,68 +27,57 @@ import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.ui.panels.monitoring.ProgresPanel;
 
-public class TestProgressPanel
-{
+public class TestProgressPanel {
 
     /**
-     * Auto-generated main method to display this 
-     * JPanel inside a new JFrame.
+     * Auto-generated main method to display this JPanel inside a new JFrame.
      */
-     public static void main(String[] args) 
-     {
-         JFrame frame = new JFrame();
-         final ProgresPanel panel=new ProgresPanel(); 
-         frame.getContentPane().add(panel);
-         
-         final long startTime=System.currentTimeMillis();
-         
-         ActionTask task=new ActionTask(null,"StatusPanel tester")
-         {
-             public void doTask()
-             {
-                 //Presentation pres=Presentation.createDefault(); 
+    public static void main(String[] args) {
+        JFrame frame = new JFrame();
+        final ProgresPanel panel = new ProgresPanel();
+        frame.getContentPane().add(panel);
 
-                 panel.setTotal(1000);
-                 
-                 for (int i=0;i<=1000;i++)
-                 {
-                     // panel.setProgress(i); 
-                     panel.setProgress((double)i/1000.0); 
-                     panel.setProgressText(" "+i+" out of:"+1000); 
-                     
-                     long deltaTime=System.currentTimeMillis()-startTime; 
-                     panel.setTimeText(Presentation.createRelativeTimeString(deltaTime,false)); 
-                     
-                     try
-                     {
-                         Thread.sleep(50);
-                     }
-                     catch (InterruptedException e)
-                     {
-                         e.printStackTrace();
-                     }
-                     
-                     if (this.isCancelled())
-                     {
-                         return; 
-                     }
-                 }
+        final long startTime = System.currentTimeMillis();
 
-             }
+        ActionTask task = new ActionTask(null, "StatusPanel tester") {
+            public void doTask() {
+                //Presentation pres=Presentation.createDefault(); 
 
-             @Override
-             public void stopTask()
-             {
-                 
-             }
-         };
-         
-         task.startTask();
-         
-         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-         frame.pack();
-         frame.setVisible(true);
-         
-     }
-     
+                panel.setTotal(1000);
+
+                for (int i = 0; i <= 1000; i++) {
+                    // panel.setProgress(i); 
+                    panel.setProgress((double) i / 1000.0);
+                    panel.setProgressText(" " + i + " out of:" + 1000);
+
+                    long deltaTime = System.currentTimeMillis() - startTime;
+                    panel.setTimeText(Presentation.createRelativeTimeString(deltaTime, false));
+
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (this.isCancelled()) {
+                        return;
+                    }
+                }
+
+            }
+
+            @Override
+            public void stopTask() {
+
+            }
+        };
+
+        task.startTask();
+
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+
+    }
+
 }

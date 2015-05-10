@@ -24,32 +24,27 @@ import nl.esciencecenter.ptk.util.Comparer;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowData;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 
-public class TableRowComparer implements Comparer<RowData>
-{
+public class TableRowComparer implements Comparer<RowData> {
     public boolean ignoreCase = true;
 
     private String columnName;
 
     private int order = 1;
 
-    private void init(String columnName, boolean reverse)
-    {
+    private void init(String columnName, boolean reverse) {
         this.columnName = columnName;
         this.order = (reverse == false) ? (1) : (-1);
     }
 
-    public TableRowComparer(String columnName, boolean reverse)
-    {
+    public TableRowComparer(String columnName, boolean reverse) {
         init(columnName, reverse);
     }
 
-    public TableRowComparer(String columnName)
-    {
+    public TableRowComparer(String columnName) {
         init(columnName, false);
     }
 
-    public int compare(RowData v1, RowData v2)
-    {
+    public int compare(RowData v1, RowData v2) {
         if (v1 == null)
             debug("Received NULL object v1");
 
@@ -86,15 +81,12 @@ public class TableRowComparer implements Comparer<RowData>
 
         int result;
 
-        if ((o1 instanceof Attribute) && (o2 instanceof Attribute))
-        {
+        if ((o1 instanceof Attribute) && (o2 instanceof Attribute)) {
             if (ignoreCase)
                 result = order * ((Attribute) o1).compareToIgnoreCase((Attribute) o2);
             else
                 result = order * ((Attribute) o1).compareTo((Attribute) o2);
-        }
-        else
-        {
+        } else {
             if (ignoreCase)
                 result = order * o1.toString().compareToIgnoreCase(o2.toString());
             else
@@ -104,8 +96,7 @@ public class TableRowComparer implements Comparer<RowData>
         return result;
     }
 
-    private void debug(String msg)
-    {
+    private void debug(String msg) {
         // sSystem.err.printf("TableRowComparator:%s\n",msg);
     }
 

@@ -35,8 +35,8 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
  * @param <EventListenerT>
  *            Event listener which receives events with type EventT.
  */
-public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventListener<EventT>>
-{
+public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventListener<EventT>> {
+
     private static PLogger logger = PLogger.getLogger(EventDispatcher.class);
 
     // ========================================================================
@@ -47,8 +47,8 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
 
     protected Object waitMutex = new Object();
 
-    protected class Dispatcher implements Runnable
-    {
+    protected class Dispatcher implements Runnable {
+
         protected boolean mustStop = false;
 
         protected boolean isStopped = false;
@@ -56,24 +56,18 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
         protected Thread thread = null;
 
         @Override
-        public void run()
-        {
-            try
-            {
+        public void run() {
+            try {
                 doDispatcherLoop();
-            }
-            catch (Throwable e)
-            {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
 
             isStopped = true;
         }
 
-        void start()
-        {
-            if (thread != null)
-            {
+        void start() {
+            if (thread != null) {
                 throw new Error("Dispatcher Already Started!");
             }
 
@@ -82,72 +76,54 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
             thread.start();
         }
 
-        protected void doDispatcherLoop()
-        {
-            while (!mustStop)
-            {
-                if (Thread.interrupted())
-                {
+        protected void doDispatcherLoop() {
+            while (!mustStop) {
+                if (Thread.interrupted()) {
                     // keep interrupted status.
                     Thread.currentThread().interrupt();
                     break;
                 }
 
-                if (hasEvents())
-                {
+                if (hasEvents()) {
                     logger.infoPrintf("hasEvents(): Nr of events=%d\n", events.size());
                     handleEvent();
-                }
-                else
-                {
-                    try
-                    {
-                        synchronized (waitMutex)
-                        {
+                } else {
+                    try {
+                        synchronized (waitMutex) {
                             waitMutex.wait(eventIdleWaitTime);
                         }
 
                         logger.infoPrintf("Wakeup No events\n");
-                    }
-                    catch (InterruptedException e)
-                    {
+                    } catch (InterruptedException e) {
                         logger.infoPrintf("<Interrupted>\n");
                     }
                 }
             }
         }
 
-        void stop()
-        {
+        void stop() {
             this.mustStop = true;
             wakeUp();
         }
 
-        void interrupt()
-        {
-            if (thread != null)
-            {
+        void interrupt() {
+            if (thread != null) {
                 thread.interrupt();
             }
         }
 
-        void wakeUp()
-        {
-            synchronized (waitMutex)
-            {
+        void wakeUp() {
+            synchronized (waitMutex) {
                 waitMutex.notifyAll();
             }
         }
 
-        boolean isRunning()
-        {
-            if (thread == null)
-            {
+        boolean isRunning() {
+            if (thread == null) {
                 return false;
             }
 
-            if (thread.isAlive())
-            {
+            if (thread.isAlive()) {
                 return true;
             }
 
@@ -155,14 +131,13 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
         }
     }
 
-    public class EventListenerEntry
-    {
+    public class EventListenerEntry {
+
         protected EventListener listener;
 
         protected EventSourceT eventSource;
 
-        public EventListenerEntry(EventListener listener, EventSourceT eventSource)
-        {
+        public EventListenerEntry(EventListener listener, EventSourceT eventSource) {
             this.listener = listener;
             this.eventSource = eventSource;
         }
@@ -178,88 +153,69 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
 
     private Dispatcher dispatcher = null;
 
-    public EventDispatcher(boolean autoStart)
-    {
+    public EventDispatcher(boolean autoStart) {
         initDispatcher(autoStart);
     }
 
-    private void initDispatcher(boolean autoStart)
-    {
+    private void initDispatcher(boolean autoStart) {
         this.dispatcher = new Dispatcher();
-        if (autoStart)
-        {
+        if (autoStart) {
             dispatcher.start();
         }
 
         logger.setLevelToDebug();
     }
 
-    public void fireEvent(EventT newEvent)
-    {
+    public void fireEvent(EventT newEvent) {
         addEvent(newEvent);
         wakeupDispatcher();
     }
 
-    protected void addEvent(EventT newEvent)
-    {
-        synchronized (events)
-        {
+    protected void addEvent(EventT newEvent) {
+        synchronized (events) {
             events.add(newEvent);
         }
     }
 
-    protected void removeEvent(EventT event)
-    {
-        synchronized (events)
-        {
+    protected void removeEvent(EventT event) {
+        synchronized (events) {
             events.remove(event);
         }
     }
 
-    protected void wakeupDispatcher()
-    {
+    protected void wakeupDispatcher() {
         dispatcher.wakeUp();
     }
 
-    public void addListener(EventListener listener, EventSourceT eventSource)
-    {
-        synchronized (listeners)
-        {
+    public void addListener(EventListener listener, EventSourceT eventSource) {
+        synchronized (listeners) {
             this.listeners.add(new EventListenerEntry(listener, eventSource));
         }
     }
 
-    public void removeListener(EventListener listener)
-    {
-        synchronized (listeners)
-        {
+    public void removeListener(EventListener listener) {
+        synchronized (listeners) {
             ListIterator<EventListenerEntry> iterator = listeners.listIterator();
 
             EventListenerEntry theEntry = null;
 
-            while (iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 theEntry = iterator.next();
 
-                if (theEntry == listener)
-                {
+                if (theEntry == listener) {
                     break;
                 }
             }
 
-            if (theEntry != null)
-            {
+            if (theEntry != null) {
                 listeners.remove(listener);
             }
         }
     }
 
-    protected EventT popEvent()
-    {
-        synchronized (this.events)
-        {
-            if (events.size() <= 0)
-            {
+    protected EventT popEvent() {
+        synchronized (this.events) {
+            if (events.size() <= 0) {
                 return null;
             }
 
@@ -269,26 +225,21 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
         }
     }
 
-    public boolean hasEvents()
-    {
-        synchronized (this.events)
-        {
+    public boolean hasEvents() {
+        synchronized (this.events) {
             return (this.events.size() > 0);
         }
     }
 
-    protected void handleEvent()
-    {
+    protected void handleEvent() {
         EventT event = this.popEvent();
 
-        if (event == null)
-        {
+        if (event == null) {
             logger.infoPrintf("No Event\n");
             return;
         }
 
-        if (listeners.size() <= 0)
-        {
+        if (listeners.size() <= 0) {
             logger.infoPrintf("No Event Listeners registered for event:%s\n", event);
             return;
         }
@@ -296,20 +247,17 @@ public class EventDispatcher<EventT, EventSourceT, EventListener extends IEventL
         // Use iterator
         ListIterator<EventListenerEntry> iterator = listeners.listIterator();
 
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             EventListenerEntry entry = iterator.next();
             entry.listener.notifyEvent(event);
         }
     }
 
-    public void stop()
-    {
+    public void stop() {
         this.dispatcher.stop();
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         this.listeners.clear();
         this.events.clear();
     }

@@ -27,55 +27,48 @@ import java.util.Map;
 
 import javax.swing.JComponent;
 
-public class FontUtil
-{
-    /** 
-     * Create Font Info from Font, copying font attributes like style and name.  
-     */ 
-    public static FontInfo createFontInfo(Font font)
-    {
-       FontInfo info=new FontInfo(); 
-       info.init(font); 
-       return info; 
+public class FontUtil {
+    /**
+     * Create Font Info from Font, copying font attributes like style and name.
+     */
+    public static FontInfo createFontInfo(Font font) {
+        FontInfo info = new FontInfo();
+        info.init(font);
+        return info;
     }
 
     /**
-     *  Get FontInfo from Font Info data base.
-     */ 
-    public static FontInfo getFontInfo(String name)
-    {
+     * Get FontInfo from Font Info data base.
+     */
+    public static FontInfo getFontInfo(String name) {
         return FontInfo.getFontInfo(name);
     }
-    
+
     /**
-     * Check's FontInfo alias database, if not Font.getFont(name) 
-     * is returned; 
+     * Check's FontInfo alias database, if not Font.getFont(name) is returned;
      * 
      * @param name
-     * @return either java's default font or font from font database. 
+     * @return either java's default font or font from font database.
      */
-    public static Font createFont(String name)
-    {
-        FontInfo info=FontInfo.getFontInfo(name);
-        
-        if (info!=null) 
+    public static Font createFont(String name) {
+        FontInfo info = FontInfo.getFontInfo(name);
+
+        if (info != null)
             return info.createFont();
-            
-        return Font.getFont(name);   
+
+        return Font.getFont(name);
     }
 
     // breadcrump to update renderinghints:
-    public static boolean updateRenderingHints(JComponent comp,Map<?,?> renderingHints)
-    {
-        Graphics graphics=comp.getGraphics();
-        
-        if (graphics instanceof Graphics2D)
-        {
-            ((Graphics2D)graphics).addRenderingHints(renderingHints); 
-            return true; 
+    public static boolean updateRenderingHints(JComponent comp, Map<?, ?> renderingHints) {
+        Graphics graphics = comp.getGraphics();
+
+        if (graphics instanceof Graphics2D) {
+            ((Graphics2D) graphics).addRenderingHints(renderingHints);
+            return true;
         }
-        
-        return false; 
+
+        return false;
     }
-    
+
 }

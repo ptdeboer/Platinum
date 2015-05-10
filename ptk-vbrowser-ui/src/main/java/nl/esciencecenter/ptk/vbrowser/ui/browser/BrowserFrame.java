@@ -60,40 +60,35 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
  * Master Browser frame.
  * 
  */
-public class BrowserFrame extends JFrame
-{
-    public static enum BrowserViewMode
-    {
-        ICONS16(16), ICONS48(48), ICONS96(96), ICONLIST16(16), ICONSLIST48(48), TABLE, CONTENT_VIEWER;
+public class BrowserFrame extends JFrame {
+
+    public static enum BrowserViewMode {
+
+        ICONS16(16), ICONS48(48), ICONS96(96), ICONLIST16(16), ICONSLIST48(48), TABLE,
+        CONTENT_VIEWER;
 
         int iconSize = 48;
 
-        private BrowserViewMode()
-        {
+        private BrowserViewMode() {
         }
 
-        private BrowserViewMode(int size)
-        {
+        private BrowserViewMode(int size) {
             iconSize = size;
         }
 
-        public int getIconSize()
-        {
+        public int getIconSize() {
             return iconSize;
         }
     };
 
-    public class TabButtonHandler implements ActionListener
-    {
+    public class TabButtonHandler implements ActionListener {
         protected TabContentPanel tabPane;
 
-        public TabButtonHandler(TabContentPanel pane)
-        {
+        public TabButtonHandler(TabContentPanel pane) {
             tabPane = pane;
         }
 
-        public void actionPerformed(ActionEvent e)
-        {
+        public void actionPerformed(ActionEvent e) {
             // redirect to ProxyBrowser controller:
             // actionListener.actionPerformed(new ActionEvent(tabPane,e.getID(),e.getActionCommand()));
             menuActionListener.actionPerformed(e);
@@ -140,20 +135,18 @@ public class BrowserFrame extends JFrame
 
     private JPanel uiToolBarPanel;
 
-    public BrowserFrame(BrowserInterface controller, ActionListener actionListener)
-    {
+    public BrowserFrame(BrowserInterface controller, ActionListener actionListener) {
         this.browserController = controller;
         this.menuActionListener = actionListener;
         initGUI();
     }
 
-    public void initGUI()
-    {
+    public void initGUI() {
+        //
         {
             this.uiMainPanel = new JPanel();
             this.add(uiMainPanel);
             this.uiMainPanel.setLayout(new BorderLayout());
-
             {
                 uiMainMenuBar = createMenuBar(menuActionListener);
                 setJMenuBar(uiMainMenuBar);
@@ -190,7 +183,8 @@ public class BrowserFrame extends JFrame
                             uiViewBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons.png"));
-                            uiViewAsIconsBtn.setActionCommand(ActionMethod.VIEW_AS_ICONS.toString());
+                            uiViewAsIconsBtn
+                                    .setActionCommand(ActionMethod.VIEW_AS_ICONS.toString());
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -199,7 +193,8 @@ public class BrowserFrame extends JFrame
                             uiViewBar.add(uiViewAsIconListBtn);
                             // viewAsIconRows.setText("ICR");
                             uiViewAsIconListBtn.setIcon(loadIcon("menu/viewasiconlist_medium.png"));
-                            uiViewAsIconListBtn.setActionCommand(ActionMethod.VIEW_AS_ICON_LIST.toString());
+                            uiViewAsIconListBtn.setActionCommand(ActionMethod.VIEW_AS_ICON_LIST
+                                    .toString());
                             uiViewAsIconListBtn.addActionListener(menuActionListener);
                             uiViewAsIconListBtn.setEnabled(true);
                         }
@@ -207,7 +202,8 @@ public class BrowserFrame extends JFrame
                             uiViewAsTableBtn = new JButton();
                             uiViewBar.add(uiViewAsTableBtn);
                             // viewAsListBut.setText("AL");
-                            uiViewAsTableBtn.setActionCommand(ActionMethod.VIEW_AS_TABLE.toString());
+                            uiViewAsTableBtn
+                                    .setActionCommand(ActionMethod.VIEW_AS_TABLE.toString());
                             uiViewAsTableBtn.addActionListener(menuActionListener);
                             uiViewAsTableBtn.setIcon(loadIcon("menu/viewastablelist.png"));
                             // uiViewAsTableBtn.setEnabled(false);
@@ -217,7 +213,7 @@ public class BrowserFrame extends JFrame
                 }
 
             }
-
+            //
             {
                 // === Split Pane === //
                 this.uiMainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -264,8 +260,8 @@ public class BrowserFrame extends JFrame
         this.setSize(1000, 600);
     }
 
-    protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus, boolean withScrollPane)
-    {
+    protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus,
+            boolean withScrollPane) {
         TabContentPanel tabPanel = TabContentPanel.createTab(name, comp, withScrollPane);
 
         int newIndex = uiRightTabPane.getTabCount();
@@ -277,34 +273,27 @@ public class BrowserFrame extends JFrame
         TabTopLabelPanel topTapPnl = new TabTopLabelPanel(tabPanel, handler);
         uiRightTabPane.setTabComponentAt(newIndex, topTapPnl);
 
-        if (newIndex > 0)
-        {
+        if (newIndex > 0) {
             Component tabComp = uiRightTabPane.getTabComponentAt(newIndex - 1);
-            if (tabComp instanceof TabTopLabelPanel)
-            {
+            if (tabComp instanceof TabTopLabelPanel) {
                 // disable add button if not lasts.
                 ((TabTopLabelPanel) tabComp).setEnableAddButton(false);
             }
         }
-        if (setFocus)
-        {
+        if (setFocus) {
             uiRightTabPane.setSelectedIndex(newIndex);
         }
         return tabPanel;
     }
 
-    protected IconsPanel getIconsPanel()
-    {
+    protected IconsPanel getIconsPanel() {
         return getIconsPanel(true);
     }
 
-    protected IconsPanel getIconsPanel(boolean autoCreate)
-    {
+    protected IconsPanel getIconsPanel(boolean autoCreate) {
         TabContentPanel currentTab = this.getCurrentTab();
-        if (currentTab == null)
-        {
-            if (autoCreate == false)
-            {
+        if (currentTab == null) {
+            if (autoCreate == false) {
                 return null;
             }
 
@@ -312,13 +301,11 @@ public class BrowserFrame extends JFrame
         }
 
         JComponent comp = currentTab.getContent();
-        if (comp instanceof IconsPanel)
-        {
+        if (comp instanceof IconsPanel) {
             return (IconsPanel) comp;
         }
 
-        if (autoCreate == false)
-        {
+        if (autoCreate == false) {
             return null;
         }
 
@@ -330,8 +317,7 @@ public class BrowserFrame extends JFrame
         return pnl;
     }
 
-    protected TabContentPanel createIconsPanelTab(ProxyNode node, boolean setFocus)
-    {
+    protected TabContentPanel createIconsPanelTab(ProxyNode node, boolean setFocus) {
         TabContentPanel tab = this.addTab("Icons", null, setFocus, true);
         IconsPanel pnl = new IconsPanel(this.browserController, null);
         pnl.setDataSource(node, true);
@@ -339,12 +325,10 @@ public class BrowserFrame extends JFrame
         return tab;
     }
 
-    protected void updateTableTab(boolean autoCreate, ProxyNode node)
-    {
+    protected void updateTableTab(boolean autoCreate, ProxyNode node) {
         TabContentPanel tab = this.getCurrentTab();
 
-        if (tab == null)
-        {
+        if (tab == null) {
             if (autoCreate == false)
                 return;
 
@@ -354,14 +338,10 @@ public class BrowserFrame extends JFrame
         JComponent comp = tab.getContent();
         ResourceTable tbl = null;
 
-        if (comp instanceof ResourceTable)
-        {
+        if (comp instanceof ResourceTable) {
             tbl = (ResourceTable) comp;
-        }
-        else
-        {
-            if (autoCreate == false)
-            {
+        } else {
+            if (autoCreate == false) {
                 return;
             }
 
@@ -372,29 +352,25 @@ public class BrowserFrame extends JFrame
         tbl.setDataSource(node, true);
     }
 
-    protected void addViewerPanel(ViewerPlugin viewer, boolean setFocus)
-    {
+    protected void addViewerPanel(ViewerPlugin viewer, boolean setFocus) {
         // TabContentPanel currentTab = this.getCurrentTab();
-        TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus, (viewer.haveOwnScrollPane() == false));
+        TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus,
+                (viewer.haveOwnScrollPane() == false));
         tab.setContent(viewer.getViewerPanel());
         return;
     }
 
-    protected JComponent getFirstTab(Class<? extends JComponent> clazz)
-    {
-        for (int i = 0; i < this.uiRightTabPane.getComponentCount(); i++)
-        {
+    protected JComponent getFirstTab(Class<? extends JComponent> clazz) {
+        for (int i = 0; i < this.uiRightTabPane.getComponentCount(); i++) {
             TabContentPanel tab = this.getTab(i);
-            if (tab.contains(clazz))
-            {
+            if (tab.contains(clazz)) {
                 return tab.getContent();
             }
         }
         return null;
     }
 
-    private JMenuBar createMenuBar(ActionListener actionListener)
-    {
+    private JMenuBar createMenuBar(ActionListener actionListener) {
         JMenuBar menu = new JMenuBar();
 
         {
@@ -503,24 +479,20 @@ public class BrowserFrame extends JFrame
         return menu;
     }
 
-    public ResourceTree getResourceTree()
-    {
+    public ResourceTree getResourceTree() {
         return this.uiResourceTree;
     }
 
-    public JTabbedPane getTabbedPane()
-    {
+    public JTabbedPane getTabbedPane() {
         return this.uiRightTabPane;
     }
 
-    public void setNavigationBarListener(ActionListener handler)
-    {
+    public void setNavigationBarListener(ActionListener handler) {
         this.uiNavigationBar.addTextFieldListener(handler);
         this.uiNavigationBar.addNavigationButtonsListener(handler);
     }
 
-    public ViewNode getCurrentTabViewedNode()
-    {
+    public ViewNode getCurrentTabViewedNode() {
         TabContentPanel tab = this.getCurrentTab();
         if (tab != null)
             return tab.getViewNode();
@@ -529,42 +501,34 @@ public class BrowserFrame extends JFrame
         return null;
     }
 
-    public TabContentPanel getCurrentTab()
-    {
+    public TabContentPanel getCurrentTab() {
         Component tab = this.uiRightTabPane.getSelectedComponent();
-        if (tab instanceof TabContentPanel)
-        {
+        if (tab instanceof TabContentPanel) {
             return ((TabContentPanel) tab);
         }
         return null;
     }
 
-    public boolean closeTab(TabContentPanel tab, boolean disposeContent)
-    {
+    public boolean closeTab(TabContentPanel tab, boolean disposeContent) {
         int tabIndex = uiRightTabPane.indexOfComponent(tab);
 
-        if (tabIndex < 0)
-        {
+        if (tabIndex < 0) {
             return false;
         }
 
         this.uiRightTabPane.removeTabAt(tabIndex);
         int index = this.uiRightTabPane.getTabCount();
 
-        if (index > 0)
-        {
+        if (index > 0) {
             Component comp = this.uiRightTabPane.getTabComponentAt(index - 1);
-            if (comp instanceof TabTopLabelPanel)
-            {
+            if (comp instanceof TabTopLabelPanel) {
                 ((TabTopLabelPanel) comp).setEnableAddButton(true); // always enable last + button.
             }
         }
 
-        if (disposeContent)
-        {
+        if (disposeContent) {
             JComponent content = tab.getContent();
-            if (content instanceof Disposable)
-            {
+            if (content instanceof Disposable) {
                 ((Disposable) content).dispose();
             }
         }
@@ -572,39 +536,35 @@ public class BrowserFrame extends JFrame
         return true;
     }
 
-    public TabContentPanel getTab(int index)
-    {
+    public TabContentPanel getTab(int index) {
         Component tab = this.uiRightTabPane.getComponent(index);
-        if (tab instanceof TabContentPanel)
-        {
+        if (tab instanceof TabContentPanel) {
             return ((TabContentPanel) tab);
         }
         return null;
     }
 
-    public NavigationBar getNavigationBar()
-    {
+    public NavigationBar getNavigationBar() {
         return this.uiNavigationBar;
     }
 
-    private ImageIcon loadIcon(String urlstr)
-    {
+    private ImageIcon loadIcon(String urlstr) {
         return new ImageIcon(getClass().getClassLoader().getResource(urlstr));
     }
 
-    public void setViewMode(BrowserViewMode mode)
-    {
+    public void setViewMode(BrowserViewMode mode) {
 
-        switch (mode)
-        {
+        switch (mode) {
             case ICONS16:
             case ICONS48:
             case ICONS96:
-                this.getIconsPanel(true).updateUIModel(UIViewModel.createIconsModel(mode.getIconSize()));
+                this.getIconsPanel(true).updateUIModel(
+                        UIViewModel.createIconsModel(mode.getIconSize()));
                 break;
             case ICONLIST16:
             case ICONSLIST48:
-                this.getIconsPanel(true).updateUIModel(UIViewModel.createIconsListModel(mode.getIconSize()));
+                this.getIconsPanel(true).updateUIModel(
+                        UIViewModel.createIconsListModel(mode.getIconSize()));
                 break;
             case TABLE:
                 this.updateTableTab(true, this.getViewedProxyNode());
@@ -618,8 +578,7 @@ public class BrowserFrame extends JFrame
         }
     }
 
-    protected ProxyNode getViewedProxyNode()
-    {
+    protected ProxyNode getViewedProxyNode() {
         TabContentPanel tab = getCurrentTab();
 
         if (tab == null)
@@ -629,30 +588,21 @@ public class BrowserFrame extends JFrame
 
         ProxyDataSource dataSource = null;
 
-        if (comp instanceof IconsPanel)
-        {
+        if (comp instanceof IconsPanel) {
             dataSource = ((IconsPanel) comp).getDataSource();
-        }
-        else if (comp instanceof ResourceTable)
-        {
+        } else if (comp instanceof ResourceTable) {
             dataSource = ((ResourceTable) comp).getDataSource();
-        }
-        else if (comp instanceof ResourceTree)
-        {
+        } else if (comp instanceof ResourceTree) {
             dataSource = ((ResourceTree) comp).getDataSource();
         }
-        if (dataSource == null)
-        {
+        if (dataSource == null) {
             return null;
-        }
-        else
-        {
+        } else {
             return dataSource.getRootNode();
         }
     }
 
-    public void setTabTitle(TabContentPanel tab, String name)
-    {
+    public void setTabTitle(TabContentPanel tab, String name) {
         int index = this.uiRightTabPane.indexOfComponent(tab);
 
         if (index < 0)
@@ -660,12 +610,9 @@ public class BrowserFrame extends JFrame
 
         Component tabComp = uiRightTabPane.getTabComponentAt(index);
 
-        if (tabComp instanceof TabTopLabelPanel)
-        {
+        if (tabComp instanceof TabTopLabelPanel) {
             ((TabTopLabelPanel) tabComp).setTabLabelText(name);
-        }
-        else
-        {
+        } else {
             logger.errorPrintf("FIXME:Component is not a TabTopLabelPanel:%s\n", tabComp);
         }
 

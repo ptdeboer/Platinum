@@ -25,32 +25,31 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 
-/** 
- * @author Piter T. de Boer. 
+/**
+ * Default File Browser.
  */
-public class StartFileBrowser 
-{
+public class StartFileBrowser {
 
-	public static void main(String args[])
-	{
-		try 
-		{
-		    // Start plain File Browser. 
-			BrowserPlatform platform=BrowserPlatform.getInstance("vbrowser"); 
-		        
-		    ProxyBrowserController frame=(ProxyBrowserController)platform.createBrowser();
-		    VRSProxyFactory fac = VRSProxyFactory.createFor(platform);  
-		    platform.registerProxyFactory(fac); 
+    /**
+     * Start VBrowser with default plugins.
+     */
+    public static void main(String args[]) {
+        try {
+            // Start plain File Browser. 
+            BrowserPlatform platform = BrowserPlatform.getInstance("vbrowser");
 
-		    // startin location. 
-			ProxyNode root = fac.openLocation("file:/home/");
-			frame.setRoot(root,true,true); 
-			
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		} 
-		
-	}
+            // init VRSProxy
+            ProxyBrowserController frame = (ProxyBrowserController) platform.createBrowser();
+            VRSProxyFactory fac = VRSProxyFactory.createFor(platform);
+            platform.registerProxyFactory(fac);
+
+            // starting location. 
+            ProxyNode root = fac.openLocation("file:/home/");
+            frame.setRoot(root, true, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

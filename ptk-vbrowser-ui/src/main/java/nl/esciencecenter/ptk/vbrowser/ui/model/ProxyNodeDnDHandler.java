@@ -30,33 +30,29 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Default DnD Handler for ViewNodes.
  */
-public class ProxyNodeDnDHandler
-{
+public class ProxyNodeDnDHandler {
 
-    public static enum DropAction
-    {
+    public static enum DropAction {
         COPY, MOVE, LINK, COPY_PASTE, CUT_PASTE
     };
 
     private static ProxyNodeDnDHandler defaultInstance = null;
 
-    public static ProxyNodeDnDHandler getInstance()
-    {
-        if (defaultInstance == null)
-        {
+    public static ProxyNodeDnDHandler getInstance() {
+        if (defaultInstance == null) {
             defaultInstance = new ProxyNodeDnDHandler();
         }
         return defaultInstance;
     }
 
-    public ProxyNodeDnDHandler()
-    {
-        
+    public ProxyNodeDnDHandler() {
+
     }
 
-    public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vris, ITaskMonitor taskMonitor) throws ProxyException
-    {
-        System.err.printf("FIXME: ViewNodeDnDHandler.doDrop:%s:%s:", dropAction, new ExtendedList<VRL>(vris));
+    public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vris,
+            ITaskMonitor taskMonitor) throws ProxyException {
+        System.err.printf("FIXME: ViewNodeDnDHandler.doDrop:%s:%s:", dropAction,
+                new ExtendedList<VRL>(vris));
         return true;
     }
 

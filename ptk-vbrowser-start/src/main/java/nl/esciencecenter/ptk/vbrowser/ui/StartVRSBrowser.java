@@ -33,58 +33,50 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Start VBrowser with Virtual Resource System.
  */
-public class StartVRSBrowser
-{
-    public static void main(String args[])
-    {
-        try
-        {
+public class StartVRSBrowser {
+    public static void main(String args[]) {
+        try {
             startVBrowser(args);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static BrowserPlatform getPlatform()
-    {
+    public static BrowserPlatform getPlatform() {
         return BrowserPlatform.getInstance("vbrowser");
     }
 
-    public static void initVRSPlugins(VRSContext context)
-    {
-        try
-        {
+    public static void initVRSPlugins(VRSContext context) {
+        try {
             context.getRegistry().registerFactory(SftpFileSystemFactory.class);
-        }
-        catch (InstantiationException | IllegalAccessException e)
-        {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
     }
 
-    public static void initVRSViewers(BrowserPlatform platform)
-    {
+    public static void initVRSViewers(BrowserPlatform platform) {
         platform.getViewerRegistry().registerViewer(VTermStarter.class);
     }
 
-    public static ProxyBrowserController startVBrowser(String args[]) throws Exception
-    {
+    public static ProxyBrowserController startVBrowser(String args[]) throws Exception {
         // BrowserPlatform/Context
         BrowserPlatform platform = getPlatform();
 
         // VRSContext
         VRSContext context = platform.getVRSContext();
+
+        // Setting the persistant configuration location before initializing the plugins allow
+        // the plugins to read from the configuration.
         VRL config = context.getHomeVRL().resolvePath(".vrsrc");
-        platform.setPersistantConfigLocation(config, true);
+        platform.setPersistantConfigLocation(config, false);
 
         // Init VRSRegistry/VRSPlugins
-        // Do this preferably after enabling the persistent configuration environment
-        // to load optional persistant VRS Configurations.
         initVRSPlugins(context);
         initVRSViewers(platform);
+
+        // Now enable location to load()/save
+        platform.setPersistantConfigLocation(config, true);
 
         // Actual ProxyBrowser
         ProxyBrowserController browser = (ProxyBrowserController) platform.createBrowser();
@@ -100,7 +92,8 @@ public class StartVRSBrowser
 
         rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null, false);
         rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null, false);
-        rootNode.addResourceLink("My Links", "sftp://" + user + "@localhost:22/", new VRL("sftp://" + user + "@localhost:22/"), null, false);
+        rootNode.addResourceLink("My Links", "sftp://" + user + "@localhost:22/", new VRL("sftp://"
+                + user + "@localhost:22/"), null, false);
 
         // main location to start browsing:
         ProxyNode root = fac.openLocation("info:/");

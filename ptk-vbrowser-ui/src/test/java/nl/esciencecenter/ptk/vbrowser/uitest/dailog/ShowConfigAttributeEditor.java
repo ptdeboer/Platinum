@@ -9,10 +9,8 @@ import nl.esciencecenter.vbrowser.vrs.dummyrs.DummyRSFactory;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ShowConfigAttributeEditor
-{
-    public static void main(String args[])
-    {
+public class ShowConfigAttributeEditor {
+    public static void main(String args[]) {
         PLogger.getRootLogger().setLevelToDebug();
 
         int len = 20;
@@ -23,23 +21,21 @@ public class ShowConfigAttributeEditor
 
         VRSContext context = VRS.createVRSContext(null);
 
-        try
-        {
+        try {
             context.getRegistry().registerFactory(DummyRSFactory.class);
-            
-            info = context.getResourceSystemInfoFor(new VRL("dummy://username@dummy.localhost.nocom:1234/?par1=par1Value&par2=par2Value#index"),
-                    true);
 
-            Attribute infoAttrs[] = info.getAttributeSet().toArray();
+            info = context
+                    .getResourceSystemInfoFor(
+                            new VRL(
+                                    "dummy://username@dummy.localhost.nocom:1234/?par1=par1Value&par2=par2Value#index"),
+                            true);
 
-            for (int i = 0; i < len; i++)
-            {
-                if ((i < infoAttrs.length) && (infoAttrs[i] != null))
-                {
+            Attribute infoAttrs[] = info.getConfigAttributeSet().toArray();
+
+            for (int i = 0; i < len; i++) {
+                if ((i < infoAttrs.length) && (infoAttrs[i] != null)) {
                     attrs[i] = infoAttrs[i];
-                }
-                else
-                {
+                } else {
                     attrs[i] = new Attribute("Field:" + i, "Value" + i);
                     attrs[i].setEditable((i % 2) == 0);
                 }
@@ -54,13 +50,10 @@ public class ShowConfigAttributeEditor
             if ((attrs == null) || (attrs.length <= 0))
                 System.out.println("NO NEW ATTRIBUTES!");
             else
-                for (Attribute a : attrs)
-                {
+                for (Attribute a : attrs) {
                     System.out.println(">>> Changed Attrs[" + i++ + "]=" + a);
                 }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

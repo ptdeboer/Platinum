@@ -57,20 +57,18 @@ public class UserRobot implements UserInfo, UIKeyboardInteractive {
     }
 
     @Override
-    public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompts,
-            boolean[] echo)
-    {
-        System.out.printf(" Destination:%s\n",destination);
-        System.out.printf("        name:%s\n",name);
-        System.out.printf(" instruction:%s\n",instruction);
+    public String[] promptKeyboardInteractive(String destination, String name, String instruction,
+            String[] prompts, boolean[] echo) {
+        System.out.printf(" Destination:%s\n", destination);
+        System.out.printf("        name:%s\n", name);
+        System.out.printf(" instruction:%s\n", instruction);
 
-        for (String prompt:prompts) {
-            System.out.printf(" - prompt:'%s'\n",prompt);
+        for (String prompt : prompts) {
+            System.out.printf(" - prompt:'%s'\n", prompt);
         }
 
-        if ((prompts.length==1) && (prompts[0].compareToIgnoreCase("Password:")==0))
-        {
-            return new String[]{new String (passwd)};
+        if ((prompts.length == 1) && (prompts[0].compareToIgnoreCase("Password:") == 0)) {
+            return new String[] { new String(passwd) };
         }
 
         return null;

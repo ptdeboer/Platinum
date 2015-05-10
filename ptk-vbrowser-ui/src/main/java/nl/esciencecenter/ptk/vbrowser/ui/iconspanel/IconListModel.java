@@ -34,67 +34,52 @@ public class IconListModel // implements ListModel
 
     protected Vector<ListDataListener> listeners = new Vector<ListDataListener>();
 
-    public IconListModel()
-    {
+    public IconListModel() {
 
     }
 
     // @Override
-    public int getSize()
-    {
+    public int getSize() {
         return icons.size();
     }
 
     // @Override
-    public IconItem getElementAt(int index)
-    {
+    public IconItem getElementAt(int index) {
         return icons.get(index);
     }
 
     // @Override
-    public void addListDataListener(ListDataListener l)
-    {
+    public void addListDataListener(ListDataListener l) {
         listeners.add(l);
     }
 
     // @Override
-    public void removeListDataListener(ListDataListener l)
-    {
+    public void removeListDataListener(ListDataListener l) {
         listeners.remove(l);
     }
 
-    public ListDataListener[] getListeners()
-    {
-        synchronized (this.listeners)
-        {
+    public ListDataListener[] getListeners() {
+        synchronized (this.listeners) {
             ListDataListener _arr[] = new ListDataListener[this.listeners.size()];
             _arr = this.listeners.toArray(_arr);
             return _arr;
         }
     }
 
-    public void setItems(IconItem[] items)
-    {
-        if (this.icons == null)
-        {
+    public void setItems(IconItem[] items) {
+        if (this.icons == null) {
             icons = new Vector<IconItem>();
-        }
-        else
-        {
-            synchronized (this.icons)
-            {
+        } else {
+            synchronized (this.icons) {
                 icons.clear();
             }
         }
 
-        synchronized (this.icons)
-        {
+        synchronized (this.icons) {
             // add item and fire event per item if this is an incremental
             // update;
-            if (items != null)
-            {
-                for (IconItem item : items)
-                {
+            if (items != null) {
+                for (IconItem item : items) {
                     addItem(item, false);
                 }
             }
@@ -103,108 +88,83 @@ public class IconListModel // implements ListModel
         this.uiFireContentsChanged();
     }
 
-    public void addItem(IconItem item, boolean fireEvent)
-    {
+    public void addItem(IconItem item, boolean fireEvent) {
         int pos;
 
-        synchronized (icons)
-        {
+        synchronized (icons) {
             pos = this.icons.size();
             this.icons.add(item);
         }
 
-        if (fireEvent)
-        {
+        if (fireEvent) {
             uiFireChildAdded(pos);
         }
     }
 
-    public void setItem(int index,IconItem item, boolean fireEvent)
-    {
+    public void setItem(int index, IconItem item, boolean fireEvent) {
 
-        synchronized (icons)
-        {
-            icons.set(index, item); 
+        synchronized (icons) {
+            icons.set(index, item);
         }
 
-        if (fireEvent)
-        {
-            uiFireContentsChanged(index,index); 
+        if (fireEvent) {
+            uiFireContentsChanged(index, index);
         }
     }
 
-    
-    public int itemIndex(VRL vrl)
-    {
-        synchronized (icons)
-        {
-            for (int i=0;i<icons.size();i++)
-            {
-                IconItem item=icons.get(i);  
-                
-                if (item.getViewNode().matches(vrl))
-                {
-                    return i; 
+    public int itemIndex(VRL vrl) {
+        synchronized (icons) {
+            for (int i = 0; i < icons.size(); i++) {
+                IconItem item = icons.get(i);
+
+                if (item.getViewNode().matches(vrl)) {
+                    return i;
                 }
             }
         }
         return -1;
     }
 
-    public IconItem findItem(VRL vrl)
-    {
-        int index=this.itemIndex(vrl);
-        
-        if (index<0)
-        {
+    public IconItem findItem(VRL vrl) {
+        int index = this.itemIndex(vrl);
+
+        if (index < 0) {
             return null;
-        }
-        else
-        {
-            return icons.get(index); 
+        } else {
+            return icons.get(index);
         }
     }
 
-    
-    public IconItem deleteItem(VRL vrl, boolean fireEvent)
-    {
+    public IconItem deleteItem(VRL vrl, boolean fireEvent) {
         IconItem delItem = null;
-        int index=-1; 
-        
-        synchronized (icons)
-        {
-            index=this.itemIndex(vrl);
-            if (index<0)
-            {
+        int index = -1;
+
+        synchronized (icons) {
+            index = this.itemIndex(vrl);
+            if (index < 0) {
                 return null;
             }
-            
-            delItem=icons.remove(index);  
+
+            delItem = icons.remove(index);
         }
-        
-        if (fireEvent)
-        {   
+
+        if (fireEvent) {
             this.uiFireRangeRemoved(index, index);
         }
-        
-        return delItem; 
+
+        return delItem;
     }
 
-    public void uiFireRangeRemoved(final int pos)
-    {
+    public void uiFireRangeRemoved(final int pos) {
         uiFireRangeRemoved(pos, pos);
     }
 
-    public void uiFireRangeRemoved(final int pos, final int inclusiveEndPos)
-    {
+    public void uiFireRangeRemoved(final int pos, final int inclusiveEndPos) {
 
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable updater = new Runnable()
-            {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable updater = new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     uiFireRangeRemoved(pos, inclusiveEndPos);
                 }
             };
@@ -214,23 +174,19 @@ public class IconListModel // implements ListModel
         }
 
         // range is inclusive: [pos,pos]
-        ListDataEvent event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, pos, inclusiveEndPos);
+        ListDataEvent event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, pos,
+                inclusiveEndPos);
 
-        for (ListDataListener l : getListeners())
-        {
+        for (ListDataListener l : getListeners()) {
             l.intervalRemoved(event);
         }
     }
 
-    public void uiFireChildAdded(final int pos)
-    {
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable updater = new Runnable()
-            {
+    public void uiFireChildAdded(final int pos) {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable updater = new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     uiFireChildAdded(pos);
                 }
             };
@@ -246,20 +202,15 @@ public class IconListModel // implements ListModel
             l.intervalAdded(event);
     }
 
-    public void uiFireContentsChanged()
-    {
-        uiFireContentsChanged(0,icons.size()-1);
+    public void uiFireContentsChanged() {
+        uiFireContentsChanged(0, icons.size() - 1);
     }
-    
-    public void uiFireContentsChanged(int starPos,int inclusiveEndPos)
-    {
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable updater = new Runnable()
-            {
+
+    public void uiFireContentsChanged(int starPos, int inclusiveEndPos) {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable updater = new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     uiFireContentsChanged();
                 }
             };
@@ -269,10 +220,10 @@ public class IconListModel // implements ListModel
         }
 
         // range is inclusive: [pos,pos]
-        ListDataEvent event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, starPos, inclusiveEndPos);
+        ListDataEvent event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, starPos,
+                inclusiveEndPos);
 
-        for (ListDataListener l : getListeners())
-        {
+        for (ListDataListener l : getListeners()) {
             l.contentsChanged(event);
         }
     }

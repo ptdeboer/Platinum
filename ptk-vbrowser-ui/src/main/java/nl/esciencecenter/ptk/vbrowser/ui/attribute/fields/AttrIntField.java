@@ -27,38 +27,32 @@ import javax.swing.JOptionPane;
 
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-public class AttrIntField extends AttrParameterField
-{
+public class AttrIntField extends AttrParameterField {
+
     private static final long serialVersionUID = 7696454286584865802L;
 
-    public AttrIntField()
-    {
-        super("<AttrIntField>"); 
+    public AttrIntField() {
+        super("<AttrIntField>");
         init();
     }
 
-    public AttrIntField(String name,String  value)
-    {
+    public AttrIntField(String name, String value) {
         super();
         this.setName(name);
         this.setText(value);
         init();
     }
 
-    public AttrIntField(String name, int dummyValue)
-    {
+    public AttrIntField(String name, int dummyValue) {
         super();
         this.setName(name);
         this.setText("" + dummyValue);
         init();
     }
 
-    protected void init()
-    {
-        setInputVerifier(new InputVerifier()
-        {
-            public boolean verify(JComponent input)
-            {
+    protected void init() {
+        setInputVerifier(new InputVerifier() {
+            public boolean verify(JComponent input) {
                 if (!(input instanceof AttrIntField))
                     return true; // give up focus
                 return ((AttrIntField) input).isEditValid();
@@ -67,74 +61,55 @@ public class AttrIntField extends AttrParameterField
     }
 
     // Set text without checking !
-    protected void setActualText(String txt)
-    {
+    protected void setActualText(String txt) {
         super.setText(txt);
     }
 
-    public boolean isInteger(String txt)
-    {
-        try
-        {
+    public boolean isInteger(String txt) {
+        try {
             Integer.parseInt(txt);
             return true;
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
 
-    protected boolean isEditValid()
-    {
+    protected boolean isEditValid() {
         if (isInteger(getText()))
             return true;
 
-        int val = JOptionPane.showConfirmDialog(this.getRootPane(), "Value is not an valid integer",
-                "Invalid Integer", JOptionPane.OK_CANCEL_OPTION);
-        if (val == JOptionPane.CANCEL_OPTION)
-        {
+        int val = JOptionPane.showConfirmDialog(this.getRootPane(),
+                "Value is not an valid integer", "Invalid Integer", JOptionPane.OK_CANCEL_OPTION);
+        if (val == JOptionPane.CANCEL_OPTION) {
             this.setActualText("0");
             return true; // reset
-        }
-        else
-        {
+        } else {
             return false; // try again
         }
     }
 
-    public AttributeType getVAttributeType()
-    {
+    public AttributeType getVAttributeType() {
         return AttributeType.INT;
     }
 
-    public void setText(String txt)
-    {
-        try
-        {
+    public void setText(String txt) {
+        try {
             int i = Integer.parseInt(txt);
             setValue(i);
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             setActualText("");
         }
     }
 
-    public void setValue(int val)
-    {
+    public void setValue(int val) {
         setActualText("" + val);
     }
 
-    public int getIntValue()
-    {
-        try
-        {
+    public int getIntValue() {
+        try {
             int i = Integer.parseInt(getText());
             return i;
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             setActualText("");
         }
         return -1; // N/A

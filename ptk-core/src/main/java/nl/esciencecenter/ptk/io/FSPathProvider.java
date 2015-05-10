@@ -29,18 +29,18 @@ import java.util.List;
 
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 
-/** 
- * FileSystem interface for resolving local filenames and URIs.
+/**
+ * Combined interface for resolving both local filenames and URIs.
  */
-public interface FSPathProvider
-{
-    public abstract String[] getSchemes(); 
+public interface FSPathProvider {
 
     public abstract List<FSPath> listRoots();
-    
+
     public abstract URI resolvePathURI(String path) throws FileURISyntaxException;
-    
-    public abstract FSPath newFSPath(java.net.URI uri) throws IOException;
+
+    public abstract FSPath resolvePath(String path) throws FileURISyntaxException;
+
+    public abstract FSPath resolvePath(java.net.URI uri) throws FileURISyntaxException;
 
     public abstract RandomReadable createRandomReader(FSPath node) throws IOException;
 
@@ -48,7 +48,7 @@ public interface FSPathProvider
 
     public abstract InputStream createInputStream(FSPath node) throws IOException;
 
-    public abstract OutputStream createOutputStream(FSPath node,boolean append) throws IOException;
+    public abstract OutputStream createOutputStream(FSPath node, boolean append) throws IOException;
 
     public abstract LinkOption[] linkOptions();
 

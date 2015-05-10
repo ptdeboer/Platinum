@@ -28,13 +28,11 @@ import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
+public class AttrPortField extends AttrIntField implements FocusListener {
 
-public class AttrPortField extends AttrIntField implements FocusListener
-{
     private static final long serialVersionUID = 7696454286584865802L;
 
-    public AttrPortField()
-    {
+    public AttrPortField() {
         super();
         super.setText("<AttrPortField>"); // dummy
         // Make Sure I AM the first listener
@@ -42,25 +40,20 @@ public class AttrPortField extends AttrIntField implements FocusListener
         init();
     }
 
-    public AttrPortField(String name, int i)
-    {
+    public AttrPortField(String name, int i) {
         super(name, "" + i);
         init();
     }
 
-    public AttrPortField(String name, String value)
-    {
+    public AttrPortField(String name, String value) {
         super(name, 0);
         setText(value);
         init();
     }
 
-    protected void init()
-    {
-        setInputVerifier(new InputVerifier()
-        {
-            public boolean verify(JComponent input)
-            {
+    protected void init() {
+        setInputVerifier(new InputVerifier() {
+            public boolean verify(JComponent input) {
                 if (!(input instanceof AttrIntField))
                     return true; // give up focus
                 return ((AttrPortField) input).isEditValid();
@@ -68,47 +61,37 @@ public class AttrPortField extends AttrIntField implements FocusListener
         });
     }
 
-    protected boolean isEditValid()
-    {
+    protected boolean isEditValid() {
         String txt = getText();
 
-        if (isInteger(txt) == false)
-        {
-            int val = JOptionPane.showConfirmDialog(this.getRootPane(), "Value is not a port value::"+txt,
-                    "Invalid Port Value",
+        if (isInteger(txt) == false) {
+            int val = JOptionPane.showConfirmDialog(this.getRootPane(),
+                    "Value is not a port value::" + txt, "Invalid Port Value",
                     JOptionPane.OK_CANCEL_OPTION);
-            if (val == JOptionPane.CANCEL_OPTION)
-            {
+            if (val == JOptionPane.CANCEL_OPTION) {
                 this.setText("0");
                 return true; // reset
-            }
-            else
-            {
+            } else {
                 return false; // try again
             }
         }
 
         int i = getIntValue();
 
-        if ((i < -1) || (i > 65535))
-        {
+        if ((i < -1) || (i > 65535)) {
             String text[] = new String[1];
             text[0] = "Port number must be between 0 and 65535";
 
             // int
             // val=UIGlobal.getMasterUI().askInput("Invalid Port",text,JOptionPane.OK_CANCEL_OPTION);
             int val = JOptionPane.showConfirmDialog(this.getRootPane(),
-                    "Valued is not a valid port value:"+txt,
-                    "Invalid port",
+                    "Valued is not a valid port value:" + txt, "Invalid port",
                     JOptionPane.OK_CANCEL_OPTION);
 
-            if (val == JOptionPane.CANCEL_OPTION)
-            {
+            if (val == JOptionPane.CANCEL_OPTION) {
                 setActualText("0");
                 return true; // reset
-            }
-            else
-            {
+            } else {
                 return false; // try again
             }
         }
@@ -117,8 +100,7 @@ public class AttrPortField extends AttrIntField implements FocusListener
 
     }
 
-    public void focusGained(FocusEvent e)
-    {
+    public void focusGained(FocusEvent e) {
         String txt = this.getText();
         // clear !
         if (isEditable())
@@ -126,8 +108,7 @@ public class AttrPortField extends AttrIntField implements FocusListener
                 super.setText("");
     }
 
-    public void focusLost(FocusEvent e)
-    {
+    public void focusLost(FocusEvent e) {
 
     }
 }

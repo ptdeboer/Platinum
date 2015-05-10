@@ -31,7 +31,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.TooManyListenersException;
@@ -56,335 +55,290 @@ import nl.esciencecenter.ptk.jfx.util.FXFileChooser.ChooserType;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
-public class LocationSelectionField extends JPanel implements URIDropTargetLister
-{
+public class LocationSelectionField extends JPanel implements URIDropTargetLister {
     private static final long serialVersionUID = 7668815810402466501L;
- 
-    public static enum LocationType { FileType, DirType, URIType }; 
-    
-    public class FileLocationEvaluator implements ActionListener, FocusListener
-    {
-    	private JTextField locationTF;
-    	//Color originalBGColor; 
-    	
-    	public FileLocationEvaluator(JTextField textField)
-    	{
-    		this.locationTF=textField;
-    		//originalBGColor=textField.getBackground(); 
-    	}
 
-    	@Override
-    	public void actionPerformed(ActionEvent e) 
-    	{
-    	    evaluate();
-    	}
-    	
-    	public boolean evaluate()
-    	{
-    		String text=locationTF.getText();
-    		StringHolder reasonH=new StringHolder(); 
-    		boolean isValidPath=FSUtil.getDefault().isValidPathSyntax(text,reasonH); 
-    		if (isValidPath==false)
-    		{
-    		    showError(reasonH.value);
-    		    return false; 
-    		}
-    		
-    		try
-    		{
-    			java.net.URI uri;
-    			uri = FSUtil.getDefault().resolvePathURI(text);
-    			if (locationType==LocationType.URIType)
-    			{
-    			    locationTF.setText(uri.toString());
-    			}
-    			else
-    			{
-    			    locationTF.setText(uri.getPath());
-    			}
-    			//locationTF.setBackground(originalBGColor);
-    			
-    			locationTF.setToolTipText("Enter location."); 
-    			return true; 
-    		}
-    		catch (FileURISyntaxException e1) 
-    		{
-    		    showError("Syntax Error: Not a valid path or URI:"+e1.getInput());
-    			//locationTF.setBackground(Color.RED);
-    			return false;
-    		}
-    	}
+    public static enum LocationType {
+        FileType, DirType, URIType
+    };
 
-    	public void showError(String errorTxt)
-        {
-    	    locationTF.setToolTipText("Syntax Error:"+errorTxt); 
+    public class FileLocationEvaluator implements ActionListener, FocusListener {
+        private JTextField locationTF;
+
+        //Color originalBGColor; 
+
+        public FileLocationEvaluator(JTextField textField) {
+            this.locationTF = textField;
+            //originalBGColor=textField.getBackground(); 
         }
 
         @Override
-		public void focusGained(FocusEvent e) 
-		{
-		}
+        public void actionPerformed(ActionEvent e) {
+            evaluate();
+        }
 
-		@Override
-		public void focusLost(FocusEvent e)
-		{
-			evaluate(); 
-		}
-    }
+        public boolean evaluate() {
+            String text = locationTF.getText();
+            StringHolder reasonH = new StringHolder();
+            boolean isValidPath = FSUtil.getDefault().isValidPathSyntax(text, reasonH);
+            if (isValidPath == false) {
+                showError(reasonH.value);
+                return false;
+            }
 
-    public class LSFMouseListener extends MouseAdapter
-    {
-        public LSFMouseListener() {}
+            try {
+                java.net.URI uri;
+                uri = FSUtil.getDefault().resolvePathURI(text);
+                if (locationType == LocationType.URIType) {
+                    locationTF.setText(uri.toString());
+                } else {
+                    locationTF.setText(uri.getPath());
+                }
+                //locationTF.setBackground(originalBGColor);
+
+                locationTF.setToolTipText("Enter location.");
+                return true;
+            } catch (FileURISyntaxException e1) {
+                showError("Syntax Error: Not a valid path or URI:" + e1.getInput());
+                //locationTF.setBackground(Color.RED);
+                return false;
+            }
+        }
+
+        public void showError(String errorTxt) {
+            locationTF.setToolTipText("Syntax Error:" + errorTxt);
+        }
 
         @Override
-        public void mousePressed(MouseEvent e)
-        {
-            if ( (isLocationEnabled()==false) || (isLocationEditable()==false) )
-                return; 
-            
-            if (enableMetaMenu==false)
-                return; 
-            
-            Object source = e.getSource(); 
-            boolean show=false;
-            
+        public void focusGained(FocusEvent e) {
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            evaluate();
+        }
+    }
+
+    public class LSFMouseListener extends MouseAdapter {
+        public LSFMouseListener() {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if ((isLocationEnabled() == false) || (isLocationEditable() == false))
+                return;
+
+            if (enableMetaMenu == false)
+                return;
+
+            Object source = e.getSource();
+            boolean show = false;
+
             // left click on icon 
-            if ( (source==fileIconLbl) && ((e.getModifiers() & Event.META_MASK)==0) )
-                show=true;
-            
+            if ((source == fileIconLbl) && ((e.getModifiers() & Event.META_MASK) == 0))
+                show = true;
+
             // right (meta) click on TextField:
-            if ( (source==locationTF) && ((e.getModifiers() & Event.META_MASK)>0) )
-                show=true;
-            
-            if (show)
-            {
-                showMetaMenu(e.getX(),e.getY()); 
+            if ((source == locationTF) && ((e.getModifiers() & Event.META_MASK) > 0))
+                show = true;
+
+            if (show) {
+                showMetaMenu(e.getX(), e.getY());
             }
         }
     }
-    
+
     // ========
     // Instance 
     // ========
-    
+
     private JTextField locationTF;
-    
+
     private JLabel fileIconLbl;
 
-    protected LocationType locationType=LocationType.FileType; 
-    
-    protected String fileExtensions[]=null;
-    
-    protected boolean enableMetaMenu=true;
+    protected LocationType locationType = LocationType.FileType;
 
-    private LSFMouseListener fieldMouseListener; 
-    
-    public LocationSelectionField(LocationType type)
-    {
-        this.locationType=type; 
+    protected String fileExtensions[] = null;
+
+    protected boolean enableMetaMenu = true;
+
+    private LSFMouseListener fieldMouseListener;
+
+    public LocationSelectionField(LocationType type) {
+        this.locationType = type;
         initGui();
         initDnD();
     }
 
-    public void initGui()
-    {
-        this.fieldMouseListener=new LSFMouseListener();
-        
+    public void initGui() {
+        this.fieldMouseListener = new LSFMouseListener();
+
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBorder(new LineBorder(Color.GRAY));
-        
+
         {
             fileIconLbl = new JLabel("");
             add(fileIconLbl);
             fileIconLbl.setIcon(loadIcon("files/directory16.png"));
             fileIconLbl.addMouseListener(fieldMouseListener);
         }
-        
+
         {
             locationTF = new JTextField();
             locationTF.setForeground(Color.BLACK);
             add(locationTF);
             locationTF.setColumns(10);
-            locationTF.setBorder(new EmptyBorder(2,2,2,2));
+            locationTF.setBorder(new EmptyBorder(2, 2, 2, 2));
             locationTF.addMouseListener(fieldMouseListener);
-            
-            FileLocationEvaluator evaluator=new FileLocationEvaluator(locationTF);
+
+            FileLocationEvaluator evaluator = new FileLocationEvaluator(locationTF);
             locationTF.addActionListener(evaluator);
             locationTF.addFocusListener(evaluator);
         }
-        
+
         {
-            JLabel fileSelectorIconLbl = new JLabel("|");   
+            JLabel fileSelectorIconLbl = new JLabel("|");
             add(fileSelectorIconLbl);
         }
     }
-    
-    private Icon loadIcon(String iconUrl)
-    {
+
+    private Icon loadIcon(String iconUrl) {
         URL url = getClass().getClassLoader().getResource(iconUrl);
-        if (url==null)
-            return IconProvider.getDefault().getMiniBrokenImageIcon(); 
+        if (url == null)
+            return IconProvider.getDefault().getMiniBrokenImageIcon();
         return new ImageIcon(url);
     }
 
     // Accepts both URI and non URI text. 
-    public void setLocationText(String txt)
-    {
-        this.locationTF.setText(txt); 
+    public void setLocationText(String txt) {
+        this.locationTF.setText(txt);
     }
 
-    public void setLocationURI(java.net.URI uri)
-    {
-    	switch (locationType)
-    	{
-    		case DirType:
-    		case FileType:
-    	        this.locationTF.setText(uri.getPath());   
-    			break;
-		case URIType:
-				this.locationTF.setText(uri.toString()); 
-			break;
-		default:
-			throw new Error("InternalError: Invalid LocationType:"+locationType); 
-    	}
-    	
+    public void setLocationURI(java.net.URI uri) {
+        switch (locationType) {
+            case DirType:
+            case FileType:
+                this.locationTF.setText(uri.getPath());
+                break;
+            case URIType:
+                this.locationTF.setText(uri.toString());
+                break;
+            default:
+                throw new Error("InternalError: Invalid LocationType:" + locationType);
+        }
+
     }
 
-    public java.net.URI getLocationURI() throws FileURISyntaxException
-    {	
-    	// Use FSUtil to resolve URI: 
-    	return FSUtil.getDefault().resolvePathURI(locationTF.getText()); 
-    }
-    
-    public boolean isURI()
-    {
-    	try
-    	{
-    		return (getLocationURI()!=null); 
-    	}
-    	catch (FileURISyntaxException e)
-    	{
-    		return false; 
-    	}
-    }
-    
-    public void setFileIcon(Icon icon)
-    {
-        fileIconLbl.setIcon(icon); 
-    }
-    
-    public void setTextFont(Font font)
-    {
-        this.locationTF.setFont(font); 
+    public java.net.URI getLocationURI() throws FileURISyntaxException {
+        // Use FSUtil to resolve URI: 
+        return FSUtil.getDefault().resolvePathURI(locationTF.getText());
     }
 
-    public void setLocationActionCommand(String commandString)
-    {
+    public boolean isURI() {
+        try {
+            return (getLocationURI() != null);
+        } catch (FileURISyntaxException e) {
+            return false;
+        }
+    }
+
+    public void setFileIcon(Icon icon) {
+        fileIconLbl.setIcon(icon);
+    }
+
+    public void setTextFont(Font font) {
+        this.locationTF.setFont(font);
+    }
+
+    public void setLocationActionCommand(String commandString) {
         this.locationTF.setActionCommand(commandString);
     }
 
-    public void addLocationActionListener(ActionListener controller)
-    {
-        this.locationTF.addActionListener(controller); 
+    public void addLocationActionListener(ActionListener controller) {
+        this.locationTF.addActionListener(controller);
     }
 
-    public String getLocationText()
-    {
+    public String getLocationText() {
         return locationTF.getText();
     }
 
-    public void setLocationEnabled(boolean value)
-    {
-        locationTF.setEnabled(value); 
-    }
-    
-    public boolean isLocationEnabled()
-    {
-        return locationTF.isEnabled(); 
-    }
-    
-    public void setLocationEditable(boolean value)
-    {
-        locationTF.setEditable(value); 
+    public void setLocationEnabled(boolean value) {
+        locationTF.setEnabled(value);
     }
 
-    public boolean isLocationEditable()
-    {
-        return locationTF.isEditable(); 
+    public boolean isLocationEnabled() {
+        return locationTF.isEnabled();
     }
 
-    /** 
-     * Adds default support for dropped URI and URls. 
+    public void setLocationEditable(boolean value) {
+        locationTF.setEditable(value);
+    }
+
+    public boolean isLocationEditable() {
+        return locationTF.isEditable();
+    }
+
+    /**
+     * Adds default support for dropped URI and URls.
      */
-    protected void initDnD()
-    {
-        DropTarget dt1=new DropTarget(); 
-        DropTarget dt2=new DropTarget(); 
+    protected void initDnD() {
+        DropTarget dt1 = new DropTarget();
+        DropTarget dt2 = new DropTarget();
 
         // enable toolbar and icontext field:  
         this.fileIconLbl.setDropTarget(dt1);
-        this.locationTF.setDropTarget(dt2); 
-        
-        try
-        { 
+        this.locationTF.setDropTarget(dt2);
+
+        try {
             dt1.addDropTargetListener(new URIDropHandler(this));
             dt2.addDropTargetListener(new URIDropHandler(this));
-        }
-        catch (TooManyListenersException e)
-        {
-            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e, "TooManyListenersException:"+e);
-        }
-    }
-
-    public void notifyUriDrop(List<URI> uris)
-    {
-        if ((uris!=null) && (uris.size()>0)) 
-        {
-            this.locationTF.setText(uris.get(0).toString());         
+        } catch (TooManyListenersException e) {
+            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e,
+                    "TooManyListenersException:" + e);
         }
     }
 
-    public void showMetaMenu(int relX,int relY)
-    {
-        JPopupMenu popUp=new JPopupMenu();  
+    public void notifyUriDrop(List<URI> uris) {
+        if ((uris != null) && (uris.size() > 0)) {
+            this.locationTF.setText(uris.get(0).toString());
+        }
+    }
+
+    public void showMetaMenu(int relX, int relY) {
+        JPopupMenu popUp = new JPopupMenu();
 
         {
-            JMenuItem mi=new JMenuItem("Location"); 
-            popUp.add(mi); 
-            mi.setEnabled(false); 
+            JMenuItem mi = new JMenuItem("Location");
+            popUp.add(mi);
+            mi.setEnabled(false);
         }
-        
-        popUp.add(new JSeparator()); 
-        
+
+        popUp.add(new JSeparator());
+
         {
-            JMenuItem mi=new JMenuItem("Browse"); 
-            mi.addActionListener(new ActionListener(){
+            JMenuItem mi = new JMenuItem("Browse");
+            mi.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent e){
-                    showFileSelector(); 
-                }    
+                public void actionPerformed(ActionEvent e) {
+                    showFileSelector();
+                }
             });
-            
+
             mi.setActionCommand("Browse");
             popUp.add(mi);
         }
-        
-         
+
         popUp.show(this, relX, relY);
     }
-    
-    public void showFileSelector()
-    {
-        try
-        {
-            URI path = FXFileChooser.staticStartFileChooser(ChooserType.OPEN_DIR,this.getLocationURI().getPath());
-            if (path!=null)
-            {
+
+    public void showFileSelector() {
+        try {
+            URI path = FXFileChooser.staticStartFileChooser(ChooserType.OPEN_DIR, this
+                    .getLocationURI().getPath());
+            if (path != null) {
                 this.setLocationURI(path);
             }
-        }
-        catch (FileURISyntaxException e)
-        {
+        } catch (FileURISyntaxException e) {
             e.printStackTrace();
         }
     }

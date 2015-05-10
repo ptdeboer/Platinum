@@ -28,11 +28,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SLF4J Logger facade.<br>
- * Refactored from Java Logger style ClassLogger. Still contains Java Logging Levels for backwards compatibility
- * reasons.
+ * Refactored from Java Logger style ClassLogger. Still contains Java Logging Levels for backwards
+ * compatibility reasons. All logging will be moved to slf4j.
  */
-public class PLogger
-{
+public class PLogger {
+
     // ==================
     // Class Fields
     // ==================
@@ -55,34 +55,27 @@ public class PLogger
     // Class Methods
     // ==================
 
-    public static synchronized PLogger getLogger(String name)
-    {
-        synchronized (classLoggers)
-        {
+    public static synchronized PLogger getLogger(String name) {
+        //
+        synchronized (classLoggers) {
             PLogger logger = classLoggers.get(name);
-
-            if (logger == null)
-            {
+            if (logger == null) {
                 logger = new PLogger(name);
                 classLoggers.put(name, logger);
             }
-
             return logger;
         }
     }
 
-    public static PLogger getLogger(Class<?> clazz)
-    {
+    public static PLogger getLogger(Class<?> clazz) {
         return getLogger(clazz.getCanonicalName());
     }
 
-    static
-    {
+    static {
         rootLogger = new PLogger("PTKRootLogger");
     }
 
-    public static PLogger getRootLogger()
-    {
+    public static PLogger getRootLogger() {
         return rootLogger;
     }
 
@@ -96,8 +89,7 @@ public class PLogger
     // redirect level not yet implemented
     private Level redirectLevel = null;
 
-    protected PLogger(String name)
-    {
+    protected PLogger(String name) {
         this.logger = LoggerFactory.getLogger(name);
     }
 
@@ -105,33 +97,27 @@ public class PLogger
     // Manipulations
     // ==========================================================================================
 
-    public void setLevelToDebug()
-    {
+    public void setLevelToDebug() {
         this.redirectLevel = Level.FINE;
     }
 
-    public void setLevelToInfo()
-    {
+    public void setLevelToInfo() {
         this.redirectLevel = Level.INFO;
     }
 
-    public void setLevelToWarn()
-    {
+    public void setLevelToWarn() {
         this.redirectLevel = Level.WARNING;
     }
 
-    public void setLevelToError()
-    {
+    public void setLevelToError() {
         this.redirectLevel = Level.SEVERE;
     }
 
-    public void setLevelToFatal()
-    {
+    public void setLevelToFatal() {
         this.redirectLevel = Level.ALL;
     }
 
-    public boolean isLevelDebug()
-    {
+    public boolean isLevelDebug() {
         return logger.isDebugEnabled();
     }
 
@@ -142,8 +128,7 @@ public class PLogger
     /**
      * Log using java.util.Loggin.Level levels
      */
-    public void log(Level jLevel, String format, Object... args)
-    {
+    public void log(Level jLevel, String format, Object... args) {
         int level = jLevel.intValue();
         // Java Logger compatible logging levels:
         if (level <= Level.FINE.intValue())
@@ -158,18 +143,16 @@ public class PLogger
             logger.error(String.format(format, args));
     }
 
-    public boolean isLoggable(Level jLevel)
-    {
+    public boolean isLoggable(Level jLevel) {
         // Java Logger compatible logging levels:
         int level = jLevel.intValue();
         return (((level <= Level.FINE.intValue()) && logger.isDebugEnabled())
                 || ((level <= Level.INFO.intValue()) && logger.isInfoEnabled())
-                || ((level <= Level.WARNING.intValue()) && logger.isWarnEnabled())
-                || ((level <= Level.SEVERE.intValue()) && logger.isErrorEnabled()));
+                || ((level <= Level.WARNING.intValue()) && logger.isWarnEnabled()) || ((level <= Level.SEVERE
+                .intValue()) && logger.isErrorEnabled()));
     }
 
-    public boolean hasDebugLevel()
-    {
+    public boolean hasDebugLevel() {
         return logger.isDebugEnabled();
     }
 
@@ -178,19 +161,17 @@ public class PLogger
     // ==========================================================================================
 
     /**
-     * Old printf() invocations add newlines. slf4j/log4j adds them according to the log pattern conversion.
+     * Old printf() invocations add newlines. slf4j/log4j adds them according to the log pattern
+     * conversion.
      */
-    private String formatNoEndline(String format, Object[] args)
-    {
-        if ((format != null) && (format.endsWith("\n")))
-        {
+    private String formatNoEndline(String format, Object[] args) {
+        if ((format != null) && (format.endsWith("\n"))) {
             format = format.substring(0, format.length() - 1);
         }
         return String.format(format, args);
     }
 
-    public void logException(Level level, Throwable e, String format, Object... args)
-    {
+    public void logException(Level level, Throwable e, String format, Object... args) {
         if (this.isLoggable(level) == false)
             return;
 
@@ -198,57 +179,48 @@ public class PLogger
         logger.error("{}", e);
     }
 
-    public void debugPrintf(String format, Object... args)
-    {
+    public void debugPrintf(String format, Object... args) {
         if (!logger.isDebugEnabled())
             return;
         logger.debug(formatNoEndline(format, args));
     }
 
-    public void infoPrintf(String format, Object... args)
-    {
+    public void infoPrintf(String format, Object... args) {
         if (!logger.isInfoEnabled())
             return;
         logger.info(formatNoEndline(format, args));
     }
 
-    public void warnPrintf(String format, Object... args)
-    {
+    public void warnPrintf(String format, Object... args) {
         if (!logger.isWarnEnabled())
             return;
         logger.debug(formatNoEndline(format, args));
     }
 
-    public void errorPrintf(String format, Object... args)
-    {
+    public void errorPrintf(String format, Object... args) {
         if (!logger.isErrorEnabled())
             return;
 
         this.logger.debug(formatNoEndline(format, args));
     }
 
-    public void fatal(String format, Object... args)
-    {
+    public void fatal(String format, Object... args) {
         logger.error("FATAL:" + format, args);
     }
 
-    public void error(String format, Object... args)
-    {
+    public void error(String format, Object... args) {
         logger.error(format, args);
     }
 
-    public void warn(String format, Object... args)
-    {
+    public void warn(String format, Object... args) {
         logger.warn(format, args);
     }
 
-    public void info(String format, Object... args)
-    {
+    public void info(String format, Object... args) {
         logger.info(format, args);
     }
 
-    public void debug(String format, Object... args)
-    {
+    public void debug(String format, Object... args) {
         logger.debug(format, args);
     }
 

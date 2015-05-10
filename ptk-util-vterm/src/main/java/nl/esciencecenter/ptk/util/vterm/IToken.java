@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.util.vterm;
 
-public interface IToken 
-{
+public interface IToken {
 
 }

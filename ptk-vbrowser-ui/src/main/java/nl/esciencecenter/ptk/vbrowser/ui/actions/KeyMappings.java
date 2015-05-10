@@ -33,20 +33,18 @@ import javax.swing.TransferHandler;
 
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 
-public class KeyMappings
-{
-    public static class InputAction extends UIAction
-    {
+public class KeyMappings {
+
+    public static class InputAction extends UIAction {
+
         private static final long serialVersionUID = -8182833255378132661L;
 
-        InputAction(String name)
-        {
+        InputAction(String name) {
             super(name);
         }
 
         @Override
-        public void actionPerformed(ActionEvent e)
-        {
+        public void actionPerformed(ActionEvent e) {
             DnDUtil.debugPrintf("ActionPerformed:%s\n", e);
             Object source = e.getSource();
         }
@@ -72,8 +70,7 @@ public class KeyMappings
 
     public static final InputAction ZOOM_RESET = new InputAction("ZoomReset");
 
-    public static void addSelectionKeyMappings(JComponent comp)
-    {
+    public static void addSelectionKeyMappings(JComponent comp) {
         InputMap inpMap = comp.getInputMap();
 
         inpMap.put(KeyStroke.getKeyStroke('A', InputEvent.CTRL_MASK), SELECT_ALL.getName());
@@ -82,7 +79,8 @@ public class KeyMappings
         inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), UP.getName());
         inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN.getName());
         inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), ENTER.getName());
-        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), MAXIMIZE.getName());
+        inpMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK),
+                MAXIMIZE.getName());
 
         ActionMap map = comp.getActionMap();
         map.put(SELECT_ALL.getName(), SELECT_ALL);
@@ -93,8 +91,7 @@ public class KeyMappings
         map.put(ENTER.getName(), ENTER);
     }
 
-    public static void addCopyPasteKeymappings(JComponent comp)
-    {
+    public static void addCopyPasteKeymappings(JComponent comp) {
         // Copy Past Keyboard bindings:
         {
             InputMap imap = comp.getInputMap();
@@ -105,7 +102,6 @@ public class KeyMappings
             imap.put(KeyStroke.getKeyStroke("ctrl V"),
                     TransferHandler.getPasteAction().getValue(Action.NAME));
         }
-
         ActionMap map = comp.getActionMap();
         // Use TransferHandler actions:
         map.put(TransferHandler.getCutAction().getValue(Action.NAME),
@@ -116,8 +112,7 @@ public class KeyMappings
                 TransferHandler.getPasteAction());
     }
 
-    public static void addZoomMappings(JComponent comp)
-    {
+    public static void addZoomMappings(JComponent comp) {
         // todo:
         // InputMap inpMap = comp.getInputMap();
         // ActionMap map = comp.getActionMap();

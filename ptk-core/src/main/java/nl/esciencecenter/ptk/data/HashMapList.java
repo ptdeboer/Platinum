@@ -29,36 +29,25 @@ import java.util.Map;
 import java.util.Set;
 
 import nl.esciencecenter.ptk.object.Duplicatable;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
- * Extended LinkedHashMap. Added more support for array and lists.
- * 
- * @author Piter T. de Boer.
+ * Extended LinkedHashMap. Added more support for array and lists and set opererators.
  * 
  * @param <TK>
  *            - The Key Type
  * @param <TV>
  *            - The Value Type
  */
-public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serializable, Duplicatable<HashMapList<TK, TV>>
-{
+public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serializable,
+        Duplicatable<HashMapList<TK, TV>> {
+
     private static final long serialVersionUID = -8373244037848706796L;
-
-    private static PLogger logger = null;
-
-    static
-    {
-        logger = PLogger.getLogger(HashMapList.class);
-        logger.setLevelToDebug();
-    }
 
     // =======================================================================
     //
     // =======================================================================
 
-    public TV put(TK key, TV value)
-    {
+    public TV put(TK key, TV value) {
         TV prev = super.put(key, value);
         return prev;
     }
@@ -66,18 +55,15 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
     /**
      * Adds All entries to current map
      */
-    public void putAll(Map<? extends TK, ? extends TV> map)
-    {
+    public void putAll(Map<? extends TK, ? extends TV> map) {
         super.putAll(map);
     }
 
     /**
      * Put selection from Map map into this Hashtable.
      */
-    public void putAll(Map<? extends TK, ? extends TV> map, Iterable<TK> keys)
-    {
-        for (TK key : keys)
-        {
+    public void putAll(Map<? extends TK, ? extends TV> map, Iterable<TK> keys) {
+        for (TK key : keys) {
             put(key, map.get(key));
         }
     }
@@ -85,22 +71,18 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
     /**
      * Put selection from Map map into this Hashtable
      */
-    public void putAll(Map<? extends TK, ? extends TV> map, TK keys[])
-    {
-        for (TK key : keys)
-        {
+    public void putAll(Map<? extends TK, ? extends TV> map, TK keys[]) {
+        for (TK key : keys) {
             put(key, map.get(key));
         }
     }
 
-    public TV elementAt(int i)
-    {
+    public TV elementAt(int i) {
         // todo: optimization for large sets:
         return this.get(this.getKey(i));
     }
 
-    public TK getKey(int nr)
-    {
+    public TK getKey(int nr) {
         // todo: faster search
         Set<TK> set = this.keySet();
 
@@ -108,8 +90,7 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
         if (size() <= 0)
             return null;
 
-        for (TK key : set)
-        {
+        for (TK key : set) {
             if (index == nr)
                 return key;
             index++;
@@ -122,13 +103,11 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
     // Arrays and Lists
     // ================
 
-    public Iterator<TK> getKeyIterator()
-    {
+    public Iterator<TK> getKeyIterator() {
         return this.keySet().iterator();
     }
 
-    public TK[] getKeyArray(TK[] arr)
-    {
+    public TK[] getKeyArray(TK[] arr) {
         return this.keySet().toArray(arr);
     }
 
@@ -139,66 +118,86 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
      *            - example array need for actual type.
      * @return
      */
-    public TV[] toArray(TV[] array)
-    {
+    public TV[] toArray(TV[] array) {
         return this.values().toArray(array);
     }
 
     @Override
-    public boolean shallowSupported()
-    {
-        return true; 
+    public boolean shallowSupported() {
+        return true;
     }
 
     @Override
-    public HashMapList<TK, TV> duplicate()
-    {
+    public HashMapList<TK, TV> duplicate() {
         return duplicate(false);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public HashMapList<TK, TV> duplicate(boolean shallow)
-    {
-        if (shallow)
-        {
-            return (HashMapList<TK, TV>)this.clone(); 
+    public HashMapList<TK, TV> duplicate(boolean shallow) {
+        if (shallow) {
+            return (HashMapList<TK, TV>) this.clone();
         }
-        
-        HashMapList<TK, TV> dup=new HashMapList<TK, TV>(); 
-        Iterator<TK> iterator = this.getKeyIterator(); 
-        
-        while(iterator.hasNext())
-        {
-            TK key=iterator.next(); 
-            TV value=this.get(key); 
-            if (shallow)
-            {
-                dup.put(key,value); 
-            }
-            else
-            {
-                if (value instanceof Duplicatable<?>)
-                {
-                    dup.put(key,((Duplicatable<TV>)value).duplicate(false)); 
-                }
-                else
-                {
-                    throw new Error("Value class does not implement non-shallow Duplicatable<> interface:"+value.getClass());
+
+        HashMapList<TK, TV> dup = new HashMapList<TK, TV>();
+        Iterator<TK> iterator = this.getKeyIterator();
+
+        while (iterator.hasNext()) {
+            TK key = iterator.next();
+            TV value = this.get(key);
+            if (shallow) {
+                dup.put(key, value);
+            } else {
+                // assert value is deep copyable
+                if (value instanceof Duplicatable<?>) {
+                    dup.put(key, ((Duplicatable<TV>) value).duplicate(false));
+                } else {
+                    throw new Error(
+                            "Value class does not implement non-shallow Duplicatable<> interface:"
+                                    + value.getClass());
                 }
             }
         }
-        
+
         return dup;
     }
 
-    public List<TV> toList()
-    {
-        ArrayList<TV> list=new ArrayList<TV>(size());
-        for (TK key:keySet())
-        {
+    public List<TV> toList() {
+        ArrayList<TV> list = new ArrayList<TV>(size());
+        for (TK key : keySet()) {
             list.add(get(key));
         }
-        return list; 
+        return list;
+    }
+
+    /**
+     * Create subSet of this set using the specifed keys.
+     * 
+     * @param keys
+     *            - key list of sub set elements.
+     * @return subset - new sub set.
+     */
+    public HashMapList<TK, TV> subSet(List<TK> keys) {
+        HashMapList<TK, TV> set = new HashMapList<TK, TV>();
+        return subSet(keys, set);
+    }
+
+    /**
+     * Add sub set specified by key List to the destination Set.
+     * 
+     * @param keys
+     *            - key list of sub set.
+     * @param destSet
+     *            - destination set
+     * @return actual destination set <code>destSet</code> (for flow programming).
+     */
+    public HashMapList<TK, TV> subSet(List<TK> keys, HashMapList<TK, TV> destSet) {
+        for (TK key : keys) {
+            TV value = this.get(key);
+            if (value != null) {
+                destSet.put(key, value);
+            }
+        }
+        return destSet;
     }
 }

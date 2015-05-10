@@ -25,49 +25,42 @@ import nl.esciencecenter.ptk.ui.widgets.SelectionComboBox;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-public class AttrEnumField extends SelectionComboBox<String> implements IAttributeField
-{
+public class AttrEnumField extends SelectionComboBox<String> implements IAttributeField {
+
     private static final long serialVersionUID = -2524144091178443352L;
 
     boolean enumEditable = false; // whether enum types are editable
 
-    public AttrEnumField()
-    {
+    public AttrEnumField() {
         super(new String[0]);
     }
 
-    public AttrEnumField(String name, String[] vals)
-    {
+    public AttrEnumField(String name, String[] vals) {
         super(vals);
         setName(name);
     }
 
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return super.getName();
     }
 
-    public String getValue()
-    {
-        return super.getSelectedItemString(); 
+    public String getValue() {
+        return super.getSelectedItemString();
     }
 
-    public void updateFrom(Attribute attr)
-    {
+    public void updateFrom(Attribute attr) {
         this.setValue(attr.getStringValue());
     }
 
-    public AttributeType getVAttributeType()
-    {
+    public AttributeType getVAttributeType() {
         return AttributeType.ENUM;
     }
 
     /**
-     * Selectable => drop down option is 'selectable'. optionsEditable = drop down selection entries are editable as
-     * well !
+     * Selectable => drop down option is 'selectable'. optionsEditable = drop down selection entries
+     * are editable as well !
      */
-    public void setEditable(boolean selectable, boolean optionsEditable)
-    {
+    public void setEditable(boolean selectable, boolean optionsEditable) {
         this.setEnabled(selectable);
         this.setEditable(optionsEditable);
     }

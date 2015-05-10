@@ -20,7 +20,7 @@
 
 package nl.esciencecenter.ptk.bootstrap;
 
-// NO EXTERNAL IMPORTS HERE 
+// Only default java imports here:
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,15 +38,14 @@ import javax.swing.JOptionPane;
 
 /**
  * Universal Bootstrapper class for both Windows, Linux and Mac Os. <br>
- * This class must be able work as a stand-alone class!<b2>
+ * This class must be able work as a stand-alone class!<br>
  * Cannot reference external classes if not in the same bootstrapper jar !
  * 
  * @author Piter T. de Boer
  */
-public class Bootstrapper
-{
-    public static class BooleanHolder
-    {
+public class Bootstrapper {
+
+    public static class BooleanHolder {
         public boolean value = false;
     };
 
@@ -57,49 +56,34 @@ public class Bootstrapper
     /**
      * Static BootStrapper configuration
      */
-    public static class BootOptions
-    {
-        // public String toolName = "bootStrapper";
+    public static class BootOptions {
 
         public String toolPrefix = "boot";
-
-        // public String toolConfigSubdir = ".ptkrc";
 
         public String confSubDir = "etc";
 
         public String libSubDir = "lib";
 
         public String binSubDir = "bin";
- 
+
         public String javaVersion = "1.7";
 
         /**
-         * Default library sub-directories explicitly added to bootstrapper classpath.
+         * Default library sub-directories explicitly added to bootstrapper classpath.<br>
          * These directories are added as classpath <em>directories</em>.
          */
-        public String libSubDirs[] = 
-            { 
-                "icons", 
-                "win32", 
-                "win64", 
-                "mac", 
-                "linux"
-             };
+        public String libSubDirs[] = { "icons", "win32", "win64", "mac", "linux" };
 
         /**
-         * Library subdirectories explicitly ignored when scanning the lib/
-         * directory for jar files.
+         * Library subdirectories explicitly ignored when scanning the lib/ directory for jar files.
          */
-        public String libIgnoreDirs[] =
-            { 
-                    "plugins" 
-            };
+        public String libIgnoreDirs[] = { "plugins" };
     }
 
     protected static boolean debug = false;
 
     // ========================================================================
-    //
+    // Instance
     // ========================================================================
 
     protected BootOptions bootOptions = new BootOptions();
@@ -117,13 +101,12 @@ public class Bootstrapper
     protected ArrayList<URL> classpathUrls = new ArrayList<URL>();
 
     /**
-     * ${APP_PREFIX} install or startup directory (minus ./lib or ./bin) 
-     * Use URL to be applet and webstart compatible. 
+     * ${APP_PREFIX} install or startup directory (minus ./lib or ./bin) Use URL to be applet and
+     * webstart compatible.
      */
     protected URL baseUrl = null;
 
-    public Bootstrapper(BootOptions options)
-    {
+    public Bootstrapper(BootOptions options) {
         if (options == null)
             options = new BootOptions();
 
@@ -143,14 +126,11 @@ public class Bootstrapper
     }
 
     /**
-     * Set this before booting to ensure correct base URL environemnt in the case
-     * of Applet of Webstart setup. 
-     * 
-     * More secure runtime environments might restrict access only to resources which are
-     * a subdirectory of this base URL. 
+     * Set this before booting to ensure correct base URL environemnt in the case of Applet of
+     * Webstart setup. More secure runtime environments might restrict access only to resources
+     * which are a subdirectory of this base URL.
      */
-    public void setBaseURL(URL baseurl)
-    {
+    public void setBaseURL(URL baseurl) {
         baseUrl = baseurl;
     }
 
@@ -161,45 +141,44 @@ public class Bootstrapper
      * - Sets skeleton CLASSPATH adding:
      * 
      * <pre>
-     * <li> ./    ; APP_INSTALL     ${APP_PREFIX.install} 
-     * <li> ./etc ; APP_SYSCONFDIR  ${APP_PREFIX.install.sysconfdir} 
-     * <li> ./lib ;                 ${APP_PREFIX.install.libdir} 
-     * <li> ./lib/linux ;           ${APP_PREFIX.install.libdir}/linux
-     * <li> ./lib/win32 ;           ${APP_PREFIX.install.libdir}/win32
-     * <li> ./lib/win64 ;           ${APP_PREFIX.install.libdir}/win32
+     *  ./    ; APP_INSTALL     ${APP_PREFIX.install} 
+     *  ./etc ; APP_SYSCONFDIR  ${APP_PREFIX.install.sysconfdir} 
+     *  ./lib ;                 ${APP_PREFIX.install.libdir} 
+     *  ./lib/linux ;           ${APP_PREFIX.install.libdir}/linux
+     *  ./lib/win32 ;           ${APP_PREFIX.install.libdir}/win32
+     *  ./lib/win64 ;           ${APP_PREFIX.install.libdir}/win32
      * </pre>
      * <p>
      * Bootstrap configuration:<br>
-     * 0) Assume default APP_INSTALL using environment variable APP_INSTALL or
-     * (if not set) by stripping ./lib or ./bin from startup path.<br>
-     * 1) check property "${APP_PREFIX}.install.sysconfdir" for configuration.<br>
-     * -1a) if not set, check APP_INSTALL and specify sysconfdir as
-     * ${APP_INSTALL}/etc<br>
-     * 2) load configuration file from
-     * ${APP_PREFIX.install.sysconfigdir}/${APP_PREFIX}rc.prop<br>
-     * -2a) when not found, try to load /etc/${APP_PREFIX}rc.prop<br>
-     * 3) (re)set installation location taken from ${APP_PREFIX}rc.prop,
-     * overriding previous settings or keep defaults (this allows to keep
-     * defaults without setting the properties explicitly in vlerc.prop)<br>
+     * <ul>
+     * <li>0) Assume default APP_INSTALL using environment variable APP_INSTALL or (if not set) by
+     * stripping ./lib or ./bin from startup path.
+     * <li>1) check property "${APP_PREFIX}.install.sysconfdir" for configuration.
+     * <li>1a) if not set, check APP_INSTALL and specify sysconfdir as ${APP_INSTALL}/etc
+     * <li>2) load configuration file from ${APP_PREFIX.install.sysconfigdir}/${APP_PREFIX}rc.prop
+     * <li>2a) when not found, try to load /etc/${APP_PREFIX}rc.prop
+     * <li>3) (re)set installation location taken from ${APP_PREFIX}rc.prop, overriding previous
+     * settings or keep defaults (this allows to keep defaults without setting the properties
+     * explicitly in vlerc.prop)
+     * </ul>
      */
-    public void checkSetAppEnvironment() throws Exception
-    {
+    public void checkSetAppEnvironment() throws Exception {
+
         String javaHome = System.getProperty("java.home");
         debugPrintf(" - java home    =%s\n", javaHome);
         String versionStr = System.getProperty("java.version");
         debugPrintf(" - java version =%s\n", versionStr);
 
         // Warning: doing string compare where int compare should be used:
-        if ((versionStr != null) && (versionStr.compareToIgnoreCase(bootOptions.javaVersion) < 0))
-        {
+        if ((versionStr != null) && (versionStr.compareToIgnoreCase(bootOptions.javaVersion) < 0)) {
             errorPrintf("Bootstrapper: Wrong java version. Need at least '%s' This is:%s\n", bootOptions.javaVersion,
                     versionStr);
 
             JOptionPane.showMessageDialog(null, "Wrong java version. Need " + bootOptions.javaVersion + " or higher.\n"
                     + "If java " + bootOptions.javaVersion + " is installed "
                     + "set your JAVA_HOME to the right location.\n" + "This version  =" + versionStr + "\n"
-                    + "Java location =" + javaHome + "\n"
-                    + "The Program will try to continue ...", "Error", JOptionPane.ERROR_MESSAGE);
+                    + "Java location =" + javaHome + "\n" + "The Program will try to continue ...", "Error",
+                    JOptionPane.ERROR_MESSAGE);
 
             // Continue anyway. 
         }
@@ -217,8 +196,7 @@ public class Bootstrapper
         // Get default installation directory as URL
         // ***
 
-        if ((installDir == null) && (baseUrl == null))
-        {
+        if ((installDir == null) && (baseUrl == null)) {
             // ***
             // Important: URI/URL uses forward slashes, native path must use "/" !
             // ***
@@ -235,8 +213,7 @@ public class Bootstrapper
             int i = 0;
 
             // dirname of path:
-            for (i = len - 1; ((i > 0) && (urlstr.charAt(i) != '/')); i--)
-            {
+            for (i = len - 1; ((i > 0) && (urlstr.charAt(i) != '/')); i--) {
                 ;
             }
             // nop;
@@ -246,23 +223,19 @@ public class Bootstrapper
             len = urlstr.length();
 
             // auto strip 'lib' from path when started directly from ./lib/...
-            if (urlstr.endsWith("/"+bootOptions.libSubDir))
-            {
+            if (urlstr.endsWith("/" + bootOptions.libSubDir)) {
                 urlstr = urlstr.substring(0, len - 4);
             }
-            
+
             // auto strip 'lib' from path when started directly from ./lib/...
-            else if (urlstr.endsWith("/"+bootOptions.binSubDir))
-            {
+            else if (urlstr.endsWith("/" + bootOptions.binSubDir)) {
                 urlstr = urlstr.substring(0, len - 4);
             }
 
             // update installDir
             baseUrl = new URL(urlstr);
 
-        }
-        else
-        {
+        } else {
             // create URL
             baseUrl = new File(installDir).toURI().toURL(); // unify File
                                                             // location
@@ -279,8 +252,7 @@ public class Bootstrapper
 
         String sysconfdir = System.getProperty(APP_SYSCONFDIR_PROP);
 
-        if (sysconfdir == null)
-        {
+        if (sysconfdir == null) {
             // NATIVE File seperator: "APP_INSTALL/etc"
             sysconfdir = installDir + File.separator + bootOptions.confSubDir;
         }
@@ -358,8 +330,7 @@ public class Bootstrapper
         // Add CLASSPATH Environment (bug: new classloader doesn't respect
         // CLASSPATH)
         String cpstr = System.getenv("CLASSPATH");
-        if (cpstr != null)
-        {
+        if (cpstr != null) {
             // ---
             // Important: Use OS depended path separator here!
             // ---
@@ -379,36 +350,29 @@ public class Bootstrapper
 
         // recursive read jars from:
         addJarsToLibUrls(libDir, true, 0);
-        addJarToLibUrls(javaHome+"/lib/jfxrt.jar",true); 
+        addJarToLibUrls(javaHome + "/lib/ext/jfxrt.jar", false);
         // Add java.libary.path
         setJavaLibraryPath(appProps);
-        
+
     }
 
-    String resolve(String parent, String rel_path, BooleanHolder bool)
-    {
+    protected String resolve(String parent, String rel_path, BooleanHolder bool) {
         String path = null;
 
         if (bool != null)
             bool.value = false; // default
 
-        if (rel_path.startsWith("/"))
-        {
+        if (rel_path.startsWith("/")) {
             path = rel_path;
         }
 
         // Arg: Windows hack, detect 'C:/blah'
-        else if (rel_path.charAt(1) == ':')
-        {
+        else if (rel_path.charAt(1) == ':') {
             path = rel_path;
-        }
-        else if (rel_path.startsWith(bootOptions.libSubDir))
-        {
+        } else if (rel_path.startsWith(bootOptions.libSubDir)) {
             // Replace "./lib" with "${${APP_PREFIX}.install.libdir} !
             path = parent + "/" + rel_path.substring(4, rel_path.length());
-        }
-        else
-        {
+        } else {
             // relative path (without "lib" prefix), but starting from LIBDIR !
             path = parent + "/" + rel_path;
 
@@ -419,15 +383,13 @@ public class Bootstrapper
         return path;
     }
 
-    public void setJavaLibraryPath(Properties props)
-    {
+    public void setJavaLibraryPath(Properties props) {
         // check system:
         String java_library_path = System.getProperty(JAVA_LIBRARY_PATH_PROP);
 
         if (java_library_path == null)
             java_library_path = "";
-        else
-        {
+        else {
             // use platform specific path seperator !
             java_library_path += File.pathSeparator;
         }
@@ -447,50 +409,39 @@ public class Bootstrapper
     }
 
     /**
-     * Check for ${APP_PROP}rc.prop in SYSCONFDIR. -
-     * ${APP_INSTALL}/etc/${APP_PREFIX}rc.prop -
+     * Check for ${APP_PROP}rc.prop in SYSCONFDIR. - ${APP_INSTALL}/etc/${APP_PREFIX}rc.prop -
      * ${APP_SYSCONFDIR}/etc/${APP_PREFIX}rc.prop - /etc/${APP_PREFIX}rc.prop
      * 
      * @returns property set if loaded or EMPTY property set when failed !
      * 
      */
-    public Properties getAppProperties(String sysconfdir)
-    {
+    public Properties getAppProperties(String sysconfdir) {
         Properties props = new Properties();
 
         // use NATIVE File.sepator !
         // Default $APP_INSTALL/etc/${APP_PREFIX}rc.prop
         String apprcprop = sysconfdir + "/" + APPRC_PROP_FILE;
 
-        try
-        {
+        try {
             File rcfile = new File(apprcprop);
             FileInputStream inpfs;
 
-            if (rcfile.exists() == true)
-            {
+            if (rcfile.exists() == true) {
                 inpfs = new FileInputStream(rcfile);
                 props.load(inpfs);
-            }
-            else
-            {
+            } else {
                 // last resort: Check /etc/vletrc.prop under unix style path
                 // :/etc/
                 rcfile = new File("/etc/" + APPRC_PROP_FILE);
-                if (rcfile.exists() == true)
-                {
+                if (rcfile.exists() == true) {
                     inpfs = new FileInputStream(rcfile);
                     props.load(inpfs);
                 }
             }
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             errorPrintf("***Exception:%s", e);
             e.printStackTrace();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             errorPrintf("***Exception:%s", e);
             e.printStackTrace();
         }
@@ -498,67 +449,47 @@ public class Bootstrapper
         return props;
     }
 
-    public File getPath(String filePath,boolean isDir, boolean mustExist) throws Exception
-    {
+    public File getPath(String filePath, boolean isDir, boolean mustExist) throws Exception {
         // if dir is a remote url, FILE will complain:
-
         File javaFile = new File(filePath);
 
         // do some sanity checks:
+        if (isDir) {
+            if ((javaFile.exists() == false) || (javaFile.isDirectory() == false)) {
+                if (mustExist) {
+                    JOptionPane.showMessageDialog(null, "Cannot find directory:'" + javaFile + "' "
+                            + "Installation might be corrupt or misconfigured. Trying to continue...", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                // continue!
+                errorPrintf("***Error: Can't resolve Directory:%s\n", javaFile);
+            }
+        } else {
+            if ((javaFile.exists() == false) && (javaFile.isFile() == false)) {
+                if (mustExist) {
+                    JOptionPane.showMessageDialog(null, "Cannot find file:'" + javaFile + "' "
+                            + "Installation might be corrupt or misconfigured. Trying to continue...", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                // continue!
+                errorPrintf("***Error: Can't resolve File:%s\n", javaFile);
+            }
+        }
 
-        if (isDir) 
-        {
-            if ( (javaFile.exists()==false) || (javaFile.isDirectory()==false) ) 
-            {
-                if (mustExist)
-                {
-                    JOptionPane.showMessageDialog(null, 
-                        "Cannot find directory:'" + javaFile + "' "
-                        + "Installation might be corrupt or misconfigured. Trying to continue...", 
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                }
-                // continue!
-                errorPrintf("***Error: Can't resolve Directory:%s\n",javaFile); 
-            }
-        }
-        else
-        {
-            if ( (javaFile.exists()==false) && (javaFile.isFile()==false) ) 
-            {
-                if (mustExist) 
-                {
-                    JOptionPane.showMessageDialog(null, 
-                        "Cannot find file:'" + javaFile + "' " + "Installation might be corrupt or misconfigured. Trying to continue...", 
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                }
-                // continue!
-                errorPrintf("***Error: Can't resolve File:%s\n",javaFile); 
-            }
-        }
-        
-        try
-        {
+        try {
             // resolve File. 
             return javaFile.getCanonicalFile();
-        }
-        catch (IOException e)
-        {
-            if (mustExist)
-            {
+        } catch (IOException e) {
+            if (mustExist) {
                 throw new Exception("IOException: Failed to get the canonical path of of " + javaFile);
-            }
-            else
-            {
-                errorPrintf("***Error: getCanonicalFile() Failed for directory:%s\n",javaFile); 
-                return null; 
+            } else {
+                errorPrintf("***Error: getCanonicalFile() Failed for directory:%s\n", javaFile);
+                return null;
             }
         }
     }
 
-    public void addDirToClasspath(String dir)
-    {
+    public void addDirToClasspath(String dir) {
         // Use URL convention for directory URLs/Paths:
 
         if (dir.endsWith("/") == false)
@@ -566,99 +497,79 @@ public class Bootstrapper
 
         debugPrintf(" - adding directory:%s\n", dir);
 
-        try
-        {
+        try {
             this.classpathUrls.add(new URL("file:///" + dir));
-        }
-        catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             errorPrintf("***Error: Exception:%s", e);
             e.printStackTrace();
         }
     }
-    
-    public boolean addJarToLibUrls(String jarPath, boolean mustExist) throws Exception
-    {
-        java.io.File jarFile=getPath(jarPath,false,mustExist);
-        
-        if (mustExist) 
-        {
-            if ( (jarFile==null) || (jarFile.exists()==false) )
-            {
-                  errorPrintf("***Error: can not find mandatory jar file:%s\n",jarFile); 
-                  return false; 
+
+    public boolean addJarToLibUrls(String jarPath, boolean mustExist) throws Exception {
+        java.io.File jarFile = getPath(jarPath, false, mustExist);
+
+        if (mustExist) {
+            if ((jarFile == null) || (jarFile.exists() == false)) {
+                errorPrintf("***Error: can not find mandatory jar file:%s\n", jarFile);
+                return false;
             }
         }
-        
-        if (jarFile==null)
-        {  
-            debugPrintf(" - warning: jarFile is null for:%s\n"+jarPath);
-            return false; 
-        }
-        
-        URL url = jarFile.toURI().toURL();
-        if (url==null)
-        {
-            errorPrintf("***Error: URL of jarFile is null for:%s\n"+jarPath);
+
+        if (jarFile == null) {
+            debugPrintf(" - warning: jarFile is null for:%s\n" + jarPath);
             return false;
         }
-        
+
+        URL url = jarFile.toURI().toURL();
+        if (url == null) {
+            errorPrintf("***Error: URL of jarFile is null for:%s\n" + jarPath);
+            return false;
+        }
+
         this.classpathUrls.add(url);
         debugPrintf(" - adding jarurl:%s\n", url);
-        return true; 
+        return true;
     }
-    
-    public boolean addJarsToLibUrls(String libDir, boolean recurse, int dirLevel) throws Exception
-    {
+
+    public boolean addJarsToLibUrls(String libDir, boolean recurse, int dirLevel) throws Exception {
         debugPrintf(" > [%2d] Scanning directory for jar files: %s\n", dirLevel, libDir);
 
-        File dir = getPath(libDir,true,true);
+        File dir = getPath(libDir, true, true);
 
-        if ( (dir==null) || (dir.exists()==false)  || (dir.isDirectory()==false) )
-        {
+        if ((dir == null) || (dir.exists() == false) || (dir.isDirectory() == false)) {
             // ignore faulty configurations.
             errorPrintf(" > [%2d] ***Error: lib directory does not exists or is unreadable:%s\n", dirLevel, dir);
             return false;
         }
 
-        try
-        {
+        try {
             File[] files = dir.listFiles();
-            for (int i = 0; i < files.length; i++)
-            {
+            for (int i = 0; i < files.length; i++) {
                 String fileName = files[i].getName();
                 String filepath = files[i].getPath();
 
                 // Debug("Checking:"+filepath);
                 // skip ./lib/plugins (but only onlevel 0)
-                if ((dirLevel == 0) && (fileName.compareToIgnoreCase("plugins") == 0))
-                {
+                if ((dirLevel == 0) && (fileName.compareToIgnoreCase("plugins") == 0)) {
                     debugPrintf(" > [%2d] - Ignoring custom plugin directory:%s\n", dirLevel, filepath);
-                }
-                else if (filepath.endsWith(".jar") == true)
-                {
+                } else if (filepath.endsWith(".jar") == true) {
                     // USe toURI().toURL() to normalize file URLs !
                     URL url = files[i].toURI().toURL();
                     this.classpathUrls.add(url);
                     debugPrintf(" > [%2d] - Adding jarurl:%s\n", dirLevel, url);
 
-                }
-                else if ((files[i].isDirectory() == true) && (recurse = true))
-                {
+                } else if ((files[i].isDirectory() == true) && (recurse = true)) {
                     addJarsToLibUrls(files[i].getPath(), recurse, dirLevel + 1);
                 }
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new Exception("BootrapException: Error during startup processing, directory=" + libDir, e);
         }
 
         return true;
     }
 
-    public void launch(String launchClass, String[] launchArgs) throws Exception
-    {
+    public void launch(String launchClass, String[] launchArgs) throws Exception {
         // set the whole APP environment:
         this.checkSetAppEnvironment();
 
@@ -675,41 +586,27 @@ public class Bootstrapper
         Thread.currentThread().setContextClassLoader(loader);
 
         // start main class
-        try
-        {
+        try {
             Class<?> mainClass = loader.loadClass(launchClass);
 
             Method mainMethod = mainClass.getMethod("main", MAIN_PARAMS_TYPE);
 
             mainMethod.invoke(null, new Object[] { launchArgs });
-        }
-        catch (ClassNotFoundException e)
-        {
+        } catch (ClassNotFoundException e) {
             throw new Exception("ClassNotFoundException:" + "Class '" + launchClass + "'.\n" + e, e);
-        }
-        catch (NoSuchMethodException e)
-        {
-            throw new Exception("NoSuchMethodException: main() method not found in class '" + launchClass + "'\n" 
-                                + e.getMessage(),e); 
-        }
-        catch (InvocationTargetException e)
-        {
+        } catch (NoSuchMethodException e) {
+            throw new Exception("NoSuchMethodException: main() method not found in class '" + launchClass + "'\n"
+                    + e.getMessage(), e);
+        } catch (InvocationTargetException e) {
             throw new Exception("InvocationTargetException:" + e, e);
-        }
-        catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new Exception("IllegalAccessException:" + e, e);
         }
     }
 
-    public static void main(String args[])
-    {
-        // --------
-        // Pre Boot
-        // --------
+    public static void main(String args[]) {
 
-        if ((args == null) || (args.length < 1))
-        {
+        if ((args == null) || (args.length < 1)) {
             printUsage();
             return;
         }
@@ -726,14 +623,14 @@ public class Bootstrapper
         if (!debug)
             debug = (System.getProperty("DEBUG") != null);
 
-        for (int i = 0; i < newargs.length; i++)
-        {
+        // build argument list
+        for (int i = 0; i < newargs.length; i++) {
             String arg = args[i + 1];
 
-            if (arg.compareTo("-debug") == 0)
+            if (arg.compareTo("-debug") == 0) {
                 debug = true;
+            }
 
-            // pass argument to launch class
             newargs[i] = args[i + 1];
         }
 
@@ -743,12 +640,9 @@ public class Bootstrapper
 
         Bootstrapper boot = new Bootstrapper(options);
 
-        try
-        {
+        try {
             boot.launch(startclass, newargs);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             errorPrintf("Failed to launch:'%s'\nException=%s\n", startclass, e);
             e.printStackTrace();
         }
@@ -758,24 +652,22 @@ public class Bootstrapper
     // Logging/Messages/Etc/
     // =========================================================================
 
-    public static void printUsage()
-    {
-        System.err.println("Usage: java [JVM options] -jar bootstrapper.jar [bootstrapper options] <main class> [application options]");
+    public static void printUsage() {
+        System.err.println("Usage: java [JVM options] -jar bootstrapper.jar [bootstrapper options] "
+                + "<main class> [application options]");
     }
 
-    public static void errorPrintf(String format, Object... args)
-    {
+    public static void errorPrintf(String format, Object... args) {
         System.err.printf(format, args);
     }
 
-    public static void debugPrintf(String format, Object... args)
-    {
-        if (debug == true)
+    public static void debugPrintf(String format, Object... args) {
+        if (debug == true) {
             System.err.printf("Bootstrapper:DEBUG:" + format, args);
+        }
     }
 
-    public static void messagePrintln(String msg)
-    {
+    public static void messagePrintln(String msg) {
         System.out.println("Bootstrapper:" + msg);
     }
 

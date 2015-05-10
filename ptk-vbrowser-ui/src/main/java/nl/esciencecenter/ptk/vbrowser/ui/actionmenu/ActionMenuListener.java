@@ -23,7 +23,8 @@ package nl.esciencecenter.ptk.vbrowser.ui.actionmenu;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 
-public interface ActionMenuListener
-{
+public interface ActionMenuListener {
+
     void handlePopUpMenuAction(ViewNodeComponent viewComp, ViewNode viewNode, Action theAction);
+
 }

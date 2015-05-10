@@ -2,10 +2,9 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 
 import nl.esciencecenter.vbrowser.vrs.VPath;
 
-/** 
- * Combined interface for InfoResources. 
+/**
+ * Combined interface for InfoResources.
  */
-public interface VInfoResourcePath extends VInfoResource,VPath
-{
+public interface VInfoResourcePath extends VInfoResource, VPath {
 
 }

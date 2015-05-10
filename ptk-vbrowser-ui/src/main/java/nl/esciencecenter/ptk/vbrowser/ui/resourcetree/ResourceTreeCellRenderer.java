@@ -28,8 +28,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 
-public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer
-{
+public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer {
     // public static Color COLOR_LIGHT_BLUE=new Color(128,128,255);
 
     /** */
@@ -37,25 +36,15 @@ public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer
 
     private ResourceTree myTree;
 
-    public ResourceTreeCellRenderer(ResourceTree tree)
-    {
+    public ResourceTreeCellRenderer(ResourceTree tree) {
         this.myTree = tree;
     }
 
-    public Component getTreeCellRendererComponent(
-            JTree jtree,
-            Object value,
-            boolean selected,
-            boolean expanded,
-            boolean leaf,
-            int row,
-            boolean hasFocus)
-    {
+    public Component getTreeCellRendererComponent(JTree jtree, Object value, boolean selected,
+            boolean expanded, boolean leaf, int row, boolean hasFocus) {
         // let DefaultTreeCellRender do the main work
-        Component c = super.getTreeCellRendererComponent(
-                jtree, value, selected,
-                expanded, leaf, row,
-                hasFocus);
+        Component c = super.getTreeCellRendererComponent(jtree, value, selected, expanded, leaf,
+                row, hasFocus);
 
         // ===
         // Assert: Component 'c' should be equal to >>>this<<<
@@ -68,14 +57,11 @@ public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer
         this.setIcon(item.getIcon());
         this.setEnabled(item.isBusy() == false);
 
-        if (node.hasFocus())
-        {
+        if (node.hasFocus()) {
             // use HTML make up
             // setBackgroundNonSelectionColor(Color.YELLOW);
             this.setText("<html><u>" + node.getName() + "</u></html");
-        }
-        else
-        {
+        } else {
             // setBackgroundNonSelectionColor(UIManager.getColor("Tree.textBackground"));
             this.setText(node.getName());
         }
@@ -83,9 +69,7 @@ public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer
         return this;
     }
 
-    public boolean imageUpdate2(Image img, int infoflags,
-            int x, int y, int w, int h)
-    {
+    public boolean imageUpdate2(Image img, int infoflags, int x, int y, int w, int h) {
         return super.imageUpdate(img, infoflags, x, y, w, h);
 
     }

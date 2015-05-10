@@ -20,6 +20,7 @@
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.ui.attribute;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -42,11 +43,11 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/** 
- * Mini dialog to show one Attribute. 
+/**
+ * Mini dialog to show one Attribute.
  */
-public class AttributeViewer extends JDialog implements FocusListener, ActionListener
-{
+public class AttributeViewer extends JDialog implements FocusListener, ActionListener {
+
     private static final long serialVersionUID = -7363909981672843970L;
     // ---
     private JPanel panel;
@@ -57,52 +58,45 @@ public class AttributeViewer extends JDialog implements FocusListener, ActionLis
     private JTextField attrTypeField;
     private JLabel attrValueLabel;
     private JLabel attrTypeLabel;
-    
-    private Attribute attribute=new Attribute("LongAttribute",(long)10);
-    private JScrollPane attrScrollPane; 
 
-    public static void viewAttribute(Attribute attr)
-    {
-    	editAttribute(attr,false); 
+    private Attribute attribute = new Attribute("LongAttribute", (long) 10);
+    private JScrollPane attrScrollPane;
+
+    public static void viewAttribute(Attribute attr) {
+        editAttribute(attr, false);
     }
-    
-    Attribute newAttribute=null;
-	private boolean editable=true;
-	private JButton cancelButton;
-	private JButton okButton;
-	private JPanel buttonPanel;
 
-    public static Attribute editAttribute(Attribute attr,boolean editable)
-    {
-        AttributeViewer av=new AttributeViewer(attr);
-        av.setEditable(editable); 
+    Attribute newAttribute = null;
+    private boolean editable = true;
+    private JButton cancelButton;
+    private JButton okButton;
+    private JPanel buttonPanel;
+
+    public static Attribute editAttribute(Attribute attr, boolean editable) {
+        AttributeViewer av = new AttributeViewer(attr);
+        av.setEditable(editable);
         av.setModal(true);
         av.setVisible(true);
-       
-        return av.newAttribute; 
-    }
-    
-    public AttributeViewer()
-    {
-        initGUI(); 
-    }
-    
-    public void setEditable(boolean editbl)
-    {
-    	this.editable=editbl; 
-    	this.attrValueField.setEditable(editbl); 
-    }
-    
-    public AttributeViewer(Attribute attr)
-    { 
-        this.attribute=attr;
-        initGUI(); 
+
+        return av.newAttribute;
     }
 
-    private void initGUI()
-    {
-        try 
-        {
+    public AttributeViewer() {
+        initGUI();
+    }
+
+    public void setEditable(boolean editbl) {
+        this.editable = editbl;
+        this.attrValueField.setEditable(editbl);
+    }
+
+    public AttributeViewer(Attribute attr) {
+        this.attribute = attr;
+        initGUI();
+    }
+
+    private void initGUI() {
+        try {
             {
                 this.setSize(379, 189);
             }
@@ -110,118 +104,108 @@ public class AttributeViewer extends JDialog implements FocusListener, ActionLis
                 panel = new JPanel();
                 getContentPane().add(panel, BorderLayout.CENTER);
                 FormLayout panelLayout = new FormLayout(
-                    "max(p;5dlu), right:pref, left:pref:grow,1px,left:pref:grow, 0px,max(p;5dlu)",
-                    "max(p;5dlu), center:pref,10px,center:pref,center:pref,top:pref:grow,0px,max(p;10dlu)");
+                        "max(p;5dlu), right:pref, left:pref:grow,1px,left:pref:grow, 0px,max(p;5dlu)",
+                        "max(p;5dlu), center:pref,10px,center:pref,center:pref,top:pref:grow,0px,max(p;10dlu)");
                 panel.setLayout(panelLayout);
                 panel.setPreferredSize(new java.awt.Dimension(350, 160));
                 {
                     attrNameLabel = new JLabel();
-                    panel.add(attrNameLabel, new CellConstraints(
-                        "2, 4, 1, 1, default, default"));
+                    panel.add(attrNameLabel, new CellConstraints("2, 4, 1, 1, default, default"));
                     attrNameLabel.setText("Attribute Name:");
                 }
                 {
                     attrNameField = new JTextField();
                     panel.add(attrNameField, new CellConstraints("3, 4, 2, 1, default, default"));
                     attrNameField.setText(attribute.getName());
-                    attrNameField.setEditable(false); 
+                    attrNameField.setEditable(false);
                 }
                 {
                     attrTypeLabel = new JLabel();
-                    panel.add(attrTypeLabel, new CellConstraints(
-                        "2, 5, 1, 1, default, default"));
+                    panel.add(attrTypeLabel, new CellConstraints("2, 5, 1, 1, default, default"));
                     attrTypeLabel.setText("Attribute Type:");
                 }
                 {
                     attrTypeField = new JTextField();
                     panel.add(attrTypeField, new CellConstraints("3, 5, 2, 1, default, default"));
                     attrTypeField.setText(attribute.getType().toString());
-                    attrTypeField.setEditable(false); 
+                    attrTypeField.setEditable(false);
                 }
                 {
                     attrValueLabel = new JLabel();
-                    panel.add(attrValueLabel, new CellConstraints(
-                        "2, 6, 1, 1, default, default"));
+                    panel.add(attrValueLabel, new CellConstraints("2, 6, 1, 1, default, default"));
                     attrValueLabel.setText("Value:");
                 }
                 {
-                    attrScrollPane=new JScrollPane(); 
+                    attrScrollPane = new JScrollPane();
                     panel.add(attrScrollPane, new CellConstraints("3, 6, 3, 2, default, default"));
-                    attrScrollPane.setPreferredSize(new Dimension(200,40)); 
-                  {
-                      attrValueField = new JTextArea();
-                      attrScrollPane.setViewportView(attrValueField);
-                      attrValueField.setText(attribute.getStringValue());
-                      attrValueField.setBorder(BorderFactory
-                        .createEtchedBorder(BevelBorder.LOWERED));
-                      attrValueField.setEditable(this.editable);
-                      
-                  }
+                    attrScrollPane.setPreferredSize(new Dimension(200, 40));
+                    {
+                        attrValueField = new JTextArea();
+                        attrScrollPane.setViewportView(attrValueField);
+                        attrValueField.setText(attribute.getStringValue());
+                        attrValueField.setBorder(BorderFactory
+                                .createEtchedBorder(BevelBorder.LOWERED));
+                        attrValueField.setEditable(this.editable);
+
+                    }
                 }
                 {
                     nameLabel = new JLabel();
-                    panel.add(nameLabel, new CellConstraints(
-                        "2, 2, 2, 1, center, default"));
+                    panel.add(nameLabel, new CellConstraints("2, 2, 2, 1, center, default"));
                     nameLabel.setText("Viewing Attribute");
                 }
             }
-			{
-				buttonPanel = new JPanel();
-				getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-				{
-					okButton = new JButton();
-					buttonPanel.add(okButton);
-					okButton.setText("OK");
-					okButton.addActionListener(this); 
-				}
-				{
-					cancelButton = new JButton();
-					buttonPanel.add(cancelButton);
-					cancelButton.setText("Cancel");
-					cancelButton.setVisible(this.editable);
-					cancelButton.addActionListener(this);
-				}
-			}
+            {
+                buttonPanel = new JPanel();
+                getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+                {
+                    okButton = new JButton();
+                    buttonPanel.add(okButton);
+                    okButton.setText("OK");
+                    okButton.addActionListener(this);
+                }
+                {
+                    cancelButton = new JButton();
+                    buttonPanel.add(cancelButton);
+                    cancelButton.setText("Cancel");
+                    cancelButton.setVisible(this.editable);
+                    cancelButton.addActionListener(this);
+                }
+            }
 
             // == listeners ===
-            attrValueField.addFocusListener(this); 
-        }
-        catch (Exception e) 
-        {
+            attrValueField.addFocusListener(this);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         this.validate(); // update sizet etc
         //GuiSettings.setToOptimalWindowSize(this); 
-       // GuiSettings.placeToCenter(this);
+        // GuiSettings.placeToCenter(this);
     }
 
-	public void focusGained(FocusEvent e)
-	{
-	}
+    public void focusGained(FocusEvent e) {
+    }
 
-	public void focusLost(FocusEvent e)
-	{
-		updateAttribute(); 
-	}
-	
-	private void updateAttribute()
-	{
-		this.newAttribute=new Attribute(attribute.getType(),attribute.getName(),attrValueField.getText());
-	}
+    public void focusLost(FocusEvent e) {
+        updateAttribute();
+    }
 
-	public void actionPerformed(ActionEvent e)
-	{
-		if (e.getSource().equals(this.okButton))
-			updateAttribute(); 
-		
-		if (e.getSource().equals(this.cancelButton))
-			this.newAttribute=null;
-		
-		exit(); 
-	}
-	
-	private void exit()
-	{
-		this.setVisible(false); 
-	}
+    private void updateAttribute() {
+        this.newAttribute = new Attribute(attribute.getType(), attribute.getName(),
+                attrValueField.getText());
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(this.okButton))
+            updateAttribute();
+
+        if (e.getSource().equals(this.cancelButton))
+            this.newAttribute = null;
+
+        exit();
+    }
+
+    private void exit() {
+        this.setVisible(false);
+    }
 }

@@ -39,11 +39,11 @@ import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * ProxyNode is abstract interface to Resource Nodes. It represents a "Proxy" of
- * the actual viewed Node.
+ * ProxyNode is abstract interface to Resource Nodes. It represents a "Proxy" of the actual viewed
+ * Node.
  */
-public abstract class ProxyNode
-{
+public abstract class ProxyNode {
+
     private static int idCounter = 0;
 
     private static PLogger logger;
@@ -56,48 +56,42 @@ public abstract class ProxyNode
     // ========================================================================
 
     // Null pointer safe toArray() method.
-    public static ProxyNode[] toArray(List<? extends ProxyNode> nodes)
-    {
+    public static ProxyNode[] toArray(List<? extends ProxyNode> nodes) {
         if (nodes == null)
             return null;
 
         return nodes.toArray(new ProxyNode[0]);
     }
-    
+
     // Null pointer safe toList() method.
-    public static List<VRL> toVRLList(List<? extends ProxyNode> nodes)
-    {
-        if (nodes==null)
-            return null; 
-        
+    public static List<VRL> toVRLList(List<? extends ProxyNode> nodes) {
+        if (nodes == null)
+            return null;
+
         ArrayList<VRL> list = new ArrayList<VRL>(nodes.size());
-        for (int i = 0; i < nodes.size(); i++)
-        {
+        for (int i = 0; i < nodes.size(); i++) {
             list.add(nodes.get(i).getVRL());
         }
         return list;
     }
 
     // Null pointer safe toArray() method.
-    public static VRL[] toVRLArray(List<? extends ProxyNode> nodes)
-    {
-        if (nodes==null)
-            return null; 
-        
-        VRL vrls[]=new VRL[nodes.size()];
-        
-        for (int i = 0; i < nodes.size(); i++)
-        {
-            vrls[i]=nodes.get(i).getVRL();
+    public static VRL[] toVRLArray(List<? extends ProxyNode> nodes) {
+        if (nodes == null)
+            return null;
+
+        VRL vrls[] = new VRL[nodes.size()];
+
+        for (int i = 0; i < nodes.size(); i++) {
+            vrls[i] = nodes.get(i).getVRL();
         }
         return vrls;
     }
-    
-    public static List<? extends ProxyNode> toList(ProxyNode[] nodes)
-    {
-        if (nodes==null)
-            return null; 
-        
+
+    public static List<? extends ProxyNode> toList(ProxyNode[] nodes) {
+        if (nodes == null)
+            return null;
+
         ArrayList<ProxyNode> list = new ArrayList<ProxyNode>(nodes.length);
         for (int i = 0; i < nodes.length; i++)
             list.add(nodes[i]);
@@ -106,14 +100,15 @@ public abstract class ProxyNode
     }
 
     // Get subrange of array nodes [offset:offset+range] .
-    public static List<? extends ProxyNode> subrange(List<? extends ProxyNode> nodes, int offset, int range)
-    {
+    public static List<? extends ProxyNode> subrange(List<? extends ProxyNode> nodes, int offset,
+            int range) {
         // no change:
         if ((offset <= 0) && (range < 0))
             return nodes;
 
         if (offset < 0)
-            throw new Error("subrange(): Parameter 'offset' can't be negative. Use 0 for 'don't care'");
+            throw new Error(
+                    "subrange(): Parameter 'offset' can't be negative. Use 0 for 'don't care'");
 
         if (nodes == null)
             return null;
@@ -144,8 +139,7 @@ public abstract class ProxyNode
         return subnodes;
     }
 
-    public static int newID()
-    {
+    public static int newID() {
         return idCounter++;
     }
 
@@ -153,18 +147,16 @@ public abstract class ProxyNode
     // Cache !
     // ========================================================================
 
-    class Childs
-    {
+    class Childs {
         List<? extends ProxyNode> nodes = null;
-
         long getChildsTime = -1;
     }
 
     /**
      * Cache for Object attributes !
      */
-    public class Cache
-    {
+    public class Cache {
+
         protected String name = null;
 
         protected Boolean is_composite = null;
@@ -185,46 +177,38 @@ public abstract class ProxyNode
 
         protected VRL is_resource_link_vrl;
 
-        protected Cache()
-        {
+        protected Cache() {
             logger.debugPrintf("New Cache() for:Proxynode:'%s'\n", ProxyNode.this.getVRL());
         }
 
         protected ProxyNode resolved_node;
 
-        public void setName(String newName)
-        {
+        public void setName(String newName) {
             this.name = newName;
         }
 
-        public void setResourceType(String value)
-        {
+        public void setResourceType(String value) {
             this.resource_type = value;
         }
 
-        public void setIsComposite(boolean val)
-        {
+        public void setIsComposite(boolean val) {
             this.is_composite = val;
         }
 
-        public void setMimeType(String mimeType)
-        {
+        public void setMimeType(String mimeType) {
             this.mime_type = mimeType;
         }
 
-        public String getMimeType()
-        {
+        public String getMimeType() {
             return this.mime_type;
         }
 
-        public boolean getIsComposite()
-        {
+        public boolean getIsComposite() {
             return this.is_composite;
         }
     }
 
-    public void refresh()
-    {
+    public void refresh() {
         this.cache = new Cache();
     }
 
@@ -240,148 +224,108 @@ public abstract class ProxyNode
 
     protected ProxyFactory proxyFactory;
 
-    protected ProxyNode(ProxyFactory factory, VRL proxyLocation)
-    {
+    protected ProxyNode(ProxyFactory factory, VRL proxyLocation) {
         id = newID();
         this.locator = proxyLocation;
         this.proxyFactory = factory;
     }
 
-    protected ProxyFactory getProxyFactory()
-    {
+    protected ProxyFactory getProxyFactory() {
         return proxyFactory;
     }
 
-    public int getID()
-    {
+    public int getID() {
         return id;
     }
 
-    public VRL getVRL()
-    {
+    public VRL getVRL() {
         return locator;
     }
 
-    /** 
-     * Uncached method. Check wheter resource really exists. 
+    /**
+     * Uncached method. Check wheter resource really exists.
+     * 
      * @return
      * @throws ProxyException
      */
-    public boolean exists() throws ProxyException
-    {
-        return doExists(); 
+    public boolean exists() throws ProxyException {
+        return doExists();
     }
-    
+
     /**
-     * Called by ProxyNode factory to prefill core attributes. Subclass can
-     * extend this method to prefetch attributes during the initialization of
-     * this Node.
+     * Called by ProxyNode factory to prefill core attributes. Subclass can extend this method to
+     * prefetch attributes during the initialization of this Node.
      */
-    protected void doPrefetchAttributes() throws ProxyException
-    {
-        synchronized (cache)
-        {
+    protected void doPrefetchAttributes() throws ProxyException {
+        // selection of important attributes.
+        synchronized (cache) {
             // update name.
             this.cache.name = doGetName();
 
-            try
-            {
+            try {
                 this.cache.is_composite = doGetIsComposite();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 handle("Couldn't prefetch isComposite().", e);
             }
 
-            try
-            {
+            try {
                 this.cache.resource_type = doGetResourceType();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 handle("Couldn't prefetch resourceType.", e);
             }
 
             // might be null anyway
-            try
-            {
+            try {
                 this.cache.resource_status = doGetResourceStatus();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 handle("Couldn't prefetch resourceStatus.", e);
             }
 
             // might be null anyway.
-            try
-            {
+            try {
                 this.cache.mime_type = doGetMimeType();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 handle("Couldn't prefetch mimeType.", e);
             }
 
-            try
-            {
+            try {
                 this.cache.child_types = doGetChildTypes();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 handle("Couldn't prefetch childTypes.", e);
             }
 
-            try
-            {
+            try {
                 this.cache.is_resource_link = doIsResourceLink();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 handle("Couldn't prefetch childTypes.", e);
             }
         }
     }
 
-    private void handle(String message, Exception e)
-    {
+    private void handle(String message, Exception e) {
         this.getProxyFactory().handleException(message, e);
     }
 
-    public Icon getIcon(UIViewModel model, boolean greyOut, boolean focus) throws ProxyException
-    {
+    public Icon getIcon(UIViewModel model, boolean greyOut, boolean focus) throws ProxyException {
         return getIcon(model.getIconSize(), greyOut, focus);
     }
 
-    public Icon getIcon(int size, boolean greyOut, boolean focus) throws ProxyException
-    {
+    public Icon getIcon(int size, boolean greyOut, boolean focus) throws ProxyException {
         IconProvider provider = this.getProxyFactory().getPlatform().getIconProvider();
-
         String mimeType = this.getMimeType();
-
         String iconUrl = this.getIconURL(getResourceStatus(), size);
-
-        boolean isLink=this.isResourceLink();
-        
-        return provider.createDefaultIcon(iconUrl,
-                this.isComposite(),
-                isLink,
-                mimeType,
-                size,
-                greyOut,
-                focus);
+        boolean isLink = this.isResourceLink();
+        return provider.createDefaultIcon(iconUrl, this.isComposite(), isLink, mimeType, size,
+                greyOut, focus);
     }
 
     public String getName() // no throw: name should already be fetched
     {
-        if (this.cache.name == null)
-        {
+        if (this.cache.name == null) {
             logger.warnPrintf("getName(): name NOT prefetched:%s\n", this);
-            try
-            {
+            try {
                 this.cache.name = doGetName();
-            }
-            catch (ProxyException e)
-            {
+            } catch (ProxyException e) {
                 handle("Method getName() Failed", e);
                 this.cache.name = getVRL().getBasename();
             }
@@ -390,16 +334,13 @@ public abstract class ProxyNode
         return this.cache.name;
     }
 
-    public String getResourceStatus()
-    {
+    public String getResourceStatus() {
         // could be prefetched or not. NULL could also mean no status info.
         return this.cache.resource_status;
     }
 
-    public String getMimeType() throws ProxyException
-    {
-        if (this.cache.mime_type == null)
-        {
+    public String getMimeType() throws ProxyException {
+        if (this.cache.mime_type == null) {
             logger.warnPrintf("getMimeType(): mime_type NOT prefetched:%s\n", this);
             this.cache.mime_type = doGetMimeType();
         }
@@ -408,8 +349,7 @@ public abstract class ProxyNode
     }
 
     /**
-     * Get Icon uses for specified satus and optional a prerender icon matching
-     * the specified size
+     * Get Icon uses for specified satus and optional a prerender icon matching the specified size
      * 
      * @param status
      *            Optional status attribute
@@ -418,30 +358,25 @@ public abstract class ProxyNode
      * @return
      * @throws ProxyException
      */
-    public String getIconURL(String status, int size) throws ProxyException
-    {
+    public String getIconURL(String status, int size) throws ProxyException {
         return this.doGetIconURL(status, size);
     }
 
-    public boolean hasChildren() throws ProxyException
-    {
+    public boolean hasChildren() throws ProxyException {
         List<? extends ProxyNode> childs = this.getChilds();
-
         if ((childs == null) || (childs.size() <= 0))
             return false;
-
         return true;
     }
 
-    public ViewNode createViewItem(UIViewModel model) throws ProxyException
-    {
+    public ViewNode createViewItem(UIViewModel model) throws ProxyException {
+        // default
         Icon defaultIcon = getIcon(model, false, false);
         ViewNode viewNode = new ViewNode(locator, defaultIcon, getName(), isComposite());
         viewNode.setResourceType(this.getResourceType());
         viewNode.setMimeType(this.getMimeType());
         viewNode.setResourceStatus(this.getResourceStatus());
-        
-         // other
+        // other
         viewNode.setIcon(ViewNode.FOCUS_ICON, getIcon(model, false, true));
         viewNode.setIcon(ViewNode.SELECTED_ICON, getIcon(model, true, false));
         viewNode.setIcon(ViewNode.SELECTED_FOCUS_ICON, getIcon(model, true, true));
@@ -449,13 +384,11 @@ public abstract class ProxyNode
         return viewNode;
     }
 
-    public boolean hasLocator(VRL locator)
-    {
+    public boolean hasLocator(VRL locator) {
         return this.locator.equals(locator);
     }
 
-    public List<? extends ProxyNode> getChilds() throws ProxyException
-    {
+    public List<? extends ProxyNode> getChilds() throws ProxyException {
         return getChilds(0, -1, null);
     }
 
@@ -463,25 +396,22 @@ public abstract class ProxyNode
     // Cached methods
     // ========================================================================
 
-    public List<? extends ProxyNode> getChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException
-    {
-        boolean autoResolve=false;
-        
+    public List<? extends ProxyNode> getChilds(int offset, int range, LongHolder numChildsLeft)
+            throws ProxyException {
+        boolean autoResolve = false;
+
         // auto resolve LinkNodes: 
         ProxyNode targetNode = this;
-        if ((autoResolve) &&  (this.isResourceLink()))
-        {
+        if ((autoResolve) && (this.isResourceLink())) {
             targetNode = this.resolveResourceLink();
         }
 
-        synchronized (this.cache.childs)
-        {
-            if (cache.childs.nodes == null)
-            {
-                List<? extends ProxyNode> childs = targetNode.doGetChilds(offset, range, numChildsLeft);
+        synchronized (this.cache.childs) {
+            if (cache.childs.nodes == null) {
+                List<? extends ProxyNode> childs = targetNode.doGetChilds(offset, range,
+                        numChildsLeft);
 
-                if ((offset > 0) || (range > 0))
-                {
+                if ((offset > 0) || (range > 0)) {
                     // todo: update ranged childs into cache, but typically
                     // ranged results
                     // are used in the case the actual child list is to big or
@@ -494,10 +424,8 @@ public abstract class ProxyNode
                 cache.childs.nodes = childs;
                 cache.childs.getChildsTime = System.currentTimeMillis();
 
-                if (cache.childs.nodes != null)
-                {
-                    for (ProxyNode child : cache.childs.nodes)
-                    {
+                if (cache.childs.nodes != null) {
+                    for (ProxyNode child : cache.childs.nodes) {
                         child.doPrefetchAttributes();
                     }
                 }
@@ -507,12 +435,9 @@ public abstract class ProxyNode
         }
     }
 
-    public ProxyNode getParent() throws ProxyException
-    {
-        synchronized (this.cache)
-        {
-            if (cache.parent == null)
-            {
+    public ProxyNode getParent() throws ProxyException {
+        synchronized (this.cache) {
+            if (cache.parent == null) {
                 cache.parent = doGetParent();
             }
 
@@ -520,8 +445,7 @@ public abstract class ProxyNode
         }
     }
 
-    public VRL getParentLocation() throws ProxyException
-    {
+    public VRL getParentLocation() throws ProxyException {
         ProxyNode parent = getParent();
 
         if (parent != null)
@@ -531,29 +455,23 @@ public abstract class ProxyNode
     }
 
     /** @deprecated to be investigated */
-    public boolean isBusy()
-    {
+    public boolean isBusy() {
         return false;
     }
 
     /**
-     * Returns (cached) ResourceType value. Should not throw exception since
-     * attribute must be known at creation time.
+     * Returns (cached) ResourceType value. Should not throw exception since attribute must be known
+     * at creation time.
      * 
      * @return
      */
-    public String getResourceType()
-    {
-        if ((this.cache==null) || (this.cache.resource_type == null))
-        {
+    public String getResourceType() {
+        if ((this.cache == null) || (this.cache.resource_type == null)) {
             logger.warnPrintf("resource_type NOT prefetched!\n");
 
-            try
-            {
+            try {
                 this.cache.resource_type = doGetResourceType();
-            }
-            catch (ProxyException e)
-            {
+            } catch (ProxyException e) {
                 handle("getResourceType()", e);
             }
         }
@@ -561,22 +479,17 @@ public abstract class ProxyNode
     }
 
     /**
-     * Returns (cached) isComposite value. Should not throw exception since
-     * attribute must be known at creation time.
+     * Returns (cached) isComposite value. Should not throw exception since attribute must be known
+     * at creation time.
      * 
      * @return
      */
-    public boolean isComposite()
-    {
-        if (this.cache.is_composite == null)
-        {
+    public boolean isComposite() {
+        if (this.cache.is_composite == null) {
             logger.warnPrintf("***>>>> isComposite() NOT prefetched!\n");
-            try
-            {
+            try {
                 this.cache.is_composite = doGetIsComposite();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 handle("isComposite()", e);
                 return true;
             }
@@ -585,16 +498,11 @@ public abstract class ProxyNode
         return this.cache.is_composite;
     }
 
-    public List<String> getChildTypes()
-    {
-        if (this.cache.child_types == null)
-        {
-            try
-            {
+    public List<String> getChildTypes() {
+        if (this.cache.child_types == null) {
+            try {
                 this.cache.child_types = doGetChildTypes();
-            }
-            catch (ProxyException e)
-            {
+            } catch (ProxyException e) {
                 handle("getCreateTypes", e);
             }
         }
@@ -602,30 +510,25 @@ public abstract class ProxyNode
         return this.cache.child_types;
     }
 
-    public List<String> getAttributeNames() throws ProxyException
-    {
+    public List<String> getAttributeNames() throws ProxyException {
         List<String> names = doGetAttributeNames();
 
-        if (names != null)
-        {
+        if (names != null) {
             return names;
         }
 
         return getDefaultProxyAttributesNames();
     }
 
-    public List<Attribute> getAttributes(List<String> attrNames) throws ProxyException
-    {
-        if (attrNames==null)
+    public List<Attribute> getAttributes(List<String> attrNames) throws ProxyException {
+        if (attrNames == null)
             return null;
-        
+
         // todo List<String> vs String array[]
         return getAttributes(attrNames.toArray(new String[0]));
     }
 
-    
-    public List<Attribute> getAttributes(String[] names) throws ProxyException
-    {
+    public List<Attribute> getAttributes(String[] names) throws ProxyException {
         List<Attribute> attrs = doGetAttributes(names);
 
         if (attrs != null)
@@ -638,14 +541,10 @@ public abstract class ProxyNode
     // Presentation
     // ============
 
-    public Presentation getPresentation()
-    {
-        try
-        {
+    public Presentation getPresentation() {
+        try {
             return doGetPresentation();
-        }
-        catch (ProxyException e)
-        {
+        } catch (ProxyException e) {
             // Default Presentation!
             logger.errorPrintf("FIXME: Could not get presentation. Need default Presentation!");
             e.printStackTrace();
@@ -653,25 +552,17 @@ public abstract class ProxyNode
         }
     }
 
-    protected List<String> getDefaultProxyAttributesNames()
-    {
-        return new StringList(new String[]
-        {
-                AttributeNames.ATTR_ICON,
-                AttributeNames.ATTR_NAME,
-                AttributeNames.ATTR_RESOURCE_TYPE,
-                AttributeNames.ATTR_URI,
-                AttributeNames.ATTR_MIMETYPE
-        });
+    protected List<String> getDefaultProxyAttributesNames() {
+        return new StringList(new String[] { AttributeNames.ATTR_ICON, AttributeNames.ATTR_NAME,
+                AttributeNames.ATTR_RESOURCE_TYPE, AttributeNames.ATTR_URI,
+                AttributeNames.ATTR_MIMETYPE });
     }
 
-    protected List<Attribute> getDefaultProxyAttributes(String[] names) throws ProxyException
-    {
+    protected List<Attribute> getDefaultProxyAttributes(String[] names) throws ProxyException {
         List<Attribute> attrs = new ArrayList<Attribute>();
 
         // hard coded default attributes:
-        for (int i = 0; i < names.length; i++)
-        {
+        for (int i = 0; i < names.length; i++) {
             String name = names[i];
             if (name.equals(AttributeNames.ATTR_ICON))
                 attrs.add(new Attribute(name, this.getIconURL(this.getResourceStatus(), 48)));
@@ -687,35 +578,28 @@ public abstract class ProxyNode
         return attrs;
     }
 
-    public ResourceConfigInfo getResourceConfigInfo() throws ProxyException 
-    {
+    public ResourceConfigInfo getResourceConfigInfo() throws ProxyException {
         return this.doGetResourceConfigInfo();
     }
 
-    public ResourceConfigInfo updateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException 
-    {
+    public ResourceConfigInfo updateResourceConfigInfo(ResourceConfigInfo info)
+            throws ProxyException {
         return this.doUpdateResourceConfigInfo(info);
     }
 
-    
-    public String toString()
-    {
+    public String toString() {
         return "<ProxyNode:" + getResourceType() + ":" + getVRL();
     }
 
-    public ProxyNode resolveResourceLink() throws ProxyException
-    {
-        if (isResourceLink() == false)
-        {
+    public ProxyNode resolveResourceLink() throws ProxyException {
+        if (isResourceLink() == false) {
             return null;
         }
 
-        if (this.cache.resolved_node == null)
-        {
+        if (this.cache.resolved_node == null) {
             VRL vrl = this.getResourceLinkVRL();
-            if (vrl==null)
-            {
-                throw new ProxyException("ResourceLink has NULL Target location:"+this); 
+            if (vrl == null) {
+                throw new ProxyException("ResourceLink has NULL Target location:" + this);
             }
             ProxyNode node = proxyFactory.openLocation(vrl);
             this.cache.resolved_node = node;
@@ -723,65 +607,53 @@ public abstract class ProxyNode
         return cache.resolved_node;
     }
 
-    public boolean isResourceLink()
-    {
-        synchronized (cache)
-        {
-            if (this.cache.is_resource_link == null)
-            {
+    public boolean isResourceLink() {
+        synchronized (cache) {
+            if (this.cache.is_resource_link == null) {
                 this.cache.is_resource_link = doIsResourceLink();
             }
         }
         return cache.is_resource_link;
     }
 
-    public VRL getResourceLinkVRL() throws ProxyException
-    {
-        synchronized (cache)
-        {
-            if (this.cache.is_resource_link_vrl == null)
-            {
+    public VRL getResourceLinkVRL() throws ProxyException {
+        synchronized (cache) {
+            if (this.cache.is_resource_link_vrl == null) {
                 this.cache.is_resource_link_vrl = doGetResourceLinkVRL();
             }
         }
         return cache.is_resource_link_vrl;
     }
 
-    public ProxyNode createNew(String type, String name) throws ProxyException
-    {
-        ProxyNode node = doCreateNew(type,name);     
-        return node; 
+    public ProxyNode createNew(String type, String name) throws ProxyException {
+        ProxyNode node = doCreateNew(type, name);
+        return node;
     }
 
-    final public void delete(boolean recursive) throws ProxyException
-    {
+    final public void delete(boolean recursive) throws ProxyException {
         doDelete(recursive);
-        
-        this.proxyFactory.cacheRemove(this);  
+
+        this.proxyFactory.cacheRemove(this);
     }
 
+    public ProxyNode renameTo(String newName) throws ProxyException {
+        return doRenameTo(newName);
+    }
 
-    public ProxyNode renameTo(String newName) throws ProxyException
-    {
-        return doRenameTo(newName); 
+    public VRSEventNotifier getProxyNodeEventNotifier() {
+        return proxyFactory.getProxyNodeEventNotifier();
     }
-    
-    public VRSEventNotifier getProxyNodeEventNotifier()
-    {
-        return proxyFactory.getProxyNodeEventNotifier(); 
-    }
-    
-    public void dispose()
-    {
+
+    public void dispose() {
         logger.errorPrintf("DISPOSE:%s\n", this);
     }
-    
+
     // ========================================================================
     // Protected implementation interface !
     // ========================================================================
 
     abstract protected boolean doExists() throws ProxyException;
-    
+
     abstract protected String doGetName() throws ProxyException;
 
     abstract protected String doGetResourceType() throws ProxyException;
@@ -795,10 +667,11 @@ public abstract class ProxyNode
     // =====================
     // VRS Internal
     // =====================
-    
+
     abstract protected ResourceConfigInfo doGetResourceConfigInfo() throws ProxyException;
 
-    abstract protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException;
+    abstract protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info)
+            throws ProxyException;
 
     // ============================
     // Child/Composite Attributes
@@ -807,7 +680,8 @@ public abstract class ProxyNode
     abstract protected boolean doGetIsComposite() throws ProxyException;
 
     /** Uncached doGetChilds, using optional range */
-    protected abstract List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException;
+    protected abstract List<? extends ProxyNode> doGetChilds(int offset, int range,
+            LongHolder numChildsLeft) throws ProxyException;
 
     /** Uncached doGetParent() */
     abstract protected ProxyNode doGetParent() throws ProxyException;
@@ -836,16 +710,11 @@ public abstract class ProxyNode
     // =====================
     // Create/Delete/Rename
     // =====================
-    
-    abstract protected ProxyNode doCreateNew(String type,String optNewName) throws ProxyException;
-   
+
+    abstract protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException;
+
     abstract protected void doDelete(boolean recurse) throws ProxyException;
 
     abstract protected ProxyNode doRenameTo(String nameOrNewPath) throws ProxyException;
-
-
-
-
-    
 
 }

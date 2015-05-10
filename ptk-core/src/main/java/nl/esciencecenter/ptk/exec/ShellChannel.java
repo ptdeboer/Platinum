@@ -25,11 +25,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Generic interface for Shell Channels which have a pty (pseudo-terminal) associated with it. Whether features are
- * supported depends on the implementing shell channel.
+ * Generic interface for Shell Channels which have a pty (pseudo-terminal) associated with it.
+ * <p>
+ * Whether features are supported depends on the implementing shell channel.
  */
-public interface ShellChannel
-{
+public interface ShellChannel {
     /**
      * Get stdin OutputStream (to write to remote shell) after channel has connected.
      */
@@ -49,38 +49,47 @@ public interface ShellChannel
 
     public void disconnect(boolean waitForTermination) throws IOException;
 
-    // === tty/shell Options ===
-
-    /** 
-     * @return terminal type, for example "vt100" or "xterm". 
+    /**
+     * @return terminal type, for example "vt100" or "xterm".
      * @throws IOException
      */
     public String getTermType() throws IOException;
-    
-    /** 
-     * Tries to set terminal type to underlaying shell channel. For example ror example "vt100" or "xterm".
-     * @return true of terminal type was succesfuly updated. False if terminal type is not supported.  
+
+    /**
+     * Tries to set terminal type to underlaying shell channel. For example ror example "vt100" or
+     * "xterm".
+     * 
+     * @return true of terminal type was succesfuly updated. False if terminal type is not
+     *         supported.
      * @throws IOException
      */
     public boolean setTermType(String type) throws IOException;
 
-    /** 
-     * Tries to set terminal size to underlaying shell channel. 
-     * @return true of terminal type was succesfuly updated. False if terminal type is not supported.  
+    /**
+     * Tries to set terminal size to underlaying shell channel.
+     * 
+     * @return true of terminal type was succesfuly updated. False if terminal type is not
+     *         supported.
      * @throws IOException
      */
     public boolean setTermSize(int numColumns, int numRows, int wp, int hp) throws IOException;
 
     /**
-     * Returns array of int[2] {col,row} or int[4] {col,row,wp,hp} of remote terminal (pty) size. Return NULL if size
-     * couldn't be determined (terminal sizes not supported)
+     * Returns array of int[2] {col,row} or int[4] {col,row,wp,hp} of remote terminal (pty) size.
+     * Return NULL if size couldn't be determined (terminal sizes not supported)
      */
     public int[] getTermSize() throws IOException;
 
-    // === Life Cycle management ===
-
+    /**
+     * Wait until shell has finished.
+     * 
+     * @throws InterruptedException
+     */
     public void waitFor() throws InterruptedException;
 
+    /**
+     * Exit value if shell process.
+     */
     public int exitValue();
 
 }

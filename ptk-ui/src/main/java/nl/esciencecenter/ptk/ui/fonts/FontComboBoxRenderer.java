@@ -28,21 +28,19 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 /**
- * Implementation of FontComboBoxRenderer. Render the text in the ComboBox with
- * the font name specified. Is a special component in the FontToolBar.
+ * Implementation of FontComboBoxRenderer. Render the text in the ComboBox with the font name
+ * specified. Is a special component in the FontToolBar.
  * 
  * @author P.T. de Boer
  */
-public class FontComboBoxRenderer extends JLabel implements ListCellRenderer
-{
+public class FontComboBoxRenderer extends JLabel implements ListCellRenderer {
     private boolean antiAliasing = true;
 
     private FontToolBar fontToolBar;
 
     private static final long serialVersionUID = -2462866413990104352L;
 
-    public FontComboBoxRenderer(FontToolBar bar)
-    {
+    public FontComboBoxRenderer(FontToolBar bar) {
         this.fontToolBar = bar;
 
         setOpaque(true);
@@ -50,16 +48,12 @@ public class FontComboBoxRenderer extends JLabel implements ListCellRenderer
         setVerticalAlignment(CENTER);
     }
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-            boolean cellHasFocus)
-    {
-        if (isSelected)
-        {
+    public Component getListCellRendererComponent(JList list, Object value, int index,
+            boolean isSelected, boolean cellHasFocus) {
+        if (isSelected) {
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());
-        }
-        else
-        {
+        } else {
             setBackground(list.getBackground());
             setForeground(list.getForeground());
         }

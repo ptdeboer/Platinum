@@ -39,74 +39,64 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Default Browser Interface Adaptor, currently used for testing. 
+/**
+ * Default Browser Interface Adaptor, currently used for testing.
  */
-public class BrowserInterfaceAdaptor  implements BrowserInterface
-{
-    final static PLogger logger=PLogger.getLogger(BrowserInterfaceAdaptor.class); 
-    
+public class BrowserInterfaceAdaptor implements BrowserInterface {
+    final static PLogger logger = PLogger.getLogger(BrowserInterfaceAdaptor.class);
+
     private BrowserPlatform platform;
+
     private JPopupMenu jpopupMenu;
-    
-    public BrowserInterfaceAdaptor(BrowserPlatform platform)
-    {
-        this.platform=platform; 
+
+    public BrowserInterfaceAdaptor(BrowserPlatform platform) {
+        this.platform = platform;
     }
-    
+
     @Override
-    public BrowserPlatform getPlatform()
-    {
+    public BrowserPlatform getPlatform() {
         return this.platform;
     }
 
     @Override
-    public void handleException(String message,Throwable e)
-    {
-        logger.logException(PLogger.ERROR, e, message, "Exception:%s\n"); 
+    public void handleException(String message, Throwable e) {
+        logger.logException(PLogger.ERROR, e, message, "Exception:%s\n");
     }
 
     @Override
-    public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode, boolean canvasMenu)
-    {
+    public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode,
+            boolean canvasMenu) {
         return jpopupMenu;
     }
 
-    public void setPopupMenu(JPopupMenu popMenu)
-    {
-        this.jpopupMenu=popMenu; 
-    }
-    
-    @Override
-    public void handleNodeAction(ViewNodeComponent viewComp, ViewNode node, Action action)
-    {
-        logger.errorPrintf("handleNodeAction:%s", node); 
+    public void setPopupMenu(JPopupMenu popMenu) {
+        this.jpopupMenu = popMenu;
     }
 
     @Override
-    public UI getUI()
-    {
-        return new SimpelUI(); 
+    public void handleNodeAction(ViewNodeComponent viewComp, ViewNode node, Action action) {
+        logger.errorPrintf("handleNodeAction:%s", node);
     }
 
     @Override
-    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction, List<VRL> vris)
-    {
-        try
-        {
+    public UI getUI() {
+        return new SimpelUI();
+    }
+
+    @Override
+    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode,
+            DropAction dropAction, List<VRL> vris) {
+        try {
             return ProxyNodeDnDHandler.getInstance().doDrop(viewNode, dropAction, vris, null);
-        }
-        catch (ProxyException e)
-        {
-            handleException("Drop Failed",e);
+        } catch (ProxyException e) {
+            handleException("Drop Failed", e);
             return false;
         }
     }
 
     @Override
-    public ITaskSource getTaskSource()
-    {
-        return TaskWatcher.getTaskWatcher(); 
+    public ITaskSource getTaskSource() {
+        return TaskWatcher.getTaskWatcher();
     }
 
 }

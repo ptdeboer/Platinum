@@ -27,33 +27,28 @@ import javax.swing.JFrame;
 /**
  * Viewer Frame for stand alone Viewer Panels.
  */
-public class ViewerFrame extends JFrame
-{
+public class ViewerFrame extends JFrame {
     private static final long serialVersionUID = 3613838609500660102L;
 
     protected ViewerPlugin viewerPlugin;
 
-    public ViewerFrame(ViewerPlugin viewer)
-    {
+    public ViewerFrame(ViewerPlugin viewer) {
         this.viewerPlugin = viewer;
         initGui();
     }
 
-    protected void initGui()
-    {
+    protected void initGui() {
         Component viewerComponent = viewerPlugin.getViewerPanel();
         this.add(viewerComponent);
     }
 
-    public ViewerPlugin getViewer()
-    {
+    public ViewerPlugin getViewer() {
         return viewerPlugin;
     }
 
-    public static ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context, boolean initViewer)
-    {
-        if (initViewer)
-        {
+    public static ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context,
+            boolean initViewer) {
+        if (initViewer) {
             viewer.initViewer(context);
         }
         ViewerFrame frame = new ViewerFrame(viewer);

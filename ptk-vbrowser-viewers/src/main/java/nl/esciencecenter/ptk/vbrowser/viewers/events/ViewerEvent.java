@@ -23,33 +23,29 @@ package nl.esciencecenter.ptk.vbrowser.viewers.events;
 import nl.esciencecenter.ptk.events.IEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType>
-{
+public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType> {
 
-    public static ViewerEvent createStartedEvent(ViewerEventSource source)
-    {
+    public static ViewerEvent createStartedEvent(ViewerEventSource source) {
         return new ViewerEvent(source, ViewerEventType.VIEWER_STARTED);
     }
 
-    public static ViewerEvent createStoppedEvent(ViewerEventSource source)
-    {
+    public static ViewerEvent createStoppedEvent(ViewerEventSource source) {
         return new ViewerEvent(source, ViewerEventType.VIEWER_STARTED);
     }
-    
 
-    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source, ViewerEventType eventType, VRL vrl)
-    {
-        ViewerEvent event=new ViewerEvent(source, eventType);
-        event.setVrl(vrl); 
-        return event; 
+    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source,
+            ViewerEventType eventType, VRL vrl) {
+        ViewerEvent event = new ViewerEvent(source, eventType);
+        event.setVrl(vrl);
+        return event;
     }
 
-    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source, ViewerEventType eventType, VRL parent, VRL vrl)
-    {
-        ViewerEvent event=new ViewerEvent(source, eventType);
-        event.setParentVrl(parent); 
-        event.setVrl(vrl); 
-        return event; 
+    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source,
+            ViewerEventType eventType, VRL parent, VRL vrl) {
+        ViewerEvent event = new ViewerEvent(source, eventType);
+        event.setParentVrl(parent);
+        event.setVrl(vrl);
+        return event;
     }
 
     // ===============
@@ -60,55 +56,45 @@ public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType>
 
     protected ViewerEventType eventType;
 
-    protected VRL optionalVrl; 
+    protected VRL optionalVrl;
 
+    protected VRL parentVrl;
 
-
-    protected VRL parentVrl; 
-
-    public VRL getVrl()
-    {
+    public VRL getVrl() {
         return optionalVrl;
     }
 
-    public void setVrl(VRL optionalVrl)
-    {
+    public void setVrl(VRL optionalVrl) {
         this.parentVrl = optionalVrl;
     }
 
-    public VRL getParentVrl()
-    {
+    public VRL getParentVrl() {
         return parentVrl;
     }
 
-    public void setParentVrl(VRL optionalVrl)
-    {
+    public void setParentVrl(VRL optionalVrl) {
         this.optionalVrl = optionalVrl;
     }
 
-    public ViewerEvent(ViewerEventSource source, ViewerEventType type)
-    {
+    public ViewerEvent(ViewerEventSource source, ViewerEventType type) {
         this.eventSource = source;
         this.eventType = type;
     }
 
     @Override
-    public ViewerEventSource getEventSource()
-    {
+    public ViewerEventSource getEventSource() {
         return this.eventSource;
     }
 
     @Override
-    public ViewerEventType getEventType()
-    {
+    public ViewerEventType getEventType() {
         return this.eventType;
     }
 
     @Override
-    public String toString()
-    {
-        return "ViewerEvent[eventSource=" + eventSource + ", eventType=" + eventType + ", optionalVrl=" + optionalVrl + ", parentVrl="
-                + parentVrl + "]";
+    public String toString() {
+        return "ViewerEvent[eventSource=" + eventSource + ", eventType=" + eventType
+                + ", optionalVrl=" + optionalVrl + ", parentVrl=" + parentVrl + "]";
     }
 
 }

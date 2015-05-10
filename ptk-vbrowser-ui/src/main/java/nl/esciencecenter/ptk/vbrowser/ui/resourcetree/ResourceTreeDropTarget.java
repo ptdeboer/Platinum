@@ -34,21 +34,18 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
  * 
  * @author P.T. de Boer.
  */
-public class ResourceTreeDropTarget extends ViewNodeDropTarget
-{
+public class ResourceTreeDropTarget extends ViewNodeDropTarget {
     private static final long serialVersionUID = -9095804562165852802L;
 
     private static PLogger logger = PLogger.getLogger(ResourceTreeDropTarget.class);
 
     // === //
 
-    public ResourceTreeDropTarget(ResourceTree tree)
-    {
+    public ResourceTreeDropTarget(ResourceTree tree) {
         super(tree);
     }
 
-    public ResourceTree getResourceTree()
-    {
+    public ResourceTree getResourceTree() {
         return (ResourceTree) this.getComponent();
     }
 
@@ -56,10 +53,8 @@ public class ResourceTreeDropTarget extends ViewNodeDropTarget
      * Override for ResourceTree, check which node is active under point 'p'.
      */
     @Override
-    protected ViewNode getViewNode(Component targetComponent, Point p)
-    {
-        if ((targetComponent instanceof ResourceTree) == false)
-        {
+    protected ViewNode getViewNode(Component targetComponent, Point p) {
+        if ((targetComponent instanceof ResourceTree) == false) {
             logger.errorPrintf("drop():Source object not a ResourceTree!!!\n");
             return null;
         }
@@ -68,21 +63,18 @@ public class ResourceTreeDropTarget extends ViewNodeDropTarget
         ResourceTreeNode rtnode = tree.getRTNodeUnderPoint(p);
         ViewNode viewNode = null;
 
-        if (rtnode != null)
-        {
+        if (rtnode != null) {
             viewNode = rtnode.getViewNode();
         }
 
         return viewNode;
     }
 
-    public void drop(DropTargetDropEvent dtde)
-    {
+    public void drop(DropTargetDropEvent dtde) {
         super.drop(dtde);
     }
 
-    public void dragOver(DropTargetDragEvent dtde)
-    {
+    public void dragOver(DropTargetDragEvent dtde) {
         // check/update ResourceTree paths:
         super.dragOver(dtde);
     }

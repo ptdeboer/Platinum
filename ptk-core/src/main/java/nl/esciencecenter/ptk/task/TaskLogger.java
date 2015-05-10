@@ -29,14 +29,13 @@ import nl.esciencecenter.ptk.util.logging.RecordingLogHandler;
 /**
  * Custom logger class for the TaskMonitor. Use java.logging compatible (sub)class.
  */
-public class TaskLogger extends FormattingLogger
-{
+public class TaskLogger extends FormattingLogger {
+
     private RecordingLogHandler handler;
 
     private Level defaultLevel = INFO;
 
-    public TaskLogger(String name)
-    {
+    public TaskLogger(String name) {
         super(name);
         this.handler = new RecordingLogHandler();
         this.addHandler(handler);
@@ -44,15 +43,12 @@ public class TaskLogger extends FormattingLogger
         this.setLevel(defaultLevel);
     }
 
-    /** Default logPrintf for TaksLogger */
-    public void logPrintf(String format, Object... args)
-    {
+    public void logPrintf(String format, Object... args) {
         // Default log level for task logger is INFO.
         log(defaultLevel, format, args);
     }
 
-    public int getLogText(boolean clearLogBuffer, int logEventOffset, StringHolder logTextHolder)
-    {
+    public int getLogText(boolean clearLogBuffer, int logEventOffset, StringHolder logTextHolder) {
         return handler.getLogText(clearLogBuffer, logEventOffset, logTextHolder);
     }
 

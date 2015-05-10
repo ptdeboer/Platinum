@@ -35,11 +35,9 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 /**
- * FontToolBar widget. 
- * Show a selections of system installed fonts. 
+ * FontToolBar widget. Show a selections of system installed fonts.
  */
-public class FontToolBar extends JToolBar implements ActionListener
-{
+public class FontToolBar extends JToolBar implements ActionListener {
     // ========================================================================
     // ========================================================================
     private static final long serialVersionUID = -7033703508793890542L;
@@ -48,7 +46,8 @@ public class FontToolBar extends JToolBar implements ActionListener
     // ========================================================================
 
     // text viewer attributes:
-    private String fontSizes[] = { "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "36", "48" };
+    private String fontSizes[] = { "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18",
+            "20", "24", "36", "48" };
 
     private String[] fontFamilyNames;
 
@@ -77,27 +76,24 @@ public class FontToolBar extends JToolBar implements ActionListener
     // ===
     // Constructor/Initializers
     // ===
-    public FontToolBar()
-    {
+    public FontToolBar() {
         initGUI();
     }
 
-    public FontToolBar(FontToolbarListener listener)
-    {
+    public FontToolBar(FontToolbarListener listener) {
         this.listener = listener;
         initGUI();
     }
 
-    private void initFonts()
-    {
-        String systemFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+    private void initFonts() {
+        String systemFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getAvailableFontFamilyNames();
         fontFamilyNames = new String[2 + systemFonts.length];
 
         fontFamilyNames[0] = "default";
         fontFamilyNames[1] = "Monospaced";
 
-        for (int i = 0; i < systemFonts.length; i++)
-        {
+        for (int i = 0; i < systemFonts.length; i++) {
             fontFamilyNames[i + 2] = systemFonts[i];
         }
 
@@ -107,8 +103,7 @@ public class FontToolBar extends JToolBar implements ActionListener
         fontInfo.setFontFamily(fontFamilyNames[0]);
     }
 
-    public void initGUI()
-    {
+    public void initGUI() {
         initFonts();
 
         setLayout(new FlowLayout());
@@ -123,8 +118,7 @@ public class FontToolBar extends JToolBar implements ActionListener
             fontFamilyCB.setRenderer(new FontComboBoxRenderer(this));
             add(fontFamilyCB);
 
-            for (String val : fontFamilyNames)
-            {
+            for (String val : fontFamilyNames) {
                 fontFamilyCB.addItem(val);
             }
 
@@ -179,103 +173,81 @@ public class FontToolBar extends JToolBar implements ActionListener
         }
     }
 
-    private Icon getIconOrDefault(String iconstr) 
-    {
-        try
-        {
+    private Icon getIconOrDefault(String iconstr) {
+        try {
             return getIcon(iconstr);
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.fillInStackTrace();
             // todo: B0rken image here. 
-            return null; 
+            return null;
         }
-         
+
     }
-    
-    private Icon getIcon(String iconstr) throws FileNotFoundException
-    {
+
+    private Icon getIcon(String iconstr) throws FileNotFoundException {
         URL iconUrl = this.getClass().getClassLoader().getResource(iconstr);
-        if (iconUrl==null)
-            throw new FileNotFoundException("Coulnd't resolve iconUrl:"+iconstr);
+        if (iconUrl == null)
+            throw new FileNotFoundException("Coulnd't resolve iconUrl:" + iconstr);
         return new ImageIcon(iconUrl);
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        if ((source == this.fontSizeCB) || (source == this.fontFamilyCB))
-        {
+        if ((source == this.fontSizeCB) || (source == this.fontFamilyCB)) {
             updateFont();
-        }
-        else if (source == this.italicButton)
-        {
+        } else if (source == this.italicButton) {
             fontInfo.setItalic(italicButton.isSelected());
             updateFont();
 
-        }
-        else if (source == this.boldButton)
-        {
+        } else if (source == this.boldButton) {
             fontInfo.setBold(boldButton.isSelected());
             updateFont();
-        }
-        else if (source == this.antiAliasingButton)
-        {
+        } else if (source == this.antiAliasingButton) {
             fontInfo.setAntiAliasing(this.antiAliasingButton.isSelected());
-        	updateFont();
+            updateFont();
         }
     }
 
-    public boolean isItalicSelected()
-    {
+    public boolean isItalicSelected() {
         return this.italicButton.isSelected();
     }
 
-    public boolean isBoldSelected()
-    {
+    public boolean isBoldSelected() {
         return this.boldButton.isSelected();
     }
 
-    public boolean isAASelected()
-    {
+    public boolean isAASelected() {
         return this.antiAliasingButton.isSelected();
     }
 
-    public void updateFont()
-    {
+    public void updateFont() {
         fontInfo.setFontFamily((String) fontFamilyCB.getSelectedItem());
 
         fontInfo.setFontSize(new Integer((String) fontSizeCB.getSelectedItem()));
 
         fontInfo.setAntiAliasing(this.antiAliasingButton.isSelected());
-        
+
         // check antialiasing/rendering hints. 
         this.listener.updateFont(fontInfo.createFont(), fontInfo.getRenderingHints());
     }
 
-    public void setFontInfo(FontInfo info)
-    {
+    public void setFontInfo(FontInfo info) {
         // set GUI fields:
-        antiAliasingButton.setSelected(info.getRenderingHints()!=null);
+        antiAliasingButton.setSelected(info.getRenderingHints() != null);
         boldButton.setSelected(info.isBold());
         italicButton.setSelected(info.isItalic());
 
-        for (int i = 0; i < this.fontFamilyNames.length; i++)
-        {
-            if (info.getFontFamily().compareToIgnoreCase(fontFamilyNames[i]) == 0)
-            {
+        for (int i = 0; i < this.fontFamilyNames.length; i++) {
+            if (info.getFontFamily().compareToIgnoreCase(fontFamilyNames[i]) == 0) {
                 fontFamilyCB.setSelectedIndex(i);
                 break;
             }
         }
 
-        for (int i = 0; i < this.fontSizes.length; i++)
-        {
+        for (int i = 0; i < this.fontSizes.length; i++) {
             String typestr = "" + info.getFontSize();
-            if (typestr.compareToIgnoreCase(fontSizes[i]) == 0)
-            {
+            if (typestr.compareToIgnoreCase(fontSizes[i]) == 0) {
                 this.fontSizeCB.setSelectedIndex(i);
                 break;
             }
@@ -284,18 +256,15 @@ public class FontToolBar extends JToolBar implements ActionListener
         this.fontInfo = info;
     }
 
-    /** 
-     * Select Font Family Name. Returns index number or -1 if not found. 
+    /**
+     * Select Font Family Name. Returns index number or -1 if not found.
      */
-    public int selectFont(String familyName)
-    {
+    public int selectFont(String familyName) {
         if (familyName == null)
             return -1;
 
-        for (int i = 0; i < this.fontFamilyNames.length; i++)
-        {
-            if (familyName.compareToIgnoreCase(fontFamilyNames[i]) == 0)
-            {
+        for (int i = 0; i < this.fontFamilyNames.length; i++) {
+            if (familyName.compareToIgnoreCase(fontFamilyNames[i]) == 0) {
                 fontFamilyCB.setSelectedIndex(i);
                 return i;
             }
@@ -304,8 +273,7 @@ public class FontToolBar extends JToolBar implements ActionListener
         return -1;
     }
 
-    public FontInfo getFontInfo()
-    {
+    public FontInfo getFontInfo() {
         return this.fontInfo;
     }
 

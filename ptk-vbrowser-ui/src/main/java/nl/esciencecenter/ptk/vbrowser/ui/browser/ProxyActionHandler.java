@@ -41,53 +41,43 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Delegated Action Handler class for the Proxy Browser.<br>
- * Encapsulates Copy, Paste, Create, Delete, Rename, Link and Drag  & Drop actions. 
+ * Encapsulates Copy, Paste, Create, Delete, Rename, Link and Drag & Drop actions.
  */
-public class ProxyActionHandler
-{
+public class ProxyActionHandler {
+
     final private static PLogger logger = PLogger.getLogger(ProxyActionHandler.class);
 
     private ProxyBrowserController proxyBrowser;
 
-    public ProxyActionHandler(ProxyBrowserController proxyBrowser)
-    {
+    public ProxyActionHandler(ProxyBrowserController proxyBrowser) {
         this.proxyBrowser = proxyBrowser;
         logger.setLevelToDebug();
     }
 
-    public void handlePaste(Action action, ViewNode node)
-    {
+    public void handlePaste(Action action, ViewNode node) {
         logger.debugPrintf("*** Paste On:%s\n", node);
     }
 
-    public void handleCopy(Action action, ViewNode node)
-    {
+    public void handleCopy(Action action, ViewNode node) {
         logger.debugPrintf("*** Copy On:%s\n", node);
     }
 
-    public void handleCopySelection(Action action, ViewNode node)
-    {
+    public void handleCopySelection(Action action, ViewNode node) {
         logger.debugPrintf("*** Copy Selection:%s\n", node);
     }
 
-    public void handleDeleteSelection(ViewNodeComponent viewComp, Action action, ViewNode node)
-    {
+    public void handleDeleteSelection(ViewNodeComponent viewComp, Action action, ViewNode node) {
         logger.debugPrintf("Delete Selection: %s\n", node);
         ViewNode selections[] = ((ViewNodeContainer) viewComp).getNodeSelection();
 
         final VRL vrls[] = ViewNode.toVRLs(selections);
 
-        BrowserTask task = new BrowserTask(proxyBrowser, "Deleting resources")
-        {
+        BrowserTask task = new BrowserTask(proxyBrowser, "Deleting resources") {
             @Override
-            protected void doTask()
-            {
-                try
-                {
+            protected void doTask() {
+                try {
                     doDeleteNodes(vrls, this.getTaskMonitor());
-                }
-                catch (Throwable e)
-                {
+                } catch (Throwable e) {
                     proxyBrowser.handleException("Couldn't delete resources.", e);
                 }
             }
@@ -98,30 +88,26 @@ public class ProxyActionHandler
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public void handleCreate(Action action, final ViewNode node, final String type, final String options)
-    {
-        final String name = proxyBrowser.getUI().askInput("New name for:" + type, "Give new name for " + type, "New " + type);
+    public void handleCreate(Action action, final ViewNode node, final String type,
+            final String options) {
+        final String name = proxyBrowser.getUI().askInput("New name for:" + type,
+                "Give new name for " + type, "New " + type);
 
-        if (name == null)
-        {
+        if (name == null) {
             logger.debugPrintf("Create action cancelled\n");
             return;
         }
 
         final VRL locator = node.getVRL();
 
-        BrowserTask task = new BrowserTask(proxyBrowser, "Creating new resource:" + type + ":'" + name + "' at:" + locator)
-        {
+        BrowserTask task = new BrowserTask(proxyBrowser, "Creating new resource:" + type + ":'"
+                + name + "' at:" + locator) {
             @Override
-            protected void doTask()
-            {
+            protected void doTask() {
 
-                try
-                {
+                try {
                     doCreateNewNode(node.getVRL(), type, name, this.getTaskMonitor());
-                }
-                catch (Throwable e)
-                {
+                } catch (Throwable e) {
                     proxyBrowser.handleException("Couldn't open location:" + locator, e);
                 }
             }
@@ -131,29 +117,21 @@ public class ProxyActionHandler
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public void handleDelete(Action action, ViewNode node)
-    {
+    public void handleDelete(Action action, ViewNode node) {
         boolean result = proxyBrowser.getUI().askOkCancel("Delete resource" + node + "?",
                 "Do you want to delete:'" + node.getName() + "'(" + node.getVRL() + "')", false);
 
-        if (result == false)
-        {
+        if (result == false) {
             return;
         }
         final VRL locator = node.getVRL();
 
-        BrowserTask task = new BrowserTask(proxyBrowser, "Deleting resource:" + locator)
-        {
+        BrowserTask task = new BrowserTask(proxyBrowser, "Deleting resource:" + locator) {
             @Override
-            protected void doTask()
-            {
-                try
-                {
-                    doDeleteNodes(new VRL[]
-                    { locator }, this.getTaskMonitor());
-                }
-                catch (Throwable e)
-                {
+            protected void doTask() {
+                try {
+                    doDeleteNodes(new VRL[] { locator }, this.getTaskMonitor());
+                } catch (Throwable e) {
                     proxyBrowser.handleException("Couldn't delete:" + locator, e);
                 }
             }
@@ -164,28 +142,24 @@ public class ProxyActionHandler
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public void handleRename(Action action, ViewNode node)
-    {
+    public void handleRename(Action action, ViewNode node) {
         String oldName = node.getName();
 
-        final String name = proxyBrowser.getUI().askInput("Enter new Name", "Enter new name for:" + oldName, oldName);
+        final String name = proxyBrowser.getUI().askInput("Enter new Name",
+                "Enter new name for:" + oldName, oldName);
 
         if (StringUtil.isEmpty(name))
             return;
 
         final VRL locator = node.getVRL();
 
-        BrowserTask task = new BrowserTask(proxyBrowser, "Renaming '" + oldName + "' to:'" + name + "' for resource:" + locator)
-        {
+        BrowserTask task = new BrowserTask(proxyBrowser, "Renaming '" + oldName + "' to:'" + name
+                + "' for resource:" + locator) {
             @Override
-            protected void doTask()
-            {
-                try
-                {
+            protected void doTask() {
+                try {
                     doRenameNode(locator, name, this.getTaskMonitor());
-                }
-                catch (Throwable e)
-                {
+                } catch (Throwable e) {
                     proxyBrowser.handleException("Couldn't rename:" + locator, e);
                 }
             }
@@ -196,27 +170,23 @@ public class ProxyActionHandler
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public boolean handleDrop(Component uiComponent, Point optPoint, final ViewNode viewNode, final DropAction dropAction,
-            final List<VRL> vrls)
-    {
+    public boolean handleDrop(Component uiComponent, Point optPoint, final ViewNode viewNode,
+            final DropAction dropAction, final List<VRL> vrls) {
         // ===================================
         // Do interactive UI stuff here ...
         // ===================================
 
         // UIGlobal.assertGuiThread("Interface drop most be called during Swings Event thread!");
 
-        BrowserTask task = new BrowserTask(proxyBrowser, "Performing drop '" + dropAction + "' on resource:" + viewNode)
-        {
+        BrowserTask task = new BrowserTask(proxyBrowser, "Performing drop '" + dropAction
+                + "' on resource:" + viewNode) {
             @Override
-            protected void doTask()
-            {
-                try
-                {
+            protected void doTask() {
+                try {
                     doDrop(viewNode, dropAction, vrls, this.getTaskMonitor());
-                }
-                catch (Throwable e)
-                {
-                    proxyBrowser.handleException("Failed to drop  open location:" + viewNode.getVRL(), e);
+                } catch (Throwable e) {
+                    proxyBrowser.handleException(
+                            "Failed to drop  open location:" + viewNode.getVRL(), e);
                 }
             }
         };
@@ -230,12 +200,11 @@ public class ProxyActionHandler
     // Backgrounded actions
     // ====================
 
-    protected void doCreateNewNode(VRL parentLocation, String type, String name, ITaskMonitor taskMonitor)
-    {
+    protected void doCreateNewNode(VRL parentLocation, String type, String name,
+            ITaskMonitor taskMonitor) {
         logger.debugPrintf("*** doCreate:<%s>:%s\n", type, name);
 
-        try
-        {
+        try {
             String taskStr = "Creating new node:" + type;
             taskMonitor.startSubTask(taskStr, 1);
             ProxyNode parentNode = proxyBrowser.openProxyNode(parentLocation);
@@ -243,19 +212,15 @@ public class ProxyActionHandler
             fireNewNodeEvent(parentNode, newNode);
             taskMonitor.updateSubTaskDone(taskStr, 1);
             taskMonitor.endSubTask("Creating new node:" + type);
-        }
-        catch (Throwable ex)
-        {
-            this.proxyBrowser.handleException("Failed to create new Resource:" + type + ":" + name, ex);
+        } catch (Throwable ex) {
+            this.proxyBrowser.handleException("Failed to create new Resource:" + type + ":" + name,
+                    ex);
         }
     }
 
-    protected void doDeleteNodes(VRL locators[], ITaskMonitor taskMonitor)
-    {
-        for (VRL vrl : locators)
-        {
-            try
-            {
+    protected void doDeleteNodes(VRL locators[], ITaskMonitor taskMonitor) {
+        for (VRL vrl : locators) {
+            try {
                 String taskStr = "Deleting node:" + vrl;
                 taskMonitor.startSubTask(taskStr, 1);
                 ProxyNode delNode = proxyBrowser.openProxyNode(vrl);
@@ -266,20 +231,16 @@ public class ProxyActionHandler
                 taskMonitor.updateSubTaskDone(taskStr, 1);
                 taskMonitor.logPrintf(" - deleted:%s\n", vrl);
                 taskMonitor.endSubTask(taskStr);
-            }
-            catch (Throwable ex)
-            {
+            } catch (Throwable ex) {
                 this.proxyBrowser.handleException("Failed to delete resource:" + vrl, ex);
                 break;
             }
         }
     }
 
-    protected void doRenameNode(VRL locator, String newName, ITaskMonitor taskMonitor)
-    {
+    protected void doRenameNode(VRL locator, String newName, ITaskMonitor taskMonitor) {
 
-        try
-        {
+        try {
             String taskStr = "Renaming node:" + locator;
             taskMonitor.startSubTask(taskStr, 1);
             ProxyNode oldNode = proxyBrowser.openProxyNode(locator);
@@ -289,26 +250,22 @@ public class ProxyActionHandler
             fireNodeRenamedEvent(oldNode.getParent(), oldNode, newNode);
             taskMonitor.updateSubTaskDone(taskStr, 1);
             taskMonitor.endSubTask(taskStr);
-        }
-        catch (Throwable ex)
-        {
+        } catch (Throwable ex) {
             this.proxyBrowser.handleException("Failed to delete resource:" + locator, ex);
         }
     }
 
-    protected void doDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls, ITaskMonitor taskMonitor)
-    {
+    protected void doDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,
+            ITaskMonitor taskMonitor) {
         logger.debugPrintf("*** doDrop %s on:%s\n", viewNode.getVRL(), dropAction);
 
-        try
-        {
+        try {
             ProxyFactory factory = this.proxyBrowser.getProxyFactoryFor(viewNode.getVRL());
             ProxyNodeDnDHandler dndHandler = factory.getProxyDnDHandler(viewNode);
             dndHandler.doDrop(viewNode, dropAction, vrls, taskMonitor);
-        }
-        catch (Throwable ex)
-        {
-            this.proxyBrowser.handleException("Failed doDrop() type '" + dropAction + " on :" + viewNode.getVRL(), ex);
+        } catch (Throwable ex) {
+            this.proxyBrowser.handleException("Failed doDrop() type '" + dropAction + " on :"
+                    + viewNode.getVRL(), ex);
         }
     }
 
@@ -316,39 +273,28 @@ public class ProxyActionHandler
     // Asynchronous updates
     // ====================
 
-    public void fireNewNodeEvent(ProxyNode parent, ProxyNode childNode)
-    {
+    public void fireNewNodeEvent(ProxyNode parent, ProxyNode childNode) {
         parent.getProxyNodeEventNotifier().scheduleEvent(
-                VRSEvent.createChildAddedEvent(
-                        parent.getVRL(),
-                        childNode.getVRL()));
+                VRSEvent.createChildAddedEvent(parent.getVRL(), childNode.getVRL()));
     }
 
-    public void fireNewNodesEvent(ProxyNode parent, List<ProxyNode> childNodes)
-    {
+    public void fireNewNodesEvent(ProxyNode parent, List<ProxyNode> childNodes) {
         VRL vrls[] = ProxyNode.toVRLArray(childNodes);
 
         parent.getProxyNodeEventNotifier().scheduleEvent(
-                VRSEvent.createChildsAddedEvent(
-                        parent.getVRL(),
-                        vrls));
+                VRSEvent.createChildsAddedEvent(parent.getVRL(), vrls));
     }
 
-    public void fireDeletedNodeEvent(ProxyNode parent, ProxyNode actualNode)
-    {
+    public void fireDeletedNodeEvent(ProxyNode parent, ProxyNode actualNode) {
         actualNode.getProxyNodeEventNotifier().scheduleEvent(
-                VRSEvent.createChildDeletedEvent(
-                        (parent != null) ? parent.getVRL() : null,
+                VRSEvent.createChildDeletedEvent((parent != null) ? parent.getVRL() : null,
                         actualNode.getVRL()));
     }
 
-    public void fireNodeRenamedEvent(ProxyNode parent, ProxyNode oldNode, ProxyNode newNode)
-    {
+    public void fireNodeRenamedEvent(ProxyNode parent, ProxyNode oldNode, ProxyNode newNode) {
         oldNode.getProxyNodeEventNotifier().scheduleEvent(
-                VRSEvent.createNodeRenamedEvent(
-                        (parent != null) ? parent.getVRL() : null,
-                        oldNode.getVRL(),
-                        newNode.getVRL()));
+                VRSEvent.createNodeRenamedEvent((parent != null) ? parent.getVRL() : null,
+                        oldNode.getVRL(), newNode.getVRL()));
     }
 
 }

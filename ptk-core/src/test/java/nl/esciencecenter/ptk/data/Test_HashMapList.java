@@ -1,7 +1,5 @@
 package nl.esciencecenter.ptk.data;
 
-import nl.esciencecenter.ptk.data.HashMapList;
-
 import org.junit.Assert;
 import org.junit.Test;
 

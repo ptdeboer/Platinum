@@ -23,7 +23,6 @@ package nl.esciencecenter.ptk.crypt;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-import nl.esciencecenter.ptk.crypt.StringHasher;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 

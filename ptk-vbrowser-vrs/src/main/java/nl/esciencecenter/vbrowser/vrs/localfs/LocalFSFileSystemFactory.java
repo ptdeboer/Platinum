@@ -27,42 +27,35 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class LocalFSFileSystemFactory implements VResourceSystemFactory
-{
-    public LocalFSFileSystemFactory() throws VrsException
-    {
-    }
-    
-    @Override
-    
-    public String[] getSchemes()
-    {
-        return new String[]{"file"}; 
+public class LocalFSFileSystemFactory implements VResourceSystemFactory {
+
+    public LocalFSFileSystemFactory() throws VrsException {
     }
 
     @Override
-    public String createResourceSystemId(VRL vrl)
-    {
+    public String[] getSchemes() {
+        return new String[] { "file" };
+    }
+
+    @Override
+    public String createResourceSystemId(VRL vrl) {
         // only one local fs. 
-        return "localfs:0";  
+        return "localfs:0";
     }
 
     @Override
-    public VResourceSystem createResourceSystemFor(VRSContext context,ResourceConfigInfo info,VRL vrl) throws VrsException
-    {
-        if ("file".equals(vrl.getScheme())==false)
-        {
-            throw new VrsException("Only support local file system URI:"+vrl);
+    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl)
+            throws VrsException {
+        if ("file".equals(vrl.getScheme()) == false) {
+            throw new VrsException("Only support local file system URI:" + vrl);
         }
-        
         return new LocalFileSystem(context);
     }
 
     @Override
-    public ResourceConfigInfo updateResourceInfo(VRSContext context,ResourceConfigInfo resourceSystemInfo, VRL vrl)
-    {
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo resourceSystemInfo, VRL vrl) {
         // Nothing to be updated. 
-        return resourceSystemInfo; 
+        return resourceSystemInfo;
     }
 
 }

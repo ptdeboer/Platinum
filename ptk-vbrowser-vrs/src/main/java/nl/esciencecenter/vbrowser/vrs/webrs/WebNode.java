@@ -31,7 +31,7 @@ import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PORT;
 import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_TYPE;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.data.StringList;
@@ -52,216 +52,169 @@ import nl.esciencecenter.vbrowser.vrs.node.VPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- *  Class represents a HTTP reference  
- */ 
-public class WebNode extends VPathNode implements VStreamAccessable
-{
+ * Class represents a HTTP reference
+ */
+public class WebNode extends VPathNode implements VStreamAccessable {
+
     // =====
     // Class
     // =====
 
-    static private StringList attributeNames=new StringList(
-        ATTR_RESOURCE_TYPE,
-        ATTR_NAME,
-        ATTR_HOSTNAME,
-        ATTR_PORT,
-        ATTR_ICON,
-        ATTR_PATH,
-        ATTR_MIMETYPE,
-        ATTR_CHARSET,
-        ATTR_LOCATION);
+    static private StringList attributeNames = new StringList(ATTR_RESOURCE_TYPE, ATTR_NAME, ATTR_HOSTNAME, ATTR_PORT,
+            ATTR_ICON, ATTR_PATH, ATTR_MIMETYPE, ATTR_CHARSET, ATTR_LOCATION);
 
     // ========
     // Instance
     // ========
-    
-    private String mimeType=null;
+
+    private String mimeType = null;
 
     private WebResourceSystem httprs;
 
-    private boolean isHTTPS=false; 
-    
-    protected WebClient getWebClient()
-    {
-        return this.httprs.getWebClient(); 
+    private boolean isHTTPS = false;
+
+    protected WebClient getWebClient() {
+        return this.httprs.getWebClient();
     }
-    
-    private void init(VRL loc) throws VrsException 
-    {
-        this.isHTTPS = StringUtil.equalsIgnoreCase(loc.getScheme(),VRS.HTTPS_SCHEME); 
+
+    private void init(VRL loc) throws VrsException {
+        this.isHTTPS = StringUtil.equalsIgnoreCase(loc.getScheme(), VRS.HTTPS_SCHEME);
     }
-    
-    public WebNode(WebResourceSystem httprs,VRL loc) throws VrsException
-    {
-        super(httprs,loc);
-        this.httprs=httprs; 
-        init(loc); 
+
+    public WebNode(WebResourceSystem httprs, VRL loc) throws VrsException {
+        super(httprs, loc);
+        this.httprs = httprs;
+        init(loc);
     }
 
     @Override
-    public String getResourceType()
-    {
-        return VRS.HTTP_SCHEME; 
+    public String getResourceType() {
+        return VRS.HTTP_SCHEME;
     }
 
-    public ResponseInputStream createInputStream() throws VrsException
-    {
-        try
-        {
+    public ResponseInputStream createInputStream() throws VrsException {
+        try {
             return getWebClient().doGetInputStream(getVRL().toURI());
+        } catch (Exception e) {
+            throw new VrsIOException(e.getMessage(), e);
         }
-        catch (Exception e)
-        {
-           throw new VrsIOException(e.getMessage(),e);
-        }
-
     }
-    
+
     /**
-     * Get mimetype as reported by remote Server. 
-     * Open Connection and tries get the ContentType header from the request. 
+     * Get mimetype as reported by remote Server. Open Connection and tries get the ContentType
+     * header from the request.
      */
     @Override
-    public String getMimeType() throws VrsException
-    {
-        if (mimeType!=null) 
-        {
+    public String getMimeType() throws VrsException {
+        if (mimeType != null) {
             return mimeType;
         }
-        
-        String str; 
-        try
-        {
-            ResponseInputStream inps=createInputStream();
-            str=inps.getMimeType(); 
-            IOUtil.autoClose(inps); 
-        }
-        catch (VrsIOException e)
-        {
+
+        String str;
+        try {
+            ResponseInputStream inps = createInputStream();
+            str = inps.getMimeType();
+            IOUtil.autoClose(inps);
+        } catch (VrsIOException e) {
             throw e;
         }
 
-        if (str==null) 
-        {
-            return "text/html"; 
-        }
-        
-        String strs[]=str.split(";");
-
-        if (strs.length<1)
-        {
-            mimeType=str;
-        }
-        else
-        {
-            mimeType=strs[0]; 
+        if (str == null) {
+            return "text/html";
         }
 
-        if (mimeType==null) 
-        {
-            return "text/html"; 
+        String strs[] = str.split(";");
+
+        if (strs.length < 1) {
+            mimeType = str;
+        } else {
+            mimeType = strs[0];
         }
-        
-        return mimeType; 
+
+        if (mimeType == null) {
+            return "text/html";
+        }
+
+        return mimeType;
     }
 
-    /** 
-     * Get the names of the attributes this resource has 
-     */ 
-    public List<AttributeDescription> getAttributeDescriptions()
-    {
-        return AttributeDescription.createList(attributeNames,AttributeType.STRING,false); 
+    /**
+     * Get the names of the attributes this resource has
+     */
+    public Map<String, AttributeDescription> getAttributeDescriptions() {
+        return AttributeDescription.createMap(attributeNames, AttributeType.STRING, false);
     }
 
     // === Misc === 
 
-//    // method needs by streamread/write interface 
-//    public int getOptimalWriteBufferSize()
-//    {
-//        return VRS.DEFAULT_STREAM_WRITE_CHUNK_SIZE;
-//    }
-//
-//    public int getOptimalReadBufferSize()
-//    {
-//        return VRS.DEFAULT_STREAM_READ_CHUNK_SIZE;
-//    }
+    //    // method needs by streamread/write interface 
+    //    public int getOptimalWriteBufferSize()
+    //    {
+    //        return VRS.DEFAULT_STREAM_WRITE_CHUNK_SIZE;
+    //    }
+    //
+    //    public int getOptimalReadBufferSize()
+    //    {
+    //        return VRS.DEFAULT_STREAM_READ_CHUNK_SIZE;
+    //    }
 
-    public String getIconURL() 
-    {
+    public String getIconURL() {
         // doesn't have to be connected. 
         VRL vrl;
-        
-        try
-        {
+
+        try {
             vrl = this.getVRL().resolvePath("favicon.ico");
-            if (exists(vrl.getPath()))
-            {
+            if (exists(vrl.getPath())) {
                 return vrl.toString();
             }
-        }
-        catch (VRLSyntaxException e)
-        {
+        } catch (VRLSyntaxException e) {
             e.printStackTrace();
         }
 
+        vrl = getVRL().replacePath("favicon.ico");
 
-        vrl=getVRL().replacePath("favicon.ico");
-
-        if (exists(vrl.getPath()))
-        {
+        if (exists(vrl.getPath())) {
             return vrl.toString();
         }
 
-        return null;   // no icon
+        return null; // no icon
     }
 
-    public ResponseOutputStream createOutputStream(boolean append) throws VrsException
-    {
-        if (append==true)
-        {
-            throw new VrsException("Appending OutputStream not supported!"); 
-        }
-        
-        VRL vrl=getVRL();
-        String queryStr=vrl.getPath();
-
-        if (vrl.getFragment()!=null)
-        {
-            queryStr+=queryStr+"#"+vrl.getFragment(); 
+    public ResponseOutputStream createOutputStream(boolean append) throws VrsException {
+        if (append == true) {
+            throw new VrsException("Appending OutputStream not supported!");
         }
 
-        if (vrl.getQuery()!=null)
-        {
-            queryStr+=queryStr+"?"+vrl.getQuery(); 
+        VRL vrl = getVRL();
+        String queryStr = vrl.getPath();
+
+        if (vrl.getFragment() != null) {
+            queryStr += queryStr + "#" + vrl.getFragment();
         }
-        
-        StringHolder statusH=new StringHolder();  
-        try
-        {
-            return getWebClient().doPutOutputStream(queryStr,statusH);
+
+        if (vrl.getQuery() != null) {
+            queryStr += queryStr + "?" + vrl.getQuery();
         }
-        catch (WebException e)
-        {
-            throw new VrsIOException(e.getMessage(),e); 
+
+        StringHolder statusH = new StringHolder();
+        try {
+            return getWebClient().doPutOutputStream(queryStr, statusH);
+        } catch (WebException e) {
+            throw new VrsIOException(e.getMessage(), e);
         }
     }
 
-    public WebResourceSystem getHTTPRS()
-    {
-        return this.httprs; 
+    public WebResourceSystem getHTTPRS() {
+        return this.httprs;
     }
-    
-    public boolean exists(String query)
-    {
-        try
-        {
-            ResponseInputStream inps=getWebClient().doGetInputStream(query); 
-            inps.autoClose(); 
+
+    public boolean exists(String query) {
+        try {
+            ResponseInputStream inps = getWebClient().doGetInputStream(query);
+            inps.autoClose();
             return true;
-        }
-        catch (IOException e)
-        {
-            return false; 
+        } catch (IOException e) {
+            return false;
         }
     }
 

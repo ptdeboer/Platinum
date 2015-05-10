@@ -34,14 +34,12 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Generic ResourceTreeModel containing only ViewNodes and Attributes.
  */
-public class ResourceTreeModel extends DefaultTreeModel
-{
+public class ResourceTreeModel extends DefaultTreeModel {
     private static final long serialVersionUID = -1155738043667059217L;
 
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(ResourceTreeModel.class);
     }
 
@@ -49,19 +47,16 @@ public class ResourceTreeModel extends DefaultTreeModel
     // Constructor/initializers
     // ========================================================================
 
-    public ResourceTreeModel()
-    {
+    public ResourceTreeModel() {
         super(null, false);
     }
 
     @Override
-    public ResourceTreeNode getRoot()
-    {
+    public ResourceTreeNode getRoot() {
         return (ResourceTreeNode) super.root;
     }
 
-    public void setRoot(ResourceTreeNode node)
-    {
+    public void setRoot(ResourceTreeNode node) {
         super.setRoot(node);
         this.uiFireStructureChanged(node);
     }
@@ -71,26 +66,22 @@ public class ResourceTreeModel extends DefaultTreeModel
     // ========================================================================
 
     @Override
-    public ResourceTreeNode getChild(Object parent, int index)
-    {
+    public ResourceTreeNode getChild(Object parent, int index) {
         return getChild((ResourceTreeNode) parent, index);
     }
 
     @Override
-    public int getChildCount(Object parent)
-    {
+    public int getChildCount(Object parent) {
         return getChildCount((ResourceTreeNode) parent);
     }
 
     @Override
-    public int getIndexOfChild(Object parent, Object child)
-    {
+    public int getIndexOfChild(Object parent, Object child) {
         return getIndexOfChild((ResourceTreeNode) parent, (ResourceTreeNode) child);
     }
 
     @Override
-    public boolean isLeaf(Object node)
-    {
+    public boolean isLeaf(Object node) {
         return isLeaf((ResourceTreeNode) node);
     }
 
@@ -98,29 +89,24 @@ public class ResourceTreeModel extends DefaultTreeModel
     // ResourceTreeNode methods
     // ========================================================================
 
-    public ResourceTreeNode getChild(ResourceTreeNode parent, int index)
-    {
+    public ResourceTreeNode getChild(ResourceTreeNode parent, int index) {
         return parent.getChildAt(index);
     }
 
-    public int getChildCount(ResourceTreeNode parent)
-    {
+    public int getChildCount(ResourceTreeNode parent) {
         return parent.getChildCount();
     }
 
-    public boolean isLeaf(ResourceTreeNode node)
-    {
+    public boolean isLeaf(ResourceTreeNode node) {
         return node.isLeaf();
     }
 
     @Override
-    public void valueForPathChanged(TreePath path, Object newValue)
-    {
+    public void valueForPathChanged(TreePath path, Object newValue) {
         logger.debugPrintf(">>> FIXME: valueForPathChanged:%s", newValue);
     }
 
-    public int getIndexOfChild(ResourceTreeNode parent, ResourceTreeNode child)
-    {
+    public int getIndexOfChild(ResourceTreeNode parent, ResourceTreeNode child) {
         return parent.getIndex(child);
     }
 
@@ -133,13 +119,11 @@ public class ResourceTreeModel extends DefaultTreeModel
     // Model updates
     // ========================================================================
 
-    public void setChilds(ResourceTreeNode targetNode, ViewNode[] items)
-    {
+    public void setChilds(ResourceTreeNode targetNode, ViewNode[] items) {
         updateChilds(targetNode, items, false);
     }
 
-    public void deleteNode(ResourceTreeNode node, boolean fireEvents)
-    {
+    public void deleteNode(ResourceTreeNode node, boolean fireEvents) {
         // update model
         ResourceTreeNode parent = node.getParent();
         int index = parent.removeChild(node);
@@ -150,8 +134,7 @@ public class ResourceTreeModel extends DefaultTreeModel
 
     }
 
-    public void clearNode(ResourceTreeNode node, boolean fireEvent)
-    {
+    public void clearNode(ResourceTreeNode node, boolean fireEvent) {
         // remove previous children, might alread been removed
         node.clear();
 
@@ -159,19 +142,19 @@ public class ResourceTreeModel extends DefaultTreeModel
             uiFireStructureChanged(node);
     }
 
-    public void addNodes(ResourceTreeNode node, ViewNode[] childs)
-    {
+    public void addNodes(ResourceTreeNode node, ViewNode[] childs) {
         updateChilds(node, childs, true);
     }
 
     /**
-     * Set childs or append new ones. If a tree node with similar VRL already exist, the new ViewNode will be updated
-     * (merge).
+     * Set childs or append new ones. If a tree node with similar VRL already exist, the new
+     * ViewNode will be updated (merge).
      */
-    protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode childs[], boolean mergeAppend)
-    {
+    protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode childs[],
+            boolean mergeAppend) {
         logger.debugPrintf("+++ updateChilds(append=%s) for:%s,numChilds=#%s\n",
-                (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRI(), ((childs!=null)?""+childs.length:"?"));
+                (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRI(),
+                ((childs != null) ? "" + childs.length : "?"));
 
         // possible background thread:
 
@@ -180,14 +163,12 @@ public class ResourceTreeModel extends DefaultTreeModel
 
         boolean changed = false;
 
-        if ((targetNode.isPopulated() == false) || (mergeAppend == false))
-        {
+        if ((targetNode.isPopulated() == false) || (mergeAppend == false)) {
             clearNode(targetNode, false);
             changed = true;
         }
 
-        if ((childs == null) || (childs.length <= 0))
-        {
+        if ((childs == null) || (childs.length <= 0)) {
             targetNode.setPopulated(true);
             // redraw:
             this.uiFireStructureChanged(targetNode);
@@ -199,13 +180,11 @@ public class ResourceTreeModel extends DefaultTreeModel
         childNodes = new ResourceTreeNode[len];
         childIndices = new int[len];
         // Process the directories
-        for (int i = 0; (childs != null) && (i < childs.length); i++)
-        {
+        for (int i = 0; (childs != null) && (i < childs.length); i++) {
             logger.debugPrintf("adding child:(ViewItem)%s\n", childs[i].getVRL());
 
             ViewNode iconItem = childs[i];
-            if (iconItem != null)
-            {
+            if (iconItem != null) {
                 VRL childLoc = iconItem.getVRL();
                 ResourceTreeNode rtnode = null;
 
@@ -213,14 +192,12 @@ public class ResourceTreeModel extends DefaultTreeModel
                 // merge the two subsequent calls to setChilds,
                 // just update the ViewNode with the same name !
 
-                if ((rtnode = targetNode.getNode(childLoc)) != null)
-                {
+                if ((rtnode = targetNode.getNode(childLoc)) != null) {
                     rtnode.setViewNode(iconItem);
                     continue; // child already exists;
                 }
 
-                try
-                {
+                try {
                     ResourceTreeNode newNode = new ResourceTreeNode(targetNode, iconItem, false);
 
                     // it now has at least one node:
@@ -232,9 +209,7 @@ public class ResourceTreeModel extends DefaultTreeModel
                     childIndices[i] = targetNode.addNode(newNode);
 
                     changed = true;
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     logger.logException(PLogger.ERROR, e, "Exception in updatNode:%s\n", e);
                 }
             }
@@ -242,21 +217,16 @@ public class ResourceTreeModel extends DefaultTreeModel
 
         targetNode.setPopulated(true);
 
-        if (changed)
-        {
-            if (mergeAppend == true)
-            {
+        if (changed) {
+            if (mergeAppend == true) {
                 this.uiFireNodesInserted(targetNode, childIndices); // insert
-            }
-            else
-            {
+            } else {
                 this.uiFireStructureChanged(targetNode); // redraw
             }
         }
     }
 
-    public int addNode(ResourceTreeNode parent, ResourceTreeNode node, boolean fireEvent)
-    {
+    public int addNode(ResourceTreeNode parent, ResourceTreeNode node, boolean fireEvent) {
         // it now has at least one node:
         // parent.setAllowsChildren(true);
         int index = parent.addNode(node);
@@ -271,15 +241,11 @@ public class ResourceTreeModel extends DefaultTreeModel
     // Events
     // ========================================================================
 
-    public void uiFireStructureChanged(final ResourceTreeNode node)
-    {
+    public void uiFireStructureChanged(final ResourceTreeNode node) {
         // Check UI Thread:
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable createTask = new Runnable()
-            {
-                public void run()
-                {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable createTask = new Runnable() {
+                public void run() {
                     uiFireStructureChanged(node);
                 }
             };
@@ -292,15 +258,11 @@ public class ResourceTreeModel extends DefaultTreeModel
     }
 
     // Fire node changed event: updates node itself, not the structure.
-    protected void uiFireNodeChanged(final ResourceTreeNode node)
-    {
+    protected void uiFireNodeChanged(final ResourceTreeNode node) {
         // Check UI Thread:
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable createTask = new Runnable()
-            {
-                public void run()
-                {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable createTask = new Runnable() {
+                public void run() {
                     uiFireNodeChanged(node);
                 }
             };
@@ -313,8 +275,8 @@ public class ResourceTreeModel extends DefaultTreeModel
     }
 
     // Fire node changed event: updates node itself, not the structure.
-    protected void uiFireNodeRemoved(final ResourceTreeNode parent, int childIndex, final ResourceTreeNode child)
-    {
+    protected void uiFireNodeRemoved(final ResourceTreeNode parent, int childIndex,
+            final ResourceTreeNode child) {
         ResourceTreeNode childs[] = new ResourceTreeNode[1];
         int[] removedChildren = new int[1];
         removedChildren[0] = childIndex;
@@ -323,15 +285,12 @@ public class ResourceTreeModel extends DefaultTreeModel
         uiFireNodesRemoved(parent, removedChildren, childs);
     }
 
-    protected void uiFireNodesRemoved(final ResourceTreeNode parent, final int childIndices[], final ResourceTreeNode childs[])
-    {
+    protected void uiFireNodesRemoved(final ResourceTreeNode parent, final int childIndices[],
+            final ResourceTreeNode childs[]) {
         // Check UI Thread:
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable createTask = new Runnable()
-            {
-                public void run()
-                {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable createTask = new Runnable() {
+                public void run() {
                     uiFireNodesRemoved(parent, childIndices, childs);
                 }
             };
@@ -343,8 +302,7 @@ public class ResourceTreeModel extends DefaultTreeModel
         this.nodesWereRemoved(parent, childIndices, childs);
     }
 
-    protected void uiFireNodeInserted(final ResourceTreeNode parent, int childIndex)
-    {
+    protected void uiFireNodeInserted(final ResourceTreeNode parent, int childIndex) {
         int[] removedChildren = new int[1];
         removedChildren[0] = childIndex;
         uiFireNodesInserted(parent, removedChildren);
@@ -355,12 +313,9 @@ public class ResourceTreeModel extends DefaultTreeModel
                                                                                                 // childs[])
     {
         // Check UI Thread:
-        if (UIGlobal.isGuiThread() == false)
-        {
-            Runnable createTask = new Runnable()
-            {
-                public void run()
-                {
+        if (UIGlobal.isGuiThread() == false) {
+            Runnable createTask = new Runnable() {
+                public void run() {
                     uiFireNodesInserted(parent, childIndices); // ,childs);
                 }
             };
@@ -380,30 +335,25 @@ public class ResourceTreeModel extends DefaultTreeModel
     /**
      * Find nodes which have the specified ProxyLocator. Method peforms a tree walk.
      */
-    public List<ResourceTreeNode> findNodes(VRL locator)
-    {
+    public List<ResourceTreeNode> findNodes(VRL locator) {
         ResourceTreeNode current = this.getRoot();
         Vector<ResourceTreeNode> nodes = new Vector<ResourceTreeNode>();
         return findNodes(nodes, current, locator);
     }
 
-    protected List<ResourceTreeNode> findNodes(List<ResourceTreeNode> nodes, ResourceTreeNode node, VRL locator)
-    {
+    protected List<ResourceTreeNode> findNodes(List<ResourceTreeNode> nodes, ResourceTreeNode node,
+            VRL locator) {
         // check parent:
         if (node.getVRI().equals(locator))
             nodes.add(node);
 
         java.util.List<ResourceTreeNode> childs = node.getChilds();
-        for (ResourceTreeNode child : childs)
-        {
+        for (ResourceTreeNode child : childs) {
             // skip one recursion:
-            if (child.hasChildren() == false)
-            {
+            if (child.hasChildren() == false) {
                 if (child.getVRI().equals(locator))
                     nodes.add(child);
-            }
-            else
-            {
+            } else {
                 findNodes(nodes, child, locator);
             }
         }

@@ -29,55 +29,46 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 /**
  * An Attribute Parameter Field is an managed Field for a (VRS) Attribute.
  */
-public class AttrParameterField extends JTextField implements IAttributeField
-{
-    public static enum AttrFieldType
-    {
-        INT,STRING,STRINGENUM,VRL,BOOLEAN,CHECKBOX;
+public class AttrParameterField extends JTextField implements IAttributeField {
+
+    public static enum AttrFieldType {
+        INT, STRING, STRINGENUM, VRL, BOOLEAN, CHECKBOX;
     }
-    
+
     private static final long serialVersionUID = 8089690166449438100L;
 
-    public AttrParameterField()
-    {
+    public AttrParameterField() {
         // names indicates abtract class, should be subclassed. 
         super("<AttrParameterField>");
     }
 
     /** Default is String Parameter */
-    public AttrParameterField(String value)
-    {
+    public AttrParameterField(String value) {
         super(value);
     }
 
-    public AttrParameterField(String name, String value)
-    {
+    public AttrParameterField(String name, String value) {
         super(value);
         this.setName(name);
     }
 
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return super.getName();
     }
 
-    public String getValue()
-    {
+    public String getValue() {
         return super.getText();
     }
 
-    public AttributeType getVAttributeType()
-    {
+    public AttributeType getVAttributeType() {
         return AttributeType.STRING;
     }
 
-    public void updateFrom(Attribute attr)
-    {
+    public void updateFrom(Attribute attr) {
         setText(attr.getStringValue());
     }
 
-    public void setEditable(boolean editable)
-    {
+    public void setEditable(boolean editable) {
         super.setEditable(editable);
     }
 

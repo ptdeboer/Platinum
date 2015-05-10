@@ -32,21 +32,19 @@ import nl.esciencecenter.ptk.vbrowser.ui.object.UIDisposable;
 /**
  * Managed Tab Panel
  */
-public class TabContentPanel extends JPanel
-{
+public class TabContentPanel extends JPanel {
+
     private static final long serialVersionUID = -8240076131848615972L;
 
     public static final String NEW_TAB_ACTION = "newTab";
 
     public static final String CLOSE_TAB_ACTION = "closeTab";
 
-    public static TabContentPanel createTab(String name, JComponent comp, boolean withScrollPane)
-    {
+    public static TabContentPanel createTab(String name, JComponent comp, boolean withScrollPane) {
         TabContentPanel tabP = new TabContentPanel(withScrollPane);
         tabP.setContent(comp);
         tabP.setName(name);
-        if (withScrollPane)
-        {
+        if (withScrollPane) {
             tabP.scrollPane.setName(name);
         }
         tabP.setToolTipText(name);
@@ -66,14 +64,12 @@ public class TabContentPanel extends JPanel
 
     private JPanel tabNavBar;
 
-    public TabContentPanel(boolean withScrollPane)
-    {
+    public TabContentPanel(boolean withScrollPane) {
         super();
         initGui(withScrollPane);
     }
 
-    protected void initGui(boolean withScrollPane)
-    {
+    protected void initGui(boolean withScrollPane) {
 
         {
             this.setLayout(new BorderLayout());
@@ -86,73 +82,57 @@ public class TabContentPanel extends JPanel
                     topPanel.add(tabNavBar);
                 }
             }
-            
-            if (withScrollPane)
-            {
+
+            if (withScrollPane) {
                 this.scrollPane = new JScrollPane();
-                this.add(scrollPane,BorderLayout.CENTER);
+                this.add(scrollPane, BorderLayout.CENTER);
                 scrollPane.getVerticalScrollBar().setUnitIncrement(48 / 2);
             }
         }
     }
 
-    public void setContent(JComponent comp)
-    {
-        if (this.content != null)
-        {
-            if (content instanceof UIDisposable)
-            {
+    public void setContent(JComponent comp) {
+        if (this.content != null) {
+            if (content instanceof UIDisposable) {
                 ((UIDisposable) content).dispose();
             }
         }
 
-        if (this.scrollPane!=null)
-        {
+        if (this.scrollPane != null) {
             this.scrollPane.setViewportView(comp);
-        }
-        else
-        {
-            if (content!=null)
-            {
-                this.remove(content); 
+        } else {
+            if (content != null) {
+                this.remove(content);
             }
-            if (comp!=null)
-            {
-                this.add(comp,BorderLayout.CENTER); 
+            if (comp != null) {
+                this.add(comp, BorderLayout.CENTER);
             }
         }
         this.content = comp;
     }
 
-    public ViewNode getViewNode()
-    {
-        if (content instanceof ViewNodeContainer)
-        {
+    public ViewNode getViewNode() {
+        if (content instanceof ViewNodeContainer) {
             return ((ViewNodeContainer) content).getViewNode();
         }
 
         return null;
     }
 
-    public boolean contains(Class<? extends JComponent> componentClass)
-    {
+    public boolean contains(Class<? extends JComponent> componentClass) {
         return componentClass.isInstance(content);
     }
 
-    public JComponent getContent()
-    {
+    public JComponent getContent() {
         return this.content;
     }
 
-    public JScrollPane getScrollPane()
-    {
+    public JScrollPane getScrollPane() {
         return this.scrollPane;
     }
 
-    public void setScrollBarUnitIncrement(int size)
-    {
-        if (scrollPane!=null)
-        {
+    public void setScrollBarUnitIncrement(int size) {
+        if (scrollPane != null) {
             scrollPane.getVerticalScrollBar().setUnitIncrement(size);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(size);
         }

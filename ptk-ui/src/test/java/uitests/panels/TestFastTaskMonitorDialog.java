@@ -15,18 +15,15 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */ 
+ */
 // source: 
 
 package uitests.panels;
 
+public class TestFastTaskMonitorDialog {
 
-public class TestFastTaskMonitorDialog
-{
+    public static void main(String[] args) {
+        TestTaskMonitorDialog.testMonitorDialog(100, 100, 1, 123);
+    }
 
-     public static void main(String[] args) 
-     {
-         TestTaskMonitorDialog.testMonitorDialog(100,100,1,123); 
-     }
-     
 }

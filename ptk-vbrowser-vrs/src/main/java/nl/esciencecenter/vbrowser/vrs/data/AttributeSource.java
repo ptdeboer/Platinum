@@ -23,16 +23,14 @@ package nl.esciencecenter.vbrowser.vrs.data;
 import java.util.List;
 
 /**
- * Interface for MetaData resources
- *  
- * @author Piter T. de Boer 
+ * Interface for MetaData resources.
  */
-public interface AttributeSource
-{
-    public List<String> getAttributeNames(); 
-    
-    public Attribute getAttribute(String name); 
-    
-    public List<Attribute> getAttributes(String[] names); 
-    
+public interface AttributeSource {
+
+    public List<String> getAttributeNames();
+
+    public Attribute getAttribute(String name);
+
+    public List<Attribute> getAttributes(String[] names);
+
 }

@@ -31,8 +31,12 @@ import nl.esciencecenter.ptk.task.ActionTask;
 /**
  * Wrapper for a Local Process.
  */
-public class LocalProcess implements Disposable
-{
+public class LocalProcess implements Disposable {
+
+    public static LocalProcess wrap(Process process) {
+        return new LocalProcess(process);
+    }
+
     private Process process = null;
 
     private OutputStream stdinStream = null; // output to process 'stdin'
@@ -55,74 +59,55 @@ public class LocalProcess implements Disposable
 
     private boolean isTerminated = false;
 
-    public LocalProcess(Process process)
-    {
+    protected LocalProcess(Process process) {
         this.process = process;
     }
 
-    public LocalProcess()
-    {
+    protected LocalProcess() {
     }
 
-    public void captureOutput(boolean captureOut, boolean captureErr)
-    {
+    public void captureOutput(boolean captureOut, boolean captureErr) {
         this.captureStdout = captureOut;
         this.captureStderr = captureErr;
     }
 
-    public void waitFor() throws IOException
-    {
-        try
-        {
+    public void waitFor() throws IOException {
+        try {
             this.process.waitFor();
-
             // wait for completion of streamreader also !
-            if (streamReaderTask != null)
-            {
+            if (streamReaderTask != null) {
                 streamReaderTask.waitForAll();
             }
-
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             // Keep Flag!:
             Thread.currentThread().interrupt();
             throw new IOException("InterruptedException", e);
-        }
-        finally
-        {
+        } finally {
             isTerminated = true;
         }
     }
 
-    public void setCaptureOutput(boolean captureStdout, boolean captureStderr)
-    {
+    public void setCaptureOutput(boolean captureStdout, boolean captureStderr) {
         this.captureStdout = captureStdout;
         this.captureStderr = captureStderr;
     }
 
-    public void execute(String[] cmds) throws IOException
-    {
+    public void execute(String[] cmds) throws IOException {
         execute(cmds, true);
     }
 
-    public void execute(String[] cmds, boolean syncWait) throws IOException
-    {
+    public void execute(String[] cmds, boolean syncWait) throws IOException {
+
         setCommands(cmds);
 
         if (commands == null)
             throw new IOException("Command string is empty !");
 
-        try
-        {
+        try {
             this.process = Runtime.getRuntime().exec(commands);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw e;
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             throw new IOException(e.getMessage(), e);
         }
 
@@ -134,13 +119,11 @@ public class LocalProcess implements Disposable
         // this to avoid extra (thread) overhead when synchronized command
         // execution.
 
-        if ((captureStdout == true) || (captureStderr == true))
-        {
+        if ((captureStdout == true) || (captureStderr == true)) {
             startStreamWatcher(syncWait);
         }
 
-        if (syncWait)
-        {
+        if (syncWait) {
             waitFor();
         }
     }
@@ -151,8 +134,8 @@ public class LocalProcess implements Disposable
      * @param syncWait
      * @throws IOException
      */
-    protected void startStreamWatcher(boolean syncWait) throws IOException
-    {
+    protected void startStreamWatcher(boolean syncWait) throws IOException {
+        //
         if ((this.captureStderr == false) && (this.captureStdout == false))
             return; // nothing to be done.
 
@@ -162,17 +145,10 @@ public class LocalProcess implements Disposable
         if (this.captureStderr)
             stderrStream = process.getErrorStream();
 
-        // start backgrounded stream reader
-
-        // streamReaderTask=new
-        // ActionTask(ProcessTaskSource.getDefault(),"StreamWatcher")
-
-        streamReaderTask = new ActionTask(null, "StreamWatcher")
-        {
+        streamReaderTask = new ActionTask(null, "StreamWatcher") {
             boolean stop = false;
 
-            public void doTask()
-            {
+            public void doTask() {
 
                 // buf size is initial. Will Autoextend.
                 StringWriter stdoutWriter = new StringWriter(1024);
@@ -180,35 +156,27 @@ public class LocalProcess implements Disposable
 
                 int val1 = -1, val2 = -1;
 
-                try
-                {
-                    do
-                    {
+                try {
+                    do {
                         // alternate read from stdout and stderr:
-                        if (stdoutStream != null)
-                        {
+                        if (stdoutStream != null) {
                             val1 = stdoutStream.read();
 
-                            if (val1 >= 0)
-                            {
+                            if (val1 >= 0) {
                                 stdoutWriter.write(val1);
                             }
                         }
 
-                        if (stderrStream != null)
-                        {
+                        if (stderrStream != null) {
                             val2 = stderrStream.read();
 
-                            if (val2 >= 0)
-                            {
+                            if (val2 >= 0) {
                                 stderrWriter.write(val2);
                             }
                         }
                         // continue until EOF has occured on both streams.
                     } while ((stop == false) && ((val1 >= 0) || (val2 >= 0)));
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     this.setException(e);
                 }
 
@@ -217,147 +185,114 @@ public class LocalProcess implements Disposable
             }
 
             @Override
-            public void stopTask()
-            {
+            public void stopTask() {
                 stop = true;
             }
         };
 
-        if (syncWait == false)
-        {
+        if (syncWait == false) {
             // background
             streamReaderTask.startTask();
-        }
-        else
-        {
+        } else {
             // call run() directly
             streamReaderTask.run();
         }
-
     }
 
     /**
-     * Set list of command + argument to start. cmds[0] is the actual command, cmds[1],...,cmds[2] are the arguments.
-     * 
-     * @param cmds
+     * Set list of command + argument to start. cmds[0] is the actual command, cmds[1],...,cmds[2]
+     * are the arguments.
      */
-    void setCommands(String[] cmds)
-    {
+    void setCommands(String[] cmds) {
         this.commands = cmds;
     }
 
     /**
-     * Returns stdout of terminated process as String. If this method is called during execution of a process this method will
-     * return null.
+     * Returns stdout of terminated process as String. If this method is called during execution of
+     * a process this method will return null.
      */
-    public String getStdout()
-    {
+    public String getStdout() {
         return stdoutString;
     }
 
     /**
-     * Returns stderr of terminated process as String. If this method is called during execution of a process this method will
-     * return null.
+     * Returns stderr of terminated process as String. If this method is called during execution of
+     * a process this method will return null.
      */
-    public String getStderr()
-    {
+    public String getStderr() {
         return stderrString;
     }
 
-    public int getExitValue()
-    {
+    public int getExitValue() {
         return process.exitValue();
     }
 
-    public void terminate()
-    {
+    public void terminate() {
         dispose();
     }
 
-    public boolean isTerminated()
-    {
+    public boolean isTerminated() {
         // process has already terminated
-        if (isTerminated == true)
-        {
+        if (isTerminated == true) {
             return true;
         }
-
         // dirty way to check whether process hasn't exited
-        try
-        {
+        try {
             this.process.exitValue();
             this.isTerminated = true;
-        }
-        catch (IllegalThreadStateException e)
-        {
+        } catch (IllegalThreadStateException e) {
             // cannot get exitValue() from non terminated process:
             this.isTerminated = false;
         }
-
+        //
         return isTerminated;
     }
 
-    public OutputStream getStdinStream()
-    {
+    public OutputStream getStdinStream() {
         stdinStream = process.getOutputStream();
         return stdinStream;
     }
 
-    public InputStream getStderrStream()
-    {
+    public InputStream getStderrStream() {
         stderrStream = process.getErrorStream();
         return stderrStream;
     }
 
-    public InputStream getStdoutStream()
-    {
+    public InputStream getStdoutStream() {
         stdoutStream = process.getInputStream();
         return stdoutStream;
     }
 
-    public void dispose()
-    {
-        if (stdinStream != null)
-        {
-            try
-            {
+    public void dispose() {
+        // stdin
+        if (stdinStream != null) {
+            try {
                 stdinStream.close();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
             }
 
             stdinStream = null;
         }
-
-        if (stdoutStream != null)
-        {
-            try
-            {
+        //stdout
+        if (stdoutStream != null) {
+            try {
                 stdoutStream.close();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
             }
 
             stdoutStream = null;
         }
-
-        if (stderrStream != null)
-        {
-            try
-            {
+        //stderr
+        if (stderrStream != null) {
+            try {
                 stderrStream.close();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
             }
 
             stderrStream = null;
         }
-
-        if (process != null)
-        {
+        // dispose
+        if (process != null) {
             process.destroy();
             process = null;
         }

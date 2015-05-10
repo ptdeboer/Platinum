@@ -5,10 +5,10 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import nl.esciencecenter.ptk.crypt.Secret;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import nl.esciencecenter.ptk.crypt.Secret;
 
 public class ListCertificates
 {

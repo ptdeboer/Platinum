@@ -6,51 +6,41 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ShowAttributeEditor
-{
+public class ShowAttributeEditor {
 
     /**
      * Auto-generated main method to display this JDialog
      */
-    public static void main(String[] args)
-    {
-        try
-        {
+    public static void main(String[] args) {
+        try {
             AttributeSet attrs = new AttributeSet();
 
             attrs.put(new Attribute("longValue", (long) 10));
             attrs.put(new Attribute("StringValue", "String Value"));
-            attrs.put(new Attribute("enum", new String[]
-            { "aap", "noot", "mies" }, 1));
+            attrs.put(new Attribute("enum", new String[] { "aap", "noot", "mies" }, 1));
 
             attrs.put(new Attribute("VRLValue", new VRL("http://www.cnn.com/hello")));
 
-            attrs.put(new Attribute("Attr-big-Text",
-                    "Testing LONG Text,\n Testing LONG text\n"
-                            + "***********************************************\n"
-                            + "***********************************************\n"
-                            + "***********************************************\n"
-                            + "***********************************************\n"
-                    ), true);
+            attrs.put(new Attribute("Attr-big-Text", "Testing LONG Text,\n Testing LONG text\n"
+                    + "***********************************************\n"
+                    + "***********************************************\n"
+                    + "***********************************************\n"
+                    + "***********************************************\n"), true);
 
-            for (String name : attrs.keySet())
-            {
+            for (String name : attrs.keySet()) {
                 attrs.setEditable(name, true);
             }
 
-            Attribute[] newAttrs = AttributeEditorForm.editAttributes("Edit Attributes", attrs.toArray(), true);
+            Attribute[] newAttrs = AttributeEditorForm.editAttributes("Edit Attributes",
+                    attrs.toArray(), true);
 
-            if (newAttrs==null)
-            {
+            if (newAttrs == null) {
                 System.out.printf("Cancelled!");
-            }
-            else for (Attribute attr : newAttrs)
-            {
-                System.out.printf(" -%s\n", attr);
-            }
-        }
-        catch (Exception e)
-        {
+            } else
+                for (Attribute attr : newAttrs) {
+                    System.out.printf(" -%s\n", attr);
+                }
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

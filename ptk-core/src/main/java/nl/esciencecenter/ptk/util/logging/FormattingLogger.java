@@ -27,158 +27,137 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
- *Legacy Java Logger Facade
+ * Legacy Java Logger Facade
  */
-public class FormattingLogger extends Logger
-{
+public class FormattingLogger extends Logger {
+
     // ==================
     // Class Fields 
     // ==================
 
-    public static final String DEFAULT_RESOURCEBUNDLENAME="nl.nlesc.ptk.logging";
-    
-    public static final Level ALL=Level.ALL;
-    public static final Level DEBUG_FULL=Level.FINEST; 
-    public static final Level DEBUG=Level.FINE; 
-    public static final Level INFO=Level.INFO; 
-    public static final Level WARN=Level.WARNING; 
-    public static final Level ERROR=Level.SEVERE;  
-    public static final Level FATAL=ERROR;   
-    public static final Level NONE=Level.OFF; 
-    
+    public static final String DEFAULT_RESOURCEBUNDLENAME = "nl.nlesc.ptk.logging";
+
+    public static final Level ALL = Level.ALL;
+    public static final Level DEBUG_FULL = Level.FINEST;
+    public static final Level DEBUG = Level.FINE;
+    public static final Level INFO = Level.INFO;
+    public static final Level WARN = Level.WARNING;
+    public static final Level ERROR = Level.SEVERE;
+    public static final Level FATAL = ERROR;
+    public static final Level NONE = Level.OFF;
+
     // ==================
     // Instance 
     // ==================
-    
-    protected FormattingLogger(String name, String resourceBundleName)
-    {
+
+    protected FormattingLogger(String name, String resourceBundleName) {
         super(name, resourceBundleName);
     }
-    
-    protected FormattingLogger(String name)
-    {
+
+    protected FormattingLogger(String name) {
         // todo: resourcebundle names 
-        super(name,null);
+        super(name, null);
     }
-    
+
     // === Level Methods === 
-    public void setLevelToDebug()
-    {
+    public void setLevelToDebug() {
         this.setLevel(DEBUG);
     }
-    
-    public void setLevelToInfo()
-    {
+
+    public void setLevelToInfo() {
         this.setLevel(INFO);
     }
-    
-    public void setLevelToWarn()
-    {
+
+    public void setLevelToWarn() {
         this.setLevel(WARN);
     }
-    
-    public void setLevelToError()
-    {
+
+    public void setLevelToError() {
         this.setLevel(ERROR);
     }
 
-    public void setLevelToFatal()
-    {
+    public void setLevelToFatal() {
         this.setLevel(FATAL);
     }
 
-    public void setLevelToNone()
-    {
+    public void setLevelToNone() {
         this.setLevel(NONE);
     }
 
     /**
-     * Clears log level so that the effective log level is inherited from the Parent logger;  
-     */ 
-    public void setLevelToParent()
-    {
-        Logger parent=this.getParent();
-        
-        if (parent!=null)
-        {
-            this.setLevel(parent.getLevel()); 
+     * Clears log level so that the effective log level is inherited from the Parent logger;
+     */
+    public void setLevelToParent() {
+        Logger parent = this.getParent();
+
+        if (parent != null) {
+            this.setLevel(parent.getLevel());
         }
     }
 
     /**
-     * Whether specified level will be logged, or the level value is higher or equal then
-     * the current loglevel.  
+     * Whether specified level will be logged, or the level value is higher or equal then the
+     * current loglevel.
      */
-    public boolean hasEffectiveLevel(Level level)
-    {
-        return this.isLoggable(level); 
+    public boolean hasEffectiveLevel(Level level) {
+        return this.isLoggable(level);
     }
 
-    /** Whether DEBUG level is enabled. */ 
-    public boolean isLevelDebug()
-    {
-        return isLoggable(FormattingLogger.DEBUG); 
+    /** Whether DEBUG level is enabled. */
+    public boolean isLevelDebug() {
+        return isLoggable(FormattingLogger.DEBUG);
     }
 
     // ========================================================================
     // Actual Log Methods 
     // ========================================================================
-    
+
     //Java say this is the method override 
-    public void log(LogRecord record) 
-    {
+    public void log(LogRecord record) {
         // Default is to bounce it up the the parent handler!
         super.log(record); // bounce up ?  
     }
-    
-    public void logPrintf(Level level,String format, Object... args)
-    {
-        log(level,format,args); 
-    }
-     
-    public void debugPrintf(String format, Object... args)
-    {
-        this.log(DEBUG,format,args); 
-    }
-    
-    public void infoPrintf(String format, Object... args)
-    {
-        this.log(INFO,format,args); 
-    }
-    
-    public void warnPrintf(String format, Object... args)
-    {
-        this.log(WARN,format,args); 
-    }
-    
-    public void errorPrintf(String format, Object... args)
-    {
-        this.log(ERROR,format,args);
-    }
-    
-    /** Print fatal message. Append end of line character */ 
-    public void fatal(String msg)
-    {
-        super.log(FATAL,msg+"\n"); 
+
+    public void logPrintf(Level level, String format, Object... args) {
+        log(level, format, args);
     }
 
-    public void logException(Level level, Throwable e, String format,Object... args)
-    { 
-        if (this.isLoggable(level)==false) // slow check!
-            return; 
+    public void debugPrintf(String format, Object... args) {
+        this.log(DEBUG, format, args);
+    }
+
+    public void infoPrintf(String format, Object... args) {
+        this.log(INFO, format, args);
+    }
+
+    public void warnPrintf(String format, Object... args) {
+        this.log(WARN, format, args);
+    }
+
+    public void errorPrintf(String format, Object... args) {
+        this.log(ERROR, format, args);
+    }
+
+    /** Print fatal message. Append end of line character */
+    public void fatal(String msg) {
+        super.log(FATAL, msg + "\n");
+    }
+
+    public void logException(Level level, Throwable e, String format, Object... args) {
+        if (this.isLoggable(level) == false) // slow check!
+            return;
 
         // create custom LogRecord!
-        LogRecord lr = new LogRecord(level,format);
+        LogRecord lr = new LogRecord(level, format);
         lr.setLoggerName(this.getName());
         lr.setParameters(args);
         lr.setThrown(e);
-        log(lr); 
+        log(lr);
     }
-    
+
     // Don't forget to add a handler which outputs the actual log messages ! 
-    public synchronized void addHandler(Handler handler) throws SecurityException 
-    {
-        super.addHandler(handler); 
+    public synchronized void addHandler(Handler handler) throws SecurityException {
+        super.addHandler(handler);
     }
-    
+
 }

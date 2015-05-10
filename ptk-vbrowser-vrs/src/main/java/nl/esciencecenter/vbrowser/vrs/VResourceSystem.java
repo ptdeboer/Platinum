@@ -23,42 +23,52 @@ package nl.esciencecenter.vbrowser.vrs;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Factory interface for VPaths. 
+/**
+ * Factory interface for VPaths.
  */
-public interface VResourceSystem
-{
+public interface VResourceSystem {
+
     public VRSContext getVRSContext();
-    
+
     /**
-     *  Server location also counts as unique identigyin ID. 
-     *  Equivalent ResourceSystems should have similar Server VRL().  
-     * @return server VRL. 
+     * Server location also counts as unique identigyin ID. Equivalent ResourceSystems should have
+     * similar Server VRL().
+     * 
+     * @return server VRL.
      */
     public VRL getServerVRL();
-    
+
     /**
-     * Resolve relative path against this ResourceSystem. 
-     * @param path relative path 
-     * @return absolute VRL 
-     * @throws VrsException if path contains invalid characters. 
+     * Resolve relative path against this ResourceSystem.
+     * 
+     * @param path
+     *            relative path
+     * @return absolute VRL
+     * @throws VrsException
+     *             if path contains invalid characters.
      */
-    public VRL resolveVRL(String path) throws VrsException; 
-    
-    /** 
-     * Resolve relative path and return VPath. 
-     * @param path relative path 
-     * @return resolve VPath 
-     * @throws VrsException if path contains invalid characters. 
+    public VRL resolveVRL(String path) throws VrsException;
+
+    /**
+     * Resolve relative path and return VPath.
+     * 
+     * @param path
+     *            relative path
+     * @return resolve VPath
+     * @throws VrsException
+     *             if path contains invalid characters.
      */
-    public VPath resolvePath(String path) throws VrsException; 
-    
-    /** 
-     * Resolve relative or absolute VRL to VPath. 
-     * @param vrl relative or absolute VRL 
-     * @return resolve VPath 
-     * @throws VrsException if VRL contains an invalid path. 
+    public VPath resolvePath(String path) throws VrsException;
+
+    /**
+     * Resolve relative or absolute VRL to VPath.
+     * 
+     * @param vrl
+     *            relative or absolute VRL
+     * @return resolve VPath
+     * @throws VrsException
+     *             if VRL contains an invalid path.
      */
     public VPath resolvePath(VRL vrl) throws VrsException;
-    
+
 }

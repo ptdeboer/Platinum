@@ -32,112 +32,93 @@ import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
 
 import com.jcraft.jsch.SftpATTRS;
 
-public class SftpFileAttributes implements VFSFileAttributes, PosixFileAttributes
-{
+public class SftpFileAttributes implements VFSFileAttributes, PosixFileAttributes {
 
     protected SftpATTRS attrs;
 
-    public SftpFileAttributes(SftpATTRS sftpATTRS)
-    {
+    public SftpFileAttributes(SftpATTRS sftpATTRS) {
         this.attrs = sftpATTRS;
     }
 
-    public boolean isSymbolicLink()
-    {
+    public boolean isSymbolicLink() {
         return attrs.isLink();
     }
 
-    public boolean isHidden()
-    {
+    public boolean isHidden() {
         return false;
     }
 
     @Override
-    public FileTime lastModifiedTime()
-    {
+    public FileTime lastModifiedTime() {
         return FileTime.from(attrs.getMTime(), TimeUnit.SECONDS);
     }
 
     @Override
-    public FileTime lastAccessTime()
-    {
+    public FileTime lastAccessTime() {
         return FileTime.from(attrs.getATime(), TimeUnit.SECONDS);
     }
 
     @Override
-    public FileTime creationTime()
-    {
+    public FileTime creationTime() {
         return null;
         // FileTime.from(attrs.getATime(),TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public boolean isRegularFile()
-    {
+    public boolean isRegularFile() {
         return attrs.isReg();
     }
 
     @Override
-    public boolean isDirectory()
-    {
+    public boolean isDirectory() {
         return attrs.isDir();
     }
 
-    public boolean isSocket()
-    {
+    public boolean isSocket() {
         return attrs.isSock();
     }
 
-    public boolean isFifo()
-    {
+    public boolean isFifo() {
         return attrs.isFifo();
     }
 
     @Override
-    public boolean isOther()
-    {
+    public boolean isOther() {
         return (attrs.isReg() == false);
     }
 
     @Override
-    public long size()
-    {
+    public long size() {
         return attrs.getSize();
     }
 
     @Override
-    public Object fileKey()
-    {
+    public Object fileKey() {
         return null;
     }
 
     @Override
-    public UserPrincipal owner()
-    {
+    public UserPrincipal owner() {
         return null;
     }
 
     @Override
-    public GroupPrincipal group()
-    {
+    public GroupPrincipal group() {
         return null;
     }
 
     @Override
-    public Set<PosixFilePermission> permissions()
-    {
+    public Set<PosixFilePermission> permissions() {
         return null;
     }
 
     @Override
-    public boolean isLocal()
-    {
+    public boolean isLocal() {
         return false;
     }
 
     @Override
-    public boolean isRemote()
-    {
+    public boolean isRemote() {
         return true;
     }
 

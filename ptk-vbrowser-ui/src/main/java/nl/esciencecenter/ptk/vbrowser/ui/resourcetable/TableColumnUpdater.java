@@ -7,37 +7,31 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
-public class TableColumnUpdater implements TableColumnModelListener
-{
+public class TableColumnUpdater implements TableColumnModelListener {
     protected ResourceTable resourceTable;
 
-    public TableColumnUpdater(ResourceTable resourceTable)
-    {
-        this.resourceTable=resourceTable;
+    public TableColumnUpdater(ResourceTable resourceTable) {
+        this.resourceTable = resourceTable;
     }
 
     @Override
-    public void columnAdded(TableColumnModelEvent e)
-    {
+    public void columnAdded(TableColumnModelEvent e) {
     }
 
     @Override
-    public void columnRemoved(TableColumnModelEvent e)
-    {
+    public void columnRemoved(TableColumnModelEvent e) {
     }
 
     @Override
-    public void columnMoved(TableColumnModelEvent e)
-    {
+    public void columnMoved(TableColumnModelEvent e) {
     }
 
     @Override
-    public void columnMarginChanged(ChangeEvent e)
-    {
-        javax.swing.table.DefaultTableColumnModel colummodel = (DefaultTableColumnModel) e.getSource();
+    public void columnMarginChanged(ChangeEvent e) {
+        javax.swing.table.DefaultTableColumnModel colummodel = (DefaultTableColumnModel) e
+                .getSource();
 
-        for (int i = 0; i < colummodel.getColumnCount(); i++)
-        {
+        for (int i = 0; i < colummodel.getColumnCount(); i++) {
             TableColumn column = colummodel.getColumn(i);
             int w = column.getWidth();
             String name = column.getHeaderValue().toString();
@@ -51,8 +45,7 @@ public class TableColumnUpdater implements TableColumnModelListener
     }
 
     @Override
-    public void columnSelectionChanged(ListSelectionEvent e)
-    {
+    public void columnSelectionChanged(ListSelectionEvent e) {
     }
 
 }

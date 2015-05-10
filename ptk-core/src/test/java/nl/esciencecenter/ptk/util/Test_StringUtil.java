@@ -22,8 +22,6 @@ package nl.esciencecenter.ptk.util;
 
 import java.io.UnsupportedEncodingException;
 
-import nl.esciencecenter.ptk.util.StringUtil;
-
 import org.junit.Assert;
 import org.junit.Test;
 

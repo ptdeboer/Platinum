@@ -27,59 +27,53 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public abstract class VResourceSystemNode implements VResourceSystem
-{
-    protected VRSContext vrsContext=null;
-    
-    protected VRL serverVrl; 
-    
-    protected VResourceSystemNode(VRSContext context,VRL serverVrl)
-    {
-        this.vrsContext=context; 
-        this.serverVrl=serverVrl; 
+/**
+ * Adaptor for the VResourceSystem interface.
+ */
+public abstract class VResourceSystemNode implements VResourceSystem {
+
+    protected VRSContext vrsContext = null;
+
+    protected VRL serverVrl;
+
+    protected VResourceSystemNode(VRSContext context, VRL serverVrl) {
+        this.vrsContext = context;
+        this.serverVrl = serverVrl;
     }
 
     @Override
-    public VRL getServerVRL()
-    {
-        return this.serverVrl; 
+    public VRL getServerVRL() {
+        return this.serverVrl;
     }
-    
-    public VRL getVRL()
-    {
-        return this.getServerVRL();  
+
+    public VRL getVRL() {
+        return this.getServerVRL();
     }
-    
+
     @Override
-    public VRL resolveVRL(String path) throws VrsException
-    {
-        return this.getServerVRL().resolvePath(path); 
+    public VRL resolveVRL(String path) throws VrsException {
+        return this.getServerVRL().resolvePath(path);
     }
-    
-    public VPath resolvePath(String path) throws VrsException
-    {
-        return resolvePath(resolveVRL(path)); 
+
+    public VPath resolvePath(String path) throws VrsException {
+        return resolvePath(resolveVRL(path));
     }
-    
-    public VRSContext getVRSContext()
-    {
-        return vrsContext; 
+
+    public VRSContext getVRSContext() {
+        return vrsContext;
     }
-    
-    protected ResourceConfigInfo getResourceSystemInfo() throws VrsException
-    {
+
+    protected ResourceConfigInfo getResourceSystemInfo() throws VrsException {
         return vrsContext.getResourceSystemInfoFor(getServerVRL(), true);
     }
 
     @Override
-    public int hashCode()
-    {
-        return this.getServerVRL().hashCode(); 
+    public int hashCode() {
+        return this.getServerVRL().hashCode();
     }
 
     @Override
-    public boolean equals(Object other)
-    {
+    public boolean equals(Object other) {
         if (this == other)
             return true;
         if (other == null)
@@ -87,28 +81,30 @@ public abstract class VResourceSystemNode implements VResourceSystem
         if (getClass() != other.getClass())
             return false;
 
-        if ((other instanceof VResourceSystem)==false)
-            return false; 
-        
-        VResourceSystem otherRS=(VResourceSystem)other;
+        if ((other instanceof VResourceSystem) == false)
+            return false;
+
+        VResourceSystem otherRS = (VResourceSystem) other;
         // equal Server VRL means equal.
         return this.getServerVRL().equals(otherRS.getServerVRL());
     }
- 
-    public String toString()
-    {
-        return "<VResourceSystem>[serverVrl="+getServerVRL()+"]"; 
+
+    public String toString() {
+        return "<VResourceSystem>[serverVrl=" + getServerVRL() + "]";
     }
-    
+
     // =================== 
     // Abstract interface 
     // ===================
-    
-    /** 
-     * Resolve relative or absolute VRL to VPath. 
-     * @param vrl relative or absolute VRL 
-     * @return resolve VPath 
-     * @throws VrsException if VRL contains an invalid path. 
+
+    /**
+     * Resolve relative or absolute VRL to VPath.
+     * 
+     * @param vrl
+     *            relative or absolute VRL
+     * @return resolve VPath
+     * @throws VrsException
+     *             if VRL contains an invalid path.
      */
     abstract public VPath resolvePath(VRL vrl) throws VrsException;
 

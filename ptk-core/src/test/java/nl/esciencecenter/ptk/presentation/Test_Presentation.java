@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import nl.esciencecenter.ptk.presentation.Presentation;
-
 import org.junit.Assert;
 import org.junit.Test;
 

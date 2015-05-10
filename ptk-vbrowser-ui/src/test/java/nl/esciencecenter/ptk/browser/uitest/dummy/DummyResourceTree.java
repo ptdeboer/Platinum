@@ -15,7 +15,7 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */ 
+ */
 // source: 
 
 package nl.esciencecenter.ptk.browser.uitest.dummy;
@@ -36,48 +36,42 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetree.ResourceTree;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class DummyResourceTree 
-{
-    
-	public static void main(String args[])
-	{
-	    
-		try
-		{
-		 
-		    
-		    BrowserPlatform platform = StartDummyBrowser.getDummyPlatform();
-		    
-	        JFrame frame=new JFrame(); 
-	        JPanel panel=new JPanel(); 
-	        frame.add(panel); 
-	        
-	        panel.setLayout(new BorderLayout()); 
-	        
-    		ResourceTree tree;
+public class DummyResourceTree {
 
-    		VRL vrl=new VRL("dummy:///"); 
-            ProxyFactory dummyFac = platform.getProxyFactoryFor(vrl); 
-    		ProxyNode root = dummyFac.openLocation("dummy:///"); 
-    		   
-    		ProxyNodeDataSourceProvider dataSource = new ProxyNodeDataSourceProvider (root); 
-    		tree=new ResourceTree(new BrowserInterfaceAdaptor(platform),dataSource);
-    		//tree=new ResourceTree(null,dataSource);
-    	        		
-    		JScrollPane pane=new JScrollPane(); 
-    			
-    		pane.setViewportView(tree); 
-    		panel.add(pane,BorderLayout.CENTER); 
-    		frame.setSize(new Dimension(600,400)); 
-    		
-    		//frame.pack();
-    		frame.setVisible(true); 
-		}
-		catch (Exception e)
-		{
-		    e.printStackTrace(); 
-		}
-		
-	}	
-	
+    public static void main(String args[]) {
+
+        try {
+
+            BrowserPlatform platform = StartDummyBrowser.getDummyPlatform();
+
+            JFrame frame = new JFrame();
+            JPanel panel = new JPanel();
+            frame.add(panel);
+
+            panel.setLayout(new BorderLayout());
+
+            ResourceTree tree;
+
+            VRL vrl = new VRL("dummy:///");
+            ProxyFactory dummyFac = platform.getProxyFactoryFor(vrl);
+            ProxyNode root = dummyFac.openLocation("dummy:///");
+
+            ProxyNodeDataSourceProvider dataSource = new ProxyNodeDataSourceProvider(root);
+            tree = new ResourceTree(new BrowserInterfaceAdaptor(platform), dataSource);
+            //tree=new ResourceTree(null,dataSource);
+
+            JScrollPane pane = new JScrollPane();
+
+            pane.setViewportView(tree);
+            panel.add(pane, BorderLayout.CENTER);
+            frame.setSize(new Dimension(600, 400));
+
+            //frame.pack();
+            frame.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

@@ -24,13 +24,13 @@ import java.io.OutputStream;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
-public interface VStreamWritable
-{
-    /** 
-     * If append==false, a new file will be created or an existing file will be overwritten.
-     * The remainder will be truncated. 
-     * If append is true the file will be opened at the end of the file. 
+public interface VStreamWritable {
+
+    /**
+     * If append==false, a new file will be created or an existing file will be overwritten. The
+     * remainder will be truncated. If append is true the file will be opened at the end of the
+     * file.
      */
-    public OutputStream createOutputStream(boolean append) throws VrsException; 
-    
+    public OutputStream createOutputStream(boolean append) throws VrsException;
+
 }

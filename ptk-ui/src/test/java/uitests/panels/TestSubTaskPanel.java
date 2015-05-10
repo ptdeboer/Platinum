@@ -6,28 +6,22 @@ import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.SubTaskPanel;
 
-public class TestSubTaskPanel
-{
+public class TestSubTaskPanel {
 
-    public static void main(String[] args)
-    {
-        ActionTask task = new ActionTask(null, "StatusPanel background Task")
-        {
-            public void doTask()
-            {
+    public static void main(String[] args) {
+        ActionTask task = new ActionTask(null, "StatusPanel background Task") {
+            public void doTask() {
                 int max = 1000;
 
                 ITaskMonitor monitor = this.getTaskMonitor();
 
                 monitor.startTask("Task/SubTask Panel test", max);
 
-                String subTask="";
-                
-                for (int i = 0; i <= max; i++)
-                {
+                String subTask = "";
 
-                    if ((i % 10) == 0)
-                    {
+                for (int i = 0; i <= max; i++) {
+
+                    if ((i % 10) == 0) {
                         subTask = "Subtask:" + i;
                         monitor.startSubTask(subTask, 10);
                     }
@@ -37,12 +31,9 @@ public class TestSubTaskPanel
                     // panel.setProgress(i);
                     monitor.updateTaskDone(i); // panel.setProgress((double)i/1000.0);
 
-                    try
-                    {
+                    try {
                         Thread.sleep(60 - (i * 50) / max);
-                    }
-                    catch (InterruptedException e)
-                    {
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
@@ -50,8 +41,7 @@ public class TestSubTaskPanel
             }
 
             @Override
-            public void stopTask()
-            {
+            public void stopTask() {
             }
         };
 

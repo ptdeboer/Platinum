@@ -26,33 +26,27 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class DummyProxyFactory extends ProxyFactory
-{
+public class DummyProxyFactory extends ProxyFactory {
 
-    public static ProxyFactory createFor(BrowserPlatform platform)
-    {
-        return new DummyProxyFactory(platform); 
+    public static ProxyFactory createFor(BrowserPlatform platform) {
+        return new DummyProxyFactory(platform);
     }
-    
+
     // ========================================================================
     // 
     // ========================================================================
 
-    public DummyProxyFactory(BrowserPlatform platform)
-    {
-        super(platform); 
+    public DummyProxyFactory(BrowserPlatform platform) {
+        super(platform);
     }
 
-    public ProxyNode doOpenLocation(VRL locator)
-    {
-        return new DummyProxyNode(this,locator,"(re)opened:"+locator.getBasename()); 
+    public ProxyNode doOpenLocation(VRL locator) {
+        return new DummyProxyNode(this, locator, "(re)opened:" + locator.getBasename());
     }
 
-	@Override
-    public boolean canOpen(VRL locator,StringHolder reason) 
-	{
-	    return locator.hasScheme("dummy");
-	}
-
+    @Override
+    public boolean canOpen(VRL locator, StringHolder reason) {
+        return locator.hasScheme("dummy");
+    }
 
 }

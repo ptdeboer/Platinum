@@ -21,6 +21,7 @@
 package nl.esciencecenter.vbrowser.vrs;
 
 import java.util.List;
+import java.util.Map;
 
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
@@ -35,8 +36,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * @see java.net.URI
  * @see VFSPath
  */
-public interface VPath
-{
+public interface VPath {
+
     /**
      * The Virtual Resource Locator of this Path. Is an URI Compatible path.
      * 
@@ -59,7 +60,8 @@ public interface VPath
     public String getResourceType() throws VrsException;
 
     /**
-     * @return ResourceSystem of this VPath. This is the resource factory interface. For a File this a VFileSystem.
+     * @return ResourceSystem of this VPath. This is the resource factory interface. For a File this
+     *         a VFileSystem.
      * @see VFileSystem
      */
     public VResourceSystem getResourceSystem() throws VrsException;
@@ -75,8 +77,8 @@ public interface VPath
     public VPath resolvePath(String path) throws VrsException;
 
     /**
-     * Return parent VPath of this VPath. Default implementation returns directory name. Logical nodes might return
-     * alternative VPaths.
+     * Return parent VPath of this VPath. Default implementation returns directory name. Logical
+     * nodes might return alternative VPaths.
      * 
      * @return Logical Parent (V)Path of this VPath.
      * @throws VrsException
@@ -85,8 +87,8 @@ public interface VPath
 
     /**
      * @param size
-     *            - indication of the size of the Icon. Actual width and height of icon should be equal or greater then
-     *            the given 'size'.
+     *            - indication of the size of the Icon. Actual width and height of icon should be
+     *            equal or greater then the given 'size'.
      * @return actual iconURL of icon to show.
      * @throws VrsException
      */
@@ -96,7 +98,7 @@ public interface VPath
 
     public String getResourceStatus() throws VrsException;
 
-    public List<AttributeDescription> getAttributeDescriptions() throws VrsException;
+    public Map<String, AttributeDescription> getAttributeDescriptions() throws VrsException;
 
     public List<Attribute> getAttributes(String names[]) throws VrsException;
 
@@ -105,7 +107,8 @@ public interface VPath
     /**
      * Flush unwritten changes, refresh cached attributes and sync with local resources.
      * 
-     * @return true if sync is supported and sync was successful. false if not supported or not applicable.
+     * @return true if sync is supported and sync was successful. false if not supported or not
+     *         applicable.
      * @throws VrsException
      *             if sync() is supported but the sync() itself failed.
      */
@@ -118,15 +121,16 @@ public interface VPath
     public boolean isComposite() throws VrsException;
 
     /**
-     * List of allow child resource types. These types will be use as allowed types for Create and the (Copy)Drop
-     * methods
+     * List of allow child resource types. These types will be use as allowed types for Create and
+     * the (Copy)Drop methods
      * 
      * @throws VrsException
      */
     public List<String> getChildResourceTypes() throws VrsException;
 
     /**
-     * List unfiltered child nodes of this resource. Preferably do not sort the list but return the order as-is.
+     * List unfiltered child nodes of this resource. Preferably do not sort the list but return the
+     * order as-is.
      */
     public List<? extends VPath> list() throws VrsException;
 

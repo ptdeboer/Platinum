@@ -21,31 +21,38 @@
 package nl.esciencecenter.vbrowser.vrs.registry;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 
-public class ResourceSystemInstances extends LinkedHashMap<String,LinkedHashMap<String, VResourceSystem>>
-{
-    private static final long serialVersionUID = 4930474168183078842L;
+public class ResourceSystemInstances extends LinkedHashMap<String, LinkedHashMap<String, VResourceSystem>> {
+    // not serializable!
+    private static final long serialVersionUID = 1L;
 
-    public VResourceSystem getResourceSystem(String contextId,String resourceId)
-    {
-        LinkedHashMap<String, VResourceSystem> list = this.get(contextId);
-        if (list==null)
+    public Map<String, VResourceSystem> getResourceSystemsFor(VRSContext vrsContext) {
+        return this.get("" + vrsContext.getID());
+    }
+
+    public VResourceSystem getResourceSystem(VRSContext vrsContext, String resourceId) {
+        Map<String, VResourceSystem> list = this.getResourceSystemsFor(vrsContext);
+        if (list == null)
             return null;
-        
+
         return list.get(resourceId);
     }
-    
-    public VResourceSystem putResourceSystem(String contextId,String resourceId, VResourceSystem vrs)
-    {
+
+    public VResourceSystem putResourceSystem(String contextId, String resourceId, VResourceSystem vrs) {
         LinkedHashMap<String, VResourceSystem> list = this.get(contextId);
-        if (list==null)
-        {
-            list=new LinkedHashMap<String,VResourceSystem>(); 
-            this.put(contextId,list); 
+        if (list == null) {
+            list = new LinkedHashMap<String, VResourceSystem>();
+            this.put(contextId, list);
         }
-        return list.put(resourceId, vrs); 
+        return list.put(resourceId, vrs);
+    }
+
+    public void unregisterResourceSystemsFor(VRSContext vrsContext) {
+        this.remove("" + vrsContext.getID());
     }
 
 }

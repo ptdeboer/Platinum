@@ -28,29 +28,25 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Example ProxyNode Factory based on (Generic) FSNode class. 
+/**
+ * Example ProxyNode Factory based on (Generic) FSNode class.
  */
-public class FSNodeProxyFactory extends ProxyFactory
-{
+public class FSNodeProxyFactory extends ProxyFactory {
     // ========================================================================
     // 
     // ========================================================================
 
-    protected FSNodeProxyFactory(BrowserPlatform browserPlatform)
-    {
+    protected FSNodeProxyFactory(BrowserPlatform browserPlatform) {
         super(browserPlatform);
     }
-    
-    public ProxyNode doOpenLocation(VRL locator) throws ProxyException
-    {
-        return new FSNodeProxyNode(this,locator); 
+
+    public ProxyNode doOpenLocation(VRL locator) throws ProxyException {
+        return new FSNodeProxyNode(this, locator);
     }
 
-	@Override
-	public boolean canOpen(VRL locator,StringHolder reason) 
-	{
-	    return locator.hasScheme(FSPath.FILE_SCHEME);
-	}
+    @Override
+    public boolean canOpen(VRL locator, StringHolder reason) {
+        return locator.hasScheme(FSPath.FILE_SCHEME);
+    }
 
 }

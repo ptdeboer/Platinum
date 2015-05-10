@@ -1,11 +1,12 @@
-<project name="Platinum" default="dist" xmlns:jacoco="antlib:org.jacoco.ant" basedir=".">
+<project name="Platinum" default="dist" xmlns:jacoco="antlib:org.jacoco.ant"
+	basedir=".">
 	<description>
-        Project        : Platinum
-        Component      : Core module.
-		
-		See build.prop for configuration options. 
-		
-    </description>
+		Project : Platinum
+		Component : Core module.
+
+		See build.prop for configuration options.
+
+	</description>
 
 	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
 		<classpath path="testlib/jacocoant.jar" />
@@ -32,60 +33,48 @@
 
 		<property name="platinum.version" value="dev-snapshot" />
 		<property name="comp.version" value="${platinum.version}" />
-
 	</target>
 
 	<target name="config">
 	</target>
 
 	<path id="comp.classpath">
-
-		<!-- include project libraries-->
 		<fileset dir="${project.dist.lib}">
 			<include name="**/*.jar" />
 		</fileset>
-
-		<!-- <fileset dir="${comp.root}/lib">
-            <include name="**/*.jar" />
-        </fileset> -->
-
 	</path>
 
 	<path id="test.classpath">
-		<!-- include project libraries-->
+		<!-- include project libraries -->
 		<fileset dir="${project.dist.lib}">
 			<include name="**/*.jar" />
 		</fileset>
-
-		<!-- <fileset dir="${comp.root}/lib">
-            <include name="**/*.jar" />
-        </fileset> -->
-
-		<fileset dir="${comp.root}/testlib">
+		<fileset dir="${project.root}/testlib">
 			<include name="**/*.jar" />
 		</fileset>
-
 		<pathelement location="${comp.build.classes}" />
 		<pathelement location="${comp.testsrc}" />
-
 	</path>
 
 
 	<!-- Target: build -->
 	<target name="build" depends="init-build" description="compile the source ">
 		<!-- Compile the java code from into ${build} -->
-
-		<javac srcdir="${comp.src}" destdir="${comp.build.classes}" compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}" target="${javac.target}">
+		<javac srcdir="${comp.src}" destdir="${comp.build.classes}"
+			compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}"
+			target="${javac.target}">
 			<classpath refid="comp.classpath" />
 		</javac>
 
 	</target>
 
 	<!-- Target: build -->
-	<target name="build-tests" depends="init-build,build" description="compile the test source ">
+	<target name="build-tests" depends="init-build,build"
+		description="compile the test source ">
 		<!-- Compile the java code from into ${build} -->
-
-		<javac srcdir="${comp.testsrc}" destdir="${comp.build.classes}" compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}" target="${javac.target}">
+		<javac srcdir="${comp.testsrc}" destdir="${comp.build.classes}"
+			compiler="${javac.compiler}" debug="${javac.debug}" source="${javac.source}"
+			target="${javac.target}">
 			<classpath refid="test.classpath" />
 		</javac>
 
@@ -94,9 +83,10 @@
 
 	<!-- compile bootstrapper classes in seperate build directory -->
 	<target name="build-bootstrap" depends="init-build" description="compile the source ">
-
 		<property name="comp.build.bootstrap" value="${comp.build}/bootstrap" />
-		<javac srcdir="${comp.src}/${bootstrap.package.dir}" destdir="${comp.build.bootstrap}" compiler="${javac.compiler}" source="1.6" debug="${javac.debug}" target="1.6" />
+		<javac srcdir="${comp.src}/${bootstrap.package.dir}" destdir="${comp.build.bootstrap}"
+			compiler="${javac.compiler}" source="1.6" debug="${javac.debug}"
+			target="1.6" />
 
 	</target>
 
@@ -107,7 +97,8 @@
 		<property name="project.vendor" value="${user.name}" />
 
 		<!-- Create application JAR file -->
-		<jar jarfile="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar" basedir="${comp.build.classes}">
+		<jar jarfile="${comp.dist}/lib/${comp.artefactId}-${comp.version}.jar"
+			basedir="${comp.build.classes}">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="${comp.mainclass}" />
@@ -126,7 +117,8 @@
 
 	<target name="bootstrap-jar" depends="build-bootstrap">
 
-		<jar jarfile="${comp.dist}/lib/bootstrapper.jar" basedir="${comp.build.bootstrap}" includes="${bootstrap.package.dir}/*.class">
+		<jar jarfile="${comp.dist}/lib/bootstrapper.jar" basedir="${comp.build.bootstrap}"
+			includes="${bootstrap.package.dir}/*.class">
 
 			<!-- define MANIFEST.MF -->
 			<manifest>
@@ -150,7 +142,7 @@
 	<target name="dist" depends="build,bootstrap-jar,jar">
 
 		<filterset id="compfilters">
-			<!-- nifty:  ant filterset (keyword subtitution) while copying files ! -->
+			<!-- nifty: ant filterset (keyword subtitution) while copying files ! -->
 			<filter token="COMP_VERSION" value="${comp.version}" />
 			<filter token="DATE" value="${comp.tstamp}" />
 		</filterset>
@@ -199,7 +191,9 @@
 
 	<!-- Target: dist-install -->
 	<target name="dist-install" depends="dist" description="install libraries">
-		<fail message="*** Error: property 'project.root' not defined. Please start with '-Dproject.root=&lt;path&gt;' argument. " unless="project.env.ok" />
+		<fail
+			message="*** Error: property 'project.root' not defined. Please start with '-Dproject.root=&lt;path&gt;' argument. "
+			unless="project.env.ok" />
 		<mkdir dir="${project.dist.doc}" />
 
 		<!-- toplevel directory structure -->

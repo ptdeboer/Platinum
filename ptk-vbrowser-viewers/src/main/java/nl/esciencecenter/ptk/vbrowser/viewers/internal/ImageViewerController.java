@@ -33,33 +33,27 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.JViewport;
 
-public class ImageViewerController implements ComponentListener
-{
+public class ImageViewerController implements ComponentListener {
     // simple mouse and key navigator:
-    public class KeyMouseMapper implements KeyListener, MouseMotionListener, MouseWheelListener, MouseListener
-    {
+    public class KeyMouseMapper implements KeyListener, MouseMotionListener, MouseWheelListener,
+            MouseListener {
         private Point dragStart;
 
         private Point dragOffsetStart;
 
-        public KeyMouseMapper(ImageViewerController imageController)
-        {
+        public KeyMouseMapper(ImageViewerController imageController) {
         }
 
-        public void keyPressed(KeyEvent e)
-        {
+        public void keyPressed(KeyEvent e) {
         }
 
-        public void keyReleased(KeyEvent e)
-        {
+        public void keyReleased(KeyEvent e) {
         }
 
-        public void keyTyped(KeyEvent e)
-        {
+        public void keyTyped(KeyEvent e) {
         }
 
-        public void mouseDragged(MouseEvent e)
-        {
+        public void mouseDragged(MouseEvent e) {
             // Debug("drag:"+e);
             // if (e.getSource()!=imageViewer.getImagePane())
             // return;
@@ -88,13 +82,11 @@ public class ImageViewerController implements ComponentListener
             imageViewer.setViewPosition(offsetx, offsety);
         }
 
-        public void mouseMoved(MouseEvent e)
-        {
+        public void mouseMoved(MouseEvent e) {
 
         }
 
-        public void mouseWheelMoved(MouseWheelEvent e)
-        {
+        public void mouseWheelMoved(MouseWheelEvent e) {
             boolean ctrl = ((e.getModifiersEx() & MouseWheelEvent.CTRL_DOWN_MASK) > 0);
 
             int rotClicks = e.getWheelRotation();
@@ -104,8 +96,7 @@ public class ImageViewerController implements ComponentListener
             if ((rotClicks < 0) && (nrClicks > 0))
                 nrClicks = -nrClicks;
 
-            if (ctrl)
-            {
+            if (ctrl) {
                 if (nrClicks < 0)
                     imageViewer.zoomIn();
 
@@ -117,8 +108,7 @@ public class ImageViewerController implements ComponentListener
 
         }
 
-        public void mouseClicked(MouseEvent e)
-        {
+        public void mouseClicked(MouseEvent e) {
             imageViewer.errorPrintf("MouseClicked:%s\n", e);
 
             // if (GuiSettings.isAltMouseButton(e))
@@ -128,30 +118,25 @@ public class ImageViewerController implements ComponentListener
             // }
 
             // reset or switch to custom settings
-            if (e.getClickCount() == 2)
-            {
+            if (e.getClickCount() == 2) {
                 imageViewer.toggleFitToScreen();
             }
         }
 
-        public void mouseEntered(MouseEvent e)
-        {
+        public void mouseEntered(MouseEvent e) {
         }
 
-        public void mouseExited(MouseEvent e)
-        {
+        public void mouseExited(MouseEvent e) {
         }
 
-        public void mousePressed(MouseEvent e)
-        {
+        public void mousePressed(MouseEvent e) {
             this.dragStart = e.getPoint();
             // keep current offset:
             this.dragOffsetStart = imageViewer.getViewPosition();
 
         }
 
-        public void mouseReleased(MouseEvent e)
-        {
+        public void mouseReleased(MouseEvent e) {
             this.dragStart = null;
         }
     }
@@ -164,8 +149,7 @@ public class ImageViewerController implements ComponentListener
 
     private ImageViewer imageViewer;
 
-    public ImageViewerController(ImageViewer imageVwr)
-    {
+    public ImageViewerController(ImageViewer imageVwr) {
         this.imageViewer = imageVwr;
         this.keyMouseMapper = new KeyMouseMapper(this);
 
@@ -186,16 +170,13 @@ public class ImageViewerController implements ComponentListener
     // ImagePane Component Observer
     //
 
-    public void componentHidden(ComponentEvent e)
-    {
+    public void componentHidden(ComponentEvent e) {
     }
 
-    public void componentMoved(ComponentEvent e)
-    {
+    public void componentMoved(ComponentEvent e) {
     }
 
-    public void componentResized(ComponentEvent e)
-    {
+    public void componentResized(ComponentEvent e) {
         //
         // After zoom/image update, size is set
         // Check Image size !
@@ -208,8 +189,7 @@ public class ImageViewerController implements ComponentListener
         // debug("ViewPort size         = "+imageViewer.scrollPane.getViewport().getSize());
         // debug("ViewPort position     = "+imageViewer.scrollPane.getViewport().getViewPosition());
 
-        if (e.getSource() == imageViewer.scrollPane)
-        {
+        if (e.getSource() == imageViewer.scrollPane) {
             // rezoom
             if (imageViewer.fitToScreen == true)
                 imageViewer.doZoom();
@@ -224,8 +204,7 @@ public class ImageViewerController implements ComponentListener
          */
     }
 
-    public void componentShown(ComponentEvent e)
-    {
+    public void componentShown(ComponentEvent e) {
     }
 
 }

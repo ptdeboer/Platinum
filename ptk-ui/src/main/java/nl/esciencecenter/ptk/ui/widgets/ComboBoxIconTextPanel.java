@@ -29,8 +29,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ComboBoxIconTextPanel extends JPanel implements ActionListener 
-{
+public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
     private static final long serialVersionUID = -3502306954828479242L;
     private AutoCompleteTextField textField;
     private JLabel iconLabel;
@@ -38,14 +37,12 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener
     private String comboBoxEditedCommand;
     private String comboBoxUpdateSelectionCommand;
 
-    public ComboBoxIconTextPanel()
-    {
-    	super(); 
-        initGUI(); 
+    public ComboBoxIconTextPanel() {
+        super();
+        initGUI();
     }
-    
-    private void initGUI() 
-    {
+
+    private void initGUI() {
         {
             this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         }
@@ -56,90 +53,75 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener
         {
             textField = new AutoCompleteTextField();
             this.add(textField);
-            textField.setText("TextField",false);
-            textField.setLocation(16,0); 
+            textField.setText("TextField", false);
+            textField.setLocation(16, 0);
         }
-        
+
         // move border from textfield to panel: 
-        this.setBackground(textField.getBackground()); 
-        this.setBorder(textField.getBorder()); 
-        textField.setBorder(null); 
+        this.setBackground(textField.getBackground());
+        this.setBorder(textField.getBorder());
+        textField.setBorder(null);
     }
 
-    public void clearHistory()
-    {
-        textField.clearHistory(); 
+    public void clearHistory() {
+        textField.clearHistory();
     }
-    
-    public void setDropTarget(DropTarget dt)
-    {
+
+    public void setDropTarget(DropTarget dt) {
         this.iconLabel.setDropTarget(dt);
         this.textField.setDropTarget(dt);
     }
-    
-    public void setText(String txt, boolean addToHistory)
-    {
-        this.textField.setText(txt,addToHistory); 
+
+    public void setText(String txt, boolean addToHistory) {
+        this.textField.setText(txt, addToHistory);
     }
-    
-    public void setIcon(Icon icon)
-    {
+
+    public void setIcon(Icon icon) {
         iconLabel.setIcon(icon);
         this.revalidate();
-        this.repaint(); 
-    }
-    
-    public void setComboActionCommand(String str)
-    {
-        this.textField.setActionCommand(str); 
-    }
-    
-    public String getText()
-    {
-        return this.textField.getText(); 
+        this.repaint();
     }
 
-
-    public void setURI(java.net.URI uri,boolean addToHistory)
-    {
-        this.setText(uri.toString(),addToHistory);
+    public void setComboActionCommand(String str) {
+        this.textField.setActionCommand(str);
     }
- 
-    public void setTextActionListener(ActionListener listener)
-    {
+
+    public String getText() {
+        return this.textField.getText();
+    }
+
+    public void setURI(java.net.URI uri, boolean addToHistory) {
+        this.setText(uri.toString(), addToHistory);
+    }
+
+    public void setTextActionListener(ActionListener listener) {
         // wrap textfield listener: 
-        this.textFieldListener=listener; 
+        this.textFieldListener = listener;
         this.textField.removeActionListener(this);
         this.textField.addActionListener(this);
     }
-   
-    public void setComboEditedCommand(String str)
-    {
-        this.comboBoxEditedCommand=str;   
-    }
-    
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        String cmd=e.getActionCommand();
-        
-        if (cmd.equals(AutoCompleteTextField.COMBOBOXEDITED)) 
-            cmd=this.comboBoxEditedCommand;
-        
-        if (cmd.equals(AutoCompleteTextField.UPDATESELECTION))  
-            cmd=this.comboBoxUpdateSelectionCommand;  
-            
-        if (cmd==null)
-            return; // filter out combo command.  
-        
-        ActionEvent wrapEvent=new ActionEvent(e.getSource(),
-                e.getID(),
-                cmd,
-                e.getWhen(),
-                e.getModifiers());
-        
-        this.textFieldListener.actionPerformed(wrapEvent); 
+
+    public void setComboEditedCommand(String str) {
+        this.comboBoxEditedCommand = str;
     }
 
-  
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+
+        if (cmd.equals(AutoCompleteTextField.COMBOBOXEDITED))
+            cmd = this.comboBoxEditedCommand;
+
+        if (cmd.equals(AutoCompleteTextField.UPDATESELECTION))
+            cmd = this.comboBoxUpdateSelectionCommand;
+
+        if (cmd == null)
+            return; // filter out combo command.  
+
+        ActionEvent wrapEvent = new ActionEvent(e.getSource(), e.getID(), cmd, e.getWhen(),
+                e.getModifiers());
+
+        this.textFieldListener.actionPerformed(wrapEvent);
+    }
+
 }

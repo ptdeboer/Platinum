@@ -25,13 +25,13 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 /**
  * Interface for Deletable resources.
  */
-public interface VDeletable
-{
- 
-    /** 
-     * Delete this resource, throws Exception if deletion failed. 
-     * @returns false if not applicable. 
-     */ 
-    public boolean delete() throws VrsException; 
-    
+public interface VDeletable {
+
+    /**
+     * Delete this resource, throws Exception if deletion failed.
+     * 
+     * @returns false if not applicable.
+     */
+    public boolean delete() throws VrsException;
+
 }

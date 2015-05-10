@@ -21,19 +21,21 @@
 package nl.esciencecenter.vbrowser.vrs.registry;
 
 import nl.esciencecenter.ptk.crypt.Secret;
+import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
+/**
  * Resource Configuration Information for VResourceSystems or other configurable resources.
  */
-public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo>
-{
+public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo> {
+
     // ---
     // Flags/Switchess
     // ---
@@ -45,205 +47,171 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo>
     // Server attributes
     // -----------------
 
-    public static final String SERVER_SCHEME = "serverScheme";
+    public static final String RESOURCE_SCHEME = "scheme";
 
-    public static final String SERVER_USERINFO = "serverUserinfo";
+    public static final String RESOURCE_USERINFO = "userinfo";
 
-    public static final String SERVER_HOSTNAME = "serverHostname";
+    public static final String RESOURCE_HOSTNAME = "hostname";
 
-    public static final String SERVER_PORT = "serverPort";
+    public static final String RESOURCE_PORT = "port";
 
-    public static final String SERVER_PATH = "serverPath";
+    public static final String RESOURCE_PATH = "path";
 
-    public static final String SERVER_CONFIG_PROPERTIES = "serverConfigProperties";
+    public static final String ATTR_USER_KEY_FILES = "userKeyFiles";
 
-    public static final String ATTR_USER_IDENTITY_FILES = "userIdentityFiles";
+    public static final String ATTR_USER_KEY_STORES = "userKeyStores";
 
     public static final String ATTR_AUTH_SCHEME = "authScheme";
 
-    public static enum AuthScheme
-    {
-        NONE,
-        PASSWORD,
-        USER_ID
+    public static final String defaultConfigAttributes[] = { RESOURCE_SCHEME, RESOURCE_USERINFO, RESOURCE_HOSTNAME,
+            RESOURCE_PORT, RESOURCE_PATH };
+
+    public static enum AuthScheme {
+        NONE, PASSWORD, USER_CERTFIICATE
     };
+
+    /**
+     * Meta attribute. Contains configuration attributes.
+     */
+    private static final String CONFIG_ATTRIBUTENAMES = "_configAttributesNames";
 
     // ==================
     // Instance
     // ==================
 
-    protected AttributeSet properties;
+    protected AttributeSet attributes;
 
     private Secret passwd = null;
 
     private ResourceSystemInfoRegistry infoRegistry = null;
 
-    final String id;
+    private String _id;
 
-    public ResourceConfigInfo(ResourceSystemInfoRegistry registry, VRL serverVRL, String infoId)
-    {
+    public ResourceConfigInfo(ResourceSystemInfoRegistry registry, VRL serverVRL, String infoId) {
         this.infoRegistry = registry;
-        properties = new AttributeSet();
+        attributes = new AttributeSet();
         setServerVRL(serverVRL);
-        this.id = infoId;
+        this._id = infoId;
     }
 
-    protected ResourceConfigInfo(ResourceSystemInfoRegistry registry, AttributeSet attributes, String infoId)
-    {
+    protected ResourceConfigInfo(ResourceSystemInfoRegistry registry, AttributeSet attributes, String infoId) {
         this.infoRegistry = registry;
-        this.properties = attributes;
-        this.id = infoId;
+        this.attributes = attributes;
+        this._id = infoId;
     }
 
-    protected void setServerVRL(VRL vrl)
-    {
-        properties.set(SERVER_SCHEME, vrl.getScheme());
-        properties.set(SERVER_HOSTNAME, vrl.getHostname());
+    protected void updateId(String newId) {
+        this._id = newId;
+    }
+
+    protected void setServerVRL(VRL vrl) {
+        attributes.set(RESOURCE_SCHEME, vrl.getScheme());
+        attributes.set(RESOURCE_HOSTNAME, vrl.getHostname());
         // must use default port;
 
         int port = vrl.getPort();
-        if (port <= 0)
-
-        {
+        if (port <= 0) {
             port = VRS.getDefaultPort(vrl.getScheme());
         }
-        properties.set(SERVER_PATH, port);
-        properties.set(SERVER_PATH, vrl.getPath());
-        // don't check need UserInfo;
-        properties.set(SERVER_USERINFO, vrl.getUserinfo());
+        attributes.set(RESOURCE_PORT, port);
+        attributes.set(RESOURCE_PATH, vrl.getPath());
+        attributes.set(RESOURCE_USERINFO, vrl.getUserinfo());
     }
 
-    public void store()
-    {
-        if (this.infoRegistry == null)
-        {
+    public void store() {
+        if (this.infoRegistry == null) {
             throw new NullPointerException("No Registry. Can not store ResourceSystemInfo!");
         }
-
         this.infoRegistry.putInfo(this);
     }
 
-    public VRL getServerVRL()
-    {
+    public VRL getServerVRL() {
         String path = "/";
 
-        if (getNeedServerPath())
-        {
+        if (getNeedServerPath()) {
             path = this.getServerPath();
         }
 
-        if (getNeedUserInfo())
-        {
+        if (getNeedUserInfo()) {
             return new VRL(getServerScheme(), getUserInfo(), getServerHostname(), getServerPort(), path);
-        }
-        else
-        {
+        } else {
             return new VRL(getServerScheme(), getServerHostname(), getServerPort(), path);
         }
     }
 
     /**
-     * Returns duplicate of properties. Changing this properties won't efffect this ResourceSystemInfo Use
-     * setProperties() to update the Resource Properties.
+     * Returns duplicate of properties. Changing this properties won't efffect this
+     * ResourceSystemInfo Use setProperties() to update the Resource Properties.
      *
      * @return duplicate of Resource Properties.
      */
-    public VRSProperties getProperties()
-    {
-        return properties.toVRSProperties();
+    public VRSProperties getProperties() {
+        return attributes.toVRSProperties();
     }
 
-    public void setProperty(String name, String value)
-    {
-        properties.set(name, value);
+    public void setProperty(String name, String value) {
+        attributes.set(name, value);
     }
 
-    public Attribute getAttribute(String name)
-    {
-        return properties.get(name);
+    public Attribute getAttribute(String name) {
+        return attributes.get(name);
     }
 
-    public void setAttribute(Attribute attr)
-    {
-        properties.put(attr);
+    public void setAttribute(Attribute attr) {
+        attributes.put(attr);
     }
 
-    public String getProperty(String name)
-    {
-        return properties.getStringValue(name);
+    public String getProperty(String name) {
+        return attributes.getStringValue(name);
     }
 
-    /**
-     * Add extra properties. To replace all properties use setProperties.
-     * 
-     * @param properties
-     *            - new properties to be addded to this ResourceInfo.
-     */
-    public void updateProperties(VRSProperties newProperties)
-    {
-        properties.putAll(properties);
-    }
-    
-    public String getServerScheme()
-    {
-        return properties.getStringValue(SERVER_SCHEME);
+    public String getServerScheme() {
+        return attributes.getStringValue(RESOURCE_SCHEME);
     }
 
-    public String getUserInfo()
-    {
-        return properties.getStringValue(SERVER_USERINFO);
+    public String getUserInfo() {
+        return attributes.getStringValue(RESOURCE_USERINFO);
     }
 
-    public void setUserInfo(String userInfo)
-    {
-        properties.set(SERVER_USERINFO, userInfo);
+    public void setUserInfo(String userInfo) {
+        attributes.set(RESOURCE_USERINFO, userInfo);
     }
 
-    public int getServerPort()
-    {
-        return properties.getIntValue(SERVER_PORT, -1);
+    public int getServerPort() {
+        return attributes.getIntValue(RESOURCE_PORT, -1);
     }
 
-    public String getServerHostname()
-    {
-        return properties.getStringValue(SERVER_HOSTNAME);
+    public String getServerHostname() {
+        return attributes.getStringValue(RESOURCE_HOSTNAME);
     }
 
-    public String getServerPath()
-    {
-        return properties.getStringValue(SERVER_PATH);
+    public String getServerPath() {
+        return attributes.getStringValue(RESOURCE_PATH);
     }
 
-    public boolean getNeedUserInfo()
-    {
-        return properties.getBooleanValue(NEED_USERINFO, false);
+    public boolean getNeedUserInfo() {
+        return attributes.getBooleanValue(NEED_USERINFO, false);
     }
 
-    public boolean getNeedServerPath()
-    {
-        return properties.getBooleanValue(NEED_SERVERPATH, false);
+    public boolean getNeedServerPath() {
+        return attributes.getBooleanValue(NEED_SERVERPATH, false);
     }
 
-    public void setNeedUserInfo(boolean value)
-    {
-        properties.set(NEED_USERINFO, value);
+    public void setNeedUserInfo(boolean value) {
+        attributes.set(NEED_USERINFO, value);
     }
 
-    public void setServerPath(String serverPath, boolean isMandatory)
-    {
-        properties.set(SERVER_PATH, serverPath);
-        properties.set(NEED_SERVERPATH, isMandatory);
+    public void setServerPath(String serverPath, boolean isMandatory) {
+        attributes.set(RESOURCE_PATH, serverPath);
+        attributes.set(NEED_SERVERPATH, isMandatory);
     }
 
     /**
      * @return actual username without optional group and/or VO information.
      */
-    public String getUsername()
-    {
+    public String getUsername() {
         String userInfo = this.getUserInfo();
-
-        if (userInfo == null)
-        {
+        if (userInfo == null) {
             return null;
         }
         // split "<username>[:<VO>]" parts:
@@ -251,7 +219,6 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo>
         if (parts == null)
             return null;
         return parts[0];
-
     }
 
     /**
@@ -259,122 +226,148 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo>
      * 
      * @return User group, VO or null if not defined.
      */
-    public String getUserVO()
-    {
+    public String getUserVO() {
         String userInfo = this.getUserInfo();
-
-        if (userInfo == null)
-        {
+        if (userInfo == null) {
             return null;
         }
         // split "<username>[:<VO>]" parts:
         String parts[] = userInfo.split(":");
-        if (parts.length < 2)
-        {
+        if (parts.length < 2) {
             return null;
         }
         return parts[1];
-
     }
 
-    public Secret getPassword()
-    {
+    public Secret getPassword() {
         return passwd;
     }
 
-    public void setPassword(Secret secret)
-    {
+    public void setPassword(Secret secret) {
         passwd = secret;
     }
 
-    public String getID()
-    {
-        return this.id;
+    public String getID() {
+        return this._id;
     }
 
     @Override
-    public boolean shallowSupported()
-    {
+    public boolean shallowSupported() {
         return false;
     }
 
     @Override
-    public ResourceConfigInfo duplicate()
-    {
-        ResourceConfigInfo info = new ResourceConfigInfo(infoRegistry, properties.duplicate(false), id);
+    public ResourceConfigInfo duplicate() {
+        ResourceConfigInfo info = new ResourceConfigInfo(infoRegistry, attributes.duplicate(false), _id);
         info.passwd = getPassword(); // copy ?
         return info;
     }
 
     @Override
-    public ResourceConfigInfo duplicate(boolean shallow)
-    {
+    public ResourceConfigInfo duplicate(boolean shallow) {
         return duplicate();
     }
 
     /**
      * @return Returns backing actual AttributeSet with configuration.
      */
-    public AttributeSet getAttributeSet()
-    {
-        return this.properties;
+    protected AttributeSet attributes() {
+        return this.attributes;
     }
 
-    public boolean setIfNotSet(String name, String value, boolean editable)
-    {
-        if (properties.get(name) == null)
-        {
-            Attribute attr = AttributeUtil.createStringAttribute(name, value, editable);
-            properties.set(attr);
+    public AttributeSet getConfigAttributeSet() {
+        StringList names = new StringList(defaultConfigAttributes);
+        StringList attrs = this.getConfigAttributeNames();
+        names.add(attrs, true);
+        return attributes.subSet(names);
+    }
+
+    public boolean setDefaultAttribute(String name, String value, boolean editable) {
+        Attribute attr = attributes.get(name);
+        this.addConfigAttributeName(name);
+
+        if (attr == null) {
+            attributes.put(new Attribute(name, value, editable));
             return true;
         }
+
+        if (editable != attr.isEditable()) {
+            attr.setEditable(editable);
+            attributes.put(attr);
+            return true;
+        }
+
         return false;
     }
 
-    public boolean setIfNotSet(Attribute attr, boolean editable)
-    {
-        Attribute prevAttr = properties.get(attr.getName());
-        if (prevAttr != null)
-        {
-            if (editable != prevAttr.isEditable())
-            {
-                attr.setEditable(editable);
-                properties.put(attr);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+    /**
+     * Set default attribute and update editable flag. If attribute is already set, the stored value
+     * will be kept as-is.
+     * 
+     * @return true if new attribute has been set or flags has been changed, false if previous value
+     *         has been kept.
+     */
+    public boolean setDefaultAttribute(Attribute attr, boolean editable) {
+        Attribute prevAttr = attributes.get(attr.getName());
+        this.addConfigAttributeName(attr.getName());
+
+        if (prevAttr == null) {
+            attributes.put(attr);
+            return true;
         }
 
-        attr.setEditable(editable);
-        properties.set(attr);
-        return true;
+        if (editable != prevAttr.isEditable()) {
+            prevAttr.setEditable(editable);
+            attributes.put(prevAttr);
+            return true;
+        }
+
+        return false;
     }
 
-    public void setAuthScheme(AuthScheme scheme, boolean editable)
-    {
-        properties.set(AttributeUtil.createStringAttribute(ATTR_AUTH_SCHEME, "" + scheme, editable));
+    public StringList getConfigAttributeNames() {
+        Attribute attr = this.attributes.get(CONFIG_ATTRIBUTENAMES);
+        if (attr == null)
+            return null;
+        return attr.getStringListValue();
     }
 
-    public void setAuthSchemeToNone()
-    {
-        properties.set(ATTR_AUTH_SCHEME, "" + AuthScheme.NONE);
+    protected void addConfigAttributeName(String name) {
+        // Auto update and populate optional meta- config attribute names property
+        Attribute attr = this.attributes.get(CONFIG_ATTRIBUTENAMES);
+        StringList list = null;
+
+        if (attr == null) {
+            attr = new Attribute(AttributeType.STRING, CONFIG_ATTRIBUTENAMES, null);
+        } else {
+            list = attr.getStringListValue();
+        }
+        if (list == null) {
+            list = new StringList();
+        }
+        if (list.contains(name) == false) {
+            list.add(name);
+            attr.setStringListValue(list);
+            this.attributes.put(attr);
+        }
     }
 
-    public void setAuthSchemeToPassword()
-    {
-        properties.set(ATTR_AUTH_SCHEME, "" + AuthScheme.PASSWORD);
+    public void setAuthScheme(AuthScheme scheme, boolean editable) {
+        attributes.set(AttributeUtil.createStringAttribute(ATTR_AUTH_SCHEME, "" + scheme, editable));
+    }
+
+    public void setAuthSchemeToNone() {
+        attributes.set(ATTR_AUTH_SCHEME, "" + AuthScheme.NONE);
+    }
+
+    public void setAuthSchemeToPassword() {
+        attributes.set(ATTR_AUTH_SCHEME, "" + AuthScheme.PASSWORD);
     }
 
     @Override
-    public String toString()
-    {
-        return "ResourceSystemInfo:[id=" + id
-                + ",serverVrl=+" + getServerVRL()
-                + ",password=" + ((passwd != null) ? "<PASSWORD>" : "<No Password>")
-                + ",properties=" + properties + "]";
+    public String toString() {
+        return "ResourceSystemInfo:[id=" + _id + ",serverVrl=+" + getServerVRL() + ",password="
+                + ((passwd != null) ? "<PASSWORD>" : "<No Password>") + ",properties=" + attributes + "]";
     }
 
 }

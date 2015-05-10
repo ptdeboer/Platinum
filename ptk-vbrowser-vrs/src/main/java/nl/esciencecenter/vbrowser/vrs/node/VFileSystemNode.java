@@ -27,37 +27,33 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Adaptor class for the VFileSystem. 
+/**
+ * Adaptor class for the VFileSystem.
  */
 public abstract class VFileSystemNode extends VResourceSystemNode implements VFileSystem //, VFSPath
 {
-    protected VFileSystemNode(VRSContext context, VRL serverVrl)
-    {
+    protected VFileSystemNode(VRSContext context, VRL serverVrl) {
         super(context, serverVrl);
     }
-    
-    public VRL  resolvePathVRL(String relativePath) throws VRLSyntaxException
-    {
+
+    public VRL resolvePathVRL(String relativePath) throws VRLSyntaxException {
         return this.getServerVRL().resolvePath(relativePath);
     }
-    
+
     @Override
-    public VFSPath resolvePath(String relativePath) throws VrsException
-    {
+    public VFSPath resolvePath(String relativePath) throws VrsException {
         return resolvePath(resolvePathVRL(relativePath));
     }
 
     @Override
-    public VFSPath resolvePath(VRL vrl) throws VrsException
-    {
+    public VFSPath resolvePath(VRL vrl) throws VrsException {
         return createVFSNode(vrl);
     }
-    
+
     // ===================
     // Abstract Interface
     // ===================
-    
+
     abstract protected VFSPathNode createVFSNode(VRL vrl) throws VrsException;
 
 }

@@ -27,20 +27,19 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public interface AttributeDataSource
-{
-    /** 
+public interface AttributeDataSource {
+    /**
      * Register listener to receive attribute update events.
-     */ 
-    public void addDataSourceEventListener(VRSEventListener listener); 
-    
-    public void removeDataSourceEventListener(VRSEventListener listener); 
-    
+     */
+    public void addDataSourceEventListener(VRSEventListener listener);
+
+    public void removeDataSourceEventListener(VRSEventListener listener);
+
     // =====================
     // Attribute Interface
     // =====================
-    
-    public List<String> getAttributeNames(VRL locator) throws ProxyException; 
-    
-    public List<Attribute> getAttributes(VRL locator,String attrNames[]) throws ProxyException; 
+
+    public List<String> getAttributeNames(VRL locator) throws ProxyException;
+
+    public List<Attribute> getAttributes(VRL locator, String attrNames[]) throws ProxyException;
 }

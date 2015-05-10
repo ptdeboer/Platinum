@@ -35,51 +35,42 @@ import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 /**
  * Extends default ViewContainerEventAdapter with Header clicks and other Table specific events.
  */
-public class TableMouseListener extends ViewContainerEventAdapter
-{
+public class TableMouseListener extends ViewContainerEventAdapter {
     private final static PLogger logger = PLogger.getLogger(TableMouseListener.class);
 
     private ResourceTable table;
 
-    public TableMouseListener(ResourceTable source, ResourceTableControler controller)
-    {
+    public TableMouseListener(ResourceTable source, ResourceTableControler controller) {
         super(source, controller);
         table = source;
     }
 
     @Override
-    public void mouseClicked(MouseEvent e)
-    {
+    public void mouseClicked(MouseEvent e) {
         // ------------------
         // Check Header click
         // ------------------
-       
-        if (isHeader(e) && (table.getGuiSettings().isSelection(e)))
-        {
+
+        if (isHeader(e) && (table.getGuiSettings().isSelection(e))) {
             // Header Click:
             String name = this.getColumnNameOf(e);
-            if (name != null)
-            {
+            if (name != null) {
                 String prevCol = this.table.getSortColumnName();
                 boolean reverse = false;
 
                 // click on already sorted column name -> reverse sorting.
-                if (StringUtil.compare(prevCol, name) == 0)
-                {
+                if (StringUtil.compare(prevCol, name) == 0) {
                     reverse = (table.getColumnSortOrderIsReversed() == false);
                 }
                 this.table.doSortColumn(name, reverse);
             }
-        }
-        else
-        {
+        } else {
             super.doMouseClicked(e);
         }
     }
 
     @Override
-    public void mousePressed(MouseEvent e)
-    {
+    public void mousePressed(MouseEvent e) {
         // ------------------
         // Check Header click
         // ------------------
@@ -91,42 +82,30 @@ public class TableMouseListener extends ViewContainerEventAdapter
         // boolean ctrl=((e.getModifiersEx() & e.CTRL_DOWN_MASK) !=0);
 
         // Show Header Popup!
-        if (isHeader(e) && (uiSettings.isPopupTrigger(e)))
-        {
+        if (isHeader(e) && (uiSettings.isPopupTrigger(e))) {
             String name = this.getColumnNameOf(e);
-            if (name != null)
-            {
+            if (name != null) {
                 HeaderPopupMenu popupMenu = new HeaderPopupMenu(table, name);
                 popupMenu.show(comp, e.getX(), e.getY());
-            }
-            else
-            {
+            } else {
                 // debug("No Column Header name!:"+e);
             }
-        }
-        else if (comp.equals(table))
-        {
+        } else if (comp.equals(table)) {
             super.doMousePressed(e);
-        }
-        else if (comp.equals(table.getParent()))
-        {
+        } else if (comp.equals(table.getParent())) {
             super.doMousePressed(e);
-        }
-        else
-        {
+        } else {
             logger.warnPrintf("Spurious Event:%s\n", e);
         }
     }
 
-    private String getColumnNameOf(MouseEvent e)
-    {
+    private String getColumnNameOf(MouseEvent e) {
         // Warning: Apply coordinates to VIEW model !
         TableColumnModel columnModel = table.getColumnModel();
 
         int colnr = columnModel.getColumnIndexAtX(e.getX());
 
-        if (colnr < 0)
-        {
+        if (colnr < 0) {
             return null;
         }
 
@@ -135,14 +114,10 @@ public class TableMouseListener extends ViewContainerEventAdapter
         return name;
     }
 
-    protected boolean isHeader(MouseEvent e)
-    {
-        if (e.getSource() instanceof JTableHeader)
-        {
+    protected boolean isHeader(MouseEvent e) {
+        if (e.getSource() instanceof JTableHeader) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }

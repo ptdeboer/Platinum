@@ -28,50 +28,43 @@ import java.nio.file.Path;
 /**
  * Stateless File reader which opens and closes the specified path per read action.
  */
-public class FSReader implements Readable, RandomReadable, AutoCloseable
-{
+public class FSReader implements Readable, RandomReadable, AutoCloseable {
+
     protected Path _path;
 
-    public FSReader(Path path) throws IOException
-    {
-        this._path=path;
+    public FSReader(Path path) throws IOException {
+        this._path = path;
     }
 
     /**
      * Perform stateless read which opens and closes file again after reading.
      */
     @Override
-    public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException
-    {
+    public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes)
+            throws IOException {
         // perform 'atomic' read.
-        try (RandomAccessFile rafile = new RandomAccessFile(_path.toFile(), "r"))
-        {
+        try (RandomAccessFile rafile = new RandomAccessFile(_path.toFile(), "r")) {
             // Seek sets position starting from beginnen, not current seek position.
             rafile.seek(fileOffset);
             int nrRead = rafile.read(buffer, bufferOffset, nrBytes);
             return nrRead;
-        }
-        catch (IOException e)
-        {
-            throw new IOException("Failed to readBytes from:"+_path,e);
+        } catch (IOException e) {
+            throw new IOException("Failed to readBytes from:" + _path, e);
         }
     }
 
     @Override
-    public long getLength() throws IOException
-    {
+    public long getLength() throws IOException {
         return Files.size(_path);
     }
 
     @Override
-    public int read(byte[] buffer, int bufferOffset, int numBytes) throws IOException
-    {
-        return readBytes(0,buffer,bufferOffset,numBytes);
+    public int read(byte[] buffer, int bufferOffset, int numBytes) throws IOException {
+        return readBytes(0, buffer, bufferOffset, numBytes);
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
     }
 
 }

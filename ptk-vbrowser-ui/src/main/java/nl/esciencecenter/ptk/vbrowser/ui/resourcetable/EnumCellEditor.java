@@ -23,12 +23,10 @@ package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 
-public class EnumCellEditor extends DefaultCellEditor
-{
+public class EnumCellEditor extends DefaultCellEditor {
     private static final long serialVersionUID = -2099371556722425549L;
 
-    public EnumCellEditor(String[] items)
-    {
+    public EnumCellEditor(String[] items) {
         super(new JComboBox<String>(items));
     }
 

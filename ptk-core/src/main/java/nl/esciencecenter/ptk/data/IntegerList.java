@@ -20,16 +20,16 @@
 
 package nl.esciencecenter.ptk.data;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class IntegerList extends NumberList
-{
+public class IntegerList extends NumberList implements Serializable {
+
     private static final long serialVersionUID = -4874302466681798570L;
 
     // === instance ===
 
-    public IntegerList(List<Integer> ints)
-    {
+    public IntegerList(List<Integer> ints) {
         super(ints);
     }
 }

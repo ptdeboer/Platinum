@@ -34,8 +34,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * VTerm factory implemented as EmbeddedViewer.
  */
-public class VTermStarter extends EmbeddedViewer implements ActionListener, ToolPlugin
-{
+public class VTermStarter extends EmbeddedViewer implements ActionListener, ToolPlugin {
     private static final PLogger logger = PLogger.getLogger(VTermStarter.class);
 
     private static final long serialVersionUID = 6104695556400295643L;
@@ -49,33 +48,26 @@ public class VTermStarter extends EmbeddedViewer implements ActionListener, Tool
     private JPanel butPanel;
 
     @Override
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return "VTerm";
     }
 
     @Override
-    public String[] getMimeTypes()
-    {
-        return new String[] {
-                "application/ssh-location"
-        };
+    public String[] getMimeTypes() {
+        return new String[] { "application/ssh-location" };
     }
 
     @Override
-    public void doInitViewer()
-    {
+    public void doInitViewer() {
         initGUI();
     }
 
     @Override
-    public boolean isStandaloneViewer()
-    {
+    public boolean isStandaloneViewer() {
         return true;
     }
 
-    private void initGUI()
-    {
+    private void initGUI() {
 
         {
             panel = new JPanel();
@@ -108,110 +100,90 @@ public class VTermStarter extends EmbeddedViewer implements ActionListener, Tool
     }
 
     @Override
-    public void doUpdate(VRL vrl) throws VrsException
-    {
+    public void doUpdate(VRL vrl) throws VrsException {
         startVTerm(vrl, null, null);
     }
 
     @Override
-    public void doStopViewer()
-    {
+    public void doStopViewer() {
     }
 
     @Override
-    public void doDisposeViewer()
-    {
+    public void doDisposeViewer() {
     }
 
     @Override
-    protected void doStartViewer(VRL vrl, String optionalMethod) throws VrsException
-    {
+    protected void doStartViewer(VRL vrl, String optionalMethod) throws VrsException {
         startVTerm(getVRL(), optionalMethod, null);
     }
 
-    public void startVTerm(VRL vrl, String optMethod, final ShellChannel shellChan) throws VrsException
-    {
+    public void startVTerm(VRL vrl, String optMethod, final ShellChannel shellChan)
+            throws VrsException {
         logger.info("startVTerm for:{}", vrl);
 
-        try
-        {
+        try {
             // Share Context !
             VRSContext context = this.getResourceHandler().getVRSClient().getVRSContext();
             VTermChannelProvider provider = new VTermChannelProvider();
             provider.registerChannelFactory("SSH", new SSHShellChannelFactory(context));
             VTerm term = StartVTerm.startVTerm(provider, vrl.toURI(), shellChan);
             register(term);
-        }
-        catch (URISyntaxException e)
-        {
+        } catch (URISyntaxException e) {
             throw new VrsException("URI Syntax exeption:" + vrl, e);
         }
     }
 
-    private void register(VTerm term)
-    {
+    private void register(VTerm term) {
 
     }
 
     @Override
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         this.closeViewer();
     }
 
     @Override
-    public Map<String, List<String>> getMimeMenuMethods()
-    {
+    public Map<String, List<String>> getMimeMenuMethods() {
         return null;
     }
 
     @Override
-    public EmbeddedViewer getViewerPanel()
-    {
+    public EmbeddedViewer getViewerPanel() {
         return this;
     }
 
     @Override
-    public String getToolName()
-    {
+    public String getToolName() {
         return "VTerm";
     }
 
     @Override
-    public boolean addToToolMenu()
-    {
+    public boolean addToToolMenu() {
         return true;
     }
 
     @Override
-    public String[] getToolMenuPath()
-    {
-        return new String[] {
-            "terminal"
-        };
+    public String[] getToolMenuPath() {
+        return new String[] { "terminal" };
     }
 
     @Override
-    public String toolBarName()
-    {
+    public String toolBarName() {
         return "VTerm";
     }
 
     @Override
-    public String defaultToolMethod()
-    {
+    public String defaultToolMethod() {
         return null;
     }
 
     @Override
-    public Icon getToolIcon(int size)
-    {
+    public Icon getToolIcon(int size) {
         return null;
     }
 
     @Override
-    public List<Pair<MenuMapping, List<String>>> getMenuMappings()
-    {
+    public List<Pair<MenuMapping, List<String>>> getMenuMappings() {
         ArrayList<String> methods = new ArrayList<String>();
         methods.add("open:Open VTerm");
         MenuMapping menuMap = new MenuMapping(null, "sftp", null, null);

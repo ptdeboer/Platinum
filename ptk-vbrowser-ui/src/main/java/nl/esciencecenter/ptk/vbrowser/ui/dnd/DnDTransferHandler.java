@@ -39,35 +39,31 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 /**
  * Default TransgerHandler for ViewNodes.
  */
-public class DnDTransferHandler extends TransferHandler
-{
-    private static PLogger logger=PLogger.getLogger(DnDTransferHandler.class); 
-    
+public class DnDTransferHandler extends TransferHandler {
+    private static PLogger logger = PLogger.getLogger(DnDTransferHandler.class);
+
     private static final long serialVersionUID = -115960212645219778L;
 
     private static DnDTransferHandler defaultTransferHandler = new DnDTransferHandler();
 
-    public static DnDTransferHandler getDefault()
-    {
+    public static DnDTransferHandler getDefault() {
         return defaultTransferHandler;
     }
 
     // === Instance stuff === //
 
     /** Construct default TransferHandler wich handles VRL Objects */
-    public DnDTransferHandler()
-    {
+    public DnDTransferHandler() {
         // Default ViewNode Transferer.
     }
 
     @Override
-    public void exportDone(JComponent comp, Transferable data, int action)
-    {
+    public void exportDone(JComponent comp, Transferable data, int action) {
         // this method is called when the export of the Transferable is done.
         // The actual DnD is NOT finished.
 
-        logger.debugPrintf("exportDone():%s\n",data);
-        logger.debugPrintf("exportDone action=%s\n",action);
+        logger.debugPrintf("exportDone():%s\n", data);
+        logger.debugPrintf("exportDone action=%s\n", action);
     }
 
     /*
@@ -82,22 +78,19 @@ public class DnDTransferHandler extends TransferHandler
     // ===
     @Deprecated
     @Override
-    public boolean canImport(JComponent c, DataFlavor[] flavors)
-    {
+    public boolean canImport(JComponent c, DataFlavor[] flavors) {
         for (DataFlavor flav : flavors)
-            logger.debugPrintf("canImport():%s\n",flav);
+            logger.debugPrintf("canImport():%s\n", flav);
         return false;
         // return VTransferData.hasMyDataFlavor(flavors);
     }
 
     // This method is called i.s.o above one:
-    public boolean canImport(TransferSupport transferSupport)
-    {
+    public boolean canImport(TransferSupport transferSupport) {
         logger.errorPrintf("FIXME:canImport():%s\n", transferSupport);
-        
+
         DataFlavor[] flavors = transferSupport.getDataFlavors();
-        for (DataFlavor flav : flavors)
-        {
+        for (DataFlavor flav : flavors) {
             logger.errorPrintf("FIXME:canImport(): -flav:%s\n", flav);
         }
         // transferSupport.setDropAction(COPY);
@@ -105,12 +98,10 @@ public class DnDTransferHandler extends TransferHandler
     }
 
     @Override
-    protected Transferable createTransferable(JComponent c)
-    {
+    protected Transferable createTransferable(JComponent c) {
         logger.debugPrintf("createTransferable():%s\n", c);
 
-        if ((c instanceof ViewNodeComponent) == false)
-        {
+        if ((c instanceof ViewNodeComponent) == false) {
             logger.errorPrintf("createTransferable(): Error: Not a ViewNodeComponent:%s\n", c);
             return null;
         }
@@ -118,42 +109,33 @@ public class DnDTransferHandler extends TransferHandler
         return createTransferable((ViewNodeComponent) c);
     }
 
-    protected Transferable createTransferable(ViewNodeComponent c)
-    {
+    protected Transferable createTransferable(ViewNodeComponent c) {
         // Debug("Create Transferable:"+c);
         ViewNode[] nodes = null;
 
         ViewNodeContainer parent = c.getViewContainer();
 
-        if (parent != null)
-        {
+        if (parent != null) {
             // redirect to parent for multi selection!
             nodes = parent.getNodeSelection();
-        }
-        else if (c instanceof ViewNodeContainer)
-        {
+        } else if (c instanceof ViewNodeContainer) {
             // drag initiated from Container! (ResourceTree)
             nodes = ((ViewNodeContainer) c).getNodeSelection();
-        }
-        else
-        {
+        } else {
             // stand-alone 'node'
             nodes = new ViewNode[1];
             nodes[0] = c.getViewNode(); // get actual view node i.s.o contains
                                         // selection.
         }
 
-        if ((nodes != null) && (nodes.length > 0))
-        {
+        if ((nodes != null) && (nodes.length > 0)) {
             logger.debugPrintf("createTransferable(): getNodeSelection()=%d\n", nodes.length);
 
             if (nodes.length <= 0)
                 return null;
 
             return VRLEntryListTransferable.createFrom(nodes);
-        }
-        else
-        {
+        } else {
             logger.debugPrintf("Tranfer source not recognised:%s\n", c);
         }
 
@@ -161,21 +143,18 @@ public class DnDTransferHandler extends TransferHandler
     }
 
     @Override
-    public void exportAsDrag(JComponent comp, InputEvent e, int action)
-    {
-        logger.debugPrintf("exportAsDrag():%s\n",e);
+    public void exportAsDrag(JComponent comp, InputEvent e, int action) {
+        logger.debugPrintf("exportAsDrag():%s\n", e);
         super.exportAsDrag(comp, e, action);
     }
 
-    public void exportToClipboard(JComponent comp, Clipboard clipboard, int action)
-    {
-        logger.debugPrintf("exportToClipboard():%s\n",comp);
+    public void exportToClipboard(JComponent comp, Clipboard clipboard, int action) {
+        logger.debugPrintf("exportToClipboard():%s\n", comp);
         super.exportToClipboard(comp, clipboard, action);
     }
 
     @Override
-    public int getSourceActions(JComponent c)
-    {
+    public int getSourceActions(JComponent c) {
         // All Nodes can be Copied, Moved and Linked to
         return COPY_OR_MOVE | DnDConstants.ACTION_LINK;
     }
@@ -188,18 +167,17 @@ public class DnDTransferHandler extends TransferHandler
      */
     @Override
     @Deprecated
-    public boolean importData(JComponent comp, Transferable data)
-    {
+    public boolean importData(JComponent comp, Transferable data) {
         // This method is directory called when performing CTRL-V
 
         logger.debugPrintf("importData():%s\n", comp);
-        if ((comp instanceof ViewNodeComponent) == false)
-        {
+        if ((comp instanceof ViewNodeComponent) == false) {
             logger.errorPrintf("importData(): Error: Not a ViewNodeComponent:%s\n", comp);
             return false;
         }
 
-        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data, DropAction.COPY);
+        return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data,
+                DropAction.COPY);
     }
 
     /*
@@ -210,32 +188,27 @@ public class DnDTransferHandler extends TransferHandler
      * TransferSupport)
      */
     @Override
-    public boolean importData(TransferSupport support)
-    {
+    public boolean importData(TransferSupport support) {
         // This method is called when performing CTRL-V
 
         Component comp = support.getComponent();
         Transferable data = support.getTransferable();
         // This method is directory called when performing CTRL-V
         logger.debugPrintf("importData(TransferSupport):%s\n", comp);
-        if ((comp instanceof ViewNodeComponent) == false)
-        {
+        if ((comp instanceof ViewNodeComponent) == false) {
             logger.errorPrintf("importData(): Error: Not a ViewNodeComponent:%s\n", comp);
             return false;
-        } 
-        
-        DropAction dndAction;
-        
-        if (support.isDrop())
-        {
-            dndAction = DnDUtil.getDropAction(support.getDropAction());
         }
-        else
-        {
+
+        DropAction dndAction;
+
+        if (support.isDrop()) {
+            dndAction = DnDUtil.getDropAction(support.getDropAction());
+        } else {
             // todo: check for  Cut'n Paste (CTRL-X)! 
             dndAction = DropAction.COPY_PASTE;
         }
-        
+
         return DnDUtil.doPasteData(comp, ((ViewNodeComponent) comp).getViewNode(), data, dndAction);
     }
 

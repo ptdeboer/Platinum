@@ -20,10 +20,9 @@
 
 package nl.esciencecenter.vbrowser.vrs.io;
 
-/** 
- * Combined interface for StreamReadable and StreamWritable resources. 
+/**
+ * Combined interface for StreamReadable and StreamWritable resources.
  */
-public interface VStreamAccessable extends VStreamReadable,VStreamWritable 
-{
+public interface VStreamAccessable extends VStreamReadable, VStreamWritable {
 
 }

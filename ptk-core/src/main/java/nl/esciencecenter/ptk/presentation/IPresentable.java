@@ -20,9 +20,8 @@
 
 package nl.esciencecenter.ptk.presentation;
 
-public interface IPresentable
-{
-    
-    public Presentation getPresentation(); 
-    
+public interface IPresentable {
+
+    public Presentation getPresentation();
+
 }

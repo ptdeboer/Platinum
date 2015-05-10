@@ -27,35 +27,37 @@ import javax.swing.JPopupMenu;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 
 /**
- * Interface for any (J)Component which can contain ViewNodes.
- * A ViewNodeContainer in itself is also a ViewNodeComponent. 
+ * Interface for any (J)Component which can contain ViewNodes. A ViewNodeContainer in itself is also
+ * a ViewNodeComponent.
  */
-public interface ViewNodeContainer  extends ViewNodeComponent
-{
+public interface ViewNodeContainer extends ViewNodeComponent {
     public ViewNode getNodeUnderPoint(Point p);
 
-    /** 
-     * Create Pop-up menu when (right-)clicked the specified actionSourceNode. 
-     * @param actionSourceNode ViewNode the click occured. 
-     * @param canvasMenu - whether this is a click the canvas (white space between the icons).
-     * @return JPopupMenu 
+    /**
+     * Create Pop-up menu when (right-)clicked the specified actionSourceNode.
+     * 
+     * @param actionSourceNode
+     *            ViewNode the click occured.
+     * @param canvasMenu
+     *            - whether this is a click the canvas (white space between the icons).
+     * @return JPopupMenu
      */
     public JPopupMenu createNodeActionMenuFor(ViewNode actionSourceNode, boolean canvasMenu);
-    
-	// === Selection Model === 
+
+    // === Selection Model === 
     public void clearNodeSelection();
 
     public ViewNode[] getNodeSelection();
 
-	/** Toggle selection */ 
+    /** Toggle selection */
     public void setNodeSelection(ViewNode node, boolean isSelected);
-	
-	/** Toggle selection of range */ 
-    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode,boolean isSelected);
 
-    /** Request focus for child. Return true if it has focus. */ 
+    /** Toggle selection of range */
+    public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode, boolean isSelected);
+
+    /** Request focus for child. Return true if it has focus. */
     public boolean requestNodeFocus(ViewNode node, boolean value);
 
-    public BrowserInterface getBrowserInterface(); 
-    
+    public BrowserInterface getBrowserInterface();
+
 }

@@ -24,8 +24,8 @@ package nl.esciencecenter.ptk.vbrowser.ui.attribute.fields;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-public interface IAttributeField
-{
+public interface IAttributeField {
+
     public String getViewerName();
 
     public String getValue();

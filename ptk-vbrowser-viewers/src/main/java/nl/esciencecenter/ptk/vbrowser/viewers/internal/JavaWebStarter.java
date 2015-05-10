@@ -47,8 +47,8 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * Start Webstart application.
  */
-public class JavaWebStarter extends EmbeddedViewer implements ActionListener, ViewerPlugin, MimeViewer
-{
+public class JavaWebStarter extends EmbeddedViewer implements ActionListener, ViewerPlugin,
+        MimeViewer {
     private static final long serialVersionUID = -8153274632131510572L;
 
     private JTextPane mainTP;
@@ -57,37 +57,28 @@ public class JavaWebStarter extends EmbeddedViewer implements ActionListener, Vi
 
     private JPanel buttonPanel;
 
-    public JavaWebStarter()
-    {
+    public JavaWebStarter() {
 
     }
 
     // do not embed the viewer inside the VBrowser.
     @Override
-    public boolean isStandaloneViewer()
-    {
+    public boolean isStandaloneViewer() {
         return true;
     }
 
     @Override
-    public String[] getMimeTypes()
-    {
-        return new String[]
-        {
-            "application/x-java-jnlp-file"
-        };
+    public String[] getMimeTypes() {
+        return new String[] { "application/x-java-jnlp-file" };
     }
 
     @Override
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return "JavaWebStart";
     }
 
-    public void initGUI()
-    {
-        FormLayout thisLayout = new FormLayout(
-                "5dlu, max(p;145dlu):grow, 5dlu",
+    public void initGUI() {
+        FormLayout thisLayout = new FormLayout("5dlu, max(p;145dlu):grow, 5dlu",
                 "max(p;5dlu), 24dlu, max(p;5dlu), 6dlu, max(p;15dlu), max(p;5dlu)");
         this.setLayout(thisLayout);
         this.setBorder(BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
@@ -111,47 +102,37 @@ public class JavaWebStarter extends EmbeddedViewer implements ActionListener, Vi
     }
 
     @Override
-    public void doInitViewer()
-    {
+    public void doInitViewer() {
         initGUI();
     }
 
     @Override
-    public void doStopViewer()
-    {
+    public void doStopViewer() {
     }
 
     @Override
-    public void doUpdate(VRL loc)
-    {
+    public void doUpdate(VRL loc) {
         startURI(loc);
     }
 
     @Override
-    public void doStartViewer(VRL vrl, String optionalMethod)
-    {
+    public void doStartViewer(VRL vrl, String optionalMethod) {
         startURI(vrl);
     }
 
-    public void startURI(VRL loc)
-    {
-        try
-        {
+    public void startURI(VRL loc) {
+        try {
             debug("starting:" + loc);
 
             // Execute Plain VRL:
             executeJavaws(loc);
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             notifyException("Failed to start webstarter for:" + loc, e);
         }
     }
 
-    private void executeJavaws(VRL loc)
-    {
-        try
-        {
+    private void executeJavaws(VRL loc) {
+        try {
             String javaHome = GlobalProperties.getJavaHome();
             String cmdPath = javaHome + "/bin/javaws";
 
@@ -160,12 +141,9 @@ public class JavaWebStarter extends EmbeddedViewer implements ActionListener, Vi
 
             URIFactory uriFactory = new URIFactory("file:///" + cmdPath);
 
-            if (GlobalProperties.isWindows())
-            {
+            if (GlobalProperties.isWindows()) {
                 cmdPath = uriFactory.getDosPath();
-            }
-            else
-            {
+            } else {
                 cmdPath = uriFactory.getPath();
             }
 
@@ -175,48 +153,37 @@ public class JavaWebStarter extends EmbeddedViewer implements ActionListener, Vi
 
             String result[] = LocalExec.execute(cmds);
 
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             notifyException("Failed to start WebStarter for:" + loc, e);
         }
     }
 
-    private void debug(String str)
-    {
+    private void debug(String str) {
 
     }
 
     @Override
-    public void doDisposeViewer()
-    {
+    public void doDisposeViewer() {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        if (source.equals(this.okB))
-        {
+        if (source.equals(this.okB)) {
             closeViewer();
         }
     }
 
     @Override
-    public Map<String, List<String>> getMimeMenuMethods()
-    {
+    public Map<String, List<String>> getMimeMenuMethods() {
         String[] mimeTypes = getMimeTypes();
 
         // Use HashMapList to keep order of menu entries: first is default(!)
 
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
-        for (int i = 0; i < mimeTypes.length; i++)
-        {
-            List<String> list = new StringList(new String[]
-            {
-                "start:Start Java"
-            });
+        for (int i = 0; i < mimeTypes.length; i++) {
+            List<String> list = new StringList(new String[] { "start:Start Java" });
             mappings.put(mimeTypes[i], list);
         }
 
@@ -224,8 +191,7 @@ public class JavaWebStarter extends EmbeddedViewer implements ActionListener, Vi
     }
 
     @Override
-    public EmbeddedViewer getViewerPanel()
-    {
+    public EmbeddedViewer getViewerPanel() {
         return this;
     }
 }

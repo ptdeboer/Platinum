@@ -10,6 +10,9 @@
 ## Source structure: 
 project.sourcedir=.
 
+# root libs
+project.root.lib=${project.root}/lib
+
 ###
 ## Distribution target directory:   
 project.dist=${project.root}/dist
@@ -30,7 +33,7 @@ project.dist.doc=${project.dist}/doc
 project.env.ok=ok;
  
 ## version
-project.version=0.9.5
+project.version=1.1.0-SNAPSHOT
 platinum.version=${project.version}
 ## Owner/Vendor: 
 project.vendor=eScienceCenter.nl

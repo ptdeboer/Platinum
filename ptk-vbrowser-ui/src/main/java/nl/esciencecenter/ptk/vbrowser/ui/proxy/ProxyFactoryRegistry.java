@@ -22,7 +22,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
 import java.util.Vector;
 
-
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -30,76 +29,62 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Registry for ProxyFactories to multiple sources
  */
-public class ProxyFactoryRegistry
-{
-    private static PLogger logger; 
-    
-    static
-    {
-        logger=PLogger.getLogger("ProxyRegistry.class"); 
+public class ProxyFactoryRegistry {
+    private static PLogger logger;
+
+    static {
+        logger = PLogger.getLogger("ProxyRegistry.class");
     }
-    
-    public static ProxyFactoryRegistry createInstance()
-    {
-        return new ProxyFactoryRegistry(); 
+
+    public static ProxyFactoryRegistry createInstance() {
+        return new ProxyFactoryRegistry();
     }
-    
+
     // ========================================================================
     //
     // ========================================================================
-    
-    private Vector<ProxyFactory> factories=new Vector<ProxyFactory>(); 
-    
-    protected ProxyFactoryRegistry()
-    {
-        initRegistry(); 
-    }
-    
-    protected void initRegistry()
-    {
-        logger.debugPrintf("--- ProxyRegistry:initRegistry() ---\n"); 
-    }
-    
-    public ProxyFactory getProxyFactoryFor(VRL locator)
-    {
-    	synchronized(this.factories)
-    	{
-    		for (ProxyFactory fac:factories)
-    		{
-    		    StringHolder reason=new StringHolder(); 
-    		    
-    			if (fac.canOpen(locator,reason))
-    			{
-    				return fac;
-    			}
-    			else
-    			{
-    			    logger.debugPrintf("Factory %s couldn't open location. Reason=%s\n",fac,reason);
-    			}
-    		}
-    	}
-    
-    	return null; 
+
+    private Vector<ProxyFactory> factories = new Vector<ProxyFactory>();
+
+    protected ProxyFactoryRegistry() {
+        initRegistry();
     }
 
-    public ProxyFactory getDefaultProxyFactory()
-    {
-        if ((factories==null) || (factories.size()<=0))
-        {
+    protected void initRegistry() {
+        logger.debugPrintf("--- ProxyRegistry:initRegistry() ---\n");
+    }
+
+    public ProxyFactory getProxyFactoryFor(VRL locator) {
+        synchronized (this.factories) {
+            for (ProxyFactory fac : factories) {
+                StringHolder reason = new StringHolder();
+
+                if (fac.canOpen(locator, reason)) {
+                    return fac;
+                } else {
+                    logger.debugPrintf("Factory %s couldn't open location. Reason=%s\n", fac,
+                            reason);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public ProxyFactory getDefaultProxyFactory() {
+        if ((factories == null) || (factories.size() <= 0)) {
             return null;
         }
-        
+
         return factories.get(0);
-        
+
     }
 
-    public void registerProxyFactory(ProxyFactory factory)
-    {
-        this.factories.add(factory); 
+    public void registerProxyFactory(ProxyFactory factory) {
+        this.factories.add(factory);
     }
-    
-    public void unregisterProxyFactory(ProxyFactory factory)
-    {
-        this.factories.remove(factory); 
+
+    public void unregisterProxyFactory(ProxyFactory factory) {
+        this.factories.remove(factory);
     }
 }

@@ -21,262 +21,198 @@
 package nl.esciencecenter.ptk;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
-import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
-/** 
- * Global properties and other runtime configurations. 
+/**
+ * Global properties and other runtime configurations.
  */
-public class GlobalProperties
-{
-	/** Java property name for architecture: For example: "i386" or "i586" */ 
+public class GlobalProperties {
+
+    /** Java property name for architecture: For example: "i386" or "i586" */
     public static final String PROP_JAVA_OS_ARCH = "os.arch";
 
-    /** Java property name for Operation System name "Linux" or "Windows" */ 
+    /** Java property name for Operation System name "Linux" or "Windows" */
     public static final String PROP_JAVA_OS_NAME = "os.name";
 
-    /** Java property name for OS Version" */ 
+    /** Java property name for OS Version" */
     public static final String PROP_JAVA_OS_VERSION = "os.version";
 
-    /** Java temporary directory */ 
-	public static final String PROP_JAVA_TMPDIR = "java.io.tmpdir";
-	
-	/** Java property which specified the user home or $HOME.*/ 
-	public static final String PROP_JAVA_USER_HOME = "user.home";
-	
-	/** Java property which specifies the user name or $USER.*/ 
-	public static final String PROP_JAVA_USER_NAME = "user.name"; 
+    /** Java temporary directory */
+    public static final String PROP_JAVA_TMPDIR = "java.io.tmpdir";
 
-	/** Java property which specifies the 'user directory' or current working directory.*/ 
-    public static final String PROP_JAVA_USER_DIR = "user.dir"; 
-    
-    /** Java os.name value for Linux */ 
+    /** Java property which specifies the user home or $HOME. */
+    public static final String PROP_JAVA_USER_HOME = "user.home";
+
+    /** Java property which specifies the user name or $USER. */
+    public static final String PROP_JAVA_USER_NAME = "user.name";
+
+    /** Java property which specifies the 'user directory' or current working directory. */
+    public static final String PROP_JAVA_USER_DIR = "user.dir";
+
+    /** Java os.name value for Linux */
     public static final String LINUX = "Linux";
 
-    /** Java os.name value for Windows */ 
-    public static final String WINDOWS= "Windows";
+    /** Java os.name value for Windows */
+    public static final String WINDOWS = "Windows";
 
-    /** Java os.name value for Windows */ 
-    public static final String WINDOWS7= "Windows 7";
+    /** Java os.name value for Windows */
+    public static final String WINDOWS7 = "Windows 7";
 
-    /** Java os.name value for Mac OS */ 
-    public static final String MAC_OS= "Mac OS";
-    
-    /** Java os.name value for Mac OS X */ 
-    public static final String MAC_OSX= "Mac OS X";
-    
+    /** Java os.name value for Mac OS */
+    public static final String MAC_OS = "Mac OS";
+
+    /** Java os.name value for Mac OS X */
+    public static final String MAC_OSX = "Mac OS X";
+
     // ========
     // Privates
     // ======== 
-    
-    private static PLogger logger;
+    /** Private copy for non system properties */
+    private static Properties globalProperties = new Properties();
 
-    /** Private copy for non system properties */ 
-    private static Properties globalProperties=new Properties(); 
-
-    static
-    {
-    	// static init! Careful here not to make static references to other
-        // potentiele not initialized classes
-
-        // Default logger. 
-    	logger=PLogger.getLogger(GlobalProperties.class); 
-    	logger.infoPrintf(">>> Global Init <<<\n");
-
-    	// To be checked; Applet mode or secure WebService mode. 
-    }
-
-    /** 
-     * Dummy method. 
-     * Call this method to initialize class loading. 
-     * See static{...} 
+    /**
+     * Dummy method. Call this method to initialize class loading. See static{...}
      */
-    public static void init()
-    {
+    public static void init() {
         ;//
     }
 
-	public static Object getProperty(String name)
-	{
-		Object prop=globalProperties.getProperty(name); 
-		if (prop!=null)
-			return prop; 
-		
-		prop=System.getProperty(name);
-		return prop; 
-	}
+    public static Object getProperty(String name) {
+        Object prop = globalProperties.getProperty(name);
+        if (prop != null)
+            return prop;
 
-	/** Auto cast Property to String value */ 
-	public static String getStringProperty(String name)
-	{
-	    Object prop=getProperty(name); 
-	    if (prop==null)
-	        return null; 
-	    return prop.toString();  
+        prop = System.getProperty(name);
+        return prop;
     }
 
-	public static Object getEnv(String name)
-	{
-		Object envval=System.getenv(name);
-		return envval; 
-	}
-	
-	public static String getGlobalUserName() 
-	{
-	    return getStringProperty(PROP_JAVA_USER_NAME); 
-	}
-	
-	public static String getGlobalUserHome() 
-	{
-	    String val=getStringProperty(PROP_JAVA_USER_HOME); 
-
-		if (val==null)
-			return null; 
-		
-		return URIFactory.uripath(val,true); 
-	}
-
-	/** 
-	 * The "User Directory" is also known as "current working directory", except this is the path
-	 * at startup and can't be manipulated. 
-	 * Note: If an application might want to change the CWD, this has to be done by the application itself.   
-	 * @return
-	 */
-	public static String getGlobalUserDir() 
-	{
-	    String val=getStringProperty(PROP_JAVA_USER_DIR); 
-
-	    if (val==null)
-	        return null; 
-	        
-	    return URIFactory.uripath(val,true); 
-    }
-	   
-	public static String getGlobalTempDir() 
-	{
-	    String val=getStringProperty(PROP_JAVA_TMPDIR); 
-
-		if (val==null)
-			return null;  
-		
-		return URIFactory.uripath(val.toString(),true); 
-	}
-	
-	/**
-     * Returns fully qualified hostname or 'localhost' if hostname can't be determined. 
-     */ 
-    public static String getHostname()
-    {
-        try
-        {
-            String hostname = InetAddress.getLocalHost().getCanonicalHostName();
-            return hostname;
-        }
-        catch (Exception ex)
-        {
-            logger.logException(PLogger.WARN,ex,"Couldn't get HOSTNAME of local machine\n");  
-        }
-
-        Object val=getEnv("HOSTNAME");
-        
-        if ((val!=null) && (val.equals("")==false))
-            return val.toString();   
-
-        return "localhost"; 
-    }
-    
-    public static PLogger getRootLogger()
-    {
-    	return PLogger.getRootLogger(); 
+    /** Auto cast Property to String value */
+    public static String getStringProperty(String name) {
+        Object prop = getProperty(name);
+        if (prop == null)
+            return null;
+        return prop.toString();
     }
 
-    public static String getOsArch() 
-    {
-        return getStringProperty(PROP_JAVA_OS_ARCH); 
+    public static Object getEnv(String name) {
+        Object envval = System.getenv(name);
+        return envval;
     }
-    
-    public static String getOsName() 
-    {
-        return getStringProperty(PROP_JAVA_OS_NAME); 
+
+    public static String getGlobalUserName() {
+        return getStringProperty(PROP_JAVA_USER_NAME);
     }
-    
-    public static String getOsVersion() 
-    {
-        return getStringProperty(PROP_JAVA_OS_VERSION); 
+
+    public static String getGlobalUserHome() {
+        return getStringProperty(PROP_JAVA_USER_HOME);
     }
 
     /**
-     *  Returns true for all OS Name values that start with "Windows". 
-     *  Current known values are (some unconfirmed):
-     *  <lu>
-     *  <li> Windows Me 
-     *  <li> Windows 2000
-     *  <li> Windows 95
-     *  <li> Windows 98
-     *  <li> Windows NT
-     *  <li> Windows Vista
-     *  <li> Windows XP
-     *  <li> Windows 7
-     *  <li> Windows 8 
-     *  </ul>
-     *  @return - true if OS Name value starts with "Windows".
-     */ 
-    public static boolean isWindows()
-    {
-    	// compare in all lower case 
-    	return GlobalProperties.getOsName().toLowerCase().startsWith(WINDOWS.toLowerCase());
-    }
-    
-    /** 
-     * Returns true if OSName exactly matches "Windows 7". 
-     * Use isWindows() for all (modern) windows versions. 
-     * @return - true if operating system is Windows 7 and only Windows 7. 
+     * The "User Directory" is also known as "current working directory", except this is the path at
+     * startup and can't be manipulated. Note: If an application might want to change the CWD, this
+     * has to be done by the application itself.
+     * 
+     * @return
      */
-    public static boolean isWindows7()
-    {
-      return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(),WINDOWS7);
+    public static String getGlobalUserDir() {
+        return getStringProperty(PROP_JAVA_USER_DIR);
     }
 
-    public static boolean isLinux()
-    {
-      return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(),LINUX);
+    public static String getGlobalTempDir() {
+        return getStringProperty(PROP_JAVA_TMPDIR);
     }
-    
-    /** 
+
+    /**
+     * Returns fully qualified hostname or 'localhost' if hostname can't be determined.
+     * 
+     * @throws UnknownHostException
+     */
+    public static String getHostname() {
+
+        try {
+            String hostname = InetAddress.getLocalHost().getCanonicalHostName();
+            return hostname;
+        } catch (UnknownHostException e) {
+            return "localhost";
+        }
+
+    }
+
+    public static String getOsArch() {
+        return getStringProperty(PROP_JAVA_OS_ARCH);
+    }
+
+    public static String getOsName() {
+        return getStringProperty(PROP_JAVA_OS_NAME);
+    }
+
+    public static String getOsVersion() {
+        return getStringProperty(PROP_JAVA_OS_VERSION);
+    }
+
+    /**
+     * Returns true for all OS Name values that start with "Windows". Current known values are (some
+     * unconfirmed): <lu> <li>
+     * Windows Me <li>Windows 2000 <li>Windows 95 <li>Windows 98 <li>Windows NT <li>Windows Vista
+     * <li>Windows XP <li>Windows 7 <li>
+     * Windows 8 </ul>
+     * 
+     * @return - true if OS Name value starts with "Windows".
+     */
+    public static boolean isWindows() {
+        // compare in all lower case 
+        return GlobalProperties.getOsName().toLowerCase().startsWith(WINDOWS.toLowerCase());
+    }
+
+    /**
+     * Returns true if OSName exactly matches "Windows 7". Use isWindows() for all (modern) windows
+     * versions.
+     * 
+     * @return - true if operating system is Windows 7 and only Windows 7.
+     */
+    public static boolean isWindows7() {
+        return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(), WINDOWS7);
+    }
+
+    public static boolean isLinux() {
+        return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(), LINUX);
+    }
+
+    /**
      * Explicit Mac Os<strong>X</strong>.
-     */ 
-    public static boolean isMacOSX()
-    {
-      return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(),MAC_OSX);
+     */
+    public static boolean isMacOSX() {
+        return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(), MAC_OSX);
     }
-    
-    /** 
-     * Explicit Mac Os, but <strong>not</strong> 'Os X'. 
-     */    
-    public static boolean isMacOS()
-    {
-      return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(),MAC_OS);
+
+    /**
+     * Explicit Mac Os, but <strong>not</strong> 'Os X'.
+     */
+    public static boolean isMacOS() {
+        return StringUtil.equalsIgnoreCase(GlobalProperties.getOsName(), MAC_OS);
     }
-    
-    /** 
-     * Returns true for all OS Name values that start with "Mac". 
-     */ 
-    public static boolean isMac()
-    {
-    	return GlobalProperties.getOsName().toLowerCase().startsWith("mac");
+
+    /**
+     * Returns true for all OS Name values that start with "Mac".
+     */
+    public static boolean isMac() {
+        return GlobalProperties.getOsName().toLowerCase().startsWith("mac");
     }
-    
-    public static String getJavaVersion()
-    {
+
+    public static String getJavaVersion() {
         return getStringProperty("java.version");
     }
 
-    public static String getJavaHome()
-    {
+    public static String getJavaHome() {
         return getStringProperty("java.home");
+    }
+
+    public static ClassLogger getRootLogger() {
+        return ClassLogger.getRootLogger();
     }
 
 }

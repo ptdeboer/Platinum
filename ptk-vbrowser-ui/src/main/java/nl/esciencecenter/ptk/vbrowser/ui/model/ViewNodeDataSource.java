@@ -25,43 +25,49 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-
 /**
- * Data Source for ViewNodes. 
- */ 
-public interface ViewNodeDataSource
-{
-	/** 
-	 * Register listener to receive data source update events.
-	 * Listeners received events about created ViewNodes
-	 */ 
-	public void addDataSourceEventListener(VRSEventListener listener); 
-	
-	public void removeDataSourceEventListener(VRSEventListener listener); 
-	
-	/** 
-	 * Toplevel resource or root node. 
-	 * @throws ProxyException 
-	 */ 
-	public ViewNode getRoot(UIViewModel uiModel) throws ProxyException;  // throws ProxyException;
+ * Data Source for ViewNodes.
+ */
+public interface ViewNodeDataSource {
+    /**
+     * Register listener to receive data source update events. Listeners received events about
+     * created ViewNodes
+     */
+    public void addDataSourceEventListener(VRSEventListener listener);
 
-	/** 
-	 * Get childs of specified resource. 
-	 * @param uiModel - the UIModel 
-	 * @param locator - location of resource
-	 * @param offset - get childs starting from this offset 
-	 * @param range - maximum number of childs wanted. Use -1 for all. 
-	 */ 
-	public ViewNode[] getChilds(UIViewModel uiModel,VRL locator,int offset, int range,LongHolder numChildsLeft) throws ProxyException;
-	
-	/** 
-	 * Open locations and create ViewNodes.
-	 *  
-	 * @param uiModel - the UIModel to use
-	 * @param locations - resource locations 
-	 * @return created ViewNodes
-	 */
-	public ViewNode[] createViewNodes(UIViewModel uiModel,VRL locations[]) throws ProxyException; 
- 
-	
+    public void removeDataSourceEventListener(VRSEventListener listener);
+
+    /**
+     * Toplevel resource or root node.
+     * 
+     * @throws ProxyException
+     */
+    public ViewNode getRoot(UIViewModel uiModel) throws ProxyException; // throws ProxyException;
+
+    /**
+     * Get childs of specified resource.
+     * 
+     * @param uiModel
+     *            - the UIModel
+     * @param locator
+     *            - location of resource
+     * @param offset
+     *            - get childs starting from this offset
+     * @param range
+     *            - maximum number of childs wanted. Use -1 for all.
+     */
+    public ViewNode[] getChilds(UIViewModel uiModel, VRL locator, int offset, int range,
+            LongHolder numChildsLeft) throws ProxyException;
+
+    /**
+     * Open locations and create ViewNodes.
+     * 
+     * @param uiModel
+     *            - the UIModel to use
+     * @param locations
+     *            - resource locations
+     * @return created ViewNodes
+     */
+    public ViewNode[] createViewNodes(UIViewModel uiModel, VRL locations[]) throws ProxyException;
+
 }

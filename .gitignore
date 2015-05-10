@@ -5,6 +5,9 @@
 /build
 /packs
 /target
+**/target
+**/build
+**/dist
 .project
 .settings
 .classpath

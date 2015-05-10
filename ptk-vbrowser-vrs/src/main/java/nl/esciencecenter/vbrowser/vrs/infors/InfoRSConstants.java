@@ -20,10 +20,11 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 
-public class InfoRSConstants
-{
+public class InfoRSConstants {
+
     public static final String INFO_SCHEME = "info";
 
     public static final String LOCALSYSTEM = "LocalSystem";
@@ -39,7 +40,7 @@ public class InfoRSConstants
     public static final String RESOURCEFOLDER = "ResourceFolder";
 
     public static final String RESOURCEINFO_CONFIG = "ResourceInfoConfig";
-    
+
     public static final String RESOURCE_ICONURL = "resourceIconURL";
 
     public static final String RESOURCE_SHOWLINKICON = "resourceShowLinkIcon";
@@ -48,25 +49,24 @@ public class InfoRSConstants
 
     public static final String RESOURCE_NAME = "resourceName";
 
-    public static final String RESOURCE_TARGETVRL = "resourceTargetVRL"; 
+    public static final String RESOURCE_TARGETVRL = "resourceTargetVRL";
 
     public static final String RESOURCE_TARGET_ISCOMPOSITE = "resourceTargateIsComposite";
 
-    public static final String LOCALSYSTEM_OSTYPE = "localsystem.os.type";
+    public static final String LOCALSYSTEM_OSNAME = "system." + GlobalProperties.PROP_JAVA_OS_NAME;
 
-    public static final String LOCALSYSTEM_OSVERSION = "localsystem.os.version";
+    public static final String LOCALSYSTEM_OSVERSION = "system." + GlobalProperties.PROP_JAVA_OS_VERSION;
 
-    public static final String LOCALSYSTEM_ARCHTYPE = "localsystem.os.arch";
+    public static final String LOCALSYSTEM_OSARCH = "system." + GlobalProperties.PROP_JAVA_OS_ARCH;
 
-    public static final String LOCALSYSTEM_HOMEDIR = "localsystem.user.home";
+    public static final String LOCALSYSTEM_HOMEDIR = "system.user.home";
 
-    public static final String LOCALSYSTEM_JREHOME = "localsystem.jre.home";
+    public static final String LOCALSYSTEM_JAVAHOME = "system.java.home";
 
-    public static final String LOCALSYSTEM_JREVERSION = "localsystem.jre.version";
+    public static final String LOCALSYSTEM_JAVAVERSION = "system.java.version";
 
-    public static final String RESOURCELINK_MIMETYPE =VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX+"-"+RESOURCELINK; 
-    
-    public static final String RESOURCEFOLDER_MIMETYPE =VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX+"-"+RESOURCEFOLDER;
-    
-    
+    public static final String RESOURCELINK_MIMETYPE = VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX + "-" + RESOURCELINK;
+
+    public static final String RESOURCEFOLDER_MIMETYPE = VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX + "-" + RESOURCEFOLDER;
+
 }

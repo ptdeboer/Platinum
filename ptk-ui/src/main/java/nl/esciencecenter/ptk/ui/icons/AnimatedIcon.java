@@ -32,200 +32,177 @@ import nl.esciencecenter.ptk.data.IntegerHolder;
 import nl.esciencecenter.ptk.ui.image.ImageSequence;
 
 /**
- * AnimatedIcon wraps around a AnimatedImage and holds the state information which 
- * image from the ImageSequence needs to be painted.
- * <br> 
+ * AnimatedIcon wraps around a AnimatedImage and holds the state information which image from the
+ * ImageSequence needs to be painted. <br>
  * For an AnimatedIcon to animate,the AnimatedIcon needs to be registered at an IconAnimator.
- * @see IconAnimator 
+ * 
+ * @see IconAnimator
  */
-public class AnimatedIcon implements Icon, Serializable
-{
+public class AnimatedIcon implements Icon, Serializable {
     // === //
     private static final long serialVersionUID = -5056027227860438690L;
 
     // === //
-    
-    protected String description; 
-    
+
+    protected String description;
+
     protected String sequenceName;
-    
-    protected int frameNr=0;
-    
-    protected int loopNr=0; 
-    
+
+    protected int frameNr = 0;
+
+    protected int loopNr = 0;
+
     protected ImageSequence animImage;
 
-    protected double animationSpeed=1.0;
+    protected double animationSpeed = 1.0;
 
     protected IconAnimator iconAnimator;
 
-    protected boolean painted=false;
+    protected boolean painted = false;
 
-    private boolean hasStopped; 
-    
-    public AnimatedIcon(ImageSequence animImage)
-    {
-        this.animImage=animImage; 
+    private boolean hasStopped;
+
+    public AnimatedIcon(ImageSequence animImage) {
+        this.animImage = animImage;
     }
-    
+
     /**
-     * Create Single Image Icon, using for testing purposes only since a single image
-     * icon can't really be animated. 
+     * Create Single Image Icon, using for testing purposes only since a single image icon can't
+     * really be animated.
      */
-    public AnimatedIcon(BufferedImage image)
-    {
-        this.animImage=new ImageSequence(image); 
+    public AnimatedIcon(BufferedImage image) {
+        this.animImage = new ImageSequence(image);
     }
 
     @Override
-    public int getIconHeight()
-    {
-        return animImage.getHeight(); 
+    public int getIconHeight() {
+        return animImage.getHeight();
     }
 
     @Override
-    public int getIconWidth()
-    {
-        return animImage.getWidth(); 
+    public int getIconWidth() {
+        return animImage.getWidth();
     }
 
     @Override
-    public void paintIcon(Component c, Graphics g, int x, int y)
-    {
+    public void paintIcon(Component c, Graphics g, int x, int y) {
         // delegate to ImageSeqeunce: 
-        animImage.paintImage(sequenceName,frameNr,c, g, x, y);
-        this.painted=true;
-        
+        animImage.paintImage(sequenceName, frameNr, c, g, x, y);
+        this.painted = true;
+
         // 
         // Auto Register and bind to the Component so that animation will be started automatically
         // when for example this Icon is used in a JLabel or other standaard JComponent !
         // To avoid this, use setIconAnimator() 
-        
-        if (this.iconAnimator==null)
-        {
-           IconAnimator.getDefault().register(c,this);
+
+        if (this.iconAnimator == null) {
+            IconAnimator.getDefault().register(c, this);
         }
-//        String text="#"+frameNr; 
-//        g.setColor(Color.black); 
-//        g.drawString(text, 0,getIconHeight());
-    } 
-    
-    /** Whether a paint() has been issued */
-    public boolean isPainted()
-    {
-        return this.painted; 
+        //        String text="#"+frameNr; 
+        //        g.setColor(Color.black); 
+        //        g.drawString(text, 0,getIconHeight());
     }
-    
+
+    /** Whether a paint() has been issued */
+    public boolean isPainted() {
+        return this.painted;
+    }
+
     /**
-     * Specify animation speed. 1.0 = standard, 2.0 =2x faster,etc
-     * A negative value results in a reverse animation. 
+     * Specify animation speed. 1.0 = standard, 2.0 =2x faster,etc A negative value results in a
+     * reverse animation.
      * 
      * @param speed
      */
-    public void setAnimationSpeed(double speed)
-    {
-        boolean inverse=false; 
-        
-        if ( (speed>0) && (animationSpeed<0) 
-            || (speed<0) && (animationSpeed>0) ) 
-            inverse=true; 
-        
-        this.animationSpeed=speed;
-        
+    public void setAnimationSpeed(double speed) {
+        boolean inverse = false;
+
+        if ((speed > 0) && (animationSpeed < 0) || (speed < 0) && (animationSpeed > 0))
+            inverse = true;
+
+        this.animationSpeed = speed;
+
         if (inverse)
-            loopNr=animImage.getLoopCount()-loopNr;
-        
+            loopNr = animImage.getLoopCount() - loopNr;
+
     }
-    
-    public double getAnimationSpeed()
-    {
-        return this.animationSpeed; 
+
+    public double getAnimationSpeed() {
+        return this.animationSpeed;
     }
-    
-    public void next()
-    {
-        IntegerHolder loopH=new IntegerHolder(loopNr); 
-        IntegerHolder frameH=new IntegerHolder(frameNr); 
-        
-        boolean result=false; 
-        
-        if (animationSpeed>0) 
-           result=animImage.calculateNextFrame(sequenceName,loopH,frameH,false);
-        else if (animationSpeed<0)
-           result=animImage.calculateNextFrame(sequenceName,loopH,frameH,true);
+
+    public void next() {
+        IntegerHolder loopH = new IntegerHolder(loopNr);
+        IntegerHolder frameH = new IntegerHolder(frameNr);
+
+        boolean result = false;
+
+        if (animationSpeed > 0)
+            result = animImage.calculateNextFrame(sequenceName, loopH, frameH, false);
+        else if (animationSpeed < 0)
+            result = animImage.calculateNextFrame(sequenceName, loopH, frameH, true);
         else
-           ;
+            ;
 
         // no more frames! 
-        if (result==false)
-            this.hasStopped=true; 
-        
+        if (result == false)
+            this.hasStopped = true;
+
         // update values 
-        loopNr=loopH.value;
-        frameNr=frameH.value;  
+        loopNr = loopH.value;
+        frameNr = frameH.value;
     }
 
-    public void stop()
-    {
-        this.animationSpeed=0; 
-        this.hasStopped=true; 
+    public void stop() {
+        this.animationSpeed = 0;
+        this.hasStopped = true;
     }
-    
-    public void start()
-    {
-        this.animationSpeed=1;
-        this.hasStopped=false; 
+
+    public void start() {
+        this.animationSpeed = 1;
+        this.hasStopped = false;
     }
-    
-    
-    
-    public void reverse()
-    {
-        this.animationSpeed=-1; 
+
+    public void reverse() {
+        this.animationSpeed = -1;
     }
-    
+
     /**
      * Return wait time how long the current image needs to be displayed in milliseconds
-     */ 
-    public int getCurrentWaitTime()
-    {
+     */
+    public int getCurrentWaitTime() {
         // lowest integer time in milliseconds  
-        return (int)Math.floor(animImage.getFrameDelay(frameNr)*Math.abs(animationSpeed));   
+        return (int) Math.floor(animImage.getFrameDelay(frameNr) * Math.abs(animationSpeed));
     }
-    
-    /** Unregisters this icon. */ 
-    public void dispose()
-    {
+
+    /** Unregisters this icon. */
+    public void dispose() {
         // unregister if registered !
-        if (this.iconAnimator!=null)
+        if (this.iconAnimator != null)
             this.iconAnimator.unregister(this);
-        
+
         // Do NOT dispose ImageSequence, it might be shared!
-        this.animImage=null;
-         
+        this.animImage = null;
+
     }
 
-    /** Specify the Icon Animator for this icon. It can only have one. */ 
-    protected void setIconAnimator(IconAnimator iconAnimator)
-    {
-       this.iconAnimator=iconAnimator;
-    }
-    
-    /** Reset Frame Sequence. Doesn't stop animation */ 
-    public void reset()
-    {
-        this.sequenceName=null; 
-        this.frameNr=0;
-    }
-    
-    public boolean hasStopped()
-    {
-        return this.hasStopped; 
+    /** Specify the Icon Animator for this icon. It can only have one. */
+    protected void setIconAnimator(IconAnimator iconAnimator) {
+        this.iconAnimator = iconAnimator;
     }
 
-    public Image getCurrentImage()
-    {
-        return this.animImage.getFrameImage(frameNr); 
+    /** Reset Frame Sequence. Doesn't stop animation */
+    public void reset() {
+        this.sequenceName = null;
+        this.frameNr = 0;
     }
-    
+
+    public boolean hasStopped() {
+        return this.hasStopped;
+    }
+
+    public Image getCurrentImage() {
+        return this.animImage.getFrameImage(frameNr);
+    }
+
 }

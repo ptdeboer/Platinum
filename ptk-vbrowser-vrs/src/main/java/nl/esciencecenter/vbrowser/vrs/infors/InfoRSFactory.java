@@ -28,40 +28,33 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class InfoRSFactory implements VResourceSystemFactory
-{
-    public InfoRSFactory() throws VrsException
-    {
+public class InfoRSFactory implements VResourceSystemFactory {
+
+    public InfoRSFactory() throws VrsException {
     }
 
     @Override
-    public String[] getSchemes()
-    {
-        return new String[]
-        { InfoRSConstants.INFO_SCHEME };
+    public String[] getSchemes() {
+        return new String[] { InfoRSConstants.INFO_SCHEME };
     }
 
     @Override
-    public String createResourceSystemId(VRL vrl)
-    {
+    public String createResourceSystemId(VRL vrl) {
         // only one local infors per registry;
         return InfoRSConstants.INFO_SCHEME + ":0";
     }
 
     @Override
-    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl) throws VrsException
-    {
-        if (StringUtil.equals(InfoRSConstants.INFO_SCHEME, vrl.getScheme()) == false)
-        {
+    public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info, VRL vrl)
+            throws VrsException {
+        if (StringUtil.equals(InfoRSConstants.INFO_SCHEME, vrl.getScheme()) == false) {
             throw new VrsException("Only support 'info' scheme:" + vrl);
         }
-
         return new InfoRS(context);
     }
 
     @Override
-    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo resourceSystemInfo, VRL vrl)
-    {
+    public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo resourceSystemInfo, VRL vrl) {
         // Nothing to be updated.
         return resourceSystemInfo;
     }

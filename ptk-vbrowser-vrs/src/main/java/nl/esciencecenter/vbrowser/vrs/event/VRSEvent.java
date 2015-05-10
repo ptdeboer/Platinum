@@ -24,168 +24,143 @@ import java.io.Serializable;
 
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSEvent implements Serializable 
-{
+public class VRSEvent implements Serializable {
+
     private static final long serialVersionUID = -6655387700048315217L;
 
-    public static enum VRSEventType
-	{
-		RESOURCES_ADDED,
-		RESOURCES_DELETED,
-		RESOURCES_RENAMED,
-		ATTRIBUTES_CHANGED,
-		REFRESH_RESOURCES
-	}
+    public static enum VRSEventType {
+        RESOURCES_ADDED, RESOURCES_DELETED, RESOURCES_RENAMED, ATTRIBUTES_CHANGED, REFRESH_RESOURCES
+    }
 
     // ========================================================================
     //
     // ========================================================================
 
-    public static VRSEvent createChildsAddedEvent(VRL optionalParent,VRL childs[])
-    {
-        VRSEvent event=new VRSEvent(VRSEventType.RESOURCES_ADDED);
-        event.parent=optionalParent;
-        event.resources=childs;
+    public static VRSEvent createChildsAddedEvent(VRL optionalParent, VRL childs[]) {
+        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_ADDED);
+        event.parent = optionalParent;
+        event.resources = childs;
         return event;
     }
 
-    public static VRSEvent createChildAddedEvent(VRL parent,VRL child)
-    {
-        VRL childs[]=new VRL[1];
-        childs[0]=child;
-        return createChildsAddedEvent(parent,childs);
+    public static VRSEvent createChildAddedEvent(VRL parent, VRL child) {
+        VRL childs[] = new VRL[1];
+        childs[0] = child;
+        return createChildsAddedEvent(parent, childs);
     }
 
-	public static VRSEvent createChildsDeletedEvent(VRL optionalParent,VRL childs[])
-    {
-        VRSEvent event=new VRSEvent(VRSEventType.RESOURCES_DELETED);
-        event.parent=optionalParent;
-        event.resources=childs;
+    public static VRSEvent createChildsDeletedEvent(VRL optionalParent, VRL childs[]) {
+        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_DELETED);
+        event.parent = optionalParent;
+        event.resources = childs;
         return event;
     }
 
-	public static VRSEvent createChildDeletedEvent(VRL optionalParent,VRL child)
-    {
-        VRSEvent event=new VRSEvent(VRSEventType.RESOURCES_DELETED);
-        event.parent=optionalParent;
-        event.resources=new VRL[1];
-        event.resources[0]=child;
+    public static VRSEvent createChildDeletedEvent(VRL optionalParent, VRL child) {
+        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_DELETED);
+        event.parent = optionalParent;
+        event.resources = new VRL[1];
+        event.resources[0] = child;
         return event;
     }
 
-	public static VRSEvent createNodesDeletedEvent(VRL nodeVrls[])
-    {
-        VRSEvent event=new VRSEvent(VRSEventType.RESOURCES_DELETED);
+    public static VRSEvent createNodesDeletedEvent(VRL nodeVrls[]) {
+        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_DELETED);
         // multi event without parent.
-        event.parent=null;
-        event.resources=nodeVrls;
+        event.parent = null;
+        event.resources = nodeVrls;
         return event;
     }
 
-    public static VRSEvent createRefreshEvent(VRL optionalParent, VRL res)
-    {
-        VRSEvent event=new VRSEvent(VRSEventType.REFRESH_RESOURCES);
-        event.parent=optionalParent;
-        event.resources=new VRL[1];
-        event.resources[0]=res;
+    public static VRSEvent createRefreshEvent(VRL optionalParent, VRL res) {
+        VRSEvent event = new VRSEvent(VRSEventType.REFRESH_RESOURCES);
+        event.parent = optionalParent;
+        event.resources = new VRL[1];
+        event.resources[0] = res;
         return event;
     }
 
-    public static VRSEvent createNodeRenamedEvent(VRL optParentVRL, VRL oldVrl,VRL newVrl)
-    {
-        VRSEvent event=new VRSEvent(VRSEventType.RESOURCES_RENAMED);
+    public static VRSEvent createNodeRenamedEvent(VRL optParentVRL, VRL oldVrl, VRL newVrl) {
+        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_RENAMED);
         // multi event with optional parent.
-        event.parent=optParentVRL;
-        event.resources=new VRL[]{oldVrl}; 
-        event.otherResources=new VRL[]{newVrl}; 
+        event.parent = optParentVRL;
+        event.resources = new VRL[] { oldVrl };
+        event.otherResources = new VRL[] { newVrl };
         return event;
     }
 
-	// ========================================================================
+    // ========================================================================
     //
     // ========================================================================
 
-	protected VRSEventType type;
+    protected VRSEventType type;
 
-	/** 
-	 * Optional parent resource.
-	 */
-	protected VRL parent;
+    /**
+     * Optional parent resource.
+     */
+    protected VRL parent;
 
-	/** 
-	 * Sources this event applies to
-	 */
-	protected VRL[] resources;
+    /**
+     * Sources this event applies to
+     */
+    protected VRL[] resources;
 
-	/** 
-     * Optional new resources, when specified otherResources[i] is the new VRL for resources[i]. 
+    /**
+     * Optional new resources, when specified otherResources[i] is the new VRL for resources[i].
      */
     protected VRL[] otherResources;
 
-	/** 
-	 * Optional attribute names involved
-	 */
-	protected String attributeNames[];
+    /**
+     * Optional attribute names involved
+     */
+    protected String attributeNames[];
 
-	protected VRSEvent(VRSEventType type)
-	{
-	    this.type=type;
-	}
+    protected VRSEvent(VRSEventType type) {
+        this.type = type;
+    }
 
-	public VRSEventType getType()
-	{
-		return this.type;
-	}
+    public VRSEventType getType() {
+        return this.type;
+    }
 
-	/** Resources this event applies to. */
-	public VRL[] getResources()
-	{
-		return this.resources;
-	}
+    /** Resources this event applies to. */
+    public VRL[] getResources() {
+        return this.resources;
+    }
 
-	/** Resources this event applies to. */
-    public VRL[] getOtherResources()
-    {
+    /** Resources this event applies to. */
+    public VRL[] getOtherResources() {
         return this.otherResources;
     }
+
     /**
-     * If the parent resource has been specified, it is the parent
-     * of all the resource from getResources()
+     * If the parent resource has been specified, it is the parent of all the resource from
+     * getResources()
      */
-	public VRL getParent()
-	{
-		return parent;
-	}
-
-	/** Attributes this event applies to if this is an Attribute Event */
-	public String[] getAttributeNames()
-	{
-		return this.attributeNames;
-	}
-
-	@Override
-    public String toString()
-	{
-	    return "DataSourceEvent:"+this.type+":(parent="+parent+", resources={"+flattenStr(resources)+"})";
-	}
-
-    private String flattenStr(VRL[] locs)
-    {
-        if (locs==null)
-            return "";
-
-        String str="";
-        for (int i=0;i<locs.length;i++)
-        {
-            str+=locs[i];
-            if (i+1<locs.length)
-                str+=",";
-        }
-
-        return str;
+    public VRL getParent() {
+        return parent;
     }
 
+    /** Attributes this event applies to if this is an Attribute Event */
+    public String[] getAttributeNames() {
+        return this.attributeNames;
+    }
 
+    @Override
+    public String toString() {
+        return "DataSourceEvent:" + this.type + ":(parent=" + parent + ", resources={" + flattenStr(resources) + "})";
+    }
 
+    private String flattenStr(VRL[] locs) {
+        if (locs == null)
+            return "";
+        String str = "";
+        for (int i = 0; i < locs.length; i++) {
+            str += locs[i];
+            if (i + 1 < locs.length)
+                str += ",";
+        }
+        return str;
+    }
 
 }

@@ -25,11 +25,11 @@ import java.io.OutputStream;
 import java.net.URI;
 
 /**
- * Shared interface for ResourceLoader, FSUtil and (VBrowser) VRS Resource Loaders. Provides methods to resolve relative
- * paths to absolute URIs and opening them for reading and writing.
+ * Shared interface for ResourceLoader, FSUtil and (VBrowser) VRS Resource Loaders. Provides methods
+ * to resolve relative paths to absolute URIs and opening them for reading and writing.
  */
-public interface ResourceProvider
-{
+public interface ResourceProvider {
+
     public java.net.URI resolvePathURI(String relpath) throws Exception;
 
     public OutputStream createOutputStream(URI uri) throws Exception;

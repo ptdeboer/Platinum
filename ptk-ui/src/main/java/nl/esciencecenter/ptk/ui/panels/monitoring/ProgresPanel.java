@@ -19,18 +19,17 @@
 // source:
 
 package nl.esciencecenter.ptk.ui.panels.monitoring;
+
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/** 
- * Progress Panel. 
- * Shows progress bar + percentage field + status fields and a mini ETA field. 
+/**
+ * Progress Panel. Shows progress bar + percentage field + status fields and a mini ETA field.
  */
-public class ProgresPanel extends javax.swing.JPanel 
-{
+public class ProgresPanel extends javax.swing.JPanel {
     private static final long serialVersionUID = 3420505823487373444L;
 
     //private JPanel miniButtonPnl;
@@ -38,33 +37,30 @@ public class ProgresPanel extends javax.swing.JPanel
     private JProgressBar progressBar;
     private JTextField timeTF;
     private JTextField progresPercTF;
-    private long todo=1000000;
-    
-    public ProgresPanel() 
-    {
+    private long todo = 1000000;
+
+    public ProgresPanel() {
         super();
         initGUI();
     }
-    
-    private void initGUI() 
-    {
-        try 
-        {
+
+    private void initGUI() {
+        try {
             FormLayout thisLayout = new FormLayout(
-                    "3dlu, 100dlu:grow, 5dlu, max(p;50dlu), 5dlu, max(p;24dlu), 3dlu", 
+                    "3dlu, 100dlu:grow, 5dlu, max(p;50dlu), 5dlu, max(p;24dlu), 3dlu",
                     "3dlu, max(p;10dlu), 3dlu, max(p;10dlu), 5dlu");
             this.setLayout(thisLayout);
             //this.setPreferredSize(new java.awt.Dimension(699, 70));
             {
                 progressBar = new JProgressBar();
                 this.add(progressBar, new CellConstraints("2, 2, 3, 1, default, default"));
-                progressBar.setMinimum(0); 
-                progressBar.setMaximum((int)todo); 
+                progressBar.setMinimum(0);
+                progressBar.setMaximum((int) todo);
             }
-//            {
-//                miniButtonPnl = new JPanel();
-//                this.add(miniButtonPnl, new CellConstraints("6, 1, 1, 1, default, default"));
-//            }
+            //            {
+            //                miniButtonPnl = new JPanel();
+            //                this.add(miniButtonPnl, new CellConstraints("6, 1, 1, 1, default, default"));
+            //            }
             {
                 progressTF = new JTextField();
                 this.add(progressTF, new CellConstraints("2, 4, 1, 1, default, default"));
@@ -80,43 +76,36 @@ public class ProgresPanel extends javax.swing.JPanel
                 this.add(timeTF, new CellConstraints("4, 4, 3, 1, default, default"));
                 timeTF.setText("<99:99:99s (99:99:99s)>");
             }
-        }
-        catch (Exception e) 
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    public void setTotal(int total)
-    {
-        this.todo=total; 
-        this.progressBar.setMinimum(0); 
+
+    public void setTotal(int total) {
+        this.todo = total;
+        this.progressBar.setMinimum(0);
         this.progressBar.setMaximum(total);
     }
-    
-    public void setProgress(long value)
-    {
-        double perc=((double)value)/((double)todo); 
-        setProgress(perc); 
-    }
-    
-    public void setProgress(double value)
-    {
-        this.progressBar.setValue((int)(value*todo));
-        // round to 99.99 
-        value=Math.round(value*10000.0)/100.0;  
-        this.progresPercTF.setText(""+value+"%  "); 
+
+    public void setProgress(long value) {
+        double perc = ((double) value) / ((double) todo);
+        setProgress(perc);
     }
 
-    public void setProgressText(String txt)
-    {
-        this.progressTF.setText(txt); 
+    public void setProgress(double value) {
+        this.progressBar.setValue((int) (value * todo));
+        // round to 99.99 
+        value = Math.round(value * 10000.0) / 100.0;
+        this.progresPercTF.setText("" + value + "%  ");
     }
-    
-    public void setTimeText(String txt)
-    {
-        this.timeTF.setText(txt); 
- 
+
+    public void setProgressText(String txt) {
+        this.progressTF.setText(txt);
     }
-   
+
+    public void setTimeText(String txt) {
+        this.timeTF.setText(txt);
+
+    }
+
 }

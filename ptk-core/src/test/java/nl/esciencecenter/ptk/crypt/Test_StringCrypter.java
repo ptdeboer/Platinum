@@ -31,9 +31,6 @@ import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
 import junit.framework.Assert;
-import nl.esciencecenter.ptk.crypt.CryptScheme;
-import nl.esciencecenter.ptk.crypt.Secret;
-import nl.esciencecenter.ptk.crypt.StringCrypter;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 import org.junit.Test;

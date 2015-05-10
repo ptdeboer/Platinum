@@ -38,22 +38,18 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
 
 import java.awt.dnd.DropTarget;
 
-public class NavigationBar extends JToolBar implements URIDropTargetLister
-{
+public class NavigationBar extends JToolBar implements URIDropTargetLister {
     private static final long serialVersionUID = -7147394442677763506L;
 
     public static final int LOCATION_ONLY = 1;
 
     public static final int LOCATION_AND_NAVIGATION = 2;
 
-    public static enum NavigationAction
-    {
+    public static enum NavigationAction {
         BROWSE_BACK, BROWSE_UP, BROWSE_FORWARD, REFRESH, LOCATION_EDITED, LOCATION_CHANGED;
 
-        public static NavigationAction valueOfOrNull(String str)
-        {
-            for (NavigationAction value : values())
-            {
+        public static NavigationAction valueOfOrNull(String str) {
+            for (NavigationAction value : values()) {
                 if (StringUtil.equals(value.toString(), str))
                     return value;
             }
@@ -85,40 +81,34 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
 
     private int barType = LOCATION_AND_NAVIGATION;
 
-    public NavigationBar()
-    {
+    public NavigationBar() {
         super(HORIZONTAL);
         init();
     }
 
-    public NavigationBar(int type)
-    {
+    public NavigationBar(int type) {
         super(HORIZONTAL);
         this.barType = type;
         init();
     }
 
-    private void init()
-    {
+    private void init() {
         initGui();
         this.setEnableNagivationButtons(false);
-        initDnD(); 
+        initDnD();
     }
 
     /** Add listener to text field only */
-    public void addTextFieldListener(ActionListener listener)
-    {
+    public void addTextFieldListener(ActionListener listener) {
         this.locationTextField.setTextActionListener(listener);
 
     }
 
     /**
-     * Add listener for navigation button if Enabled. If navigation buttons are
-     * not enabled before calling this method the refresh button will only be
-     * added to the refresh button.
+     * Add listener for navigation button if Enabled. If navigation buttons are not enabled before
+     * calling this method the refresh button will only be added to the refresh button.
      */
-    public void addNavigationButtonsListener(ActionListener listener)
-    {
+    public void addNavigationButtonsListener(ActionListener listener) {
         if (refreshButton != null)
             refreshButton.addActionListener(listener);
 
@@ -130,8 +120,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
         browseBack.addActionListener(listener);
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         JToolBar locationToolBar = this;
         JToolBar navigationToolBar = this;
 
@@ -140,8 +129,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
         // ==================
         // Navigation Buttons
         // ==================
-        if (this.getShowNavigationButtons())
-        {
+        if (this.getShowNavigationButtons()) {
             {
                 browseBack = new JButton();
                 navigationToolBar.add(browseBack);
@@ -182,7 +170,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
         {
             locationTextField = new ComboBoxIconTextPanel();
             locationToolBar.add(locationTextField);
-            locationTextField.setText("location:///",false);
+            locationTextField.setText("location:///", false);
             locationTextField.setComboActionCommand(NavigationAction.LOCATION_EDITED.toString());
             locationTextField.setComboEditedCommand(NavigationAction.LOCATION_CHANGED.toString());
 
@@ -191,21 +179,18 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
         }
     }
 
-    public void updateLocation(String location, boolean addToHistory)
-    {
-        this.locationTextField.setText(location,addToHistory);
+    public void updateLocation(String location, boolean addToHistory) {
+        this.locationTextField.setText(location, addToHistory);
     }
 
-    public void clearLocationHistory()
-    {
+    public void clearLocationHistory() {
         this.locationTextField.clearHistory();
     }
 
     /**
      * Enabled/disabled the navigation buttons. Disabled buttons appeares grey
      */
-    public void setEnableNagivationButtons(boolean enable)
-    {
+    public void setEnableNagivationButtons(boolean enable) {
         if (this.getShowNavigationButtons() == false)
             return;
 
@@ -214,8 +199,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
         this.browseUp.setEnabled(enable);
     }
 
-    public boolean getShowNavigationButtons()
-    {
+    public boolean getShowNavigationButtons() {
         if (this.barType == NavigationBar.LOCATION_ONLY)
             return false;
 
@@ -225,61 +209,51 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister
         return false;
     }
 
-    public void setLocationText(String txt,boolean addToHistory)
-    {
-        this.locationTextField.setText(txt,addToHistory);
+    public void setLocationText(String txt, boolean addToHistory) {
+        this.locationTextField.setText(txt, addToHistory);
     }
 
-    public static NavigationAction getNavigationCommand(String cmdStr)
-    {
+    public static NavigationAction getNavigationCommand(String cmdStr) {
         return NavigationAction.valueOfOrNull(cmdStr);
     }
 
-    public String getLocationText()
-    {
+    public String getLocationText() {
         return locationTextField.getText();
     }
 
-    public void setIcon(Icon icon)
-    {
+    public void setIcon(Icon icon) {
         this.locationTextField.setIcon(icon);
     }
 
-    public Icon loadIcon(String str)
-    {
+    public Icon loadIcon(String str) {
         URL res = getClass().getClassLoader().getResource(str);
         return new ImageIcon(res);
     }
 
-    /** 
-     * Adds default support for dropped URI and URls. 
+    /**
+     * Adds default support for dropped URI and URls.
      */
-    protected void initDnD()
-    {
-        DropTarget dt1=new DropTarget(); 
-        DropTarget dt2=new DropTarget(); 
+    protected void initDnD() {
+        DropTarget dt1 = new DropTarget();
+        DropTarget dt2 = new DropTarget();
 
         // enable toolbar and icontext field:  
         this.setDropTarget(dt1);
-        this.locationTextField.setDropTarget(dt2); 
-        
-        try
-        { 
+        this.locationTextField.setDropTarget(dt2);
+
+        try {
             dt1.addDropTargetListener(new URIDropHandler(this));
             dt2.addDropTargetListener(new URIDropHandler(this));
-        }
-        catch (TooManyListenersException e)
-        {
-            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e, "TooManyListenersException:"+e);
-        }
-    }
-    
-    public void notifyUriDrop(List<URI> uris)
-    {
-        if ((uris!=null) && (uris.size()>0)) 
-        {
-            this.updateLocation(uris.get(0).toString(),false);         
+        } catch (TooManyListenersException e) {
+            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e,
+                    "TooManyListenersException:" + e);
         }
     }
-    
+
+    public void notifyUriDrop(List<URI> uris) {
+        if ((uris != null) && (uris.size() > 0)) {
+            this.updateLocation(uris.get(0).toString(), false);
+        }
+    }
+
 }

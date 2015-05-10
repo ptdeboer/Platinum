@@ -23,7 +23,8 @@ package nl.esciencecenter.ptk.vbrowser.ui.attribute;
 
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 
-public interface AttributePanelListener
-{
+public interface AttributePanelListener {
+
     public abstract void notifyAttributeChanged(Attribute attr);
+
 }

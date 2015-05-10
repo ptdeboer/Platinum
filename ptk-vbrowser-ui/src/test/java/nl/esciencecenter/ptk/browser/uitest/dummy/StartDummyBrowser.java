@@ -27,45 +27,38 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class StartDummyBrowser
-{
+public class StartDummyBrowser {
     protected static BrowserPlatform platform = null;
 
-    public static BrowserPlatform getDummyPlatform()
-    {
-        if (platform == null)
-        {
+    public static BrowserPlatform getDummyPlatform() {
+        if (platform == null) {
             platform = BrowserPlatform.getInstance("dummy");
 
             ProxyFactory dummyFac = DummyProxyFactory.createFor(platform);
 
             platform.registerProxyFactory(dummyFac);
-            
+
             platform.getViewerRegistry().registerViewer(DummyViewer.class);
-            
+
         }
         return platform;
 
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
 
-        try
-        {
+        try {
             BrowserPlatform platform = getDummyPlatform();
-            
-            VRL vrl=new VRL("dummy:///"); 
-            
+
+            VRL vrl = new VRL("dummy:///");
+
             ProxyBrowserController frame = (ProxyBrowserController) platform.createBrowser();
-            ProxyFactory dummyFac = platform.getProxyFactoryFor(vrl); 
+            ProxyFactory dummyFac = platform.getProxyFactoryFor(vrl);
             ProxyNode root = dummyFac.openLocation("dummy:///");
 
             frame.setRoot(root, true, true);
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

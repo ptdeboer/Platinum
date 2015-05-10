@@ -15,7 +15,7 @@
  * 
  * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
  * ---
- */ 
+ */
 // source: 
 
 package nl.esciencecenter.ptk.browser.uitest.fsnode;
@@ -25,29 +25,24 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 
-public class StartFSNodeBrowser 
-{
- 
-	public static void main(String args[])
-	{
-		try 
-		{
-			BrowserPlatform platform=BrowserPlatform.getInstance("fstestbrowser"); 
-		    
-		    ProxyBrowserController frame=(ProxyBrowserController)platform.createBrowser();
-		    
-		    ProxyFactory fac = new FSNodeProxyFactory(platform); 
-		    
-		    platform.registerProxyFactory(fac); 
-		    
-			ProxyNode root = fac.openLocation("file:/home/");
-		
-			frame.setRoot(root,true,true); 
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		} 
-		
-	}
+public class StartFSNodeBrowser {
+
+    public static void main(String args[]) {
+        try {
+            BrowserPlatform platform = BrowserPlatform.getInstance("fstestbrowser");
+
+            ProxyBrowserController frame = (ProxyBrowserController) platform.createBrowser();
+
+            ProxyFactory fac = new FSNodeProxyFactory(platform);
+
+            platform.registerProxyFactory(fac);
+
+            ProxyNode root = fac.openLocation("file:/home/");
+
+            frame.setRoot(root, true, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

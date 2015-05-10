@@ -67,9 +67,8 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     private static final PLogger logger = PLogger.getLogger(HexViewer.class);
 
     // todo: UTF-8 Char Mapping
-    public final String specialCharMapping[] =
-    {
-            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // 00 - 0F
+    public final String specialCharMapping[] = { "", "", "", "", "", "", "", "", "", "", "", "",
+            "", "", "", "", // 00 - 0F
             "", "", "", "\u240d", "", "", "", "", "", "", "", "", "", "", "", "", // 10-1F
             "", "A", "B", "C", "D", "E", "F", "G", "", "", "", "", "", "", "", "", // 20
             "H", "I", "J", "K", "L", "M", "N", "O", "", "", "", "", "", "", "", "", // 30
@@ -98,25 +97,19 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     private static final long serialVersionUID = 4959020834564707156L;
 
     /** The mimetypes I can view */
-    private static String mimeTypes[] = {
-        "application/octet-stream",
-    };
+    private static String mimeTypes[] = { "application/octet-stream", };
 
     static private boolean default_show_font_toolbar = false;
 
-    public static enum UTFType
-    {
+    public static enum UTFType {
         UTF8, UTF16
     };
 
-    public static class UTFDecoder
-    {
-        public UTFDecoder()
-        {
+    public static class UTFDecoder {
+        public UTFDecoder() {
         };
 
-        public UTFDecoder(UTFType type)
-        {
+        public UTFDecoder(UTFType type) {
         };
     }
 
@@ -194,8 +187,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
     private ActionTask updateTask;
 
-    public void initGui()
-    {
+    public void initGui() {
         this.hexViewController = new HexViewController(this);
 
         {
@@ -282,7 +274,8 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
                 textArea.addKeyListener(hexViewController);
             }
             {
-                scrollbar = new JScrollBar(JScrollBar.VERTICAL, 0, getMinimumBytesPerLine() * this.maxRows, 0, 10240);
+                scrollbar = new JScrollBar(JScrollBar.VERTICAL, 0, getMinimumBytesPerLine()
+                        * this.maxRows, 0, 10240);
                 mainPanel.add(scrollbar, BorderLayout.EAST);
                 scrollbar.addAdjustmentListener(hexViewController);
                 scrollbar.setBlockIncrement(1024 - this.getMinimumBytesPerLine() * 2);
@@ -305,70 +298,56 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         initDnD();
     }
 
-    private void initDnD()
-    {
+    private void initDnD() {
         // DROP TARGET
         {
             DropTarget dropTarget = new DropTarget();
 
             // canvas can receive drop events;
             this.textArea.setDropTarget(dropTarget);
-            try
-            {
+            try {
                 dropTarget.addDropTargetListener(new URIDropHandler(this.hexViewController));
-            }
-            catch (TooManyListenersException e)
-            {
+            } catch (TooManyListenersException e) {
                 logger.errorPrintf("FIXME:TooManyListenersException:%s\n", e);
             }
         }
     }
 
     @Override
-    public void doInitViewer()
-    {
+    public void doInitViewer() {
         initGui();
     }
 
     @Override
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return "Binary Viewer";
     }
 
-    public void doStartViewer(VRL vrl, String optionalMethod)
-    {
+    public void doStartViewer(VRL vrl, String optionalMethod) {
         doUpdate(vrl);
         this.validate();
     }
 
-    public void doUpdate(final VRL loc)
-    {
+    public void doUpdate(final VRL loc) {
         debug("updateLocation:" + loc);
 
         if (loc == null)
             return;
 
-        this.updateTask = new ActionTask(null, "loading:" + getVRL())
-        {
+        this.updateTask = new ActionTask(null, "loading:" + getVRL()) {
 
             @Override
-            protected void doTask()
-            {
-                try
-                {
+            protected void doTask() {
+                try {
                     _reload(loc);
-                }
-                catch (Throwable t)
-                {
+                } catch (Throwable t) {
                     this.setException(t);
                     handle("failed to load:" + getVRL(), t);
                 }
             }
 
             @Override
-            public void stopTask()
-            {
+            public void stopTask() {
             }
         };
 
@@ -376,30 +355,22 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     }
 
     @Override
-    public void doStopViewer()
-    {
-        if (this.updateTask != null)
-        {
+    public void doStopViewer() {
+        if (this.updateTask != null) {
             updateTask.signalTerminate();
         }
     }
 
-    public void doDisposeViewer()
-    {
+    public void doDisposeViewer() {
         this.textArea = null;
         disposeReader();
     }
 
-    protected void disposeReader()
-    {
-        if (reader != null)
-        {
-            try
-            {
+    protected void disposeReader() {
+        if (reader != null) {
+            try {
                 reader.close();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             reader = null;
@@ -407,26 +378,22 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     }
 
     @Override
-    public String[] getMimeTypes()
-    {
+    public String[] getMimeTypes() {
         return mimeTypes;
     }
 
-    public void setText(String txt)
-    {
+    public void setText(String txt) {
         textArea.setText(txt);
     }
 
-    public String getText()
-    {
+    public String getText() {
         return textArea.getText();
     }
 
     /**
      * For binary dropped content.
      */
-    public void setContents(byte[] bytes)
-    {
+    public void setContents(byte[] bytes) {
         this.fileOffset = 0;
         this.offset = 0;
         this.buffer = bytes;
@@ -435,33 +402,26 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         redrawContents();
     }
 
-    public boolean isTool()
-    {
+    public boolean isTool() {
         return true;
     }
 
-    public String getClassification()
-    {
+    public String getClassification() {
         return "test/Viewers";
     }
 
-    public boolean haveOwnScrollPane()
-    {
+    public boolean haveOwnScrollPane() {
         return true;
     }
 
-    void redrawContents()
-    {
+    void redrawContents() {
         uiRedrawContents();
     }
 
-    void uiRedrawContents()
-    {
-        if (SwingUtilities.isEventDispatchThread() == false)
-        {
+    void uiRedrawContents() {
+        if (SwingUtilities.isEventDispatchThread() == false) {
             Runnable runner = new Runnable() {
-                public void run()
-                {
+                public void run() {
                     uiRedrawContents();
                 }
             };
@@ -470,8 +430,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         }
 
         // ASSERT
-        if (buffer == null)
-        {
+        if (buffer == null) {
             return;
         }
 
@@ -496,8 +455,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         String maxLenStr = Long.toHexString(length);
         startCharsString = maxLenStr.length() + 1 + (1 + 2 * getWordSize()) * nrWordsPerLine + 2;
 
-        while ((y < maxRows) && (index < length))
-        {
+        while ((y < maxRows) && (index < length)) {
             int bufferIndex = (int) (index - fileOffset); // index in buffer
 
             // Debug("index       ="+index);
@@ -505,8 +463,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
             linestr = getPosStr(index, maxLenStr.length()) + " ";
 
-            for (int j = 0; j < nrWordsPerLine; j++)
-            {
+            for (int j = 0; j < nrWordsPerLine; j++) {
                 linestr += hexStr(buffer, bufferIndex + j * getWordSize(), getWordSize()) + " ";
             }
 
@@ -531,8 +488,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         }
 
         // 0 contents
-        if (length == 0)
-        {
+        if (length == 0) {
             builder.setLength(0);
             builder.append(getPosStr(0, 8) + " ");
         }
@@ -547,8 +503,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         resetFocus();
     }
 
-    protected void updateSizes()
-    {
+    protected void updateSizes() {
         String maxLenStr = Long.toHexString(length);
 
         // ===============================================
@@ -558,10 +513,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
 
         Dimension targetSize = textArea.getSize();
         FontMetrics metrics = textArea.getFontMetrics(textArea.getFont());
-        char chars[] =
-        {
-            'w'
-        };
+        char chars[] = { 'w' };
         int charWidth = metrics.charsWidth(chars, 0, 1);
         int charHeight = metrics.getHeight();
         int maxLineChars = targetSize.width / (charWidth);
@@ -585,8 +537,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         if (scrollMax < 0)
             scrollMax = 0;
 
-        if (scrollMax >= Integer.MAX_VALUE)
-        {
+        if (scrollMax >= Integer.MAX_VALUE) {
             // Use upper value:
             this.scrollMutiplier = (scrollMax / Integer.MAX_VALUE) + 1;
             scrollMax = scrollMax / scrollMutiplier;
@@ -608,17 +559,13 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         this.lengthField.setText(getPosStr(length, maxLenStr.length()));
     }
 
-    protected void setScrollBarValue(long value)
-    {
+    protected void setScrollBarValue(long value) {
         // Bug: Fix disappearing ScrollBar if offset
         // note: if scrolbar value is exactly Integer.MIN_VALUE the scrollbar is not visible.
 
-        if (value >= Integer.MAX_VALUE)
-        {
+        if (value >= Integer.MAX_VALUE) {
             logger.errorPrintf("Offset exceeds Integer.MAX_VALUE:%d\n", value);
-        }
-        else if (value <= Integer.MIN_VALUE)
-        {
+        } else if (value <= Integer.MIN_VALUE) {
             logger.errorPrintf("Offset exceeds Integer.MIN_VALUE:%d\n,value");
         }
 
@@ -626,26 +573,22 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         this.scrollbar.setValue((int) value);
     }
 
-    protected void updateScrollBarRange(int min, long max, int blockIncrement, int unitIncrement)
-    {
-        if (max >= Integer.MAX_VALUE)
-        {
+    protected void updateScrollBarRange(int min, long max, int blockIncrement, int unitIncrement) {
+        if (max >= Integer.MAX_VALUE) {
             logger.errorPrintf("Maximum exceeds Integer.MAX_VALUE\n");
-        }
-        else if (max <= Integer.MIN_VALUE)
-        {
+        } else if (max <= Integer.MIN_VALUE) {
             logger.errorPrintf("Maximum exceeds Integer.MAX_VALUE\n");
         }
 
-        logger.infoPrintf("updateScrollBarRange(): range=[%d,%d], block,unit=[%d,%d]\n", min, max, blockIncrement, unitIncrement);
+        logger.infoPrintf("updateScrollBarRange(): range=[%d,%d], block,unit=[%d,%d]\n", min, max,
+                blockIncrement, unitIncrement);
         this.scrollbar.setMinimum(min);
         this.scrollbar.setMaximum((int) max);
         this.scrollbar.setBlockIncrement(blockIncrement);
         this.scrollbar.setUnitIncrement(unitIncrement);
     }
 
-    private String fillWithSpaces(String orgstr, int len)
-    {
+    private String fillWithSpaces(String orgstr, int len) {
         String newstr = new String(orgstr);
 
         for (int i = orgstr.length(); i < len; i++)
@@ -654,8 +597,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return newstr;
     }
 
-    private String getPosStr(long index, int maxLen)
-    {
+    private String getPosStr(long index, int maxLen) {
         // start of line:
         String posStr = Long.toHexString(index);
         posStr = "0x" + nulls(maxLen - posStr.length()) + posStr;
@@ -663,8 +605,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return posStr;
     }
 
-    private String nulls(int n)
-    {
+    private String nulls(int n) {
         // optimizations (?):
         if (n <= 0)
             return "";
@@ -695,12 +636,10 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     }
 
     // byte to hexstr !
-    public String hexStr(byte[] word, int offset, int wordSize)
-    {
+    public String hexStr(byte[] word, int offset, int wordSize) {
         String str = "";
 
-        for (int i = 0; (i < wordSize) && (offset + i < word.length); i++)
-        {
+        for (int i = 0; (i < wordSize) && (offset + i < word.length); i++) {
             int b = word[offset + i]; // Little Endian
 
             if (b < 0)
@@ -716,14 +655,11 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return str;
     }
 
-    public String decodeChars(byte buffer[], int start, int len, boolean plainBytes)
-    {
+    public String decodeChars(byte buffer[], int start, int len, boolean plainBytes) {
         String charStr = "";
 
-        if (plainBytes)
-        {
-            for (int i = start; (i < start + len) && (i < buffer.length); i++)
-            {
+        if (plainBytes) {
+            for (int i = start; (i < start + len) && (i < buffer.length); i++) {
                 charStr += charStr((int) buffer[i]);
             }
         }
@@ -731,23 +667,19 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return charStr;
     }
 
-    public String charStr(int val)
-    {
+    public String charStr(int val) {
         if (val < 0)
             val = val + 128;
 
-        if ((val < 0) || (val > 255))
-        {
+        if ((val < 0) || (val > 255)) {
             errorPrintf("Error: Character number out of bound:%d\n", val);
             return "?";
         }
 
         String str = null;
         str = specialCharMapping[val];
-        if ((val != 32) && StringUtil.equals(str, ""))
-        {
-            switch (val)
-            {
+        if ((val != 32) && StringUtil.equals(str, "")) {
+            switch (val) {
                 case 0:
                     str = " ";
                     break;
@@ -769,66 +701,54 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         return str;
     }
 
-    public void moveToOffset(final long offset)
-    {
-        if (this.offset == offset)
-        {
+    public void moveToOffset(final long offset) {
+        if (this.offset == offset) {
             logger.debugPrintf("Ignoring moveTo same offset:%d\n", offset);
             return;
         }
 
-        if (updateTask != null)
-        {
-            if (updateTask.isAlive())
-            {
+        if (updateTask != null) {
+            if (updateTask.isAlive()) {
                 logger.errorPrintf("FIXME: Already updating! Ignoring move to:%d\n", offset);
                 return;
             }
         }
 
-        this.updateTask = new ActionTask(null, "loading:" + getVRL())
-        {
+        this.updateTask = new ActionTask(null, "loading:" + getVRL()) {
 
             @Override
-            protected void doTask() throws VrsException
-            {
+            protected void doTask() throws VrsException {
                 _moveToOffset(offset);
             }
 
             @Override
-            public void stopTask()
-            {
+            public void stopTask() {
             }
         };
 
         updateTask.startTask();
     }
 
-    void debug(String msg)
-    {
+    void debug(String msg) {
         logger.debugPrintf("%s\n", msg);
     }
 
-    public void addOffset(int delta)
-    {
+    public void addOffset(int delta) {
         moveToOffset(offset + delta);
     }
 
-    public void updateFont(Font font, Map<?, ?> renderingHints)
-    {
+    public void updateFont(Font font, Map<?, ?> renderingHints) {
         // GuiSettings.updateRenderingHints(this, renderingHints); // useAntialising);
         textArea.setFont(font);
         redrawContents();
     }
 
     /** Resets focus to textArea for key commands */
-    public void resetFocus()
-    {
+    public void resetFocus() {
         textArea.requestFocus();
     }
 
-    public void toggleFontToolBar()
-    {
+    public void toggleFontToolBar() {
         if (this.fontToolBar.isVisible())
             this.fontToolBar.setVisible(false);
         else
@@ -852,49 +772,38 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
      * mappings=new Vector<ActionMenuMapping>(); mappings.add(mapping); return mappings; }
      */
 
-    public long getOffset()
-    {
+    public long getOffset() {
         return offset;
     }
 
-    void setWordSize(int wordSize)
-    {
+    void setWordSize(int wordSize) {
         this.wordSize = wordSize;
     }
 
-    int getWordSize()
-    {
+    int getWordSize() {
         return wordSize;
     }
 
-    void setMinimumBytesPerLine(int minimumBytesPerLine)
-    {
+    void setMinimumBytesPerLine(int minimumBytesPerLine) {
         this.minimumBytesPerLine = minimumBytesPerLine;
     }
 
-    int getMinimumBytesPerLine()
-    {
+    int getMinimumBytesPerLine() {
         return minimumBytesPerLine;
     }
 
-    public long getNrBytesPerLine()
-    {
+    public long getNrBytesPerLine() {
         return this.nrBytesPerLine;
     }
 
     @Override
-    public Map<String, List<String>> getMimeMenuMethods()
-    {
+    public Map<String, List<String>> getMimeMenuMethods() {
         // Use HashMapList to keep order of menu entries: first is default(!)
 
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
-        for (int i = 0; i < mimeTypes.length; i++)
-        {
-            List<String> list = new StringList(new String[]
-            {
-                "view:View Binary"
-            });
+        for (int i = 0; i < mimeTypes.length; i++) {
+            List<String> list = new StringList(new String[] { "view:View Binary" });
             mappings.put(mimeTypes[i], list);
         }
 
@@ -905,12 +814,10 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
     // IO Methods/backgrounded methods
     // ========================================================================
 
-    private synchronized void _reload(final VRL loc) throws IOException
-    {
+    private synchronized void _reload(final VRL loc) throws IOException {
         debug("_update:" + loc);
 
-        try
-        {
+        try {
             disposeReader();
 
             this.reader = this.getResourceHandler().createRandomReader(loc);
@@ -922,17 +829,13 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
             _readBuffer();
             redrawContents();
             _updateMagic();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
 
-    public void _moveToOffset(long value)
-    {
-        if (SwingUtilities.isEventDispatchThread())
-        {
+    public void _moveToOffset(long value) {
+        if (SwingUtilities.isEventDispatchThread()) {
             throw new Error("No IO during EventDispatchThread!");
         }
 
@@ -952,8 +855,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         // last
         // part of the file.
         if ((offset > this.fileOffset + buffer.length - this.nrBytesPerView)
-                && (fileOffset + this.maxBufferSize < length))
-        {
+                && (fileOffset + this.maxBufferSize < length)) {
 
             // read half buffer before and after current offset
             fileOffset = offset - maxBufferSize / 2;
@@ -965,8 +867,7 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         }
 
         // OR move buffer window down
-        if (offset < this.fileOffset)
-        {
+        if (offset < this.fileOffset) {
             // read half buffer before and after current offset
             fileOffset = offset - maxBufferSize / 2;
 
@@ -982,18 +883,15 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         redrawContents(); // (re)draw
     }
 
-    private void _readBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes)
-            throws IOException, VrsException
-    {
+    private void _readBytes(RandomReadable reader, long fileOffset, byte[] buffer,
+            int bufferOffset, int numBytes) throws IOException, VrsException {
         this.getResourceHandler().syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
     }
 
-    private synchronized void _readBuffer()
-    {
+    private synchronized void _readBuffer() {
         debug("readBuffer:" + offset);
 
-        if (reader == null)
-        {
+        if (reader == null) {
             // no vfile, set to defaults:
             fileOffset = 0;
             length = buffer.length;
@@ -1017,41 +915,31 @@ public class HexViewer extends EmbeddedViewer implements FontToolbarListener// ,
         debug("read buffer. buffer length =" + buffer.length);
 
         // fill buffer:
-        try
-        {
+        try {
             notifyBusy(true);
 
             this.setViewerTitle("Reading:" + getVRL());
             // new FileReader(vfile).read(fileOffset,buffer,0,len);
             _readBytes(reader, fileOffset, buffer, 0, len);
             this.setViewerTitle("Inspecting:" + getVRL());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             this.setViewerTitle("Error reading:" + getVRL());
             notifyException("Failed to read buffer", e);
-        }
-        finally
-        {
+        } finally {
             notifyBusy(false);
         }
     }
 
-    public void _updateMagic()
-    {
-        try
-        {
+    public void _updateMagic() {
+        try {
             String magic = MimeTypes.getDefault().getMagicMimeType(buffer);
             logger.infoPrintf("Magic Type=%s\n", magic);
             this.magicField.setText(magic);
-        }
-        catch (MagicMatchNotFoundException e)
-        {
-            logger.logException(PLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL().getPath());
+        } catch (MagicMatchNotFoundException e) {
+            logger.logException(PLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL()
+                    .getPath());
             // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.logException(PLogger.ERROR, e, "Exception when updating magic\n");
         }
 

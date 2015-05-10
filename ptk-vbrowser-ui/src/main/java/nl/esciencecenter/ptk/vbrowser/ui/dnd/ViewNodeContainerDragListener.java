@@ -35,26 +35,22 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Drag Gesture listener for ViewNodeComponents. Drag Recognized event comes
- * from the Global Drag Gesture Recognizer.
+ * Drag Gesture listener for ViewNodeComponents. Drag Recognized event comes from the Global Drag
+ * Gesture Recognizer.
  * 
- * This Drag listener checks and selects the actual selected ViewNode inside a
- * ViewNodeContainer.
+ * This Drag listener checks and selects the actual selected ViewNode inside a ViewNodeContainer.
  * 
  * @author Piter T. de Boer
  */
-public class ViewNodeContainerDragListener implements DragGestureListener
-{
+public class ViewNodeContainerDragListener implements DragGestureListener {
 
-    public ViewNodeContainerDragListener()
-    {
+    public ViewNodeContainerDragListener() {
         // no parent needed as this is installed on ViewNodeComponent only.
         // source Component of DragGestureEvent (getComponent) MUST be of this
         // type.
     }
 
-    public void dragGestureRecognized(DragGestureEvent dge)
-    {
+    public void dragGestureRecognized(DragGestureEvent dge) {
         // DnDUtil.errorPrintf("dragGestureRecognized:%s\n", dge);
         // DnD Stuff:
 
@@ -69,8 +65,7 @@ public class ViewNodeContainerDragListener implements DragGestureListener
 
         boolean multi = ((dge.getTriggerEvent().getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0);
 
-        if ((comp instanceof ViewNodeComponent) == false)
-        {
+        if ((comp instanceof ViewNodeComponent) == false) {
             DnDUtil.errorPrintf(this.getClass() + ":Actual component is not a ViewNode:%s\n", comp);
             return;
         }
@@ -84,23 +79,19 @@ public class ViewNodeContainerDragListener implements DragGestureListener
             DnDUtil.debugPrintf("Drag from ViewNode!:%s\n", node.getViewNode().getVRL());
 
             // Redirect Drag Selection to Parent to enable multi-select.
-            if (parent != null)
-            {
+            if (parent != null) {
                 if (multi == true)
                     // When starting a multi selected drage: Include CURRENT
                     // Selection.
                     parent.setNodeSelection(node.getViewNode(), true);
-                else
-                {
+                else {
                     // Unselect ALL if a drag is started WIHTOUT the CTRL
                     // modifier
                     parent.clearNodeSelection();
                     // update to single selection:
                     parent.setNodeSelection(node.getViewNode(), true);
                 }
-            }
-            else
-            {
+            } else {
                 // single ViewNode component:
             }
         }
@@ -111,18 +102,14 @@ public class ViewNodeContainerDragListener implements DragGestureListener
 
         // Swing way to initiate a Drag:
         TransferHandler trans = comp.getTransferHandler();
-        if (trans != null)
-        {
+        if (trans != null) {
             trans.exportAsDrag(comp, trigger, DnDConstants.ACTION_COPY);
-        }
-        else
-        {
+        } else {
             DnDUtil.errorPrintf("***Fatal: NULL TransferHandler for:%s\n" + comp);
         }
     }
 
-    private Cursor selectCursor(int action)
-    {
+    private Cursor selectCursor(int action) {
         return (action == DnDConstants.ACTION_MOVE) ? DragSource.DefaultMoveDrop
                 : DragSource.DefaultCopyDrop;
     }

@@ -34,23 +34,21 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class DummyProxyNode extends ProxyNode
-{
+public class DummyProxyNode extends ProxyNode {
     static private Presentation dummyPresentation;
 
     static private StringList attrNames = null;
 
-    static
-    {
+    static {
         attrNames = new StringList(new String[] { "attr1", "attr2", "attr3", "attr4" });
 
         dummyPresentation = Presentation.createDefault();
-        
-        for (int i = 0; i < attrNames.size(); i++)
-        {
-            dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[] { 42, 42 + i * 42, 42 + 4 * 42 });
+
+        for (int i = 0; i < attrNames.size(); i++) {
+            dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[] { 42,
+                    42 + i * 42, 42 + 4 * 42 });
         }
-        
+
         dummyPresentation.setPreferredContentAttributeNames(attrNames);
     }
 
@@ -64,74 +62,62 @@ public class DummyProxyNode extends ProxyNode
 
     private String mimetype = "text/plain";
 
-    private String logicalName="<None>"; 
-    
-    protected DummyProxyNode createChild(String childName)
-    {
-        return new DummyProxyNode(this, getVRL().appendPath(childName),childName);
+    private String logicalName = "<None>";
+
+    protected DummyProxyNode createChild(String childName) {
+        return new DummyProxyNode(this, getVRL().appendPath(childName), childName);
     }
 
-    public DummyProxyNode(DummyProxyFactory dummyProxyFactory, VRL locator,String name)
-    {
+    public DummyProxyNode(DummyProxyFactory dummyProxyFactory, VRL locator, String name) {
         super(dummyProxyFactory, locator);
         this.parent = null;
-        this.logicalName=name; 
+        this.logicalName = name;
     }
 
-    protected DummyProxyNode(DummyProxyNode parent, VRL locator,String name)
-    {
+    protected DummyProxyNode(DummyProxyNode parent, VRL locator, String name) {
         super(parent.getProxyFactory(), locator);
         this.parent = parent;
-        this.logicalName=name; 
+        this.logicalName = name;
         init();
     }
 
-    private void init()
-    {
-        logicalName="DummyProxy:" + this.getID();
+    private void init() {
+        logicalName = "DummyProxy:" + this.getID();
     }
-    
+
     @Override
-    public boolean isBusy()
-    {
+    public boolean isBusy() {
         return false;
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return logicalName;
     }
 
     @Override
-    public boolean hasChildren()
-    {
+    public boolean hasChildren() {
         return true;
     }
 
     @Override
-    public boolean isComposite()
-    {
+    public boolean isComposite() {
         return isComposite;
     }
 
     @Override
-    protected ProxyNode doGetParent() throws ProxyException
-    {
+    protected ProxyNode doGetParent() throws ProxyException {
         return getProxyFactory().doOpenLocation(this.locator.getParent());
     }
 
     @Override
-    public String getMimeType()
-    {
+    public String getMimeType() {
         return this.mimetype;
     }
 
     @Override
-    public List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft)
-    {
-        if (childs == null)
-        {
+    public List<? extends ProxyNode> doGetChilds(int offset, int range, LongHolder numChildsLeft) {
+        if (childs == null) {
 
             childs = new ArrayList<DummyProxyNode>();
             childs.add(createChild("child-" + id + ".1"));
@@ -153,59 +139,49 @@ public class DummyProxyNode extends ProxyNode
     }
 
     @Override
-    protected String doGetMimeType() throws ProxyException
-    {
+    protected String doGetMimeType() throws ProxyException {
         return this.mimetype;
     }
 
     @Override
-    protected boolean doGetIsComposite() throws ProxyException
-    {
+    protected boolean doGetIsComposite() throws ProxyException {
         return this.isComposite;
     }
 
     @Override
-    protected String doGetName()
-    {
+    protected String doGetName() {
         return this.getVRL().getBasename();
     }
 
     @Override
-    protected String doGetResourceType()
-    {
+    protected String doGetResourceType() {
         return "DummyType";
     }
 
     @Override
-    protected String doGetResourceStatus()
-    {
+    protected String doGetResourceStatus() {
         return "NOP";
     }
 
     @Override
-    protected List<String> doGetChildTypes()
-    {
+    protected List<String> doGetChildTypes() {
         return new StringList("DummyType");
     }
 
     @Override
-    protected List<String> doGetAttributeNames() throws ProxyException
-    {
+    protected List<String> doGetAttributeNames() throws ProxyException {
         return attrNames.clone();
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(String[] names) throws ProxyException
-    {
-        if (names==null)
-        {
-            return null; 
+    protected List<Attribute> doGetAttributes(String[] names) throws ProxyException {
+        if (names == null) {
+            return null;
         }
-        
+
         ArrayList<Attribute> attrs = new ArrayList<Attribute>(names.length);
 
-        for (int i = 0; i < names.length; i++)
-        {
+        for (int i = 0; i < names.length; i++) {
             attrs.add(new Attribute(names[i], "Value:" + names[i]));
         }
 
@@ -214,79 +190,67 @@ public class DummyProxyNode extends ProxyNode
     }
 
     @Override
-    protected Presentation doGetPresentation()
-    {
+    protected Presentation doGetPresentation() {
         return dummyPresentation;
     }
 
     @Override
-    protected String doGetIconURL(String status, int size) throws ProxyException
-    {
+    protected String doGetIconURL(String status, int size) throws ProxyException {
         return null;
     }
 
     @Override
-    protected boolean doIsResourceLink()
-    {
+    protected boolean doIsResourceLink() {
         return false;
     }
 
     @Override
-    protected VRL doGetResourceLinkVRL()
-    {
+    protected VRL doGetResourceLinkVRL() {
         return null;
     }
 
     @Override
-    protected DummyProxyNode doCreateNew(String type, String optNewName) throws ProxyException
-    {   
-        DummyProxyNode node; 
-        node=createChild(optNewName); 
-        childs.add(node); 
+    protected DummyProxyNode doCreateNew(String type, String optNewName) throws ProxyException {
+        DummyProxyNode node;
+        node = createChild(optNewName);
+        childs.add(node);
         return node;
     }
 
     @Override
-    protected void doDelete(boolean recurse) throws ProxyException
-    {
-        if (recurse)
-        {
-            throw new ProxyException("Recursive delete not implemented"); 
+    protected void doDelete(boolean recurse) throws ProxyException {
+        if (recurse) {
+            throw new ProxyException("Recursive delete not implemented");
         }
-        
-        if (parent!=null)
-        {
+
+        if (parent != null) {
             parent.deleteChild(this);
         }
     }
 
-    protected void deleteChild(DummyProxyNode node)
-    {
-        this.childs.remove(node); 
-    }
-    
-    @Override
-    protected ProxyNode doRenameTo(String name) throws ProxyException
-    {
-       this.logicalName=name; 
-       return this;
+    protected void deleteChild(DummyProxyNode node) {
+        this.childs.remove(node);
     }
 
     @Override
-    protected boolean doExists() throws ProxyException
-    {
+    protected ProxyNode doRenameTo(String name) throws ProxyException {
+        this.logicalName = name;
+        return this;
+    }
+
+    @Override
+    protected boolean doExists() throws ProxyException {
         return true;
     }
 
     @Override
-    protected ResourceConfigInfo doGetResourceConfigInfo() throws ProxyException
-    {
-        return new DummyConfigInfo(this); 
+    protected ResourceConfigInfo doGetResourceConfigInfo() throws ProxyException {
+        return new DummyConfigInfo(this);
     }
 
     @Override
-    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) throws ProxyException
-    {
+    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info)
+            throws ProxyException {
         return null;
     }
 

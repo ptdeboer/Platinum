@@ -29,13 +29,12 @@ import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Interface for Viewers which are Custom "Tools". These viewers will appears under the "Tools" menu and optionally have
- * their own ToolBar.
+ * Interface for Viewers which are Custom "Tools". These viewers will appears under the "Tools" menu
+ * and optionally have their own ToolBar.
  */
-public interface ToolPlugin
-{
+public interface ToolPlugin {
 
-    /** 
+    /**
      * @return Tool Name to use in menus. Might be different then ViewerName.
      */
     public String getToolName();
@@ -46,31 +45,33 @@ public interface ToolPlugin
     public boolean addToToolMenu();
 
     /**
-     * @return Menu path to appear under "Tools" menu of the browser. For example {"util","binary viewers"}.
+     * @return Menu path to appear under "Tools" menu of the browser. For example
+     *         {"util","binary viewers"}.
      */
     public String[] getToolMenuPath();
 
     /**
-     * @return Toolbar name to group other tools to the same ToolBar if createToolBar() is true. If null, no toolbar will be
-     * created.
+     * @return Toolbar name to group other tools to the same ToolBar if createToolBar() is true. If
+     *         null, no toolbar will be created.
      */
     public String toolBarName();
 
     /**
      * @return Default method name to use when the viewer is started from the Tool Menu. see
-     * {@link EmbeddedViewer#startViewerFor(VRL, String)}
+     *         {@link EmbeddedViewer#startViewerFor(VRL, String)}
      */
     public String defaultToolMethod();
 
     /**
-     * @return Return custom tool Icon. Parameter size indicates minimum size of icon. Icons are automatically resized to fit
-     * the menu or Toolbar.<br>
-     * To avoid upscaling of the icon return at least an icon with a Height &gt; size and Width &gt; size.
+     * @return Return custom tool Icon. Parameter size indicates minimum size of icon. Icons are
+     *         automatically resized to fit the menu or Toolbar.<br>
+     *         To avoid upscaling of the icon return at least an icon with a Height &gt; size and
+     *         Width &gt; size.
      */
     public Icon getToolIcon(int size);
 
     /**
      * @return Returns the mapping of a MenuMapping to a list of menu methods.<br>
      */
-    public List<Pair<MenuMapping,List<String>>> getMenuMappings();
+    public List<Pair<MenuMapping, List<String>>> getMenuMappings();
 }

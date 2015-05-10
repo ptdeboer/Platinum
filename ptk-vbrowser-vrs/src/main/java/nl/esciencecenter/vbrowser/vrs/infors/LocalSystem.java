@@ -22,8 +22,9 @@ package nl.esciencecenter.vbrowser.vrs.infors;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.FSPath;
@@ -39,50 +40,41 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Fixed LocalSystem node.
  */
-public class LocalSystem extends InfoRSPathNode
-{
+public class LocalSystem extends InfoRSPathNode {
+
     protected FSUtil fsUtil = null;
 
     private InfoResourceNode homeNode;
 
-    public LocalSystem(InfoRootNode infoRootNode) throws VrsException
-    {
+    public LocalSystem(InfoRootNode infoRootNode) throws VrsException {
         super(infoRootNode, InfoRSConstants.LOCALSYSTEM, InfoRS.createPathVRL(InfoRSConstants.LOCALSYSTEM));
         fsUtil = FSUtil.getDefault();
         initChilds();
     }
 
-    public String getIconURL(int size)
-    {
+    public String getIconURL(int size) {
         return "info/system-128.png";
     }
 
-    protected void initChilds() throws VrsException
-    {
+    protected void initChilds() throws VrsException {
         initSubNodes();
         initHome();
         initDrives();
     }
 
-    public InfoResourceNode getHomeNode() throws VrsException
-    {
-        if (this.homeNode == null)
-        {
+    public InfoResourceNode getHomeNode() throws VrsException {
+        if (this.homeNode == null) {
             homeNode = initHome();
         }
         return homeNode;
     }
 
-    protected InfoResourceNode initHome() throws VrsException
-    {
+    protected InfoResourceNode initHome() throws VrsException {
         FSPath home;
-        try
-        {
+        try {
             home = fsUtil.getUserHomeDir();
-        }
-        catch (IOException e)
-        {
-          throw new VrsIOException(e.getMessage(),e); 
+        } catch (IOException e) {
+            throw new VrsIOException(e.getMessage(), e);
         }
 
         URI uri = home.getURI();
@@ -94,16 +86,12 @@ public class LocalSystem extends InfoRSPathNode
         return homeNode;
     }
 
-    protected void initDrives() throws VrsException
-    {
-        List<FSPath> roots; 
-        
+    protected void initDrives() throws VrsException {
+        List<FSPath> roots;
         roots = fsUtil.listRoots();
-                
         int index = 0;
 
-        for (FSPath root : roots)
-        {
+        for (FSPath root : roots) {
             URI uri = root.getURI();
             VRL vrl = new VRL(uri);
 
@@ -115,71 +103,60 @@ public class LocalSystem extends InfoRSPathNode
         }
     }
 
-    protected InfoResourceNode createSubPathLinkNode(String subPath, VRL targetVrl, String name, String iconUrl) throws VRLSyntaxException
-    {
-        InfoResourceNode node = InfoResourceNode.createSubPathLinkNode(this, subPath,  name, targetVrl, iconUrl, true); 
+    protected InfoResourceNode createSubPathLinkNode(String subPath, VRL targetVrl, String name, String iconUrl)
+            throws VRLSyntaxException {
+        InfoResourceNode node = InfoResourceNode.createSubPathLinkNode(this, subPath, name, targetVrl, iconUrl, true);
         return node;
     }
 
-    public List<AttributeDescription> getAttributeDescriptions() throws VrsException
-    {
-        List<AttributeDescription> descs = super.getAttributeDescriptions();
-        List<AttributeDescription> resourceAttrs = getResourceAttrDescriptions();
-        descs.addAll(resourceAttrs);
+    public Map<String, AttributeDescription> getAttributeDescriptions() throws VrsException {
+        Map<String, AttributeDescription> descs = super.getAttributeDescriptions();
+        Map<String, AttributeDescription> resourceAttrs = getResourceAttrDescriptions();
+        descs.putAll(resourceAttrs);
 
         return descs;
     }
 
-    public List<AttributeDescription> getResourceAttrDescriptions()
-    {
-        ArrayList<AttributeDescription> descs = new ArrayList<AttributeDescription>();
-        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_OSTYPE, AttributeType.STRING, false, "LocalSystem OS Type"));
-        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_OSVERSION, AttributeType.STRING, false, "LocalSystem OS Version"));
-        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_ARCHTYPE, AttributeType.STRING, false, "LocalSystem Architecture"));
-        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_HOMEDIR, AttributeType.STRING, false,
-                "LocalSystem user home directory"));
-        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_JREHOME, AttributeType.STRING, false, "LocalSystem JRE home"));
-        descs.add(new AttributeDescription(InfoRSConstants.LOCALSYSTEM_JREVERSION, AttributeType.STRING, false, "LocalSystem JRE Version"));
+    public Map<String, AttributeDescription> getResourceAttrDescriptions() {
+        LinkedHashMap<String, AttributeDescription> descs = new LinkedHashMap<String, AttributeDescription>();
+
+        descs.put(InfoRSConstants.LOCALSYSTEM_OSNAME, new AttributeDescription(InfoRSConstants.LOCALSYSTEM_OSNAME,
+                AttributeType.STRING, false, "LocalSystem OS Type"));
+        descs.put(InfoRSConstants.LOCALSYSTEM_OSVERSION, new AttributeDescription(
+                InfoRSConstants.LOCALSYSTEM_OSVERSION, AttributeType.STRING, false, "LocalSystem OS Version"));
+        descs.put(InfoRSConstants.LOCALSYSTEM_OSARCH, new AttributeDescription(InfoRSConstants.LOCALSYSTEM_OSARCH,
+                AttributeType.STRING, false, "LocalSystem Architecture"));
+        descs.put(InfoRSConstants.LOCALSYSTEM_HOMEDIR, new AttributeDescription(InfoRSConstants.LOCALSYSTEM_HOMEDIR,
+                AttributeType.STRING, false, "LocalSystem user home directory"));
+        descs.put(InfoRSConstants.LOCALSYSTEM_JAVAHOME, new AttributeDescription(InfoRSConstants.LOCALSYSTEM_JAVAHOME,
+                AttributeType.STRING, false, "LocalSystem JRE home"));
+        descs.put(InfoRSConstants.LOCALSYSTEM_JAVAVERSION, new AttributeDescription(
+                InfoRSConstants.LOCALSYSTEM_JAVAVERSION, AttributeType.STRING, false, "LocalSystem JRE Version"));
         return descs;
     }
 
-    public Attribute getResourceAttribute(String name) throws VrsException
-    {
-        if (name == null)
-        {
+    public Attribute getResourceAttribute(String name) throws VrsException {
+        if (name == null) {
             return null;
         }
-        
+
         Attribute attr = super.getResourceAttribute(name);
-        if (attr != null)
-        {
+        if (attr != null) {
             return attr;
         }
-            
-        if (name.equals(InfoRSConstants.LOCALSYSTEM_OSTYPE))
-        {
+
+        if (name.equals(InfoRSConstants.LOCALSYSTEM_OSNAME)) {
             attr = new Attribute(name, GlobalProperties.getOsName());
-        }
-        else if (name.equals(InfoRSConstants.LOCALSYSTEM_ARCHTYPE))
-        {
+        } else if (name.equals(InfoRSConstants.LOCALSYSTEM_OSARCH)) {
             attr = new Attribute(name, GlobalProperties.getOsArch());
-        }
-        else if (name.equals(InfoRSConstants.LOCALSYSTEM_OSVERSION))
-        {
+        } else if (name.equals(InfoRSConstants.LOCALSYSTEM_OSVERSION)) {
             attr = new Attribute(name, GlobalProperties.getOsVersion());
-        }
-        else if (name.equals(InfoRSConstants.LOCALSYSTEM_JREHOME))
-        {
+        } else if (name.equals(InfoRSConstants.LOCALSYSTEM_JAVAHOME)) {
             attr = new Attribute(name, GlobalProperties.getJavaHome());
-        }
-        else if (name.equals(InfoRSConstants.LOCALSYSTEM_JREVERSION))
-        {
+        } else if (name.equals(InfoRSConstants.LOCALSYSTEM_JAVAVERSION)) {
             attr = new Attribute(name, GlobalProperties.getJavaVersion());
-        }
-        else if (name.equals(InfoRSConstants.LOCALSYSTEM_HOMEDIR))
-        {
-            String path = this.getHomeNode().getVRL().getPath();
-            attr = new Attribute(name, path);
+        } else if (name.equals(InfoRSConstants.LOCALSYSTEM_HOMEDIR)) {
+            attr = new Attribute(name, GlobalProperties.getGlobalUserHome());
         }
 
         return attr;

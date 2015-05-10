@@ -20,7 +20,9 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -45,31 +47,26 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Browser Platform. Typically one Platform instance per application environment is created.
  */
-public class BrowserPlatform
-{
+public class BrowserPlatform {
+
     private static PLogger logger = PLogger.getLogger(BrowserPlatform.class);
 
     private static Map<String, BrowserPlatform> platforms = new Hashtable<String, BrowserPlatform>();
 
     /**
-     * Get specific BrowserPlatform. Multiple browser platforms may be register/created in one single JVM.
+     * Get specific BrowserPlatform. Multiple browser platforms may be register/created in one
+     * single JVM.
      */
-    public static BrowserPlatform getInstance(String ID)
-    {
+    public static BrowserPlatform getInstance(String ID) {
         BrowserPlatform instance;
 
-        synchronized (platforms)
-        {
+        synchronized (platforms) {
             instance = platforms.get(ID);
 
-            if (instance == null)
-            {
-                try
-                {
+            if (instance == null) {
+                try {
                     instance = new BrowserPlatform(ID);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     logger.errorPrintf("FATAL: Could not initialize browser platform:'%s'!\n", ID);
                     logger.logException(PLogger.FATAL, e, "Exception during initialization:%s\n", e);
                 }
@@ -102,13 +99,13 @@ public class BrowserPlatform
 
     private ViewerEventDispatcher viewerEventDispatcher;
 
-    protected BrowserPlatform(String id) throws Exception
-    {
+    private List<ProxyBrowserController> browsers = new ArrayList<ProxyBrowserController>();
+
+    protected BrowserPlatform(String id) throws Exception {
         init(id);
     }
 
-    private void init(String id) throws Exception
-    {
+    private void init(String id) throws Exception {
         this.platformID = id;
         // init defaults:
         this.proxyRegistry = ProxyFactoryRegistry.createInstance();
@@ -133,61 +130,54 @@ public class BrowserPlatform
         // Init Viewers and ViewerPlugins.
         // ===================================
 
-        this.viewerEventDispatcher=new ViewerEventDispatcher(true); 
+        this.viewerEventDispatcher = new ViewerEventDispatcher(true);
         initViewers();
     }
 
-    protected void initVRSContext(VRL cfgDir) throws Exception
-    {
+    protected void initVRSContext(VRL cfgDir) throws Exception {
         VRSProperties props = new VRSProperties("VRSBrowserProperties");
         this.vrsContext = new VRSContext(props);
         this.vrsClient = new VRSClient(getVRSContext());
     }
 
-    public void setPersistantConfigLocation(VRL configHome, boolean persistantConfig)
-    {
-        vrsContext.setPersistantConfigLocation(configHome, persistantConfig);
+    public void setPersistantConfigLocation(VRL configHome, boolean enablePersistantConfig) {
+        vrsContext.setPersistantConfigLocation(configHome, enablePersistantConfig);
     }
 
     /**
-     * @return persistent configuration directory where to store properties for example '$HOME/.mypropertiesrc/'. <br>
+     * @return persistent configuration directory where to store properties for example
+     *         '$HOME/.mypropertiesrc/'. <br>
      *         Is null for non persistent platforms.
      */
-    public VRL getPersistantConfigLocation()
-    {
+    public VRL getPersistantConfigLocation() {
         return vrsContext.getPersistantConfigLocation();
     }
 
-    protected void initViewers() throws Exception
-    {
+    protected void initViewers() throws Exception {
         // create custom sub-directory for viewer settings. 
-        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient, createCustomConfigDir("viewers"));
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient,
+                createCustomConfigDir("viewers"));
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
     }
 
-    public VRSContext getVRSContext()
-    {
+    public VRSContext getVRSContext() {
         return vrsContext;
     }
 
-    public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception
-    {
+    public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception {
         vrsContext.getRegistry().registerFactory(clazz);
     }
 
-    public String getPlatformID()
-    {
+    public String getPlatformID() {
         return platformID;
     }
 
-    public ProxyFactory getProxyFactoryFor(VRL locator)
-    {
+    public ProxyFactory getProxyFactoryFor(VRL locator) {
         return this.proxyRegistry.getProxyFactoryFor(locator);
     }
 
-    public BrowserInterface createBrowser()
-    {
+    public BrowserInterface createBrowser() {
         return createBrowser(true);
     }
 
@@ -198,21 +188,18 @@ public class BrowserPlatform
      *            - show browser frame.
      * @return Master browser controller interface.
      */
-    public BrowserInterface createBrowser(boolean show)
-    {
-        return new ProxyBrowserController(this, show);
+    public BrowserInterface createBrowser(boolean show) {
+        return register(new ProxyBrowserController(this, show));
     }
 
-    public void registerProxyFactory(ProxyFactory factory)
-    {
+    public void registerProxyFactory(ProxyFactory factory) {
         this.proxyRegistry.registerProxyFactory(factory);
     }
 
     /**
      * Returns Internal Browser DnD TransferHandler for DnDs between ViewNodeComponents.
      */
-    public TransferHandler getTransferHandler()
-    {
+    public TransferHandler getTransferHandler() {
         // default;
         return DnDUtil.getDefaultTransferHandler();
     }
@@ -220,17 +207,14 @@ public class BrowserPlatform
     /**
      * @return Viewer and other plug-in registry for this platform.
      */
-    public PluginRegistry getViewerRegistry()
-    {
+    public PluginRegistry getViewerRegistry() {
         return viewerRegistry;
     }
 
-    public VRL createCustomConfigDir(String subPath) throws Exception
-    {
+    public VRL createCustomConfigDir(String subPath) throws Exception {
         VRL configDir = this.vrsContext.getPersistantConfigLocation();
 
-        if (configDir == null)
-        {
+        if (configDir == null) {
             return null;
         }
 
@@ -240,44 +224,71 @@ public class BrowserPlatform
     /**
      * @return Icon Factory for this platform.
      */
-    public IconProvider getIconProvider()
-    {
+    public IconProvider getIconProvider() {
         return iconProvider;
     }
 
-    public UIProperties getGuiSettings()
-    {
+    public UIProperties getGuiSettings() {
         return guiSettings;
     }
 
     /**
-     * Cross-platform event notifier. If all platform use URI (VRL) based events, these events can be shared across
-     * implementations.
+     * Cross-platform event notifier. If all platform use URI (VRL) based events, these events can
+     * be shared across implementations.
      * 
      * @return The global cross-platform VRSEventNotifier.
      */
-    public VRSEventNotifier getVRSEventNotifier()
-    {
+    public VRSEventNotifier getVRSEventNotifier() {
         return VRSEventNotifier.getInstance();
     }
 
-    /** 
-     * Generic ViewerEvent dispatcher. 
+    /**
+     * Generic ViewerEvent dispatcher.
      */
-    public ViewerEventDispatcher getViewerEventDispatcher() 
-    {
-        return this.viewerEventDispatcher; 
+    public ViewerEventDispatcher getViewerEventDispatcher() {
+        return this.viewerEventDispatcher;
     }
-    
+
+    protected ProxyBrowserController register(ProxyBrowserController browser) {
+        logger.info("{}:register():{}", this, browser);
+        this.browsers.add(browser);
+        return browser;
+    }
+
+    protected void unregister(ProxyBrowserController browser) {
+        logger.info("{}:unregister():{}", this, browser);
+        this.browsers.remove(browser);
+        if (this.browsers.size() <= 0) {
+            logger.info(">>> Closed *last* browser for this Platform:{}", this.getPlatformID());
+            shutDown();
+        }
+    }
+
     // ==============  
     // Dispose
     // ==============
-    
-    public void dispose()
-    {
-        this.viewerEventDispatcher.stop(); 
-        this.viewerEventDispatcher.dispose(); 
-        
+
+    /**
+     * Perform graceful shutdown.
+     */
+    public void shutDown() {
+        dispose();
     }
-    
+
+    /**
+     * Immediately close and dipose all registered resources;
+     */
+    public void dispose() {
+        vrsClient.dispose();
+        vrsContext.dispose();
+        this.vrsClient = null;
+        this.viewerEventDispatcher.stop();
+        this.viewerEventDispatcher.dispose();
+        vrsClient = null;
+        vrsContext = null;
+    }
+
+    public String toString() {
+        return "BrowserPlatform:[platformID='" + this.platformID + "']";
+    }
 }

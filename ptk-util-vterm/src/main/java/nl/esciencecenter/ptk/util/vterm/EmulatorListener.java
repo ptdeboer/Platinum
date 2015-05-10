@@ -20,18 +20,16 @@
 
 package nl.esciencecenter.ptk.util.vterm;
 
-public interface EmulatorListener 
-{
-	/** When and Xterm Graph Mode update was received */ 
-	void notifyGraphMode(int type, String arg); 
+public interface EmulatorListener {
+    /** When and Xterm Graph Mode update was received */
+    void notifyGraphMode(int type, String arg);
 
-	/** When the Characted has changed */ 
-	void notifyCharSet(String charSet);
+    /** When the Characted has changed */
+    void notifyCharSet(String charSet);
 
-	/**
-	 * Is send AFTER the terminal has been resized. 
-	 * CharPanel already has updated it size 
-	 */ 
-	void notifyResized(int columns,int rows); 
-	
+    /**
+     * Is send AFTER the terminal has been resized. CharPanel already has updated it size
+     */
+    void notifyResized(int columns, int rows);
+
 }

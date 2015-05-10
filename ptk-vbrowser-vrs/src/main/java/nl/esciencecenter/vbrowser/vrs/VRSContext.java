@@ -24,6 +24,7 @@ import java.util.Properties;
 
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.crypt.Secret;
+import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
@@ -37,226 +38,224 @@ import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfoRegistry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Main Context of the Virtual Resource System. 
- * Hold Registry, ResourceSystemInfoRegistry and instantiated ResourceSystems. 
+/**
+ * Main Context of the Virtual Resource System. Hold Registry, ResourceSystemInfoRegistry and
+ * instantiated ResourceSystems.
  */
-public class VRSContext
-{
-    private static final PLogger logger=PLogger.getLogger(VRSContext.class); 
-    
-    private static long instanceCounter=0; 
-    
+public class VRSContext {
+
+    private static final PLogger logger = PLogger.getLogger(VRSContext.class);
+
+    private static long instanceCounter = 0;
+
     // ---
     // Instance 
     // --- 
-    private long id=instanceCounter++; 
-    
+    private long id = instanceCounter++;
+
     protected Registry registry;
-    
+
     protected VRSProperties vrsProperties;
 
-    protected ResourceSystemInfoRegistry resourceInfoRegistry; 
+    protected ResourceSystemInfoRegistry resourceInfoRegistry;
 
     protected UI ui;
 
-    private VRL persistantConfigLocation=null;
+    private VRL persistantConfigLocation = null;
 
-    private boolean hasPersistantConfig=false;
-    
-    public VRSContext()
-    {
-        init(new VRSProperties("VRSContext")); 
-    }
+    private boolean hasPersistantConfig = false;
 
-    public long getID()
-    {
-        return id; 
-    }
-    
-    public VRSContext(Properties props)
-    {
-        init(new VRSProperties("VRSContext",props,true));
-    }
-    
-    public VRSContext(VRSProperties props)
-    {
-        init(props.duplicate(false)); 
+    public VRSContext() {
+        init(new VRSProperties("VRSContext"));
     }
 
-    private void init(VRSProperties privateProperties)
-    {
-        logger.infoPrintf("***New VRSContext(), id="+id+"***");
+    public long getID() {
+        return id;
+    }
+
+    public VRSContext(Properties props) {
+        init(new VRSProperties("VRSContext", props, true));
+    }
+
+    public VRSContext(VRSProperties props) {
+        init(props.duplicate(false));
+    }
+
+    private void init(VRSProperties privateProperties) {
+        logger.infoPrintf("***New VRSContext(), id=" + id + "***");
         // default Static Registry ! 
-        this.registry=Registry.getInstance(); 
-        this.vrsProperties=privateProperties;
-        resourceInfoRegistry=new ResourceSystemInfoRegistry(this);
-        ui=new SimpelUI(); 
+        this.registry = Registry.getInstance();
+        this.vrsProperties = privateProperties;
+        resourceInfoRegistry = new ResourceSystemInfoRegistry(this);
+        ui = new SimpelUI();
     }
-    
-    public Registry getRegistry()
-    {
-        return registry;  
+
+    public Registry getRegistry() {
+        return registry;
     }
-    
-    /** 
-     * @return Configure properties for this VRSContext. 
+
+    /**
+     * @return Configure properties for this VRSContext.
      */
-    public VRSProperties getProperties()
-    {
-        return this.vrsProperties; 
+    public VRSProperties getProperties() {
+        return this.vrsProperties;
     }
-    
-    public CertificateStore getCertificateStore() throws VrsException
-    {
-        try
-        {
-            VRL caCertsLoc=null; 
-            
-            if (hasPersistantConfig())
-            {
+
+    public CertificateStore getCertificateStore() throws VrsException {
+        try {
+            VRL caCertsLoc = null;
+            if (hasPersistantConfig()) {
                 // load existing or create new
-                VRL loc = this.getPersistantConfigLocation(); 
-                caCertsLoc=loc.appendPath("cacerts"); 
-                
-                CertificateStore certificateStore=CertificateStore.loadCertificateStore(caCertsLoc.getPath(), 
-                        new Secret(CertificateStore.DEFAULT_PASSPHRASE.toCharArray()), 
-                        true,
-                        true); 
-                return certificateStore; 
-            }
-            else
-            {
+                VRL loc = this.getPersistantConfigLocation();
+                caCertsLoc = loc.appendPath("cacerts");
+
+                CertificateStore certificateStore = CertificateStore.loadCertificateStore(caCertsLoc.getPath(),
+                        new Secret(CertificateStore.DEFAULT_PASSPHRASE.toCharArray()), true, true);
+                return certificateStore;
+            } else {
                 return CertificateStore.getDefault(true);
             }
+        } catch (CertificateStoreException e) {
+            throw new VrsException(e.getMessage(), e);
         }
-        catch (CertificateStoreException e)
-        {
-           throw new VrsException(e.getMessage(),e); 
-        }
-    }
-    
-    public ResourceSystemInfoRegistry getResourceSystemInfoRegistry()
-    {
-        return this.resourceInfoRegistry; 
-    }
-    
-    public ResourceConfigInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException
-    {
-        VResourceSystemFactory fac = registry.getVResourceSystemFactoryFor(this, vrl.getScheme());
-        if (fac==null)
-        {   
-            throw new VrsException("Scheme not supported. No ResourceSystemFactory for:"+vrl);
-        }
-        
-        String id=fac.createResourceSystemId(vrl);
-        
-        ResourceConfigInfo info= resourceInfoRegistry.getInfo(id);
-        
-        if ((info==null) && (autoCreate==true))
-        {
-            info=new ResourceConfigInfo(resourceInfoRegistry,vrl,id);
-        }
-        if (info!=null)
-        {   
-            info=fac.updateResourceInfo(this, info, vrl); 
-        }
-        return info; 
     }
 
-    /** 
+    public ResourceSystemInfoRegistry getResourceSystemInfoRegistry() {
+        return this.resourceInfoRegistry;
+    }
+
+    public String createResourceSystemInfoIDFor(VRL vrl) throws VrsException {
+        VResourceSystemFactory fac = registry.getVResourceSystemFactoryFor(this, vrl.getScheme());
+        if (fac == null) {
+            throw new VrsException("Scheme not supported. No ResourceSystemFactory for:" + vrl);
+        }
+        String id = fac.createResourceSystemId(vrl);
+        return id;
+    }
+
+    public boolean suppertsResourceSystemFor(VRL vrl) {
+        VResourceSystemFactory fac = registry.getVResourceSystemFactoryFor(this, vrl.getScheme());
+        return (fac != null);
+    }
+
+    public ResourceConfigInfo getResourceSystemInfoFor(VRL vrl, boolean autoCreate) throws VrsException {
+        //
+        VResourceSystemFactory fac = registry.getVResourceSystemFactoryFor(this, vrl.getScheme());
+        if (fac == null) {
+            throw new VrsException("Scheme not supported. No ResourceSystemFactory for:" + vrl);
+        }
+
+        String id = fac.createResourceSystemId(vrl);
+        ResourceConfigInfo info = resourceInfoRegistry.getInfo(id);
+
+        if ((info == null) && (autoCreate == true)) {
+            info = new ResourceConfigInfo(resourceInfoRegistry, vrl, id);
+        }
+        if (info != null) {
+            info = fac.updateResourceInfo(this, info, vrl);
+        }
+        return info;
+    }
+
+    /**
      * Return actual ResourceSystemInfo used for the specified ResourceSystem.
      */
-    public ResourceConfigInfo getResourceSystemInfoFor(VResourceSystem vrs) throws VrsException
-    {
+    public ResourceConfigInfo getResourceSystemInfoFor(VResourceSystem vrs) throws VrsException {
         // todo: query actual instance instead of registry.
         return getResourceSystemInfoFor(vrs.getServerVRL(), false);
     }
-    
-    public void putResourceConfigInfo(ResourceConfigInfo info)
-    {
-        resourceInfoRegistry.putInfo(info); 
+
+    public void putResourceConfigInfo(ResourceConfigInfo info) {
+        resourceInfoRegistry.putInfo(info);
     }
-    /** 
-     * For head-less environments, getUI() will return a dummy Object.    
-     * For non graphical environments this method will return a dummy ui. 
-     * When registered in the VBrowser this method will return an interactive callback interface to the VBrowser. 
-     * @return register UI or dummy UI for non-interactive environments. 
+
+    /**
+     * For head-less environments, getUI() will return a dummy Object. For non graphical
+     * environments this method will return a dummy ui. When registered in the VBrowser this method
+     * will return an interactive callback interface to the VBrowser.
+     * 
+     * @return register UI or dummy UI for non-interactive environments.
      */
-    public UI getUI()
-    {
-        return ui; 
-    }
-    
-    public VRL getHomeVRL()
-    {
-        VRL vrl=new VRL("file",null,GlobalProperties.getGlobalUserHome());
-        return vrl; 
+    public UI getUI() {
+        return ui;
     }
 
-    public VRL getCurrentPathVRL()
-    {
-        return new VRL("file",null,GlobalProperties.getGlobalUserDir());
+    /**
+     * Create absolute and normalized User Home VRL.
+     */
+    public VRL getHomeVRL() {
+        return new VRL(FSUtil.getDefault().getUserHomeURI());
     }
 
-    public String getUserName()
-    {
-        return GlobalProperties.getGlobalUserName(); 
+    /**
+     * Create absolute and normalized cwd of application Home VRL.
+     */
+    public VRL getCurrentPathVRL() {
+        return new VRL(FSUtil.getDefault().getWorkingDirURI());
     }
 
-    public void setPersistantConfigLocation(VRL configHome, boolean enabled) 
-    {
-        this.persistantConfigLocation=configHome; 
-        this.hasPersistantConfig=enabled; 
-        vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP,configHome);
-        vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_ENABLED_PROP,enabled);
+    public String getUserName() {
+        return GlobalProperties.getGlobalUserName();
     }
-    
-    public VRL getPersistantConfigLocation()
-    {
-        // check for explicit set property: 
-        if (this.persistantConfigLocation!=null)
-        {
-            return persistantConfigLocation; 
+
+    public void setPersistantConfigLocation(VRL configHome, boolean enabled) {
+        this.persistantConfigLocation = configHome;
+        this.hasPersistantConfig = enabled;
+        vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP, configHome);
+        vrsProperties.set(VRSContextProperties.VRS_PERSISTANT_CONFIG_ENABLED_PROP, enabled);
+
+        if (enabled) {
+            this.resourceInfoRegistry.reload();
         }
-        
-        String propVal=vrsProperties.getStringProperty(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
-        
-        if (propVal!=null)
-        {
-            try
-            {
+    }
+
+    public VRL getPersistantConfigLocation() {
+
+        if (this.persistantConfigLocation != null) {
+            return persistantConfigLocation;
+        }
+
+        String propVal = vrsProperties.getStringProperty(VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
+
+        if (propVal != null) {
+            try {
                 // return 
-                return new VRL(propVal); 
-            }
-            catch (Exception e)
-            {
-                logger.errorPrintf("Could parse property %s:'%s'\n", VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP,propVal);
+                return new VRL(propVal);
+            } catch (Exception e) {
+                logger.errorPrintf("Could parse property %s:'%s'\n",
+                        VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP, propVal);
             }
         }
-        
-        logger.infoPrintf("Property not defined or wrong value:%s\n", VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
-        return null; 
-    }
-    
-    public boolean hasPersistantConfig() 
-    {
-        return (hasPersistantConfig) && (getPersistantConfigLocation()!=null);  
-    }
 
-    public String getVO()
-    {
+        logger.infoPrintf("Property not defined or wrong value:%s\n",
+                VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
         return null;
     }
 
-    public Credential getCredential(String credentialType)
-    {
-        return null; 
+    public boolean hasPersistantConfig() {
+        return (hasPersistantConfig) && (getPersistantConfigLocation() != null);
     }
 
-    public VRL getInfoRootNodeVRL() throws VRLSyntaxException
-    {
-        return new VRL("info:/"); 
+    public String getVO() {
+        return null;
     }
-    
+
+    /**
+     * Return default credential for the specified type.
+     */
+    public Credential getDefaultCredential(String credentialType) {
+        return null;
+    }
+
+    public VRL getInfoRootNodeVRL() throws VRLSyntaxException {
+        return new VRL("info:/");
+    }
+
+    public String toString() {
+        return "VRSContext:[id='" + this.id + "',persistantConfigLocation='" + persistantConfigLocation + "']";
+    }
+
+    public void dispose() {
+        this.registry.cleanupFor(this);
+    }
 }

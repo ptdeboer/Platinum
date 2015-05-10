@@ -16,90 +16,76 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class DummyViewer implements ViewerPlugin, MimeViewer
-{
+public class DummyViewer implements ViewerPlugin, MimeViewer {
 
-    JPanel panel; 
-    
-    JLabel label; 
-    
-    
+    JPanel panel;
+
+    JLabel label;
+
     @Override
-    public String[] getMimeTypes()
-    {
+    public String[] getMimeTypes() {
         return null;
     }
 
     @Override
-    public Map<String, List<String>> getMimeMenuMethods()
-    {
+    public Map<String, List<String>> getMimeMenuMethods() {
         return null;
     }
 
     @Override
-    public void addViewerListener(ViewerListener listener)
-    {
+    public void addViewerListener(ViewerListener listener) {
     }
 
     @Override
-    public void removeViewerListener(ViewerListener listener)
-    {
+    public void removeViewerListener(ViewerListener listener) {
     }
 
     @Override
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return "DummyViewer";
     }
 
     @Override
-    public JComponent getViewerPanel()
-    {
+    public JComponent getViewerPanel() {
         return panel;
     }
 
     @Override
-    public void initViewer(ViewerContext viewerContext)
-    {
+    public void initViewer(ViewerContext viewerContext) {
         {
-            panel=new JPanel(); 
-            panel.setPreferredSize(new Dimension(400,400));
+            panel = new JPanel();
+            panel.setPreferredSize(new Dimension(400, 400));
             panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
             panel.setLayout(new BorderLayout());
             {
-                label=new JLabel(); 
-                panel.add(label,BorderLayout.CENTER); 
+                label = new JLabel();
+                panel.add(label, BorderLayout.CENTER);
             }
         }
     }
 
     @Override
-    public void startViewer(VRL vrl, String optMenuMethod)
-    {
-        label.setText("Started for:"+vrl);
-        panel.revalidate(); 
+    public void startViewer(VRL vrl, String optMenuMethod) {
+        label.setText("Started for:" + vrl);
+        panel.revalidate();
     }
 
     @Override
-    public void stopViewer()
-    {
-        label.setText("Stopped!"); 
+    public void stopViewer() {
+        label.setText("Stopped!");
     }
 
     @Override
-    public void disposeViewer()
-    {
+    public void disposeViewer() {
     }
 
     @Override
-    public boolean haveOwnScrollPane()
-    {
+    public boolean haveOwnScrollPane() {
         return false;
     }
 
     @Override
-    public boolean isStandaloneViewer()
-    {
+    public boolean isStandaloneViewer() {
         return false;
     }
 

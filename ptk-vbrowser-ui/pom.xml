@@ -21,13 +21,12 @@
 		</resources>
 
 		<plugins>
-			<!--  inhereted plugins -->
+			<!-- inhereted plugins -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
 		</plugins>
-
 	</build>
 
 	<dependencies>
@@ -35,22 +34,21 @@
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-core</artifactId>
 			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-vbrowser-vrs</artifactId>
 			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>nl.esciencecenter.platinum</groupId>
+			<artifactId>ptk-vbrowser-ui-icons</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-vbrowser-viewers</artifactId>
 			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<!-- JUnit -->
 		<dependency>

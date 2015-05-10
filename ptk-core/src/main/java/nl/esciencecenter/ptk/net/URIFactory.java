@@ -31,20 +31,21 @@ import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.URIPathEncoder;
 
 /**
- * Generic URI Factory. <br>
- * Most methods are shadowed from URI so this class can also be used as an URI Proxy Object replacing java.net.URI. <br>
- * Use this factory to chain a sequence of URI modification methods. Use toURI() to create the resulting URI.
+ * Generic URI Factory using legacy code from the VBrowser. Some methods are kept for backwards
+ * compatibility reasons.<br>
+ * Most methods are shadowed from URI so this class can also be used as an URI Proxy Object
+ * replacing java.net.URI. <br>
+ * Use this factory to chain a sequence of URI modification methods (flow). Use toURI() to create
+ * the resulting URI.
  * <p>
  * For example:<br>
  * <code>
  * String baseUri=...; <br>
  * URI theUri = new URIFactory(baseUri).setHostname("remote").appendPath("webService").uriResolve("?query").toURI();<br> 
  * </code>
- * 
- * @author Piter T. de Boer
  */
-public final class URIFactory implements Serializable, Cloneable, Duplicatable<URIFactory>
-{
+public final class URIFactory implements Serializable, Cloneable, Duplicatable<URIFactory> {
+
     private static final long serialVersionUID = 282430272904693557L;
 
     /** Path seperator character for URIs = '/' */
@@ -74,13 +75,11 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     // Class Methods
     // =======================================================================
 
-    public static String uripath(String orgpath)
-    {
+    public static String uripath(String orgpath) {
         return uripath(orgpath, true);
     }
 
-    public static String uripath(String orgpath, boolean makeAbsolute)
-    {
+    public static String uripath(String orgpath, boolean makeAbsolute) {
         // use local File Seperator to normalize path.
         return uripath(orgpath, makeAbsolute, java.io.File.separatorChar);
     }
@@ -89,7 +88,8 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * Produce URI compatible path and do other normalizations.
      * 
      * <ul>
-     * <li>Flip Local File Separator char <code>localSepChar</code> to (URI compatible) forward slashes
+     * <li>Flip Local File Separator char <code>localSepChar</code> to (URI compatible) forward
+     * slashes
      * <li>Change DOS paths into absolute DOS paths: for example: 'C:' into '/C:/'
      * <li>Prefixes all paths with '/' to make it absolute , unless makeAbsolute=false
      * </ul>
@@ -103,8 +103,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * 
      * @return The normalized and decoded URI path.
      */
-    public static String uripath(String orgpath, boolean makeAbsolute, char localSepChar)
-    {
+    public static String uripath(String orgpath, boolean makeAbsolute, char localSepChar) {
         if (orgpath == null)
             return ""; // default path="";
 
@@ -122,10 +121,8 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
         // II) Convert relative path to absolute by inserting '/'
         // c:/subdir/path => /c:/subdir/path
-        if (makeAbsolute == true)
-        {
-            if (newpath.charAt(0) != URI_SEP_CHAR)
-            {
+        if (makeAbsolute == true) {
+            if (newpath.charAt(0) != URI_SEP_CHAR) {
                 newpath = URI_SEP_CHAR + newpath;
             }
         }
@@ -151,35 +148,28 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         // Since single character schemes in URIs do not exist, this RE will
         // match against DOS paths:
 
-        if ((newpath.length() >= 2) && (newpath.matches(dosPrefixRE)))
-        {
+        if ((newpath.length() >= 2) && (newpath.matches(dosPrefixRE))) {
             // Since "C:" is already an absolute path, prefix it with "/" as
             // follows "C:" => "/C:"
-            if (newpath.charAt(0) != '/')
-            {
+            if (newpath.charAt(0) != '/') {
                 newpath = "/" + newpath;
             }
 
             // insert "/" between ":" and path as follows: "/C:<path>" =>
             // "/C:/<path>"
-            if ((newpath.length() >= 4) && (newpath.charAt(2) == ':') && (newpath.charAt(3) != URI_SEP_CHAR))
-            {
+            if ((newpath.length() >= 4) && (newpath.charAt(2) == ':')
+                    && (newpath.charAt(3) != URI_SEP_CHAR)) {
                 newpath = "/" + newpath.charAt(1) + ":/" + newpath.substring(3);
             }
         }
 
         // Convert (exact matching) DOS relative path "/C:" to absolute "/C:/"
         // The actual relative path of the drive could be resolved here.
-        if ((newpath.length() == 3) && (newpath.charAt(2) == ':'))
-        {
+        if ((newpath.length() == 3) && (newpath.charAt(2) == ':')) {
             newpath = newpath + URI_SEP_CHAR;
-        }
-        else if ((newpath.length() == 4) && (newpath.charAt(3) == URI_SEP_CHAR))
-        {
+        } else if ((newpath.length() == 4) && (newpath.charAt(3) == URI_SEP_CHAR)) {
             // keep "/C:/..."
-        }
-        else if ((newpath.length() > 1) && (newpath.charAt(newpath.length() - 1) == URI_SEP_CHAR))
-        {
+        } else if ((newpath.length() > 1) && (newpath.charAt(newpath.length() - 1) == URI_SEP_CHAR)) {
             // Strip last '/' if it isn't an absolute (Windows) drive path path
             // like example: '/C:/'
             newpath = newpath.substring(0, newpath.length() - 1);
@@ -196,22 +186,16 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     /**
      * If path starts with tilde, replace actual tilde with userHome.
      */
-    public static String resolveTilde(String homePath, String path)
-    {
+    public static String resolveTilde(String homePath, String path) {
         String subPath;
 
-        if (path.startsWith("~/"))
-        {
+        if (path.startsWith("~/")) {
             subPath = path.substring(2);
             path = homePath + "/" + subPath;
-        }
-        else if (path.startsWith("~"))
-        {
+        } else if (path.startsWith("~")) {
             subPath = path.substring(1);
             path = homePath + "/" + subPath;
-        }
-        else if (path.startsWith("/~"))
-        {
+        } else if (path.startsWith("/~")) {
             subPath = path.substring(2);
             path = homePath + "/" + subPath;
         }
@@ -226,34 +210,28 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      *            filename of full path of file.
      * @return stripped filename without extension.
      */
-    public static String stripExtension(String filename)
-    {
+    public static String stripExtension(String filename) {
+        //
         if (filename == null)
             return null;
-
+        //
         int index = filename.length();
         index--;
-
         // scan last part of path
-
-        while ((index >= 0) && (filename.charAt(index) != '.'))
-        {
+        while ((index >= 0) && (filename.charAt(index) != '.')) {
             index--;
         }
-
         // index now points to '.' char or is -1; (before beginning of the name)
-
         if (index < 0)
             return filename; // no dot => NO extension !
-
+        //
         return filename.substring(0, index);
     }
 
     /**
      * Return extension part of filename.
      */
-    public static String extension(String filename)
-    {
+    public static String extension(String filename) {
         if (filename == null)
             return null;
 
@@ -262,8 +240,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
         // scan last part of path
 
-        while ((index >= 0) && (filename.charAt(index) != '.'))
-        {
+        while ((index >= 0) && (filename.charAt(index) != '.')) {
             index--;
         }
 
@@ -280,14 +257,12 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      *            - actual string
      * @return URI encode String.
      */
-    public static String encodeQuery(String rawString)
-    {
+    public static String encodeQuery(String rawString) {
         String encoded = URIPathEncoder.encode(rawString);
         return encoded;
     }
 
-    public static String encodePath(String rawString)
-    {
+    public static String encodePath(String rawString) {
         String encoded = URIPathEncoder.encode(rawString);
         return encoded;
     }
@@ -295,13 +270,11 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     /**
      * Returns basename part (last part) of path String.
      */
-    public static String basename(String path)
-    {
+    public static String basename(String path) {
         // default cases: null,empty and root path:
 
         if (path == null)
             return null;
-
         if (path.equalsIgnoreCase(""))
             return "";
 
@@ -315,14 +288,12 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
         // special case, path ENDS with '/' which must be ignored
 
-        if (path.charAt(index) == URI_SEP_CHAR)
-        {
+        if (path.charAt(index) == URI_SEP_CHAR) {
             index--;
             strlen--;
         }
 
-        while ((index >= 0) && (path.charAt(index) != URI_SEP_CHAR))
-        {
+        while ((index >= 0) && (path.charAt(index) != URI_SEP_CHAR)) {
             index--;
         }
 
@@ -333,8 +304,8 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     /**
-     * Returns the dirname part of the URI compatible path ! (parent directory path) of path. Note: use URI.uripath to
-     * sanitize and normalize a path!
+     * Returns the dirname part of the URI compatible path ! (parent directory path) of path. Note:
+     * use URI.uripath to sanitize and normalize a path!
      * <p>
      * Special cases:
      * <ul>
@@ -345,69 +316,54 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * 
      * @see basename
      */
-    public static String dirname(String path)
-    {
+    public static String dirname(String path) {
         // null path
         if (path == null)
             return null;
 
         int index = 0;
         int strlen = path.length();
-
         index = strlen - 1;// start at end of string
-
-        // Empty and root path:
 
         // relative path, cannot return dirname
         if (path.equalsIgnoreCase(""))
             return "";
-
         // root path of root is root itself
         if (path.equalsIgnoreCase(URI_SEP_CHAR_STR))
             return URI_SEP_CHAR_STR;
-
         // special case, path ENDS with '/' which must be ignored
-        if (path.charAt(index) == URI_SEP_CHAR)
-        {
+        if (path.charAt(index) == URI_SEP_CHAR) {
             index--;
             strlen--;
         }
-
         // move backwards to first seperator
-        while ((index >= 0) && (path.charAt(index) != URI_SEP_CHAR))
-        {
+        while ((index >= 0) && (path.charAt(index) != URI_SEP_CHAR)) {
             index--;
         }
 
-        if (index == 0)
-        {
+        if (index == 0) {
             // first char (path[0]) == '/' => special case root dir encountered:
             return URI_SEP_CHAR_STR;
-        }
-        else if (index < 0)
-        {
+        } else if (index < 0) {
             // no seperator found: this means this is a RELATIVE path with no
             // parent dirname !
             return "";
         }
-
         // index points to character '/'.
-
         return path.substring(0, index);
     }
 
     /**
-     * Create URIFactory from Opaque URI. Only the scheme is parsed. The part after the scheme is used as-is.
+     * Create URIFactory from Opaque URI. Only the scheme is parsed. The part after the scheme is
+     * used as-is.
      * 
      * @param opaqueUri
      *            - Opaque URI String.
      * @return URIFactory constructed from Opaque URI.
      */
-    public static URIFactory createOpaque(String opaqueUri)
-    {
+    public static URIFactory createOpaque(String opaqueUri) {
         int index = opaqueUri.indexOf(':');
-        if (index < 0)
-        {
+        if (index < 0) {
             return new URIFactory(null, opaqueUri); // relative URI)
         }
 
@@ -444,68 +400,58 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
     private boolean isOpaque = false;
 
-    public URIFactory(URI uri)
-    {
+    public URIFactory(URI uri) {
         if (uri == null)
             return;
-
         init(uri);
     }
 
-    protected URIFactory()
-    {
-        ;
+    protected URIFactory() {
     }
 
-    public URIFactory(final String uristr) throws URISyntaxException
-    {
+    public URIFactory(final String uristr) throws URISyntaxException {
         init(uristr);
     }
 
     /**
      * Constructs Opaque URI, keeping schemeSpecificPart 'as-is'. URI Fields may be parsed.
      */
-    public URIFactory(String scheme, String schemeSpecificPart)
-    {
+    public URIFactory(String scheme, String schemeSpecificPart) {
         init(scheme, null, null, -1, schemeSpecificPart, null, null, true);
     }
 
-    public URIFactory(String scheme, String host, int port, String path)
-    {
+    public URIFactory(String scheme, String host, int port, String path) {
         init(scheme, null, host, port, path, null, null, false);
     }
 
-    public URIFactory(String scheme, String userInfo, String host, int port, String path)
-    {
+    public URIFactory(String scheme, String userInfo, String host, int port, String path) {
         init(scheme, userInfo, host, port, path, null, null, false);
     }
 
-    public URIFactory(String scheme, String userInfo, String host, int port, String path, String query, String fragment)
-    {
+    public URIFactory(String scheme, String userInfo, String host, int port, String path,
+            String query, String fragment) {
         init(scheme, userInfo, host, port, path, query, fragment, false);
     }
 
-    public URIFactory(final URL url) throws URISyntaxException
-    {
-        init(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null, false);
+    public URIFactory(final URL url) throws URISyntaxException {
+        init(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
+                url.getQuery(), null, false);
     }
 
-    public URIFactory(final URIFactory uri)
-    {
+    public URIFactory(final URIFactory uri) {
         this.copyFrom(uri);
     }
 
     /**
-     * Initialize by smartly parsing the provided String. Checks whether the string is encoded or decoded.
+     * Initialize by smartly parsing the provided String. Checks whether the string is encoded or
+     * decoded.
      * 
      * @param uriStr
      *            - Relative or Absolute URI String. Might be URI encoded.
      * @throws URISyntaxException
      */
-    protected void init(final String uriStr) throws URISyntaxException
-    {
-        if (uriStr == null)
-        {
+    protected void init(final String uriStr) throws URISyntaxException {
+        if (uriStr == null) {
             throw new URISyntaxException("<NULL>", "URI String can not be null");
         }
 
@@ -519,17 +465,15 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         if (index >= 0)
             sspStr = uriStr.substring(index + 1, uriStr.length());
 
-        if (sspStr != null)
-        {
+        if (sspStr != null) {
             // Parse: "scheme:", "scheme:/" "scheme://". Triple slash is parsed as empty authority URI
-            if (StringUtil.isEmpty(sspStr) || StringUtil.equals(sspStr, "/") || StringUtil.equals(sspStr, "//"))
-            {
+            if (StringUtil.isEmpty(sspStr) || StringUtil.equals(sspStr, "/")
+                    || StringUtil.equals(sspStr, "//")) {
                 // create scheme only URI
 
                 this.scheme = uriStr.substring(0, index);
 
-                if ("/".equals(sspStr))
-                {
+                if ("/".equals(sspStr)) {
                     this.pathOrReference = "/";
                 }
                 // check scheme://
@@ -538,30 +482,24 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
             }
         }
 
-        try
-        {
+        try {
             URI uri = new URI(uriStr);
             // use URI initializer: contains patches for URI parsing ! (better
             // use initializors!)
             init(uri);
             return;
-        }
-        catch (URISyntaxException e1)
-        {
+        } catch (URISyntaxException e1) {
             ex = e1;
             // Be Flexible: could be not encoded string: try to encode it first
             // There is no way to detect whether the string is encoded if it
             // contains a valid '%'.
-            try
-            {
+            try {
                 // Try to encode the String.
 
                 URI uri = new URI(encodePath(uriStr));
                 init(uri); // use URI initializer
                 return;
-            }
-            catch (URISyntaxException e2)
-            {
+            } catch (URISyntaxException e2) {
                 ex = e2;
             }
         }
@@ -572,8 +510,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     /**
      * Initialize Factory using provided URI object.
      */
-    protected void init(final URI _uri)
-    {
+    protected void init(final URI _uri) {
         // All URIs are normalized!
         URI uri = _uri.normalize();
 
@@ -597,13 +534,11 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         String newQuery = null;
         String newFraq = null;
 
-        if ((hasAuth == false) && (uri.getRawSchemeSpecificPart().startsWith("/") == false))
-        {
+        if ((hasAuth == false) && (uri.getRawSchemeSpecificPart().startsWith("/") == false)) {
             // Parse Reference URI or Relative URI which is not URL compatible:
             // hack to parse query and fragment from non URL compatible
             // URI
-            try
-            {
+            try {
                 // check: "ref:<blah>?query#frag"
                 URI tempUri = null;
 
@@ -615,17 +550,13 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
                 pathOrRef = path2.substring(1, path2.length());
                 newQuery = tempUri.getQuery();
                 newFraq = tempUri.getFragment();
-            }
-            catch (URISyntaxException e)
-            {
+            } catch (URISyntaxException e) {
                 // Global.errorPrintStacktrace(e);
                 // Reference URI: ref:<blahblahblah> without starting '/' !
                 // store as is without parsing:
                 pathOrRef = uri.getRawSchemeSpecificPart();
             }
-        }
-        else
-        {
+        } else {
             // plain PATH URI: get Path,Query and Fragment.
             pathOrRef = uri.getPath();
             newQuery = uri.getQuery();
@@ -639,12 +570,11 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     /**
-     * Master Initializer. All fields are given and no exception is thrown. Fields should be decoded. * Path can be
-     * relative or absolute but must be normalized with forward slashes.
+     * Master Initializer. All fields are given and no exception is thrown. Fields should be
+     * decoded. * Path can be relative or absolute but must be normalized with forward slashes.
      */
-    private void init(String newscheme, String userinf, String newhost, int newport, String newpath, String newquery,
-            String newfrag, boolean isOpaque)
-    {
+    private void init(String newscheme, String userinf, String newhost, int newport,
+            String newpath, String newquery, String newfrag, boolean isOpaque) {
         this.isOpaque = isOpaque;
 
         // must be null or uri will add empty values
@@ -667,8 +597,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         // ===
         // Feature: Strip ':' after scheme
         // ===
-        if ((newscheme != null) && (newscheme.endsWith(":")))
-        {
+        if ((newscheme != null) && (newscheme.endsWith(":"))) {
             newscheme = newscheme.substring(0, newscheme.length() - 1);
         }
 
@@ -688,8 +617,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         // Sanitize path, but keep relative paths or reference paths intact
         // if there is no authority !
 
-        if (isOpaque == false)
-        {
+        if (isOpaque == false) {
             newpath = uripath(newpath, this.hasAuthority());
         }
 
@@ -700,8 +628,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     @Override
-    public URIFactory clone()
-    {
+    public URIFactory clone() {
         return duplicate();
     }
 
@@ -709,22 +636,19 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * Return full copy of this object
      */
     @Override
-    public URIFactory duplicate()
-    {
+    public URIFactory duplicate() {
         URIFactory fac = new URIFactory();
         fac.copyFrom(this);
         return fac;
     }
 
     @Override
-    public boolean shallowSupported()
-    {
+    public boolean shallowSupported() {
         return false;
     }
 
     @Override
-    public URIFactory duplicate(boolean shallow)
-    {
+    public URIFactory duplicate(boolean shallow) {
         return duplicate();
     }
 
@@ -732,64 +656,55 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     // Setters/Getters/Changers of actuals fields.
     // ========================================================================
 
-    public URIFactory setScheme(String newScheme)
-    {
+    public URIFactory setScheme(String newScheme) {
         // check ?
         this.scheme = newScheme;
         return this;
     }
 
-    public URIFactory setUserInfo(String user)
-    {
+    public URIFactory setUserInfo(String user) {
         this.userInfo = user;
         return this;
     }
 
-    public URIFactory setHostname(String newHostname)
-    {
+    public URIFactory setHostname(String newHostname) {
         // check ?
         this.hostname = newHostname;
         return this;
     }
 
-    public URIFactory setPath(String newPath)
-    {
+    public URIFactory setPath(String newPath) {
         // check ?
         setPath(newPath, hasAuthority());
         return this;
     }
 
-    public URIFactory setPort(int newPort)
-    {
+    public URIFactory setPort(int newPort) {
         // check
         this.port = newPort;
         return this;
     }
 
-    public URIFactory setQuery(String newQuery)
-    {
+    public URIFactory setQuery(String newQuery) {
         this.query = newQuery;
         return this;
     }
 
-    public URIFactory setFragment(String newFragment)
-    {
+    public URIFactory setFragment(String newFragment) {
         this.fragment = newFragment;
         return this;
     }
 
     /** Set new Path and format it to default URI path */
-    public URIFactory setPath(String path, boolean makeAbsolute)
-    {
+    public URIFactory setPath(String path, boolean makeAbsolute) {
         // decode and normalize path
         this.pathOrReference = uripath(path, makeAbsolute);
         return this;
     }
 
-    protected void copyFrom(URIFactory loc)
-    {
+    protected void copyFrom(URIFactory loc) {
+        // 
         this.isOpaque = loc.isOpaque;
-
         // duplicate Strings !
         this.scheme = StringUtil.duplicate(loc.scheme);
         this.userInfo = StringUtil.duplicate(loc.userInfo);
@@ -800,8 +715,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         this.fragment = StringUtil.duplicate(loc.fragment);
     }
 
-    public String getBasename()
-    {
+    public String getBasename() {
         return basename(pathOrReference);
     }
 
@@ -811,8 +725,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * @param withExtension
      *            whether to keep the extension.
      */
-    public String getBasename(boolean withExtension)
-    {
+    public String getBasename(boolean withExtension) {
         String name = basename(getPath());
 
         if (withExtension == true)
@@ -821,103 +734,88 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
             return stripExtension(name);
     }
 
-    public String getPath()
-    {
+    public String getPath() {
         return pathOrReference;
     }
 
-    public String getHostname()
-    {
+    public String getHostname() {
         return hostname;
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return port;
     }
 
-    public String getFragment()
-    {
+    public String getFragment() {
         return this.fragment;
     }
 
     /**
      * @return decoded reference component of URI
      */
-    public String getReference()
-    {
+    public String getReference() {
         return pathOrReference;
     }
 
-    public boolean isAbsolute()
-    {
+    public boolean isAbsolute() {
         return (scheme != null);
     }
 
-    public boolean isRelative()
-    {
+    public boolean isRelative() {
         return (scheme == null);
     }
 
     /**
-     * Returns true if the URI is Opaque. This means the scheme specific part isn't parsed and must be used 'as-is'.
+     * Returns true if the URI is Opaque. This means the scheme specific part isn't parsed and must
+     * be used 'as-is'.
      * 
      * @return true if the URI is opaque, false otherwise.
      */
-    public boolean isOpaque()
-    {
+    public boolean isOpaque() {
         return this.isOpaque;
     }
 
-    public boolean hasScheme(String otherScheme)
-    {
+    public boolean hasScheme(String otherScheme) {
         return StringUtil.equals(this.scheme, otherScheme);
     }
 
-    public String getScheme()
-    {
+    public String getScheme() {
         return this.scheme;
     }
 
-    public boolean hasAuthority()
-    {
-        return StringUtil.notEmpty(this.userInfo) || StringUtil.notEmpty(this.hostname) || (this.port > 0);
+    public boolean hasAuthority() {
+        return StringUtil.notEmpty(this.userInfo) || StringUtil.notEmpty(this.hostname)
+                || (this.port > 0);
     }
 
-    public boolean hasUserInfo()
-    {
+    public boolean hasUserInfo() {
         return (userInfo != null);
     }
 
     /**
      * Get last part of filename starting from a '.' but ignore fragment and/or query part !
      */
-    public String getExtension()
-    {
+    public String getExtension() {
         return extension(getPath());
     }
 
-    public String getQuery()
-    {
+    public String getQuery() {
         return this.query;
     }
 
-    public String getUserInfo()
-    {
+    public String getUserInfo() {
         return this.userInfo;
     }
 
     /** Returns dirname part of path */
-    public String getDirname()
-    {
+    public String getDirname() {
         return dirname(this.pathOrReference);
     }
 
     /**
      * Returns array of path elements. For example "/dev/zero" = {"dev","zero"}
      */
-    public String[] getPathElements()
-    {
+    public String[] getPathElements() {
         String path = getPath();
 
         if (path == null)
@@ -937,40 +835,31 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     // ========================================================================
 
     /**
-     * Appends plain string to this URI's String representation. Does <em>NOT</em> check for fragments or query strings.
-     * When appending file system paths use explicit appendPath()!
+     * Appends plain string to this URI's String representation. Does <em>NOT</em> check for
+     * fragments or query strings. When appending file system paths use explicit appendPath()!
      */
-    public URIFactory appendString(String substr) throws URISyntaxException
-    {
+    public URIFactory appendString(String substr) throws URISyntaxException {
         return new URIFactory(this.toString() + substr);
     }
 
     /**
-     * Creates new location by appending path to this one added seperator char between path elements. To added query
-     * and/or fragments string use append().
+     * Creates new location by appending path to this one added seperator char between path
+     * elements. To added query and/or fragments string use append().
      */
-    public URIFactory appendPath(String dirname)
-    {
+    public URIFactory appendPath(String dirname) {
         String oldpath = getPath();
         String newpath = null;
 
         if (oldpath == null)
             oldpath = "";
 
-        if (StringUtil.isEmpty(dirname))
-        {
+        if (StringUtil.isEmpty(dirname)) {
             return this; // nothing to append
-        }
-        else if (dirname.charAt(0) == URI_SEP_CHAR)
-        {
+        } else if (dirname.charAt(0) == URI_SEP_CHAR) {
             newpath = oldpath + dirname;
-        }
-        else if (dirname.charAt(0) == DOS_SEP_CHAR)
-        {
+        } else if (dirname.charAt(0) == DOS_SEP_CHAR) {
             newpath = oldpath + URI_SEP_CHAR + dirname.substring(1);
-        }
-        else
-        {
+        } else {
             newpath = oldpath + URI_SEP_CHAR + dirname;
         }
 
@@ -981,13 +870,12 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     /**
-     * Use URI.resolve() to resolve this relative path. Note that URI by default strips the last part of the complete
-     * filepath. Use resovePath() to do an actual path resolving.
+     * Use URI.resolve() to resolve this relative path. Note that URI by default strips the last
+     * part of the complete filepath. Use resovePath() to do an actual path resolving.
      * 
      * @throws URISyntaxException
      */
-    public URIFactory uriResolve(String reluri) throws URISyntaxException
-    {
+    public URIFactory uriResolve(String reluri) throws URISyntaxException {
         if ((reluri == null) || (reluri == ""))
             return this;
 
@@ -998,31 +886,24 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         if (c0 == '#')
             return this.setFragment(reluri.substring(1, reluri.length()));
 
-        if (c0 == '?')
-        {
+        if (c0 == '?') {
             reluri = reluri.substring(1);
             String strs[] = reluri.split("#");
-            if ((strs == null) || (strs.length <= 0))
-            {
+            if ((strs == null) || (strs.length <= 0)) {
                 this.setQuery(null); // empty query)
                 this.setFragment(null);
                 return this;
-            }
-            else if (strs.length == 1)
-            {
+            } else if (strs.length == 1) {
                 this.setQuery(strs[0]);
                 this.setFragment(null);
                 return this;
-            }
-            else if (strs.length == 2)
-            {
+            } else if (strs.length == 2) {
                 this.setQuery(strs[0]);
                 this.setFragment(strs[1]);
                 return this;
-            }
-            else
-            {
-                throw new URISyntaxException(reluri, "Can't parse mutliple query and/or fragment parts.", 0);
+            } else {
+                throw new URISyntaxException(reluri,
+                        "Can't parse mutliple query and/or fragment parts.", 0);
             }
         }
 
@@ -1031,13 +912,12 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     /**
-     * Resolve path and return new decoded filepath. Ignores Query and Fragment parts and uses decoded path element from
-     * URI.
+     * Resolve path and return new decoded filepath. Ignores Query and Fragment parts and uses
+     * decoded path element from URI.
      * 
      * @return Returns normalized (not encoded) URI path with forward slashes.
      */
-    public String resolvePath(String relpath) throws URISyntaxException
-    {
+    public String resolvePath(String relpath) throws URISyntaxException {
         // append kludge file to trigger uri to resolving actual path.
         String kludgePath = this.getPath() + "/dummy.html";
         URI uri = new URI("file", kludgePath, null);
@@ -1046,8 +926,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         return uripath(newUri.getPath());
     }
 
-    public URIFactory getParent()
-    {
+    public URIFactory getParent() {
         URIFactory fac = duplicate();
         fac.pathOrReference = dirname(this.pathOrReference);
         return fac;
@@ -1057,22 +936,17 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     // URI Formatter methods
     // ========================================================================
 
-    public URI toURI() throws URISyntaxException
-    {
-        if (this.isOpaque)
-        {
+    public URI toURI() throws URISyntaxException {
+        if (this.isOpaque) {
             // Apparently 'fragment' is not part of the schemeSpecificPart
             new URI(this.scheme, this.pathOrReference, this.fragment);
         }
 
-        if (this.hasAuthority())
-        {
-            return new URI(this.scheme, this.userInfo, this.hostname, this.port, this.getPath(), this.query,
-                    this.fragment);
+        if (this.hasAuthority()) {
+            return new URI(this.scheme, this.userInfo, this.hostname, this.port, this.getPath(),
+                    this.query, this.fragment);
 
-        }
-        else
-        {
+        } else {
             // Reference or path only URI:
             return new URI(scheme, null, null, -1, pathOrReference, query, fragment);
         }
@@ -1080,50 +954,45 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
 
     /**
      * Calls toURI().toURL()<br>
-     * <strong>Note:</strong> toURI() encodes the URI fields. This will result in an encoded URL as well. Use
-     * toFileURL() to get an decoded file URL where the path field is not encoded.
+     * <strong>Note:</strong> toURI() encodes the URI fields. This will result in an encoded URL as
+     * well. Use toFileURL() to get an decoded file URL where the path field is not encoded.
      */
-    public URL toURL() throws MalformedURLException, URISyntaxException
-    {
+    public URL toURL() throws MalformedURLException, URISyntaxException {
         return toURI().toURL();
     }
 
     /**
      * Explicit encode URI fields.
      */
-    public URI toEncodedURI() throws URISyntaxException
-    {
-        return new URI(scheme, userInfo, hostname, port, encodePath(pathOrReference), encodeQuery(query), encodeQuery(fragment));
+    public URI toEncodedURI() throws URISyntaxException {
+        return new URI(scheme, userInfo, hostname, port, encodePath(pathOrReference),
+                encodeQuery(query), encodeQuery(fragment));
     }
 
-    public String toString()
-    {
+    public String toString() {
         return toNormalizedString();
     }
 
     /**
-     * This method returns the <em>Decoded</em> URI string. For an URI compatible string (with %XX encoding) use
-     * toURI().toString() or toURIString() !
+     * This method returns the <em>Decoded</em> URI string. For an URI compatible string (with %XX
+     * encoding) use toURI().toString() or toURIString() !
      * 
      * @return normalized and decoded URI String.
      */
-    public String toNormalizedString()
-    {
+    public String toNormalizedString() {
         // suport relative VRLs!
         String str = "";
 
         if (this.isAbsolute() == true)
             str += scheme + ":";
 
-        if (hasAuthority())
-        {
+        if (hasAuthority()) {
             str += URI_SEP_CHAR_STR + URI_SEP_CHAR_STR;
 
             if ((userInfo != null) && (userInfo.compareTo("") != 0))
                 str += userInfo + "@";
 
-            if (hostname != null)
-            {
+            if (hostname != null) {
                 str += hostname;
                 if (port > 0)
                     str += ":" + port;
@@ -1131,19 +1000,15 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         }
 
         // path could start without "/" !
-        if (pathOrReference != null)
-        {
+        if (pathOrReference != null) {
             // should not be possible:
-            if ((hasAuthority()) && (pathOrReference.startsWith(URI_SEP_CHAR_STR) == false))
-            {
+            if ((hasAuthority()) && (pathOrReference.startsWith(URI_SEP_CHAR_STR) == false)) {
                 // relative path but there muse be a '/ 'between host and path.
                 str += URI_SEP_CHAR; // still end with '/' for consistancy !
             }
 
             str += pathOrReference;
-        }
-        else
-        {
+        } else {
             str += URI_SEP_CHAR; // still end with '/' for consistancy !
         }
 
@@ -1156,16 +1021,17 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
         return str;
     }
 
-    public String getDosPath()
-    {
-        String newPath = this.getPath();
+    public String getDosPath() {
+        return createDosPath(this.getPath());
+    }
 
+    public static String createDosPath(String uriPath) {
+        // todo: use nio.Files
+        String newPath = uriPath;
         // Check '/C:' and remove leading slash.
-
-        if (newPath.length() >= 3)
-        {
-            if ((newPath.charAt(0) == '/') && (newPath.charAt(2) == ':'))
-            {
+        if (newPath.length() >= 3) {
+            if ((newPath.charAt(0) == '/') && (newPath.charAt(2) == ':')) {
+                @SuppressWarnings("unused")
                 char drive = newPath.charAt(1); // A,B,C,...,Z
                 newPath = newPath.substring(1);
             }
@@ -1180,8 +1046,8 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     // ===
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
+        // Generated by Eclipse:
         final int prime = 31;
         int result = 1;
         result = prime * result + ((fragment == null) ? 0 : fragment.hashCode());
@@ -1196,95 +1062,65 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        // Generated:
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        // Generated by Eclipse
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass())
-        {
+        if (getClass() != obj.getClass()) {
             return false;
         }
         URIFactory other = (URIFactory) obj;
-        if (fragment == null)
-        {
-            if (other.fragment != null)
-            {
+        if (fragment == null) {
+            if (other.fragment != null) {
                 return false;
             }
-        }
-        else if (!fragment.equals(other.fragment))
-        {
+        } else if (!fragment.equals(other.fragment)) {
             return false;
         }
-        if (hostname == null)
-        {
-            if (other.hostname != null)
-            {
+        if (hostname == null) {
+            if (other.hostname != null) {
                 return false;
             }
-        }
-        else if (!hostname.equals(other.hostname))
-        {
+        } else if (!hostname.equals(other.hostname)) {
             return false;
         }
-        if (isOpaque != other.isOpaque)
-        {
+        if (isOpaque != other.isOpaque) {
             return false;
         }
-        if (pathOrReference == null)
-        {
-            if (other.pathOrReference != null)
-            {
+        if (pathOrReference == null) {
+            if (other.pathOrReference != null) {
                 return false;
             }
-        }
-        else if (!pathOrReference.equals(other.pathOrReference))
-        {
+        } else if (!pathOrReference.equals(other.pathOrReference)) {
             return false;
         }
-        if (port != other.port)
-        {
+        if (port != other.port) {
             return false;
         }
-        if (query == null)
-        {
-            if (other.query != null)
-            {
+        if (query == null) {
+            if (other.query != null) {
                 return false;
             }
-        }
-        else if (!query.equals(other.query))
-        {
+        } else if (!query.equals(other.query)) {
             return false;
         }
-        if (scheme == null)
-        {
-            if (other.scheme != null)
-            {
+        if (scheme == null) {
+            if (other.scheme != null) {
                 return false;
             }
-        }
-        else if (!scheme.equals(other.scheme))
-        {
+        } else if (!scheme.equals(other.scheme)) {
             return false;
         }
 
-        if (userInfo == null)
-        {
-            if (other.userInfo != null)
-            {
+        if (userInfo == null) {
+            if (other.userInfo != null) {
                 return false;
             }
-        }
-        else if (!userInfo.equals(other.userInfo))
-        {
+        } else if (!userInfo.equals(other.userInfo)) {
             return false;
         }
 
@@ -1292,17 +1128,18 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
     }
 
     /**
-     * Create local file system compatible URL represented by the current URI. As toURI().toURL() might encode the
-     * actual path in the URI and URL.getPath() does not do any decoding of an optionally encoded path, converting
-     * encoded URIs to URLs might cause inconsistencies when accessing the local file system. This method uses the
-     * decoded URI fields to create a (file) URL.
+     * Create local file system compatible URL represented by the current URI.
+     * <p>
+     * As toURI().toURL() might encode the actual path in the URI and URL.getPath() does not do any
+     * decoding of an optionally encoded path, converting encoded URIs to URLs might cause
+     * inconsistencies when accessing the local file system. This method uses the decoded URI fields
+     * to create a (file) URL.
      * 
      * @return decoded (local) file URL.
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    public URL toFileURL() throws MalformedURLException, URISyntaxException
-    {
+    public URL toFileURL() throws MalformedURLException, URISyntaxException {
         // to create a local file URL, use decoded parts, also local files do not recognize query nor reference fields.
         return new URL(getScheme(), getHostname(), getPort(), getPath());
     }
@@ -1315,14 +1152,11 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
-    public URL toDirURL() throws MalformedURLException, URISyntaxException
-    {
+    public URL toDirURL() throws MalformedURLException, URISyntaxException {
         String path = getPath();
-        if (path.endsWith("/") == false)
-        {
+        if (path.endsWith("/") == false) {
             path = path + "/";
         }
-
         // to create a local file URL, use decoded parts, also local files do not recognize query nor reference fields.
         return new URL(getScheme(), getHostname(), getPort(), path);
     }

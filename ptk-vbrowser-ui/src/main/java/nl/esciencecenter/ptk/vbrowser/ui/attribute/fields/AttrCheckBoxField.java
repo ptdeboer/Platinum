@@ -26,52 +26,43 @@ import javax.swing.JCheckBox;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-/** 
- * Maps Boolean Attribute to checkbox field. 
+/**
+ * Maps Boolean Attribute to checkbox field.
  */
-public class AttrCheckBoxField extends JCheckBox implements IAttributeField
-{
+public class AttrCheckBoxField extends JCheckBox implements IAttributeField {
     private static final long serialVersionUID = 3100398728004063981L;
 
-    public AttrCheckBoxField()
-    {
+    public AttrCheckBoxField() {
         super();
     }
 
-    public AttrCheckBoxField(String name, boolean value)
-    {
+    public AttrCheckBoxField(String name, boolean value) {
         super();
         this.setName(name);
         this.setSelected(value);
     }
 
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return super.getName();
     }
 
-    public String getValue()
-    {
+    public String getValue() {
         return "" + this.isSelected();
     }
 
-    public boolean getBooleanValue()
-    {
+    public boolean getBooleanValue() {
         return this.isSelected();
     }
 
-    public void updateFrom(Attribute attr)
-    {
+    public void updateFrom(Attribute attr) {
         this.setSelected(attr.getBooleanValue());
     }
 
-    public AttributeType getVAttributeType()
-    {
+    public AttributeType getVAttributeType() {
         return AttributeType.BOOLEAN;
     }
 
-    public void setEditable(boolean flag)
-    {
+    public void setEditable(boolean flag) {
         this.setEnabled(flag);
     }
 

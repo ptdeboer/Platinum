@@ -23,55 +23,46 @@ package nl.esciencecenter.ptk.data;
 /**
  * Boolean holder class for VAR Boolean types.
  */
-public class BooleanHolder implements VARHolder<Boolean>
-{
+public class BooleanHolder implements VARHolder<Boolean> {
+
     public Boolean value = null;
 
-    public BooleanHolder(boolean val)
-    {
+    public BooleanHolder(boolean val) {
         value = val;
     }
 
-    public BooleanHolder()
-    {
+    public BooleanHolder() {
         value = new Boolean(false);
     }
 
-    public boolean booleanValue()
-    {
-        if (value != null)
-            return value;
-
-        throw new NullPointerException("Value in IntegerHolder is NULL");
-
+    public boolean booleanValue() {
+        if (value==null) {
+            throw new NullPointerException("Value in IntegerHolder is NULL");
+        }
+        return value;
     }
 
     /**
      * Returns Holder value or defValue if holder does not contain any value.
      */
-    public boolean booleanValue(boolean defValue)
-    {
-        if (value != null)
-            return value;
-
-        return defValue;
+    public boolean booleanValue(boolean defValue) {
+        if (value==null)
+            return defValue;
+        return value;
     }
 
     /**
      * Whether value was specified.
      */
-    public boolean isSet()
-    {
+    public boolean isSet() {
         return (value != null);
     }
 
-    public void set(Boolean val)
-    {
+    public void set(Boolean val) {
         this.value = val;
     }
 
-    public Boolean get()
-    {
+    public Boolean get() {
         return value;
     }
 }

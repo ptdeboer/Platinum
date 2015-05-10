@@ -31,10 +31,9 @@ import javax.swing.JFrame;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 
-public class AttributeEditorController implements ActionListener, WindowListener
-{
-    private final static PLogger logger=PLogger.getLogger(AttributeEditorController.class);
-    
+public class AttributeEditorController implements ActionListener, WindowListener {
+    private final static PLogger logger = PLogger.getLogger(AttributeEditorController.class);
+
     protected JFrame standAloneFrame = null;
 
     protected AttributeEditorForm attrEditorDialog = null;
@@ -46,89 +45,69 @@ public class AttributeEditorController implements ActionListener, WindowListener
 
     protected boolean isOk = true;
 
-    public AttributeEditorController(AttributeEditorForm srbDialog)
-    {
+    public AttributeEditorController(AttributeEditorForm srbDialog) {
         this.attrEditorDialog = srbDialog;
     }
 
-    public void update()
-    {
+    public void update() {
         // get attribute from attribute panel and update attribute object
         Attribute attrs[] = attrEditorDialog.infoPanel.getAttributes();
 
-        if (attrs == null)
-        {
+        if (attrs == null) {
             logger.debugPrintf("AttributeEditorController: null Attributes\n");
             return;
         }
-        for (int i = 0; i < attrs.length; i++)
-        {
+        for (int i = 0; i < attrs.length; i++) {
             logger.debugPrintf("Attr[%d]=%s\n", i, attrs[i]);
         }
     }
 
-
-    public void actionPerformed(ActionEvent e)
-    {
-        if (e.getSource() == this.attrEditorDialog.okButton)
-        {
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == this.attrEditorDialog.okButton) {
             // store but do not save
             update();
 
             isOk = true;
             Exit();
 
-        }
-        else if (e.getSource() == this.attrEditorDialog.cancelButton)
-        {
+        } else if (e.getSource() == this.attrEditorDialog.cancelButton) {
             isOk = false;
             Exit();
-        }
-        else if (e.getSource() == this.attrEditorDialog.resetButton)
-        {
+        } else if (e.getSource() == this.attrEditorDialog.resetButton) {
             attrEditorDialog.setAttributes(this.attrEditorDialog.originalAttributes);
         }
     }
 
-    public synchronized void Exit()
-    {
+    public synchronized void Exit() {
         attrEditorDialog.Exit();
 
         // need to dispose of standalone frame also.
 
-        if (standAloneFrame != null)
-        {
+        if (standAloneFrame != null) {
             standAloneFrame.dispose();
         }
     }
 
-    public void windowOpened(WindowEvent e)
-    {
+    public void windowOpened(WindowEvent e) {
     }
 
-    public void windowClosing(WindowEvent e)
-    {
+    public void windowClosing(WindowEvent e) {
         Exit();
     }
 
-    public void windowClosed(WindowEvent e)
-    {
+    public void windowClosed(WindowEvent e) {
     }
 
-    public void windowIconified(WindowEvent e)
-    {
+    public void windowIconified(WindowEvent e) {
     }
 
-    public void windowDeiconified(WindowEvent e)
-    {
+    public void windowDeiconified(WindowEvent e) {
     }
 
-    public void windowActivated(WindowEvent e)
-    {
+    public void windowActivated(WindowEvent e) {
     }
 
-    public void windowDeactivated(WindowEvent e)
-    {
+    public void windowDeactivated(WindowEvent e) {
     }
 
 }

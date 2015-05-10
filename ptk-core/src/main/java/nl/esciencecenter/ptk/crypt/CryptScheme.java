@@ -20,13 +20,14 @@
 
 package nl.esciencecenter.ptk.crypt;
 
+import java.io.Serializable;
+
 /**
  * Pre configured encryption schemes.
  * <p>
  * Jackson POJO directives: enum classes are automatically converted.
  */
-public enum CryptScheme
-{
+public enum CryptScheme implements Serializable {
     /**
      * Triple DES (E-D-E), Electronic Cook Book and PKC5 Padding.
      */
@@ -73,13 +74,12 @@ public enum CryptScheme
     protected String configString;
 
     /**
-     * Significant key length in bytes. For Triple DES, this is 24 For AES-128 this is 16, for AES-256 this 32. Keys
-     * longer than this length might be truncated.
+     * Significant key length in bytes. For Triple DES, this is 24 For AES-128 this is 16, for
+     * AES-256 this 32. Keys longer than this length might be truncated.
      */
     protected int keyLength;
 
-    private CryptScheme(String shemeAlias, String schemeFamily, String configName, int keyLength)
-    {
+    private CryptScheme(String shemeAlias, String schemeFamily, String configName, int keyLength) {
         this.schemeAlias = shemeAlias;
         this.schemeFamily = schemeFamily;
         this.configString = configName;
@@ -89,16 +89,14 @@ public enum CryptScheme
     /**
      * @return Used encryption scheme symbolic name or alias.
      */
-    public String getSchemeAlias()
-    {
+    public String getSchemeAlias() {
         return schemeAlias;
     }
 
     /**
      * @return Actually used Cipher Scheme (DES,AES)
      */
-    public String getCipherScheme()
-    {
+    public String getCipherScheme() {
         return schemeFamily;
     }
 
@@ -107,19 +105,17 @@ public enum CryptScheme
      * 
      * @return
      */
-    public String getConfigString()
-    {
+    public String getConfigString() {
         return configString;
     }
 
     /**
-     * Returns significant key length. Smaller keys are rejected. Longer key might be truncated or XOR-ed with their
-     * remainder.
+     * Returns significant key length. Smaller keys are rejected. Longer key might be truncated or
+     * XOR-ed with their remainder.
      * 
      * @return Significant Key Length in bytes.
      */
-    public int getKeyLength()
-    {
+    public int getKeyLength() {
         return keyLength;
     }
 

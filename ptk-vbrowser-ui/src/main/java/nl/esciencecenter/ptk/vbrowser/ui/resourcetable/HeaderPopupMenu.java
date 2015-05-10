@@ -23,7 +23,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -35,24 +34,21 @@ import javax.swing.JTable;
 /**
  * Table Header popup menu + popup listener. Creates dynamic menu from DataModel.
  */
-public class HeaderPopupMenu extends JPopupMenu
-{
+public class HeaderPopupMenu extends JPopupMenu {
     private static final long serialVersionUID = -3678190881308127063L;
 
     // ========================================================================
     // Class Stuff
     // ========================================================================
 
-    public enum HeaderCommand
-    {
-        INSERT_COLUMN_AFTER, INSERT_COLUMN_BEFORE, DELETE_COLUMN, AUTO_FIT_COLUMNS_ON, AUTO_FIT_COLUMNS_OFF
+    public enum HeaderCommand {
+        INSERT_COLUMN_AFTER, INSERT_COLUMN_BEFORE, DELETE_COLUMN, AUTO_FIT_COLUMNS_ON,
+        AUTO_FIT_COLUMNS_OFF
     };
 
     /** Non static ActionListener so that it can access outer class members */
-    public class ANPopupListener implements ActionListener
-    {
-        public void actionPerformed(ActionEvent e)
-        {
+    public class ANPopupListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
             // Global.debugPrintln("PopupListener","Action:"+e);
             // Global.debugPrintln("PopupListener","source:"+e.getSource());
 
@@ -66,8 +62,7 @@ public class HeaderPopupMenu extends JPopupMenu
 
             HeaderCommand cmd = HeaderCommand.valueOf(cmdstr);
 
-            switch (cmd)
-            {
+            switch (cmd) {
                 case INSERT_COLUMN_BEFORE:
                 case INSERT_COLUMN_AFTER:
                     boolean insertBefore = (cmd == HeaderCommand.INSERT_COLUMN_BEFORE);
@@ -95,12 +90,11 @@ public class HeaderPopupMenu extends JPopupMenu
     private ResourceTable tablePanel;
 
     /**
-     * Header name that was clicked on.  
+     * Header name that was clicked on.
      */
     private String headerName;
 
-    public HeaderPopupMenu(ResourceTable table, String header)
-    {
+    public HeaderPopupMenu(ResourceTable table, String header) {
         this.tablePanel = table;
         this.headerName = header;
 
@@ -113,8 +107,7 @@ public class HeaderPopupMenu extends JPopupMenu
         // this.add(createHeaderOptionsMenu());
     }
 
-    private JMenuItem createMenuItem(String name, String cmdString)
-    {
+    private JMenuItem createMenuItem(String name, String cmdString) {
         JMenuItem mitem = new JMenuItem();
         mitem.setText(name);
         mitem.setActionCommand(cmdString);
@@ -123,8 +116,7 @@ public class HeaderPopupMenu extends JPopupMenu
         return mitem;
     }
 
-    private JMenuItem createCheckBoxMenuItem(String name, String cmdString, boolean selected)
-    {
+    private JMenuItem createCheckBoxMenuItem(String name, String cmdString, boolean selected) {
         JCheckBoxMenuItem mitem = new JCheckBoxMenuItem();
         mitem.setText(name);
         mitem.setActionCommand(cmdString);
@@ -133,30 +125,26 @@ public class HeaderPopupMenu extends JPopupMenu
         return mitem;
     }
 
-    private JMenu createAddAttrNamesSubMenu()
-    {
+    private JMenu createAddAttrNamesSubMenu() {
         JMenu menu = new JMenu();
         menu.setText("Columns");
 
         // All Headers!
-        String names[]= tablePanel.getModel().getAllAttributeNames();
+        String names[] = tablePanel.getModel().getAllAttributeNames();
 
         @SuppressWarnings("unused")
         JMenuItem mitem = null;
 
-        if (names != null)
-        {
-            for (String name : names)
-            {
+        if (names != null) {
+            for (String name : names) {
                 boolean present = tablePanel.hasColumn(name);
-                if (present == false)
-                {
-                    menu.add(mitem = createCheckBoxMenuItem(name, "" + HeaderCommand.INSERT_COLUMN_AFTER + ":" + name, present));
+                if (present == false) {
+                    menu.add(mitem = createCheckBoxMenuItem(name, ""
+                            + HeaderCommand.INSERT_COLUMN_AFTER + ":" + name, present));
                     // menu.add(mitem=createCheckBoxMenuItem(name,""+HeaderCommand.INSERT_COLUMN_AFTER+":"+name,present));
-                }
-                else
-                {
-                    menu.add(mitem = createCheckBoxMenuItem(name, "" + HeaderCommand.DELETE_COLUMN + ":" + name, present));
+                } else {
+                    menu.add(mitem = createCheckBoxMenuItem(name, "" + HeaderCommand.DELETE_COLUMN
+                            + ":" + name, present));
                 }
             }
         }
@@ -165,8 +153,7 @@ public class HeaderPopupMenu extends JPopupMenu
     }
 
     // JPopupMenu and JMenu only have JComponent as shared parent...
-    private void addHeaderOptionsTo(JComponent menu)
-    {
+    private void addHeaderOptionsTo(JComponent menu) {
         @SuppressWarnings("unused")
         JMenuItem mitem;
 
@@ -174,9 +161,11 @@ public class HeaderPopupMenu extends JPopupMenu
         boolean state = (tablePanel.getAutoResizeMode() == JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         if (state == false)
-            menu.add(mitem = createCheckBoxMenuItem("Auto fit columns", "" + HeaderCommand.AUTO_FIT_COLUMNS_ON, state));
+            menu.add(mitem = createCheckBoxMenuItem("Auto fit columns", ""
+                    + HeaderCommand.AUTO_FIT_COLUMNS_ON, state));
         else
-            menu.add(mitem = createCheckBoxMenuItem("Auto fit columns", "" + HeaderCommand.AUTO_FIT_COLUMNS_OFF, state));
+            menu.add(mitem = createCheckBoxMenuItem("Auto fit columns", ""
+                    + HeaderCommand.AUTO_FIT_COLUMNS_OFF, state));
     }
 
 }

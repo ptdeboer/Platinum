@@ -34,8 +34,7 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdater
-{
+public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdater {
     private final static PLogger logger = PLogger.getLogger(IconsPanelUpdater.class);
 
     private ProxyDataSource dataSource;
@@ -44,82 +43,67 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
 
     private ViewNode rootNode;
 
-    public IconsPanelUpdater(IconsPanel panel, ProxyDataSource dataSource)
-    {
+    public IconsPanelUpdater(IconsPanel panel, ProxyDataSource dataSource) {
         this.iconsPanel = panel;
         this.dataSource = dataSource;
         setDataSource(dataSource, true);
     }
 
-    public ViewNode getRootNode()
-    {
+    public ViewNode getRootNode() {
         return rootNode;
     }
 
-    public UIViewModel getUIModel()
-    {
+    public UIViewModel getUIModel() {
         return this.iconsPanel.getUIViewModel();
     }
 
-    protected BrowserInterface getMasterBrowser()
-    {
+    protected BrowserInterface getMasterBrowser() {
         return this.iconsPanel.getMasterBrowser();
     }
 
-    protected ITaskSource getTaskSource()
-    {
+    protected ITaskSource getTaskSource() {
         BrowserInterface masterB = getMasterBrowser();
 
-        if (masterB instanceof ProxyBrowserController)
-        {
+        if (masterB instanceof ProxyBrowserController) {
             return masterB.getTaskSource();
         }
 
         return null;
     }
 
-    public void setDataSource(ProxyDataSource dataSource, boolean update)
-    {
+    public void setDataSource(ProxyDataSource dataSource, boolean update) {
         // unregister
-        if (this.dataSource != null)
-        {
+        if (this.dataSource != null) {
             this.dataSource.removeDataSourceEventListener(this);
         }
 
         this.dataSource = dataSource;
 
         // register
-        if (this.dataSource != null)
-        {
+        if (this.dataSource != null) {
             this.dataSource.addDataSourceEventListener(this);
         }
 
-        if ((update) && (dataSource != null))
-        {
+        if ((update) && (dataSource != null)) {
             updateRoot();
         }
     }
 
     @Override
-    public void notifyVRSEvent(VRSEvent e)
-    {
+    public void notifyVRSEvent(VRSEvent e) {
         VRL vrls[] = e.getResources();
         VRL parent = e.getParent();
 
         VRL otherVrls[] = e.getOtherResources();
 
         // check parent:
-        if ((parent != null) && (rootNode.getVRL().equals(parent) == false))
-        {
+        if ((parent != null) && (rootNode.getVRL().equals(parent) == false)) {
             return;
         }
 
-        switch (e.getType())
-        {
-            case RESOURCES_ADDED:
-            {
-                if (parent == null)
-                {
+        switch (e.getType()) {
+            case RESOURCES_ADDED: {
+                if (parent == null) {
                     logger.errorPrintf("Cannot check if new resource are for me. parent==null!\n");
                     return;
                 }
@@ -127,51 +111,43 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
                 update();
                 break;
             }
-            case RESOURCES_DELETED:
-            {
+            case RESOURCES_DELETED: {
                 deleteChilds(vrls);
                 break;
             }
-            default:
-            {
+            default: {
                 update();
                 break;
             }
         }
     }
 
-    private void deleteChilds(VRL[] vrls)
-    {
+    private void deleteChilds(VRL[] vrls) {
         // perform delete during Event thread.
         IconListModel model = iconsPanel.getModel();
 
-        for (VRL vrl : vrls)
-        {
+        for (VRL vrl : vrls) {
             model.deleteItem(vrl, true);
         }
 
         iconsPanel.revalidate();
     }
 
-    @Override 
-    public void update()
-    {
+    @Override
+    public void update() {
         updateRoot();
         iconsPanel.revalidate();
     }
 
     @Override
-    public void update(VRL[] vrls, String[] optAttributeNames)
-    {
+    public void update(VRL[] vrls, String[] optAttributeNames) {
         logger.errorPrintf("FIXME:update(...,...)");
         // update all for now: 
-        update(); 
+        update();
     }
 
-    private IconItem[] createIconItems(ViewNode[] nodes)
-    {
-        if (nodes == null)
-        {
+    private IconItem[] createIconItems(ViewNode[] nodes) {
+        if (nodes == null) {
             return null;
         }
 
@@ -179,35 +155,30 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
 
         IconItem items[] = new IconItem[len];
 
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             items[i] = createIconItem(nodes[i]);
         }
 
         return items;
     }
 
-    protected IconItem createIconItem(ViewNode node)
-    {
+    protected IconItem createIconItem(ViewNode node) {
         IconItem item = new IconItem(iconsPanel, getUIModel(), node);
-        item.initDND(iconsPanel.getPlatform().getTransferHandler(), iconsPanel.getDragGestureListener());
+        item.initDND(iconsPanel.getPlatform().getTransferHandler(),
+                iconsPanel.getDragGestureListener());
         return item;
     }
 
-    private void handle(String actionText, ProxyException e)
-    {
+    private void handle(String actionText, ProxyException e) {
         this.iconsPanel.getMasterBrowser().handleException(actionText, e);
     }
 
-    public ProxyDataSource getDataSource()
-    {
+    public ProxyDataSource getDataSource() {
         return this.dataSource;
     }
 
-    protected void updateRoot()
-    {
-        if (dataSource == null)
-        {
+    protected void updateRoot() {
+        if (dataSource == null) {
             updateChilds(null);// clear/reset;
             return;
         }
@@ -219,29 +190,22 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
     // Backgrounded tasks.
     // ======================
 
-    private void doPopulate(final boolean fetchRoot, final boolean fetchChilds)
-    {
-        BrowserTask task = new BrowserTask(this.getTaskSource(), "Populating IconsPanel.")
-        {
+    private void doPopulate(final boolean fetchRoot, final boolean fetchChilds) {
+        BrowserTask task = new BrowserTask(this.getTaskSource(), "Populating IconsPanel.") {
 
             @Override
-            protected void doTask() throws Exception
-            {
-                try
-                {
-                    if (fetchRoot)
-                    {
+            protected void doTask() throws Exception {
+                try {
+                    if (fetchRoot) {
                         rootNode = dataSource.getRoot(getUIModel());
                     }
 
-                    if (fetchChilds)
-                    {
-                        ViewNode[] childs = dataSource.getChilds(getUIModel(), rootNode.getVRL(), 0, -1, null);
+                    if (fetchChilds) {
+                        ViewNode[] childs = dataSource.getChilds(getUIModel(), rootNode.getVRL(),
+                                0, -1, null);
                         updateChilds(childs);
                     }
-                }
-                catch (ProxyException e)
-                {
+                } catch (ProxyException e) {
                     handle("Couldn't populate  root location.", e);
                 }
             }
@@ -251,10 +215,8 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
 
     }
 
-    private void updateChilds(ViewNode[] childs)
-    {
+    private void updateChilds(ViewNode[] childs) {
         this.iconsPanel.getModel().setItems(createIconItems(childs));
     }
-
 
 }

@@ -20,29 +20,26 @@
 
 package nl.esciencecenter.ptk.presentation;
 
-public class PresentationConst
-{
+public class PresentationConst {
 
-    // Todo: Match Local 
-    public static String monthNames[] = 
-        {
-            "Jan", 
-            "Feb", 
-            "Mar", 
-            "Apr", 
-            "May", 
-            "Jun", 
-            "Jul", 
-            "Aug", 
-            "Sep", 
-            "Oct", 
-            "Nov",
-            "Dec"
-        };
-    
-    public static String[] getMonthNames()
-    {
-        return monthNames; 
+    // Todo: Match Locale names.  
+    public static String monthNames[] = { //
+    "Jan",//
+            "Feb",//
+            "Mar",//
+            "Apr",//
+            "May",//
+            "Jun",//
+            "Jul",//
+            "Aug",//
+            "Sep",//
+            "Oct",//
+            "Nov",//
+            "Dec"//
+    };
+
+    public static String[] getMonthNames() {
+        return monthNames;
     }
 
 }

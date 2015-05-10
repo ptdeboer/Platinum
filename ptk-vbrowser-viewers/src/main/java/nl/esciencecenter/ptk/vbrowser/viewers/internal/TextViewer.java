@@ -65,8 +65,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Embedded textviewer for the VBrowser.
  */
-public class TextViewer extends EmbeddedViewer implements ActionListener, FontToolbarListener
-{
+public class TextViewer extends EmbeddedViewer implements ActionListener, FontToolbarListener {
     private static final long serialVersionUID = -2866218889160789305L;
 
     // --
@@ -74,10 +73,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
     private static final String CONFIG_LINE_WRAP = "textviewer.linewrap";
 
-    private static final String configPropertyNames[] =
-    {
-            CONFIG_LINE_WRAP
-    };
+    private static final String configPropertyNames[] = { CONFIG_LINE_WRAP };
 
     public static final String ACTION_VIEW = "View";
 
@@ -86,21 +82,13 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     /**
      * The mimetypes i can view
      */
-    private static String mimeTypes[] =
-    {
-            MimeTypes.MIME_TEXT_PLAIN,
-            MimeTypes.MIME_TEXT_HTML,
-            "text/x-c",
-            "text/x-cpp",
-            "text/x-java",
-            "application/x-sh",
-            "application/x-csh",
+    private static String mimeTypes[] = { MimeTypes.MIME_TEXT_PLAIN, MimeTypes.MIME_TEXT_HTML,
+            "text/x-c", "text/x-cpp", "text/x-java", "application/x-sh", "application/x-csh",
             "application/x-shellscript",
             // MimeTypes.MIME_BINARY, -> Now handled by MimeType mapping!
             "application/vlet-type-definition",
             // nfo files: uses CP437 Encoding (US Extended ASCII)!
-            "text/x-nfo"
-    };
+            "text/x-nfo" };
 
     // ===
     // Instance
@@ -166,13 +154,11 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
     private ActionTask loadTask;
 
-    public TextViewer()
-    {
+    public TextViewer() {
         ; // initialization is done in initViewer() !
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         // TextViewer is a JPanel:
         {
             this.setLayout(new BorderLayout());
@@ -250,8 +236,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                         String encs[] = ResourceLoader.getDefaultCharEncodings();
                         encodingButtons = new Vector<JRadioButton>();
                         ButtonGroup bGroup = new ButtonGroup();
-                        for (String encoding : encs)
-                        {
+                        for (String encoding : encs) {
                             JRadioButton item = new JRadioButton(encoding);
                             encodingMenu.add(item);
                             item.setActionCommand("encoding:" + encoding);
@@ -365,35 +350,30 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
         }
     }
 
-    protected FontInfo getFontInfo()
-    {
+    protected FontInfo getFontInfo() {
         return fontToolbar.getFontInfo();
     }
 
     @Override
-    public boolean haveOwnScrollPane()
-    {
+    public boolean haveOwnScrollPane() {
         return true;
     }
 
     /**
      * @param txt
      */
-    public void setText(String txt)
-    {
+    public void setText(String txt) {
         textArea.setText(txt);
         // needed when updating outside Event thread:
         textArea.revalidate();
     }
 
-    protected void updateFont(FontInfo info)
-    {
+    protected void updateFont(FontInfo info) {
         this.fontToolbar.setFontInfo(info);
         this.updateFont(info.createFont(), info.getRenderingHints());
     }
 
-    public void updateFont(Font font, Map<?, ?> renderingHints)
-    {
+    public void updateFont(Font font, Map<?, ?> renderingHints) {
         textArea.setFont(font);
         FontUtil.updateRenderingHints(textArea, renderingHints);// doesn't work.
         textArea.repaint();
@@ -403,51 +383,41 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
      * @param location
      * @throws VrsException
      */
-    public void doStartViewer(VRL vrl, String optionalMethod)
-    {
+    public void doStartViewer(VRL vrl, String optionalMethod) {
         doUpdate(vrl);
     }
 
-    protected void doUpdate(final VRL location)
-    {
+    protected void doUpdate(final VRL location) {
 
-        try
-        {
+        try {
 
-            if (isSaving())
-            {
+            if (isSaving()) {
                 throw new IOException("Still waiting for previous save to finished!");
             }
 
             if (location == null)
                 return; // clear ?
 
-            loadTask = new ActionTask(null, "Load Contents of:" + this)
-            {
-                public void doTask()
-                {
+            loadTask = new ActionTask(null, "Load Contents of:" + this) {
+                public void doTask() {
                     _load(location);
                 }
 
                 @Override
-                public void stopTask()
-                {
+                public void stopTask() {
 
                 }
 
             };
 
             loadTask.startTask();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             notifyException("Failed to (re)load URI:" + getVRL(), e);
         }
 
     }
 
-    protected void _load(VRL uri)
-    {
+    protected void _load(VRL uri) {
         infoPrintf("TextViewer Loading:%s\n", uri);
 
         // reset stop flag:
@@ -455,35 +425,30 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
         this.setText(""); // clear previous ..
 
-        if (uri == null)
-        {
+        if (uri == null) {
             setText("<<<NULL URI>>>");
             return;
         }
 
         setBusyLoadSave(true);
 
-        try
-        {
+        try {
             setViewerTitle("Loading :" + getVRL());
 
             String txt = "";
 
             String mimeType = getResourceHandler().getMimeType(uri.getPath());
 
-            if (this.muststop == true)
-            {
+            if (this.muststop == true) {
                 setBusyLoadSave(false);
                 return; // receive stop signal BEFORE getContents...
             }
 
             // Special Replica handling:
-            if (this.getResourceHandler().hasReplicas(getVRL()))
-            {
+            if (this.getResourceHandler().hasReplicas(getVRL())) {
                 VRL vrls[] = getResourceHandler().getReplicas(getVRL());
 
-                if ((vrls == null) || (vrls.length <= 0))
-                {
+                if ((vrls == null) || (vrls.length <= 0)) {
                     // Use Exception dialog as Warning Dialog
                     throw new IOException(
                             "Warning:File doesn't have any replicas.\n"
@@ -495,18 +460,14 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
             txt = getResourceHandler().readText(uri, textEncoding);
             // Override
-            if (StringUtil.equals(mimeType, "text/x-nfo"))
-            {
+            if (StringUtil.equals(mimeType, "text/x-nfo")) {
                 textEncoding = ResourceLoader.CHARSET_CP437;
                 setFont("Monospaced");
-            }
-            else
-            {
+            } else {
                 // Keep current
                 // textEncoding=ResourceLoader.CHARSET_UTF8;
             }
-            if (this.muststop == true)
-            {
+            if (this.muststop == true) {
                 setBusyLoadSave(false);
                 return; // receive stop signal AFTER getContents...
             }
@@ -516,46 +477,35 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
             requestFocusOnText();
             updateTitle();
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             loadError = true;
             setViewerTitle("Error Loading :" + getVRL());
             //
             setText("");
             notifyException("Failed to load text:" + getVRL(), e);
-        }
-        finally
-        {
+        } finally {
             setBusyLoadSave(false);
         }
     }
 
-    public void setFont(String name)
-    {
+    public void setFont(String name) {
         this.fontToolbar.selectFont(name);
     }
 
-    protected void updateTitle()
-    {
-        if (this.editable == false)
-        {
+    protected void updateTitle() {
+        if (this.editable == false) {
             setViewerTitle("Viewing:" + getVRL().getBasename());
-        }
-        else
-        {
+        } else {
             setViewerTitle("Editing:" + getVRL().getBasename());
         }
     }
 
-    protected void requestFocusOnText()
-    {
+    protected void requestFocusOnText() {
         this.textArea.requestFocusInWindow();
     }
 
     @Override
-    public String[] getMimeTypes()
-    {
+    public String[] getMimeTypes() {
         return mimeTypes;
     }
 
@@ -575,86 +525,60 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     // }
 
     @Override
-    public void doStopViewer()
-    {
+    public void doStopViewer() {
         this.muststop = true;
     }
 
     @Override
-    public void doDisposeViewer()
-    {
+    public void doDisposeViewer() {
         this.textArea = null;
     }
 
     @Override
-    public void doInitViewer()
-    {
+    public void doInitViewer() {
         initGui();
     }
 
     @Override
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return "TextEditor";
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String actionCmd = e.getActionCommand();
 
         // FontToolbar events are handled by that component:
-        if ((source == this.refreshButton) || (source == this.refreshMenuItem))
-        {
-            try
-            {
-                if (isSaving())
-                {
-                    notifyException("Still Saving!", new Exception("Still waiting for previous save to finished!"));
+        if ((source == this.refreshButton) || (source == this.refreshMenuItem)) {
+            try {
+                if (isSaving()) {
+                    notifyException("Still Saving!", new Exception(
+                            "Still waiting for previous save to finished!"));
                     return;
                 }
                 doUpdate(getVRL());
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 notifyException("Failed to (re)load:" + getVRL(), ex);
             }
-        }
-        else if ((source == this.saveConfigButton) || (source == this.saveConfigMenuItem))
-        {
+        } else if ((source == this.saveConfigButton) || (source == this.saveConfigMenuItem)) {
             saveSettings();
-        }
-        else if (source == this.loadConfigMenuItem)
-        {
+        } else if (source == this.loadConfigMenuItem) {
             loadSettings();
-        }
-        else if (source == this.enableEditButton)
-        {
+        } else if (source == this.enableEditButton) {
             enableEdit(this.editable == false); // toggle
             this.requestFocusOnText();
-        }
-        else if (source == this.editMenuItem)
-        {
+        } else if (source == this.editMenuItem) {
             enableEdit(editMenuItem.isSelected());
-        }
-        else if (source == this.wrapMenuItem)
-        {
+        } else if (source == this.wrapMenuItem) {
             setLineWrap(this.wrapMenuItem.getState());
 
-        }
-        else if ((source == this.saveButton) || (source == this.saveMenuItem))
-        {
-            try
-            {
+        } else if ((source == this.saveButton) || (source == this.saveMenuItem)) {
+            try {
                 save();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 this.notifyException("Failed to save:" + getVRL(), ex);
             }
-        }
-        else if (source == enableEncodingMenuitem)
-        {
+        } else if (source == enableEncodingMenuitem) {
             boolean val = (enableEncodingMenuitem.getText().compareToIgnoreCase("Enable") == 0);
 
             if (val)
@@ -664,9 +588,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
 
             for (JRadioButton rbut : this.encodingButtons)
                 rbut.setEnabled(val);
-        }
-        else if (actionCmd.startsWith("encoding:"))
-        {
+        } else if (actionCmd.startsWith("encoding:")) {
             String strs[] = actionCmd.split(":");
             setEncoding(strs[1]);
             // only show warning during GUI actions
@@ -674,75 +596,65 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
         }
     }
 
-    protected void setEncoding(String val)
-    {
+    protected void setEncoding(String val) {
         this.textEncoding = val;
     }
 
-    private void showWarnEncoding()
-    {
+    private void showWarnEncoding() {
         if (this._showWarningEncoding == false)
             return;
 
-        super.showMessage("Encoding has changed", "Warning: You are changing the encoding of this text.\n"
-                + "Either:\n" + "(1) Reload this file to read the original text using the new encoding, or\n"
-                + "(2) Save this resource to encode the current text using the new encoding.");
+        super.showMessage(
+                "Encoding has changed",
+                "Warning: You are changing the encoding of this text.\n"
+                        + "Either:\n"
+                        + "(1) Reload this file to read the original text using the new encoding, or\n"
+                        + "(2) Save this resource to encode the current text using the new encoding.");
 
         // I will zay thiz zonly wanz:
         this._showWarningEncoding = false;
     }
 
-    protected void setLineWrap(boolean state)
-    {
+    protected void setLineWrap(boolean state) {
         this.textArea.setLineWrap(state);
         this.configProperties.setProperty(CONFIG_LINE_WRAP, "" + state);
     }
 
     ActionTask saveTask = null;
 
-    protected boolean isSaving()
-    {
+    protected boolean isSaving() {
         if (saveTask == null)
             return false;
 
-        if (saveTask.isAlive() == false)
-        {
+        if (saveTask.isAlive() == false) {
             saveTask = null;
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }
 
-    protected void save() throws IOException
-    {
+    protected void save() throws IOException {
         final String textToSave = this.textArea.getText();
 
-        if (isSaving())
-        {
+        if (isSaving()) {
             throw new IOException("Still waiting for previous save to finished!");
         }
 
-        saveTask = new ActionTask(null, "Save Contents of:" + this)
-        {
-            public void doTask()
-            {
+        saveTask = new ActionTask(null, "Save Contents of:" + this) {
+            public void doTask() {
                 _save(textToSave, getTextEncoding());
             }
 
             @Override
-            public void stopTask()
-            {
+            public void stopTask() {
             }
         };
 
         saveTask.startTask();
     }
 
-    protected void setBusyLoadSave(final boolean val)
-    {
+    protected void setBusyLoadSave(final boolean val) {
         if (this.editable)
             saveButton.setEnabled((val == false));
         else
@@ -762,22 +674,16 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
      * 
      * @param encoding
      */
-    protected void _save(final String txt, String encoding)
-    {
-        try
-        {
+    protected void _save(final String txt, String encoding) {
+        try {
             setBusyLoadSave(true);
             setViewerTitle("Saving text:" + getURIBasename());
             updateTitle();
 
             this.getResourceHandler().writeText(getVRL(), txt, encoding);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             notifyException("Failed to write text to:" + getVRL(), e);
-        }
-        finally
-        {
+        } finally {
             setBusyLoadSave(false);
         }
     }
@@ -785,10 +691,8 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     /**
      * Enable/Disable edit
      */
-    protected void enableEdit(boolean val)
-    {
-        if (val == true)
-        {
+    protected void enableEdit(boolean val) {
+        if (val == true) {
 
             this.editable = true;
             this.textArea.setEditable(true);
@@ -797,9 +701,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
             this.setViewerTitle("Editing:" + getURIBasename());
             this.editMenuItem.setSelected(true);
             this.saveMenuItem.setEnabled(true);
-        }
-        else
-        {
+        } else {
 
             this.editable = false;
             this.textArea.setEditable(false);
@@ -813,28 +715,22 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
         // this.enableEditButton.setSelected(true);
     }
 
-    protected void saveSettings()
-    {
+    protected void saveSettings() {
         Properties allProps = new Properties();
 
         Properties props = this.fontToolbar.getFontInfo().getFontProperties();
         allProps.putAll(props);
         allProps.putAll(this.configProperties);
 
-        try
-        {
+        try {
             saveConfigProperties(allProps, viewerSettingsFile);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             notifyException("Failed to save configuration properties", e);
         }
     }
 
-    protected void loadSettings()
-    {
-        try
-        {
+    protected void loadSettings() {
+        try {
             Properties props = loadConfigProperties(viewerSettingsFile);
             // System.err.println("load settings");
             FontInfo info = new FontInfo(props);
@@ -842,47 +738,37 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
             this.updateFont(info);
 
             // update/copy settings
-            for (String name : configPropertyNames)
-            {
+            for (String name : configPropertyNames) {
                 Object value = props.getProperty(name);
                 if (value != null)
                     this.configProperties.setProperty(name, value.toString());
             }
             updateSettings();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             warnPrintf("Exception when loading settings: %s\n", e);
         }
     }
 
-    protected void updateSettings()
-    {
+    protected void updateSettings() {
 
-        try
-        {
+        try {
             String value = this.configProperties.getProperty(CONFIG_LINE_WRAP);
             if (value != null)
                 this.wrapMenuItem.setState(Boolean.parseBoolean(value));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             errorPrintf("Property Exception '%s':%s\n", CONFIG_LINE_WRAP, e);
         }
     }
 
     @Override
-    public Map<String, List<String>> getMimeMenuMethods()
-    {
+    public Map<String, List<String>> getMimeMenuMethods() {
         // Use HashMapList to keep order of menu entries: first is default(!)
 
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
-        for (int i = 0; i < mimeTypes.length; i++)
-        {
-            List<String> list = new StringList(new String[] {
-                    ACTION_VIEW + ":View Text", ACTION_EDIT + ":Edit Text"
-            });
+        for (int i = 0; i < mimeTypes.length; i++) {
+            List<String> list = new StringList(new String[] { ACTION_VIEW + ":View Text",
+                    ACTION_EDIT + ":Edit Text" });
             mappings.put(mimeTypes[i], list);
         }
 

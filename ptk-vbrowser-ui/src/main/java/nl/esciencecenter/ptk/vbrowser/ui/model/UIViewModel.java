@@ -23,214 +23,195 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 import java.awt.Color;
 import java.awt.Dimension;
 
-/** 
+/**
  * Holds UI attributes.
- */  
-public class UIViewModel
-{
+ */
+public class UIViewModel {
     // ======
     // Class
     // ======
 
-    public static enum UIDirection{HORIZONTAL,VERTICAL}; 
-    
-    public static enum UIAlignment{LEFT,CENTER,RIGHT,FILL}; 
+    public static enum UIDirection {
+        HORIZONTAL, VERTICAL
+    };
 
-    public static UIViewModel createTreeViewModel()
-    {
-        UIViewModel model=new UIViewModel(); 
-        model.iconSize=16; 
-        return model; 
+    public static enum UIAlignment {
+        LEFT, CENTER, RIGHT, FILL
+    };
+
+    public static UIViewModel createTreeViewModel() {
+        UIViewModel model = new UIViewModel();
+        model.iconSize = 16;
+        return model;
     }
 
-    public static UIViewModel createIconsModel(int size)
-    {
-        UIViewModel iconsModel=new UIViewModel(); 
-        
-        iconsModel.iconSize=size; 
-        iconsModel.iconLayoutDirection=UIDirection.HORIZONTAL;
-        iconsModel.iconLabelPlacement=UIDirection.VERTICAL;
-        iconsModel.maximumIconLabelWidth=size*5; 
-        
-        return iconsModel; 
+    public static UIViewModel createIconsModel(int size) {
+        UIViewModel iconsModel = new UIViewModel();
+
+        iconsModel.iconSize = size;
+        iconsModel.iconLayoutDirection = UIDirection.HORIZONTAL;
+        iconsModel.iconLabelPlacement = UIDirection.VERTICAL;
+        iconsModel.maximumIconLabelWidth = size * 5;
+
+        return iconsModel;
     }
 
-    public static   UIViewModel createIconsListModel(int size)
-    {
-        UIViewModel iconsListModel=new UIViewModel(); 
-        
-        iconsListModel.iconSize=size; 
-        iconsListModel.iconLayoutDirection=UIDirection.VERTICAL;
-        iconsListModel.iconLabelPlacement=UIDirection.HORIZONTAL;
-        iconsListModel.maximumIconLabelWidth=size*20; 
-        
-        return iconsListModel; 
+    public static UIViewModel createIconsListModel(int size) {
+        UIViewModel iconsListModel = new UIViewModel();
+
+        iconsListModel.iconSize = size;
+        iconsListModel.iconLayoutDirection = UIDirection.VERTICAL;
+        iconsListModel.iconLabelPlacement = UIDirection.HORIZONTAL;
+        iconsListModel.maximumIconLabelWidth = size * 20;
+
+        return iconsListModel;
     }
 
-    public static UIViewModel createTableModel()
-    {
-        UIViewModel defaultTableModel=new UIViewModel(); 
-        
-        defaultTableModel.iconSize=16; 
-        defaultTableModel.maximumIconLabelWidth=120; 
-        
-        return defaultTableModel; 
-    }
-    
-	// ========================================================================
-	// instance
-	// ======================================================================== 
-	
-	/** 
-	 * Hierarchical UI properties, if an int value is -1 or an object value is null, inherit the value from the parent.  
-	 */ 
-    final protected UIViewModel parent; 
-    
-    /** Icons size. -1 = inherit from parent. */ 
-    protected int iconSize=48; 
-    
-    /** Direction of icons to layout in list mode. */ 
-    private UIDirection iconLayoutDirection=UIDirection.HORIZONTAL;
+    public static UIViewModel createTableModel() {
+        UIViewModel defaultTableModel = new UIViewModel();
 
-	/** Place of label under or next to icon */ 
-    private UIDirection iconLabelPlacement=UIDirection.VERTICAL; 
+        defaultTableModel.iconSize = 16;
+        defaultTableModel.maximumIconLabelWidth = 120;
+
+        return defaultTableModel;
+    }
+
+    // ========================================================================
+    // instance
+    // ======================================================================== 
+
+    /**
+     * Hierarchical UI properties, if an int value is -1 or an object value is null, inherit the
+     * value from the parent.
+     */
+    final protected UIViewModel parent;
+
+    /** Icons size. -1 = inherit from parent. */
+    protected int iconSize = 48;
+
+    /** Direction of icons to layout in list mode. */
+    private UIDirection iconLayoutDirection = UIDirection.HORIZONTAL;
+
+    /** Place of label under or next to icon */
+    private UIDirection iconLabelPlacement = UIDirection.VERTICAL;
 
     /** Horizontal gap between icons. -1 = inherit from parent. */
-    protected int iconHGap=8;
-    
+    protected int iconHGap = 8;
+
     /** Vertical gap between icons. -1 = inherit form parent. */
-    protected int iconVGap=8;
+    protected int iconVGap = 8;
 
-    private int maximumIconLabelWidth=180;
-    
-    private Color fgColor=Color.BLACK; 
+    private int maximumIconLabelWidth = 180;
 
-    private Color bgColor=Color.WHITE; 
+    private Color fgColor = Color.BLACK;
 
-    private Color fgColorSelected=null;  // null=default; Color.RED;
+    private Color bgColor = Color.WHITE;
 
-    private Color bgColorSelected=Color.LIGHT_GRAY;
-    
-    public UIViewModel()
-    {
-         parent=null;
-    }
-    
-    public UIViewModel(UIViewModel parent)
-    {
-         this.parent=parent; 
-    }
-    
-    public UIViewModel getParent()
-    {
-    	return this.parent; 
-    }
-    
-    public int getIconSize()
-    {
-    	// iconSize=-1 means inherit from parent; 
-    	if ((iconSize<0) && (parent!=null))
-    		return parent.getIconSize();
-    	
-        return iconSize; 
-    }
-    
-    public Dimension getIconDimensions()
-    {
-        return new Dimension(getIconSize(),getIconSize());  
+    private Color fgColorSelected = null; // null=default; Color.RED;
+
+    private Color bgColorSelected = Color.LIGHT_GRAY;
+
+    public UIViewModel() {
+        parent = null;
     }
 
-    public void setIconSize(int size)
-    {
-        iconSize=size; 
+    public UIViewModel(UIViewModel parent) {
+        this.parent = parent;
     }
 
-	public UIDirection getIconLabelPlacement() 
-	{
-		return iconLabelPlacement; 
-	}
-	
-	public UIDirection getIconLayoutDirection() 
-	{
-		return iconLayoutDirection; 
-	}
-	
-	// ==============================
-	// Layout and GUI stuff  
-	// ==============================
-	
-	public int getMaxIconLabelWidth()
-	{
-	    if ((maximumIconLabelWidth<0) && (parent!=null)) 
-	        return parent.getMaxIconLabelWidth(); 
-	    
-		return this.maximumIconLabelWidth; 
-	}
+    public UIViewModel getParent() {
+        return this.parent;
+    }
 
-    public Color getCanvasBGColor()
-    {
-        return Color.white; 
+    public int getIconSize() {
+        // iconSize=-1 means inherit from parent; 
+        if ((iconSize < 0) && (parent != null))
+            return parent.getIconSize();
+
+        return iconSize;
     }
-    
-    /** Horizontal space between Icons */ 
-    public int getIconHGap() 
-    {
-        if ((iconHGap<0) && (parent!=null))
-            return parent.getIconHGap(); 
-        
-        return iconHGap; 
+
+    public Dimension getIconDimensions() {
+        return new Dimension(getIconSize(), getIconSize());
     }
-    
+
+    public void setIconSize(int size) {
+        iconSize = size;
+    }
+
+    public UIDirection getIconLabelPlacement() {
+        return iconLabelPlacement;
+    }
+
+    public UIDirection getIconLayoutDirection() {
+        return iconLayoutDirection;
+    }
+
+    // ==============================
+    // Layout and GUI stuff  
+    // ==============================
+
+    public int getMaxIconLabelWidth() {
+        if ((maximumIconLabelWidth < 0) && (parent != null))
+            return parent.getMaxIconLabelWidth();
+
+        return this.maximumIconLabelWidth;
+    }
+
+    public Color getCanvasBGColor() {
+        return Color.white;
+    }
+
+    /** Horizontal space between Icons */
+    public int getIconHGap() {
+        if ((iconHGap < 0) && (parent != null))
+            return parent.getIconHGap();
+
+        return iconHGap;
+    }
+
     /** Vertical space between Icons */
-    public int getIconVGap() 
-    {
-        if ((iconVGap<0) && (parent!=null))
-            return parent.getIconVGap(); 
+    public int getIconVGap() {
+        if ((iconVGap < 0) && (parent != null))
+            return parent.getIconVGap();
 
-        return iconVGap; 
+        return iconVGap;
     }
 
-    public Color getFontHighlightColor()
-    {
-        return Color.blue; 
+    public Color getFontHighlightColor() {
+        return Color.blue;
     }
 
-    public Color getFontColor()
-    {
+    public Color getFontColor() {
         return Color.black;
     }
 
-    public Color getForegroundColor()
-    {
-        if ((fgColor==null) && (parent!=null)) 
-            return parent.fgColor; 
-        
-        return fgColor; 
+    public Color getForegroundColor() {
+        if ((fgColor == null) && (parent != null))
+            return parent.fgColor;
+
+        return fgColor;
     }
-    
-    public Color getBackgroundColor()
-    {
-        if ((bgColor==null) && (parent!=null)) 
-            return parent.bgColor; 
-        
-        return bgColor; 
+
+    public Color getBackgroundColor() {
+        if ((bgColor == null) && (parent != null))
+            return parent.bgColor;
+
+        return bgColor;
     }
-    
-    public Color getSelectedForegroundColor()
-    {
-        if ((fgColorSelected==null) && (parent!=null)) 
-            return parent.fgColorSelected;  
-        
-        return fgColorSelected; 
+
+    public Color getSelectedForegroundColor() {
+        if ((fgColorSelected == null) && (parent != null))
+            return parent.fgColorSelected;
+
+        return fgColorSelected;
     }
-    
-    public Color getSelectedBackgroundColor()
-    {
-        if ((bgColorSelected==null) && (parent!=null)) 
-            return parent.bgColorSelected;  
-        
-        return bgColorSelected; 
+
+    public Color getSelectedBackgroundColor() {
+        if ((bgColorSelected == null) && (parent != null))
+            return parent.bgColorSelected;
+
+        return bgColorSelected;
     }
 
 }
-

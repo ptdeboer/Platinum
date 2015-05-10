@@ -25,8 +25,7 @@ import java.util.List;
 /**
  * Common VAR Holder interface for lists.
  */
-public interface VARListHolder<T>
-{
+public interface VARListHolder<T> {
     /**
      * Whether value is set.
      */

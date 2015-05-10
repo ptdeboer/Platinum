@@ -23,14 +23,18 @@ package nl.esciencecenter.ptk.data;
 import java.util.Vector;
 
 /**
- * Generic History class. Manages a Stack like History of elements to remember for example last visited URLs in a
- * browser. Unlike a stack a pop() doesn't remove an entry. Instead the History has a back() method which returns the
- * latest added entry, but does not remove it. A forward() moves the History index one further and keeping the original
- * at the 'Stack'. An add() functions the same way as a push() but if the current index into the histor is does not
+ * Generic History class. Manages a Stack like History of elements to remember for example last
+ * visited URLs in a browser.
+ * <p>
+ * Unlike a stack a pop() doesn't remove an entry. Instead the History has a back() method which
+ * returns the latest added entry, but does not remove it. A forward() moves the History index one
+ * further and keeps the original at the 'Stack'.
+ * <p>
+ * An add() functions the same way as a push() but if the current index into the history does not
  * point to the last entry, the remainder of the History Stack is removed.
  */
-public class History<T>
-{
+public class History<T> {
+
     protected Vector<T> elements;
 
     protected boolean noDoubles = true;
@@ -40,36 +44,29 @@ public class History<T>
      */
     protected int currentIndex = -1;
 
-    public History()
-    {
+    public History() {
         elements = new Vector<T>();
     }
 
-    public History(int size)
-    {
+    public History(int size) {
         elements = new Vector<T>(size);
     }
 
     /**
-     * Add element to history. If the element equals current element the element is not added. Also if the index is not
-     * pointin to the last element, the history is truncated.
+     * Add element to history. If the element equals current element the element is not added. Also
+     * if the index is not pointin to the last element, the history is truncated.
      * 
      * @param el
      *            - element to be added to the history.
      */
-    public void add(T el)
-    {
+    public void add(T el) {
         // insert at current index.
         // currentIndex points to next 'empty' space.
-        synchronized (elements)
-        {
-            if ((noDoubles) && (isLast()))
-            {
+        synchronized (elements) {
+            if ((noDoubles) && (isLast())) {
                 // if last element equals current, don't add
-                if (currentIndex > 0)
-                {
-                    if (this.elements.get(currentIndex).equals(el))
-                    {
+                if (currentIndex > 0) {
+                    if (this.elements.get(currentIndex).equals(el)) {
                         // Do not add double (last) entry:
                         return;
                     }
@@ -84,16 +81,13 @@ public class History<T>
         }
     }
 
-    public boolean isLast()
-    {
+    public boolean isLast() {
         return (currentIndex == size() - 1);
     }
 
-    public T back()
-    {
-        // go back but keep current stack :
-        synchronized (elements)
-        {
+    /** Go back in history and return current element but keep current stack order. */
+    public T back() {
+        synchronized (elements) {
             // int len=elements.size();
 
             if (currentIndex <= 0)
@@ -107,11 +101,12 @@ public class History<T>
         }
     }
 
-    public T forward()
-    {
-        // go forward in current stack:
-        synchronized (elements)
-        {
+    /**
+     * Go forward in current stack and return 'next' element. Returns null if already most recent
+     * element.
+     */
+    public T forward() {
+        synchronized (elements) {
             int len = elements.size();
 
             if (currentIndex + 1 >= len)
@@ -124,8 +119,7 @@ public class History<T>
         }
     }
 
-    public int size()
-    {
+    public int size() {
         return elements.size();
     }
 

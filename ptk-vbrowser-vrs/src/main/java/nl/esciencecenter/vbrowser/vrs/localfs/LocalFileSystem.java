@@ -27,6 +27,7 @@ import java.nio.file.FileSystemException;
 
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.vbrowser.vrs.VCloseable;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
@@ -39,98 +40,76 @@ import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.node.VFileSystemNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class LocalFileSystem extends VFileSystemNode implements VStreamCreator
-{
-    private FSUtil fsUtil;
+public class LocalFileSystem extends VFileSystemNode implements VStreamCreator, VCloseable {
 
-    public LocalFileSystem(VRSContext context) throws VrsException
-    {
+    protected FSUtil fsUtil;
+
+    public LocalFileSystem(VRSContext context) throws VrsException {
         super(context, new VRL("file:/"));
         fsUtil = new FSUtil();
     }
 
     @Override
-    protected LocalFSPathNode createVFSNode(VRL vrl) throws VrsException
-    {
+    protected LocalFSPathNode createVFSNode(VRL vrl) throws VrsException {
         return createNode(vrl.getPath());
     }
 
-    protected LocalFSPathNode createNode(String path) throws VrsException
-    {
-        try
-        {
+    protected LocalFSPathNode createNode(String path) throws VrsException {
+        try {
             // optionall resolve tilde:
             VRL homeVLR = this.getVRSContext().getHomeVRL();
             path = URIFactory.resolveTilde(homeVLR.getPath(), path);
-            return new LocalFSPathNode(this, fsUtil.newFSPath(path));
-        }
-        catch (IOException e)
-        {
+            return new LocalFSPathNode(this, fsUtil.resolvePath(path));
+        } catch (IOException e) {
             throw convertException(null, "Failed to resolve path:" + path, e);
         }
     }
 
-    protected FSUtil getFSUtil()
-    {
+    protected FSUtil getFSUtil() {
         return this.fsUtil;
     }
 
     @Override
-    public InputStream createInputStream(VRL vrl) throws VrsException
-    {
+    public InputStream createInputStream(VRL vrl) throws VrsException {
         return createVFSNode(vrl).createInputStream();
     }
 
     @Override
-    public OutputStream createOutputStream(VRL vrl) throws VrsException
-    {
+    public OutputStream createOutputStream(VRL vrl) throws VrsException {
         return createVFSNode(vrl).createOutputStream(false);
     }
 
-    public static VrsException convertException(VPath sourcePath, String actionText, Throwable ex)
-    {
+    public static VrsException convertException(VPath sourcePath, String actionText, Throwable ex) {
         // new nio.file exceptions have reason in the Exception name.
-        if (ex instanceof java.nio.file.AccessDeniedException)
-        {
+        if (ex instanceof java.nio.file.AccessDeniedException) {
             return new ResourceAccessDeniedException(actionText + "\n" + "Access Denied.\n" + ex.getMessage(), ex);
-        }
-        else if (ex instanceof java.nio.file.DirectoryNotEmptyException)
-        {
+        } else if (ex instanceof java.nio.file.DirectoryNotEmptyException) {
             return new ResourceNotEmptyException(actionText + "\n" + "Directory not empty.\n" + ex.getMessage(), ex);
-        }
-        else if (ex instanceof java.nio.file.FileAlreadyExistsException)
-        {
+        } else if (ex instanceof java.nio.file.FileAlreadyExistsException) {
             return new ResourceCreationException(actionText + "\n" + "File already exists.\n" + ex.getMessage(), ex);
-        }
-        else if (ex instanceof java.nio.file.NoSuchFileException)
-        {
+        } else if (ex instanceof java.nio.file.NoSuchFileException) {
             return new ResourceNotFoundException(actionText + "\n" + "No such file.\n" + ex.getMessage(), ex);
-        }
-        else if (ex instanceof java.nio.file.NotDirectoryException)
-        {
+        } else if (ex instanceof java.nio.file.NotDirectoryException) {
             return new ResourceNotFoundException(actionText + "\n" + "Not a directory.\n" + ex.getMessage(), ex);
-        }
-        else if (ex instanceof java.nio.file.NotLinkException)
-        {
+        } else if (ex instanceof java.nio.file.NotLinkException) {
             return new ResourceNotFoundException(actionText + "\n" + "Not a link.\n" + ex.getMessage(), ex);
-        }
-        else if (ex instanceof FileSystemException)
-        {
+        } else if (ex instanceof FileSystemException) {
             // Exception name provide reason
             String exName = ex.getClass().getName();
             return new VrsIOException(actionText + "\n" + exName + ".\n" + ex.getMessage(), (IOException) ex);
-        }
-        else if (ex instanceof IOException)
-        {
+        } else if (ex instanceof IOException) {
             // Exception name provide reason
             String exName = ex.getClass().getName();
             return new VrsIOException(actionText + "\n" + exName + ".\n" + ex.getMessage(), (IOException) ex);
-        }
-        else
-        {
+        } else {
             return new VrsException(actionText + "\n" + ex.getMessage(), ex);
         }
+    }
 
+    @Override
+    public boolean close() {
+        fsUtil = null;
+        return true;
     }
 
 }

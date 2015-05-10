@@ -26,15 +26,19 @@
 		<module>ptk-util-vterm</module>
 		<module>ptk-vbrowser-vrs</module>
 		<module>ptk-vbrowser-vrs-sftp</module>
+		<module>ptk-vbrowser-ui-icons</module>
 		<module>ptk-vbrowser-ui</module>
 		<module>ptk-vbrowser-viewers</module>
 		<module>ptk-vbrowser-viewers-loboviewer</module>
 		<module>ptk-vbrowser-vrs-integration-tests</module>
+		<module>ptk-vbrowser-start</module>
+		<module>ptk-zipdist</module>
 	</modules>
 
 	<build>
 		<pluginManagement>
-			<!-- Parent plugin configurations trigger when plugin is referred to -->
+			<!-- Parent plugin configurations trigger when plugin is referred to in 
+				child poms -->
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -48,10 +52,20 @@
 						</files>
 					</configuration>
 				</plugin>
+				<!-- Reporting -->
+				<plugin>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>2.7</version>
+				</plugin>
 				<!-- Assembly -->
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.5.2</version>
+					<version>2.5.4</version>
+					<configuration>
+						<descriptors>
+							<descriptor>src/assembly/bin.xml</descriptor>
+						</descriptors>
+					</configuration>
 				</plugin>
 				<!-- Surefire for Unit tests -->
 				<plugin>
@@ -66,7 +80,7 @@
 						</excludes>
 					</configuration>
 				</plugin>
-				<!-- Failsave for Integration Tests -->
+				<!-- Failsafe for Integration Tests -->
 				<plugin>
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<version>2.18.1</version>
@@ -89,7 +103,7 @@
 		</pluginManagement>
 	</build>
 
-	<!-- Toplevel dependencies inherited by all childs -->
+	<!-- Toplevel dependencies inherited by all childs without refering to it. -->
 	<dependencies>
 		<!-- JUnit -->
 		<dependency>

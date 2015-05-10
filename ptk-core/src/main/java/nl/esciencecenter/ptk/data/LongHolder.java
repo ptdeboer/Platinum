@@ -23,60 +23,53 @@ package nl.esciencecenter.ptk.data;
 /**
  * Integer holder class for VAR Integer types.
  */
-public class LongHolder implements VARHolder<Long>
-{
+public class LongHolder implements VARHolder<Long> {
+
     public Long value = null;
 
-    public LongHolder(Long val)
-    {
+    public LongHolder(Long val) {
         this.value = val;
     }
 
-    public LongHolder()
-    {
+    public LongHolder() {
         value = new Long(0);
     }
 
-    public long longValue()
-    {
-        if (value != null)
-            return value;
+    /**
+     * @return autoboxed primitive long value of Long Object.
+     * @throws NullPointerException
+     *             if Long Object is not defined.
+     */
+    public long longValue() {
+        if (value == null)
+            throw new NullPointerException("Value in IntegerHolder is NULL");
 
-        throw new NullPointerException("Value in IntegerHolder is NULL");
-
+        return value;
     }
 
     /**
-     * Returns Holder value or defVal if holder does not contain any value
+     * Returns value or defeaultValue if holder does not contain any value.
      */
-    public long longValue(long defVal)
-    {
-        if (value != null)
-            return value;
+    public long longValue(long defeaultValue) {
+        if (value == null)
+            return defeaultValue;
 
-        return defVal;
+        return value;
     }
 
-    /**
-     * Whether value was specified.
-     */
-    public boolean isNull()
-    {
+    public boolean isNull() {
         return (value == null);
     }
 
-    public Long get()
-    {
+    public Long get() {
         return this.value;
     }
 
-    public void set(Long val)
-    {
+    public void set(Long val) {
         this.value = val;
     }
 
-    public boolean isSet()
-    {
+    public boolean isSet() {
         return (value != null);
     }
 }

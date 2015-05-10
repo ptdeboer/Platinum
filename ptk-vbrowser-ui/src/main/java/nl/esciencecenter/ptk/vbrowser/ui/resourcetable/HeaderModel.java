@@ -25,73 +25,61 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 import nl.esciencecenter.ptk.data.StringList;
 
-public class HeaderModel extends AbstractListModel<String>
-{
+public class HeaderModel extends AbstractListModel<String> {
     private static final long serialVersionUID = -4513306632211174045L;
 
     private StringList values;
 
     private boolean isEditable = true;
 
-    public HeaderModel()
-    {
+    public HeaderModel() {
         init(new StringList()); // empty list
     }
 
-    public HeaderModel(String values[])
-    {
-        init(new StringList(values)); 
+    public HeaderModel(String values[]) {
+        init(new StringList(values));
     }
 
     @Override
-    public String getElementAt(int index)
-    {
+    public String getElementAt(int index) {
         return values.get(index);
     }
 
-    private void init(StringList stringList)
-    {
-        this.values=stringList; 
-        System.err.printf(values.toString(">>>",",","\n"));
+    private void init(StringList stringList) {
+        this.values = stringList;
+        System.err.printf(values.toString(">>>", ",", "\n"));
     }
-    
+
     @Override
-    public int getSize()
-    {
+    public int getSize() {
         return values.size();
     }
 
-    public void setValues(String vals[])
-    {
-        values=new StringList(vals);
+    public void setValues(String vals[]) {
+        values = new StringList(vals);
         this.fireContentsChanged(this, 0, values.size() - 1);
     }
 
-    public void setValues(List<String> vals) 
-    {
-        values=new StringList(vals);
+    public void setValues(List<String> vals) {
+        values = new StringList(vals);
         this.fireContentsChanged(this, 0, values.size() - 1);
     }
-    
+
     /**
      * @return copy of headers as array.
      */
-    public String[] toArray()
-    {
-        return this.values.toArray(); 
+    public String[] toArray() {
+        return this.values.toArray();
     }
-    
-    public int indexOf(String name)
-    {
+
+    public int indexOf(String name) {
         return this.values.indexOf(name);
     }
 
     /**
      * Inserts newHeader after 'header' of before 'header'. Fires intervalAdded event
      */
-    public int insertHeader(String header, String newHeader,
-            boolean insertBefore)
-    {
+    public int insertHeader(String header, String newHeader, boolean insertBefore) {
         int index = -1;
 
         if (insertBefore)
@@ -104,8 +92,7 @@ public class HeaderModel extends AbstractListModel<String>
         return index;
     }
 
-    public int remove(String value)
-    {
+    public int remove(String value) {
         int index = this.indexOf(value);
         if (index < 0)
             return -1;
@@ -115,18 +102,15 @@ public class HeaderModel extends AbstractListModel<String>
         return index;
     }
 
-    public boolean isEditable()
-    {
+    public boolean isEditable() {
         return isEditable;
     }
 
-    public void setEditable(boolean val)
-    {
+    public void setEditable(boolean val) {
         this.isEditable = val;
     }
 
-    public boolean contains(String name)
-    {
+    public boolean contains(String name) {
         return values.contains(name);
     }
 

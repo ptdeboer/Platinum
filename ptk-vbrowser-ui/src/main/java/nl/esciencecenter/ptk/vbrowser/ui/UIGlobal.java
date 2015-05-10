@@ -24,72 +24,53 @@ import javax.swing.SwingUtilities;
 
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
+public class UIGlobal {
 
-public class UIGlobal
-{
     private static PLogger uiLogger;
 
-    
-    static
-    {
-    	uiLogger=PLogger.getLogger(UIGlobal.class); 
-        uiLogger.debugPrintf(">>> UIGlobal.init() <<<\n"); 
-        
-        try
-        {
-            uiLogger=PLogger.getLogger("UIGlobal"); 
-      
-        }
-        catch (Exception e)
-        {
-            uiLogger.logException(PLogger.FATAL,e,"Exception during initialization!"); 
-        }
-    }
-    
-    public static void init()
-    {
-    }
-   
-    public static void assertNotGuiThread(String msg) throws Error
-	{
-		assertGuiThread(false,msg);
-	}
-	
-	public static void assertGuiThread(String msg) throws Error
-	{
-		assertGuiThread(true,msg); 
-	}
+    static {
+        uiLogger = PLogger.getLogger(UIGlobal.class);
+        uiLogger.debugPrintf(">>> UIGlobal.init() <<<\n");
 
-	public static void assertGuiThread(boolean mustBeGuiThread,String msg) throws Error
-	{
+        try {
+            uiLogger = PLogger.getLogger("UIGlobal");
+
+        } catch (Exception e) {
+            uiLogger.logException(PLogger.FATAL, e, "Exception during initialization!");
+        }
+    }
+
+    public static void init() {
+    }
+
+    public static void assertNotGuiThread(String msg) throws Error {
+        assertGuiThread(false, msg);
+    }
+
+    public static void assertGuiThread(String msg) throws Error {
+        assertGuiThread(true, msg);
+    }
+
+    public static void assertGuiThread(boolean mustBeGuiThread, String msg) throws Error {
         // still happens when trying to read/acces link targets of linknodes 
-        if (mustBeGuiThread!=UIGlobal.isGuiThread())
-        {
+        if (mustBeGuiThread != UIGlobal.isGuiThread()) {
             uiLogger.infoPrintf("\n>>>\n    *** Swing GUI Event Assertion Error *** !!!\n>>>\n");
             throw new Error("Internal Error. Cannot perform this "
-            						+(mustBeGuiThread?"during":"outside")+"during the Swing GUI Event thread.\n"+msg);
+                    + (mustBeGuiThread ? "during" : "outside")
+                    + "during the Swing GUI Event thread.\n" + msg);
         }
-	}
-    
-	public static void swingInvokeLater(Runnable task)
-	{
-		SwingUtilities.invokeLater(task); 
-	}
-	
-	public static boolean isGuiThread()
-	{
-		 return (SwingUtilities.isEventDispatchThread()==true);
-	}
-
-	public static boolean isHeadless() 
-	{
-	    return false;
     }
-	   
-	public static boolean isApplet() 
-	{
-		return false;
-	}
-	
-}
 
+    public static void swingInvokeLater(Runnable task) {
+        SwingUtilities.invokeLater(task);
+    }
+
+    public static boolean isGuiThread() {
+        return (SwingUtilities.isEventDispatchThread() == true);
+    }
+
+    public static boolean isApplet() {
+        return false;
+    }
+
+}

@@ -36,24 +36,18 @@ public class TestSftpExists {
 
         SftpChannel channel = session.createSftpChannel();
         channel.connect();
-        
-        channel.exists("/tmp/testdir/testfile"); 
-        
 
+        channel.exists("/tmp/testdir/testfile");
 
-        try
-        {
-            channel.exists("/tmp"); 
-        }
-        catch (SftpException e) {
+        try {
+            channel.exists("/tmp");
+        } catch (SftpException e) {
             e.printStackTrace();
         }
 
-        try
-        {
-            channel.exists("/tmp/testdir/testfileNOTFOUND"); 
-        }
-        catch (SftpException e) {
+        try {
+            channel.exists("/tmp/testdir/testfileNOTFOUND");
+        } catch (SftpException e) {
             e.printStackTrace();
         }
     }

@@ -41,11 +41,11 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 
-public class AttributeEditorForm extends JDialog
-{
+public class AttributeEditorForm extends JDialog {
+
     private static final long serialVersionUID = 9136623460001660679L;
-    
-    private static final PLogger logger=PLogger.getLogger(AttributeEditorForm.class);
+
+    private static final PLogger logger = PLogger.getLogger(AttributeEditorForm.class);
 
     // ---
     // package protected 
@@ -67,10 +67,8 @@ public class AttributeEditorForm extends JDialog
     // --- 
     protected Attribute[] originalAttributes;
 
-    private void initGUI(Attribute attrs[])
-    {
-        try
-        {
+    private void initGUI(Attribute attrs[]) {
+        try {
             this.setTitle(this.titleName);
 
             BorderLayout thisLayout = new BorderLayout();
@@ -118,10 +116,8 @@ public class AttributeEditorForm extends JDialog
                 }
             }
             // enforce new size. 
-            forceSetSizeToPreferred(); 
-        }
-        catch (Exception e)
-        {
+            forceSetSizeToPreferred();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -130,8 +126,7 @@ public class AttributeEditorForm extends JDialog
     // Constructor
     // ==========================================================================
 
-    private void forceSetSizeToPreferred()
-    {
+    private void forceSetSizeToPreferred() {
         validate();
         Dimension size = this.getPreferredSize();
         // bug in FormLayout ? Last row is not shown
@@ -141,8 +136,7 @@ public class AttributeEditorForm extends JDialog
         setSize(size);
     }
 
-    private void init(String titleName, Attribute attrs[])
-    {
+    private void init(String titleName, Attribute attrs[]) {
         this.titleName = titleName;
 
         attrs = AttributeUtil.duplicateArray(attrs); // use duplicate to edit;
@@ -154,37 +148,32 @@ public class AttributeEditorForm extends JDialog
         // only set to editable if there exists at least one editable attribute
         this.isEditable = false;
 
-        for (Attribute attr : attrs)
-        {
-            if ((attr != null) && (attr.isEditable() == true))
-            {
+        for (Attribute attr : attrs) {
+            if ((attr != null) && (attr.isEditable() == true)) {
                 this.isEditable = true;
             }
         }
-        
+
         initGUI(attrs);
         formController.update();
 
     }
 
-    public AttributeEditorForm(String titleName, Attribute attrs[])
-    {
+    public AttributeEditorForm(String titleName, Attribute attrs[]) {
         super();
         init(titleName, attrs);
     }
 
-    public AttributeEditorForm()
-    {
-       super(); 
+    public AttributeEditorForm() {
+        super();
     }
 
     // ==========================================================================
     //
     // ==========================================================================
 
-    public void setAttributes(Attribute[] attributes)
-    {
-        this.originalAttributes=attributes; 
+    public void setAttributes(Attribute[] attributes) {
+        this.originalAttributes = attributes;
         // use duplicate to edit:
         Attribute[] dupAttributes = AttributeUtil.duplicateArray(attributes);
         this.infoPanel.setAttributes(new AttributeSet(dupAttributes), true);
@@ -192,23 +181,20 @@ public class AttributeEditorForm extends JDialog
         revalidate();
     }
 
-    public synchronized void Exit()
-    {
+    public synchronized void Exit() {
         // notify waiting threads: waitForDialog().
         this.notifyAll();
         dispose();
     }
 
-    public void dispose()
-    {   
+    public void dispose() {
         super.dispose();
     }
 
-    public boolean hasChangedAttributes()
-    {
+    public boolean hasChangedAttributes() {
         return this.infoPanel.hasChangedAttributes();
     }
-    
+
     // ==========================================================================
     // main
     // ==========================================================================
@@ -217,14 +203,11 @@ public class AttributeEditorForm extends JDialog
      * Static method to interactively ask user for attribute settings.
      */
     public static Attribute[] editAttributes(final String titleName, final Attribute[] attrs,
-            final boolean returnChangedAttributesOnly)
-    {
+            final boolean returnChangedAttributesOnly) {
         final AttributeEditorForm dialog = new AttributeEditorForm();
 
-        Runnable formTask = new Runnable()
-        {
-            public void run()
-            {
+        Runnable formTask = new Runnable() {
+            public void run() {
                 // perform init during GUI thread
                 dialog.init(titleName, attrs);
 
@@ -234,55 +217,40 @@ public class AttributeEditorForm extends JDialog
                 dialog.setAlwaysOnTop(true);
                 dialog.setVisible(true);
 
-                synchronized (this)
-                {
+                synchronized (this) {
                     this.notifyAll();
                 }
             }
         };
 
         // Run during gui thread of use Swing invokeLater()
-        if (UIGlobal.isGuiThread())
-        {
+        if (UIGlobal.isGuiThread()) {
             formTask.run(); // run directly:
-        }
-        else
-        {
+        } else {
             // go background:
             SwingUtilities.invokeLater(formTask);
 
-            synchronized (formTask)
-            {
-                try
-                {
+            synchronized (formTask) {
+                try {
                     formTask.wait();
-                }
-                catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     logger.logException(PLogger.ERROR, e, "--- Interupted ---\n");
                 }
             }
         }
 
         // wait
-        if (dialog.formController.isOk == true)
-        {
+        if (dialog.formController.isOk == true) {
             // boolean update=dialog.hasChangedAttributes();
-            if (returnChangedAttributesOnly)
-            {
+            if (returnChangedAttributesOnly) {
                 return dialog.infoPanel.getChangedAttributes();
-            }
-            else
-            {
+            } else {
                 return dialog.infoPanel.getAttributes();
             }
-        }
-        else
-        {
+        } else {
             // no attributes. 
             return null;
         }
     }
-
 
 }

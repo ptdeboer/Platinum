@@ -24,18 +24,20 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
+import nl.esciencecenter.ptk.object.Disposable;
+
 /**
  * Store password in to a character array instead of a String. <br>
- * This is slightly more secure, but not much. It avoids accidental copying of the object or printing out of the
- * password in for example log files. Also Password fields in Swing already return char arrays.
+ * This is slightly more secure, but not much. It avoids accidental copying of the object or
+ * printing out of the password in for example log files. Also Password fields in Swing already
+ * return char arrays.
  */
-public class Secret
-{
+public class Secret implements Disposable {
     /**
-     * Wrap Secret object around character array. The actual character array is used inside this object.
+     * Wrap Secret object around character array. The actual character array is used inside this
+     * object. Array is not cleared. 
      */
-    public static Secret wrap(char[] chars)
-    {
+    public static Secret wrap(char[] chars) {
         Secret secret = new Secret();
         secret.secret = chars;
         return secret;
@@ -45,41 +47,36 @@ public class Secret
 
     private char[] secret;
 
-    private Secret()
-    {
+    private Secret() {
     }
 
     /**
      * Store secret characters into this object. The characters are copied into new array.
      */
-    public Secret(char[] source)
-    {
+    public Secret(char[] source) {
         init(source, false);
     }
 
     /**
-     * Copy secret chars and optionally clear source. This way the secret content will be moved from the source into
-     * this Secret object.
+     * Copy secret chars and optionally clear source. This way the secret content will be moved from
+     * the source into this Secret object.
      * 
      * @param source
      *            - char array of secret characters
      * @param clearSource
-     *            - set to true if source needs to be cleared so tha the 'secret' is moved into this Secrect object
+     *            - set to true if source needs to be cleared so that the 'secret' is moved into this
+     *            Secrect object
      */
-    public Secret(char[] source, boolean clearSource)
-    {
+    public Secret(char[] source, boolean clearSource) {
         init(source, clearSource);
     }
 
-    protected void init(char[] source, boolean clearSource)
-    {
+    protected void init(char[] source, boolean clearSource) {
         int n = source.length;
         this.secret = new char[n];
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             secret[i] = source[i];
-            if (clearSource)
-            {
+            if (clearSource) {
                 source[i] = 0;
             }
         }
@@ -88,15 +85,12 @@ public class Secret
     /**
      * Clear Char Array. It is recommended to explicitly call dispose() after usage.
      */
-    public void dispose()
-    {
-        if (secret == null)
-        {
+    public void dispose() {
+        if (secret == null) {
             return;
         }
         int n = secret.length;
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             secret[i] = 0;
         }
         secret = null;
@@ -105,44 +99,39 @@ public class Secret
     /**
      * Returns a <em>clone</em> of the secret character array.
      */
-    public char[] getChars()
-    {
+    public char[] getChars() {
         return secret.clone();
     }
 
-    public void finalize()
-    {
+    public void finalize() {
         dispose();
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "<Secret!>";
     }
 
     /**
-     * Encode characters to bytes using specified charSet and return as ByteBuffer. It is recommended to clear the
-     * ByteBuffer after use. <br>
-     * Note that one Java Char is actually two bytes, this method converts to the byte-encoding used by 'charSetName'.
+     * Encode characters to bytes using specified charSet and return as ByteBuffer. It is
+     * recommended to clear the ByteBuffer after use. <br>
+     * Note that one Java Char is actually two bytes, this method converts to the byte-encoding used
+     * by 'charSetName'.
      */
-    public ByteBuffer toByteBuffer(String charSetName)
-    {
+    public ByteBuffer toByteBuffer(String charSetName) {
         return toByteBuffer(Charset.forName(charSetName));
     }
 
     /**
-     * Encode characters to bytes using specified charSet and return as ByteBuffer. It is recommend to clear the
-     * ByteBuffer after use.
+     * Encode characters to bytes using specified charSet and return as ByteBuffer. It is recommend
+     * to clear the ByteBuffer after use.
      */
-    public ByteBuffer toByteBuffer(Charset charSet)
-    {
+    public ByteBuffer toByteBuffer(Charset charSet) {
         CharBuffer cbuff = CharBuffer.wrap(secret);
         ByteBuffer buf = charSet.encode(cbuff);
         return buf;
     }
 
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         if (secret == null)
             return true;
 
@@ -152,13 +141,11 @@ public class Secret
         return false;
     }
 
-    public boolean equals(Secret other)
-    {
+    public boolean equals(Secret other) {
         if (other == null)
             return false;
 
-        if (secret == null)
-        {
+        if (secret == null) {
             if (other.secret == null)
                 return true;
             else
@@ -168,8 +155,7 @@ public class Secret
         if (secret.length != other.secret.length)
             return false;
 
-        for (int i = 0; i < secret.length; i++)
-        {
+        for (int i = 0; i < secret.length; i++) {
             if (secret[i] != other.secret[i])
                 return false;
         }

@@ -22,15 +22,16 @@ package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
 
-public interface RandomWritable extends AutoCloseable
-{
-    public void writeBytes(long fileOffset, byte buffer[], int bufferOffset, int nrBytes) throws IOException;
+public interface RandomWritable extends AutoCloseable {
+
+    public void writeBytes(long fileOffset, byte buffer[], int bufferOffset, int nrBytes)
+            throws IOException;
 
     /**
      * @return current lenght of resource, -1 if unknown
      */
     long getLength() throws IOException;
-    
+
     // explicit inheritance
     public void close() throws Exception;
 }

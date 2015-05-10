@@ -42,36 +42,32 @@ import javax.crypto.spec.SecretKeySpec;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 /**
- * String Encrypter/Decryptor class. Can also be used to encrypt/decrypt byte arrays.
+ * String Encrypter/Decryptor class. Can also be used to encrypt/decrypt byte arrays, name is kept for backwards compatibilty. 
  */
-public class StringCrypter
-{
-    public static class EncryptionException extends Exception
-    {
+public class StringCrypter {
+
+    public static class EncryptionException extends Exception {
+
         private static final long serialVersionUID = 1L;
 
-        public EncryptionException(Throwable t)
-        {
+        public EncryptionException(Throwable t) {
             super(t);
         }
 
-        public EncryptionException(String message, Throwable cause)
-        {
+        public EncryptionException(String message, Throwable cause) {
             super(message, cause);
         }
     }
 
-    public static class DecryptionFailedException extends EncryptionException
-    {
+    public static class DecryptionFailedException extends EncryptionException {
+
         private static final long serialVersionUID = 1L;
 
-        public DecryptionFailedException(Throwable t)
-        {
+        public DecryptionFailedException(Throwable t) {
             super(t);
         }
 
-        public DecryptionFailedException(String message, Throwable cause)
-        {
+        public DecryptionFailedException(String message, Throwable cause) {
             super(message, cause);
         }
     }
@@ -97,43 +93,41 @@ public class StringCrypter
     private MessageDigest keyHasher;
 
     /**
-     * Whether to use the plain character bytes from a password string instead of a hashing function. This option is for
-     * legacy applications.
+     * Whether to use the plain character bytes from a password string instead of a hashing
+     * function. This option is for legacy applications.
      */
     private boolean usePlainCharBytes = false;
 
     private CryptScheme cryptScheme;
 
-    public StringCrypter(Secret encryptionKey) throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException
-    {
+    public StringCrypter(Secret encryptionKey) throws EncryptionException,
+            NoSuchAlgorithmException, UnsupportedEncodingException {
         init(encryptionKey, CryptScheme.DESEDE_ECB_PKCS5, StringHasher.SHA_256, CHARSET_UTF8);
     }
 
-    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme) throws EncryptionException, NoSuchAlgorithmException,
-            UnsupportedEncodingException
-    {
+    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme)
+            throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
         init(encryptionKey, encryptionScheme, StringHasher.SHA_256, CHARSET_UTF8);
     }
 
-    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme, String keyHashingScheme, String charEncoding)
-            throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException
-    {
+    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme,
+            String keyHashingScheme, String charEncoding) throws EncryptionException,
+            NoSuchAlgorithmException, UnsupportedEncodingException {
         init(encryptionKey, encryptionScheme, keyHashingScheme, charEncoding);
     }
 
-    public StringCrypter(byte encryptionKey[], CryptScheme encryptionScheme, String keyHashingScheme, String charEncoding)
-            throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException
-    {
+    public StringCrypter(byte encryptionKey[], CryptScheme encryptionScheme,
+            String keyHashingScheme, String charEncoding) throws EncryptionException,
+            NoSuchAlgorithmException, UnsupportedEncodingException {
         setCharacterEncoding(charEncoding);
         keyHasher = MessageDigest.getInstance(keyHashingScheme);
         initKey(encryptionKey, null, encryptionScheme);
     }
 
-    private void init(Secret encryptionKey, CryptScheme encryptionScheme, String keyHasherScheme, String charEncoding)
-            throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException
-    {
-        if (encryptionKey == null)
-        {
+    private void init(Secret encryptionKey, CryptScheme encryptionScheme, String keyHasherScheme,
+            String charEncoding) throws EncryptionException, NoSuchAlgorithmException,
+            UnsupportedEncodingException {
+        if (encryptionKey == null) {
             throw new IllegalArgumentException("Encryption key was null");
         }
 
@@ -143,12 +137,9 @@ public class StringCrypter
         // throw new IllegalArgumentException("Encryption key was less than "+MINIMUM_CRYPT_KEY_LENGTH+" characters");
         // }
 
-        if (keyHasherScheme == null)
-        {
+        if (keyHasherScheme == null) {
             this.usePlainCharBytes = true;
-        }
-        else
-        {
+        } else {
             keyHasher = MessageDigest.getInstance(keyHasherScheme);
         }
 
@@ -158,16 +149,14 @@ public class StringCrypter
 
     }
 
-    public void setUsePlainCharBytes(boolean value)
-    {
+    public void setUsePlainCharBytes(boolean value) {
         this.usePlainCharBytes = value;
     }
 
     /**
      * Use hash algorithm to create an unsalted key digest from the password/passkey.
      */
-    public byte[] createKeyDigest(Secret password)
-    {
+    public byte[] createKeyDigest(Secret password) {
         ByteBuffer bbuf = password.toByteBuffer(charSet);
 
         // Legacy code, not recommended
@@ -182,11 +171,9 @@ public class StringCrypter
         return keyBytes;
     }
 
-    @SuppressWarnings("deprecation")
-    protected void initKey(byte rawKey[], byte IV[], CryptScheme encryptionScheme) throws EncryptionException
-    {
-        if (rawKey == null)
-        {
+    protected void initKey(byte rawKey[], byte IV[], CryptScheme encryptionScheme)
+            throws EncryptionException {
+        if (rawKey == null) {
             throw new NullPointerException("Encryption key is null!");
         }
 
@@ -194,18 +181,15 @@ public class StringCrypter
         String cipherScheme = encryptionScheme.getCipherScheme();
         int keyLen = encryptionScheme.getKeyLength();
 
-        try
-        {
+        try {
 
             // IV only needed for CBC, not ECB:
             // IvParameterSpec ivSpec=null;
             //
             // if (IV!=null)
             // ivSpec = new IvParameterSpec(IV);
-            switch (encryptionScheme)
-            {
-                case DESEDE_ECB_PKCS5:
-                {
+            switch (encryptionScheme) {
+                case DESEDE_ECB_PKCS5: {
                     keySpec = new DESedeKeySpec(rawKey);
                     keyFactory = SecretKeyFactory.getInstance(encryptionScheme.getCipherScheme());
                     cipher = Cipher.getInstance(encryptionScheme.getConfigString());
@@ -213,19 +197,16 @@ public class StringCrypter
                 }
                 case AES128_ECB_PKCS5:
                     // case AES192_ECB_PKCS5:
-                case AES256_ECB_PKCS5:
-                {
+                case AES256_ECB_PKCS5: {
                     byte subkey[] = null;
 
-                    if (rawKey.length < keyLen)
-                    {
-                        throw new EncryptionException("AES Key length to short. Length=" + rawKey.length + ", must be at least:" + keyLen,
-                                null);
+                    if (rawKey.length < keyLen) {
+                        throw new EncryptionException("AES Key length to short. Length="
+                                + rawKey.length + ", must be at least:" + keyLen, null);
                     }
 
                     subkey = new byte[keyLen];
-                    for (int i = 0; i < keyLen; i++)
-                    {
+                    for (int i = 0; i < keyLen; i++) {
                         subkey[i] = rawKey[i];
                     }
 
@@ -236,23 +217,17 @@ public class StringCrypter
                     cipher = Cipher.getInstance(encryptionScheme.getConfigString());
                     break;
                 }
-                default:
-                {
-                    throw new IllegalArgumentException("Encryption scheme not supported: " + encryptionScheme);
+                default: {
+                    throw new IllegalArgumentException("Encryption scheme not supported: "
+                            + encryptionScheme);
                 }
             } // switch
 
-        }
-        catch (NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             throw new EncryptionException(e.getMessage(), e);
-        }
-        catch (NoSuchPaddingException e)
-        {
+        } catch (NoSuchPaddingException e) {
             throw new EncryptionException(e.getMessage(), e);
-        }
-        catch (InvalidKeyException e)
-        {
+        } catch (InvalidKeyException e) {
             throw new EncryptionException(e.getMessage(), e);
         }
     }
@@ -260,8 +235,7 @@ public class StringCrypter
     /**
      * Specify which characters set is used to get the bytes from password Strings. Default is UTF-8
      */
-    public void setCharacterEncoding(String charSetStr) throws UnsupportedEncodingException
-    {
+    public void setCharacterEncoding(String charSetStr) throws UnsupportedEncodingException {
         charSet = Charset.forName(charSetStr);
 
         if (charSet == null)
@@ -271,16 +245,15 @@ public class StringCrypter
     /**
      * @see #setCharacterEncoding(String)
      */
-    public Charset getCharacterEncoding()
-    {
+    public Charset getCharacterEncoding() {
         return this.charSet;
     }
 
     /**
-     * Encrypts String and returns encoded result as base64 encoded String. This increases the String size by ~33%.
+     * Encrypts String and returns encoded result as base64 encoded String. This increases the
+     * String size by ~33%.
      */
-    public String encryptToBase64(String unencryptedString) throws EncryptionException
-    {
+    public String encryptToBase64(String unencryptedString) throws EncryptionException {
         byte ciphertext[] = encrypt(unencryptedString);
         return StringUtil.base64Encode(ciphertext);
     }
@@ -288,49 +261,37 @@ public class StringCrypter
     /**
      * Encrypts String and returns encoded result as bytes.
      */
-    public byte[] encrypt(String unencryptedString) throws EncryptionException
-    {
-        if (StringUtil.isWhiteSpace(unencryptedString))
-        {
-            throw new IllegalArgumentException("unencrypted string was null or contains only whitespace.");
+    public byte[] encrypt(String unencryptedString) throws EncryptionException {
+        //
+        if (StringUtil.isWhiteSpace(unencryptedString)) {
+            throw new IllegalArgumentException(
+                    "unencrypted string was null or contains only whitespace.");
         }
-
         return encrypt(unencryptedString.getBytes(charSet));
     }
 
-    public byte[] encrypt(byte bytes[]) throws EncryptionException
-    {
-        try
-        {
+    public byte[] encrypt(byte bytes[]) throws EncryptionException {
+        // 
+        try {
             SecretKey key = null;
 
-            if (keyFactory != null)
-            {
+            if (keyFactory != null) {
                 key = keyFactory.generateSecret(keySpec);
-            }
-            else if (keySpec instanceof SecretKey)
-            {
-                key = (SecretKey) keySpec; // key is already a SecretKey ! (for example an AES key)
-            }
-            else
-            {
-                throw new NullPointerException("KeyFactory isn't initialized and key specification is not a valid SecretKey!");
+            } else if (keySpec instanceof SecretKey) {
+                key = (SecretKey) keySpec;
+            } else {
+                throw new NullPointerException(
+                        "KeyFactory isn't initialized and key specification is not a valid SecretKey!");
             }
 
             cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] ciphertext = cipher.doFinal(bytes);
             return ciphertext;
-        }
-        catch (InvalidKeySpecException e)
-        {
+        } catch (InvalidKeySpecException e) {
             throw new EncryptionException(e.getMessage(), e);
-        }
-        catch (InvalidKeyException e)
-        {
-            if (this.cryptScheme.getCipherScheme().toUpperCase().startsWith("AES"))
-            {
-                if (e.getMessage().contains("Illegal key size"))
-                {
+        } catch (InvalidKeyException e) {
+            if (this.cryptScheme.getCipherScheme().toUpperCase().startsWith("AES")) {
+                if (e.getMessage().contains("Illegal key size")) {
 
                     throw new EncryptionException(
                             "Illegal keysize for AES. Are Unlimited Strength Jurisdiction Policy Files for AES installed?\n"
@@ -338,13 +299,9 @@ public class StringCrypter
                 }
             }
             throw new EncryptionException(e.getMessage(), e);
-        }
-        catch (IllegalBlockSizeException e)
-        {
+        } catch (IllegalBlockSizeException e) {
             throw new EncryptionException(e.getMessage(), e);
-        }
-        catch (BadPaddingException e)
-        {
+        } catch (BadPaddingException e) {
             throw new EncryptionException(e.getMessage(), e);
         }
     }
@@ -352,79 +309,62 @@ public class StringCrypter
     /**
      * Decrypt base64 encoded and encrypted String
      */
-    public String decryptString(String base64String) throws EncryptionException
-    {
-        if (StringUtil.isWhiteSpace(base64String))
-        {
+    public String decryptString(String base64String) throws EncryptionException {
+        //
+        if (StringUtil.isWhiteSpace(base64String)) {
             throw new IllegalArgumentException("Encrypted String was null or empty");
         }
-
-        try
-        {
+        //
+        try {
             byte[] cleartext = StringUtil.base64Decode(base64String);
             byte[] ciphertext = decrypt(cleartext);
             return new String(ciphertext, charSet);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new DecryptionFailedException("Base 64 decoding failed.\n" + e.getMessage(), e);
         }
-
     }
 
     /**
      * Decrypt hexadecimal encoded and encrypted String and return decoded String.
      */
-    public String decryptHexEncodedString(String hexEncodedString) throws EncryptionException
-    {
-        if (StringUtil.isWhiteSpace(hexEncodedString))
-        {
-            throw new IllegalArgumentException("Encrypted String was null or empty. Must be hexadecimal encoded String.");
+    public String decryptHexEncodedString(String hexEncodedString) throws EncryptionException {
+
+        if (StringUtil.isWhiteSpace(hexEncodedString)) {
+            throw new IllegalArgumentException(
+                    "Encrypted String was null or empty. Must be hexadecimal encoded String.");
         }
 
         byte[] cleartext = StringUtil.parseBytesFromHexString(hexEncodedString);
         byte[] ciphertext = decrypt(cleartext);
-
         return new String(ciphertext, charSet);
-
     }
 
     /**
      * Decrypt base64 encoded and encrypted String and return as bytes.
      */
-    public byte[] decrypt(byte crypt[]) throws EncryptionException
-    {
-        if (crypt == null)
-        {
+    public byte[] decrypt(byte crypt[]) throws EncryptionException {
+        //
+        if (crypt == null) {
             throw new NullPointerException("Byte array can't be null.");
         }
 
-        try
-        {
+        try {
             SecretKey key = null;
 
-            if (keyFactory != null)
-            {
+            if (keyFactory != null) {
                 key = keyFactory.generateSecret(keySpec);
-            }
-            else if (keySpec instanceof SecretKey)
-            {
+            } else if (keySpec instanceof SecretKey) {
                 key = (SecretKey) keySpec; // key is already a SecretKey ! (for example an AES key)
-            }
-            else
-            {
-                throw new NullPointerException("KeyFactory isn't initialized and key specification is not a valid SecretKey!");
+            } else {
+                throw new NullPointerException(
+                        "KeyFactory isn't initialized and key specification is not a valid SecretKey!");
             }
 
             cipher.init(Cipher.DECRYPT_MODE, key);
             return cipher.doFinal(crypt);
-        }
-        catch (javax.crypto.BadPaddingException e)
-        {
+        } catch (javax.crypto.BadPaddingException e) {
             throw new DecryptionFailedException("Decryption Failed: Bad or invalid key", e);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new EncryptionException(e.getMessage(), e);
         }
     }

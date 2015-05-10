@@ -30,12 +30,10 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
-public class ResourceTreeController implements TreeExpansionListener, ViewNodeActionListener
-{
+public class ResourceTreeController implements TreeExpansionListener, ViewNodeActionListener {
     private static PLogger logger;
 
-    static
-    {
+    static {
         logger = PLogger.getLogger(ResourceTreeController.class);
     }
 
@@ -43,25 +41,22 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
 
     private BrowserInterface browser;
 
-    public ResourceTreeController(BrowserInterface browser, ResourceTree resourceTree, ResourceTreeModel model)
-    {
+    public ResourceTreeController(BrowserInterface browser, ResourceTree resourceTree,
+            ResourceTreeModel model) {
         this.tree = resourceTree;
         this.browser = browser;
     }
 
-    public void handleNodeActionEvent(ViewNode node, Action action)
-    {
+    public void handleNodeActionEvent(ViewNode node, Action action) {
         this.browser.handleNodeAction(tree, node, action);
     }
 
     // From TreeExpansionListener
-    public void treeExpanded(TreeExpansionEvent evt)
-    {
+    public void treeExpanded(TreeExpansionEvent evt) {
         logger.debugPrintf("TreeExpansionHandler.treeExpanded()\n");
 
         TreePath path = evt.getPath();
-        if (evt.getSource().equals(tree) == false)
-        {
+        if (evt.getSource().equals(tree) == false) {
             logger.errorPrintf("***Received event from different tree!\n");
             return;
         }
@@ -75,13 +70,11 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
     }
 
     // From TreeExpansionListener
-    public void treeCollapsed(TreeExpansionEvent evt)
-    {
+    public void treeCollapsed(TreeExpansionEvent evt) {
         logger.debugPrintf("TreeExpansionHandler.treeCollapsed()\n");
     }
 
-    public BrowserInterface getBrowserInterface()
-    {
+    public BrowserInterface getBrowserInterface() {
         return browser;
     }
 

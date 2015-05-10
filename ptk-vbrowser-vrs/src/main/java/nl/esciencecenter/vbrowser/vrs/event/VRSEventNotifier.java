@@ -25,8 +25,8 @@ import java.util.Vector;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
-public class VRSEventNotifier
-{
+public class VRSEventNotifier {
+
     // ========================================================================
     //
     // ========================================================================
@@ -35,17 +35,15 @@ public class VRSEventNotifier
 
     private static PLogger logger;
 
-    static
-    {
-        logger=PLogger.getLogger(VRSEventNotifier.class);
-        instance=new VRSEventNotifier();
+    static {
+        logger = PLogger.getLogger(VRSEventNotifier.class);
+        instance = new VRSEventNotifier();
     }
 
     /**
      * Single instance for all VRSEvents!
      */
-    public static VRSEventNotifier getInstance()
-    {
+    public static VRSEventNotifier getInstance() {
         return instance;
     }
 
@@ -53,72 +51,54 @@ public class VRSEventNotifier
     //
     // ========================================================================
 
-    private Vector<VRSEventListener> listeners=new Vector<VRSEventListener>();
+    private Vector<VRSEventListener> listeners = new Vector<VRSEventListener>();
 
-    private Vector<VRSEvent> events=new Vector<VRSEvent>();
+    private Vector<VRSEvent> events = new Vector<VRSEvent>();
 
     private ActionTask notifierTask;
 
-    private volatile boolean doNotify=true;
+    private volatile boolean doNotify = true;
 
-    protected VRSEventNotifier()
-    {
+    protected VRSEventNotifier() {
         startNotifier();
     }
 
-    protected void startNotifier()
-    {
-        this.notifierTask=new ActionTask(null,"ProxyViewNodeEventNotifier task")
-            {
-                @Override
-                protected void doTask() throws Exception
-                {
-                    try
-                    {
-                        doNotifyLoop();
-                    }
-                    catch (Throwable t)
-                    {
-                        logger.errorPrintf("Notifyer event thread exception=%s\n",t);
-                        t.printStackTrace();
-                    }
+    protected void startNotifier() {
+        this.notifierTask = new ActionTask(null, "ProxyViewNodeEventNotifier task") {
+            @Override
+            protected void doTask() throws Exception {
+                try {
+                    doNotifyLoop();
+                } catch (Throwable t) {
+                    logger.errorPrintf("Notifyer event thread exception=%s\n", t);
+                    t.printStackTrace();
                 }
+            }
 
-
-                @Override
-                protected void stopTask() throws Exception
-                {
-                    stopNotifier();
-                }
-            };
+            @Override
+            protected void stopTask() throws Exception {
+                stopNotifier();
+            }
+        };
 
         this.notifierTask.startDaemonTask();
     }
 
-    public void stopNotifier()
-    {
-        this.doNotify=false;
+    public void stopNotifier() {
+        this.doNotify = false;
     }
 
-    protected void doNotifyLoop()
-    {
+    protected void doNotifyLoop() {
         logger.infoPrintf("Starting notifyerloop");
 
-        while(doNotify)
-        {
-            VRSEvent event=getNextEvent();
-            if (event!=null)
-            {
+        while (doNotify) {
+            VRSEvent event = getNextEvent();
+            if (event != null) {
                 notifyEvent(event);
-            }
-            else
-            {
-                try
-                {
+            } else {
+                try {
                     Thread.sleep(100);
-                }
-                catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -127,38 +107,29 @@ public class VRSEventNotifier
         logger.infoPrintf("Notifyerloop has stopped.");
     }
 
-    private void notifyEvent(VRSEvent event)
-    {
-        for(VRSEventListener listener:getListeners())
-        {
-            try
-            {
+    private void notifyEvent(VRSEvent event) {
+        for (VRSEventListener listener : getListeners()) {
+            try {
                 listener.notifyVRSEvent(event);
-            }
-            catch (Throwable t)
-            {
-                logger.errorPrintf("***Exception during event notifiation:%s\n",t);
+            } catch (Throwable t) {
+                logger.errorPrintf("***Exception during event notifiation:%s\n", t);
                 t.printStackTrace();
             }
         }
     }
 
-    private VRSEventListener[] getListeners()
-    {
+    private VRSEventListener[] getListeners() {
         // create private copy
-        synchronized(this.listeners)
-        {
-            VRSEventListener _arr[]=new VRSEventListener[this.listeners.size()];
-            _arr=this.listeners.toArray(_arr);
+        synchronized (this.listeners) {
+            VRSEventListener _arr[] = new VRSEventListener[this.listeners.size()];
+            _arr = this.listeners.toArray(_arr);
             return _arr;
         }
     }
 
-    private VRSEvent getNextEvent()
-    {
-        synchronized(this.events)
-        {
-            if (this.events.size()<=0)
+    private VRSEvent getNextEvent() {
+        synchronized (this.events) {
+            if (this.events.size() <= 0)
                 return null;
 
             VRSEvent event = this.events.get(0);
@@ -167,27 +138,20 @@ public class VRSEventNotifier
         }
     }
 
-    public void scheduleEvent(VRSEvent event)
-    {
-        synchronized(this.events)
-        {
+    public void scheduleEvent(VRSEvent event) {
+        synchronized (this.events) {
             this.events.add(event);
         }
     }
 
-
-    public void addListener(VRSEventListener listener)
-    {
-        synchronized(this.listeners)
-        {
+    public void addListener(VRSEventListener listener) {
+        synchronized (this.listeners) {
             this.listeners.add(listener);
         }
     }
 
-    public void removeListener(VRSEventListener listener)
-    {
-        synchronized(this.listeners)
-        {
+    public void removeListener(VRSEventListener listener) {
+        synchronized (this.listeners) {
             this.listeners.remove(listener);
         }
     }

@@ -37,22 +37,17 @@ import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class X509Viewer extends EmbeddedViewer implements CertPanelListener
-{
+public class X509Viewer extends EmbeddedViewer implements CertPanelListener {
     private static final long serialVersionUID = 5397354476414010762L;
 
     public static final String ADD_METHOD = "addCert";
 
     public static final String VIEW_METHOD = "viewCert";
 
-    private static String mimeTypes[] =
-    {
-            "application/x-x509-ca-cert",
+    private static String mimeTypes[] = { "application/x-x509-ca-cert",
             // .crt and .pem can be both user AND CA
-            "application/x-pem-file",
-            "application/x-x509-pem-file",
-            "application/x-x509-crt-file",
-            // "application/x-x509-user-cert" = user cert! (not CA)
+            "application/x-pem-file", "application/x-x509-pem-file", "application/x-x509-crt-file",
+    // "application/x-x509-user-cert" = user cert! (not CA)
     };
 
     // ========================================================================
@@ -65,36 +60,30 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
 
     private CertificateStore certUtil;
 
-    public X509Viewer()
-    {
+    public X509Viewer() {
         super();
     }
 
     @Override
-    public void doDisposeViewer()
-    {
+    public void doDisposeViewer() {
     }
 
     @Override
-    public String[] getMimeTypes()
-    {
+    public String[] getMimeTypes() {
         return mimeTypes;
     }
 
     @Override
-    public String getViewerName()
-    {
+    public String getViewerName() {
         return "ViewerX509";
     }
 
     @Override
-    public void doInitViewer()
-    {
+    public void doInitViewer() {
         initGUI();
     }
 
-    public void initGUI()
-    {
+    public void initGUI() {
         this.setLayout(new BorderLayout());
 
         this.caPanel = new CertPanel();
@@ -104,19 +93,16 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
         this.setPreferredSize(preferredSize);
     }
 
-    protected void installCertificate(X509Certificate cert, boolean save) throws Exception
-    {
+    protected void installCertificate(X509Certificate cert, boolean save) throws Exception {
         getCertUtil().addCACertificate(cert, save);
     }
 
-    protected CertificateStore getCertUtil() throws CertificateStoreException
-    {
+    protected CertificateStore getCertUtil() throws CertificateStoreException {
         return this.getResourceHandler().getCertificateStore();
     }
 
     @Override
-    public void doStopViewer()
-    {
+    public void doStopViewer() {
 
     }
 
@@ -146,19 +132,16 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     // }
 
     @Override
-    public void doStartViewer(VRL vrl, String optionalMethod)
-    {
+    public void doStartViewer(VRL vrl, String optionalMethod) {
         doUpdate(vrl, optionalMethod);
     }
 
     @Override
-    public void doUpdate(VRL vrl)
-    {
+    public void doUpdate(VRL vrl) {
         doUpdate(vrl, null);
     }
 
-    public void doUpdate(VRL location, String optMethodName)
-    {
+    public void doUpdate(VRL location, String optMethodName) {
         // default to true ?
         boolean add = true;
 
@@ -174,15 +157,12 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
         addCertificate(location, add);
     }
 
-    public void askCertificate(VRL loc) throws VrsException
-    {
+    public void askCertificate(VRL loc) throws VrsException {
         addCertificate(loc, true);
     }
 
-    public void addCertificate(VRL loc, boolean askToAdd)
-    {
-        try
-        {
+    public void addCertificate(VRL loc, boolean askToAdd) {
+        try {
             cert = instCert(loc);
 
             String keyIssuers = cert.getIssuerDN().getName();
@@ -205,43 +185,35 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
             message.append("Not Before:             " + cert.getNotBefore() + "\n");
             message.append("Serial Number:          " + cert.getSerialNumber() + "\n");
 
-            if (askToAdd)
-            {
+            if (askToAdd) {
                 caPanel.setQuestion("You have been asked to trust a new Certificate Authority(CA).\n"
                         + "Accept certificate from '" + keyIssuers + "'?");
-            }
-            else
-            {
+            } else {
                 caPanel.setQuestion("Viewing Certificate information.");
                 caPanel.setViewOnly(true);
             }
 
             caPanel.setMessageText(message.toString());
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             caPanel.setMessageText(e.getMessage());
             caPanel.setQuestion("Exception occured");
             notifyException("Failed to add certificate:" + loc, e);
         }
     }
 
-    public boolean isStandaloneViewer()
-    {
+    public boolean isStandaloneViewer() {
         return true;
     }
 
-    private X509Certificate instCert(VRL certUri) throws Exception
-    {
+    private X509Certificate instCert(VRL certUri) throws Exception {
         String txt = getResourceHandler().readText(certUri, textEncoding);
 
         // Use hardcoded String to find start of certificate.
         // Current Pem reader is just as simplistic.
         int index = txt.indexOf("-----BEGIN CERTIFICATE");
 
-        if (index >= 0)
-        {
+        if (index >= 0) {
             // Get (Expected) DER part
             String derStr = txt.substring(index);
             return CertUtil.createDERCertificateFromString(derStr);
@@ -249,29 +221,24 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
         int len = txt.length();
         if (len > 80)
             len = 80;
-        throw new IOException("Couldn't find start of (DER) certificate!\n---\nStarting text:\n" + '"' + txt.substring(0, len) + '"');
+        throw new IOException("Couldn't find start of (DER) certificate!\n---\nStarting text:\n"
+                + '"' + txt.substring(0, len) + '"');
 
     }
 
-    public void optionSelected()
-    {
+    public void optionSelected() {
         int opt = caPanel.getOption();
-        try
-        {
-            if (opt == CertPanel.OK)
-            {
+        try {
+            if (opt == CertPanel.OK) {
                 installCertificate(cert, true);
             }
-            if (opt == CertPanel.TEMPORARY)
-            {
+            if (opt == CertPanel.TEMPORARY) {
                 installCertificate(cert, false);
             }
 
             caPanel.setEnabled(false);
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             notifyException("Adding Certificate Failed", e);
         }
 
@@ -279,20 +246,16 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener
     }
 
     @Override
-    public Map<String, List<String>> getMimeMenuMethods()
-    {
+    public Map<String, List<String>> getMimeMenuMethods() {
         String[] mimeTypes = getMimeTypes();
 
         // Use HashMapList to keep order of menu entries: first is default(!)
 
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
-        for (int i = 0; i < mimeTypes.length; i++)
-        {
-            List<String> list = new StringList(new String[]
-            {
-                    VIEW_METHOD + ":View Certificate", ADD_METHOD + ":Add Certificate"
-            });
+        for (int i = 0; i < mimeTypes.length; i++) {
+            List<String> list = new StringList(new String[] { VIEW_METHOD + ":View Certificate",
+                    ADD_METHOD + ":Add Certificate" });
             mappings.put(mimeTypes[i], list);
         }
 
