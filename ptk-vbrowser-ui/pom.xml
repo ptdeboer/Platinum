@@ -14,12 +14,6 @@
 	</parent>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>src/resources/icons</directory>
-			</resource>
-		</resources>
-
 		<plugins>
 			<!-- inhereted plugins -->
 			<plugin>
