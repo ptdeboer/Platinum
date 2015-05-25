@@ -21,6 +21,7 @@
 package nl.esciencecenter.ptk.ui.widgets;
 
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -46,7 +47,12 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
     public static final int LOCATION_AND_NAVIGATION = 2;
 
     public static enum NavigationAction {
-        BROWSE_BACK, BROWSE_UP, BROWSE_FORWARD, REFRESH, LOCATION_EDITED, LOCATION_CHANGED;
+        BROWSE_BACK, // 
+        BROWSE_UP, //
+        BROWSE_FORWARD, //
+        REFRESH, //
+        LOCATION_EDITED, //
+        LOCATION_AUTOCOMPLETED;
 
         public static NavigationAction valueOfOrNull(String str) {
             for (NavigationAction value : values()) {
@@ -56,6 +62,15 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
 
             return null;
         }
+    }
+
+    public static NavigationAction getCommand(String cmd) {
+        //todo: fix spurious action command:
+        if (cmd.equals("comboBoxEdited")) {
+            System.err.printf("FIXME:got comboBoxEdited cmd!\n");
+            return NavigationAction.LOCATION_EDITED;
+        }
+        return NavigationAction.valueOf(cmd);
     }
 
     // ===
@@ -129,53 +144,57 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         // ==================
         // Navigation Buttons
         // ==================
-        if (this.getShowNavigationButtons()) {
+        try {
+            if (this.getShowNavigationButtons()) {
+                {
+                    browseBack = new JButton();
+                    navigationToolBar.add(browseBack);
+                    browseBack.setIcon(loadIcon("navigationbar/back.gif"));
+                    browseBack.setActionCommand(NavigationAction.BROWSE_BACK.toString());
+
+                }
+                {
+                    browseForward = new JButton();
+                    navigationToolBar.add(browseForward);
+                    browseForward.setIcon(loadIcon("navigationbar/forward.gif"));
+                    browseForward.setActionCommand(NavigationAction.BROWSE_FORWARD.toString());
+
+                }
+                {
+                    browseUp = new JButton();
+                    navigationToolBar.add(browseUp);
+                    browseUp.setIcon(loadIcon("navigationbar/up.gif"));
+                    browseUp.setActionCommand(NavigationAction.BROWSE_UP.toString());
+                }
+            }
+            // Refresh
             {
-                browseBack = new JButton();
-                navigationToolBar.add(browseBack);
-                browseBack.setIcon(loadIcon("menu/back.gif"));
-                browseBack.setActionCommand(NavigationAction.BROWSE_BACK.toString());
+                refreshButton = new JButton();
+                navigationToolBar.add(refreshButton);
+                refreshButton.setIcon(loadIcon("navigationbar/refresh.gif"));
+                refreshButton.setActionCommand(NavigationAction.REFRESH.toString());
+            }
+
+            // ========
+            // Location
+            // ========
+            {
+                locationLabel = new JLabel("Location:");
+                locationToolBar.add(locationLabel);
 
             }
             {
-                browseForward = new JButton();
-                navigationToolBar.add(browseForward);
-                browseForward.setIcon(loadIcon("menu/forward.gif"));
-                browseForward.setActionCommand(NavigationAction.BROWSE_FORWARD.toString());
+                locationTextField = new ComboBoxIconTextPanel();
+                locationToolBar.add(locationTextField);
+                locationTextField.setText("location:///", false);
+                locationTextField.setComboActionCommands(NavigationAction.LOCATION_EDITED.toString(),
+                        NavigationAction.LOCATION_AUTOCOMPLETED.toString());
 
+                // set Preferred Width for the GTK/Window LAF!
+                locationTextField.setMinimumSize(new java.awt.Dimension(300, 28));
             }
-            {
-                browseUp = new JButton();
-                navigationToolBar.add(browseUp);
-                browseUp.setIcon(loadIcon("menu/up.gif"));
-                browseUp.setActionCommand(NavigationAction.BROWSE_UP.toString());
-            }
-        }
-        // Refresh
-        {
-            refreshButton = new JButton();
-            navigationToolBar.add(refreshButton);
-            refreshButton.setIcon(loadIcon("menu/refresh.gif"));
-            refreshButton.setActionCommand(NavigationAction.REFRESH.toString());
-        }
-
-        // ========
-        // Location
-        // ========
-        {
-            locationLabel = new JLabel("Location:");
-            locationToolBar.add(locationLabel);
-
-        }
-        {
-            locationTextField = new ComboBoxIconTextPanel();
-            locationToolBar.add(locationTextField);
-            locationTextField.setText("location:///", false);
-            locationTextField.setComboActionCommand(NavigationAction.LOCATION_EDITED.toString());
-            locationTextField.setComboEditedCommand(NavigationAction.LOCATION_CHANGED.toString());
-
-            // set Preferred Width for the GTK/Window LAF!
-            locationTextField.setMinimumSize(new java.awt.Dimension(300, 28));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -225,8 +244,10 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         this.locationTextField.setIcon(icon);
     }
 
-    public Icon loadIcon(String str) {
-        URL res = getClass().getClassLoader().getResource(str);
+    public Icon loadIcon(String str) throws IOException {
+        URL res = getClass().getClassLoader().getResource("icons/" + str);
+        if (res == null)
+            throw new IOException("Failed to load icon:" + str);
         return new ImageIcon(res);
     }
 
@@ -245,8 +266,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
             dt1.addDropTargetListener(new URIDropHandler(this));
             dt2.addDropTargetListener(new URIDropHandler(this));
         } catch (TooManyListenersException e) {
-            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e,
-                    "TooManyListenersException:" + e);
+            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e, "TooManyListenersException:" + e);
         }
     }
 
@@ -254,6 +274,14 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         if ((uris != null) && (uris.size() > 0)) {
             this.updateLocation(uris.get(0).toString(), false);
         }
+    }
+
+    public List<String> getHistory() {
+        return this.locationTextField.getHistory();
+    }
+
+    public void setHistory(List<String> history) {
+        this.locationTextField.setHistory(history);
     }
 
 }

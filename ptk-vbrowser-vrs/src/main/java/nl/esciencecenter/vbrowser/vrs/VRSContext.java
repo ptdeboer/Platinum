@@ -29,6 +29,7 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
+import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.credentials.Credential;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
@@ -104,9 +105,8 @@ public class VRSContext {
     public CertificateStore getCertificateStore() throws VrsException {
         try {
             VRL caCertsLoc = null;
-            if (hasPersistantConfig()) {
-                // load existing or create new
-                VRL loc = this.getPersistantConfigLocation();
+            VRL loc = this.getPersistantConfigLocation();
+            if (loc!=null) {
                 caCertsLoc = loc.appendPath("cacerts");
 
                 CertificateStore certificateStore = CertificateStore.loadCertificateStore(caCertsLoc.getPath(),
@@ -257,5 +257,12 @@ public class VRSContext {
 
     public void dispose() {
         this.registry.cleanupFor(this);
+        this.registry=null;
+        this.resourceInfoRegistry.dispose();
+        this.resourceInfoRegistry=null;
+    }
+
+    public String getCharEncoding() {
+        return ResourceLoader.CHARSET_UTF8;
     }
 }

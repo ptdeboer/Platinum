@@ -37,7 +37,7 @@ public class FileURISyntaxException extends IOException {
         this.fileLocation = location;
     }
 
-    public FileURISyntaxException(String message, String location, URISyntaxException cause) {
+    public FileURISyntaxException(String message, String location, Exception cause) {
         super(message, cause);
         this.fileLocation = location;
     }

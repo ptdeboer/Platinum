@@ -1,0 +1,113 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+	<id>dist</id>
+	<formats>
+		<format>dir</format>
+		<format>zip</format>
+	</formats>
+	<!-- strip the 'target/MODULES-VERSION-bin/MODULE-VERSION/' basedir -->
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<moduleSets>
+		<moduleSet>
+			<!-- Enable access to all projects in the current multimodule build! -->
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<!-- Now, select which projects to include in this module-set, this will 
+				include dependencies to other modules available in the reactor vat -->
+			<includes>
+				<include>*:ptk-core</include>
+				<include>*:ptk-web</include>
+				<include>*:ptk-ui</include>
+				<include>*:ptk-util-vterm</include>
+				<include>*:ptk-vbrowser-vrs</include>
+				<include>*:ptk-vbrowser-vrs-sftp</include>
+				<include>*:ptk-vbrowser-ui</include>
+				<include>*:ptk-vbrowser-viewers</include>
+				<include>*:ptk-vbrowser-viewers-loboviewer</include>
+				<include>*:ptk-vbrowser-start</include>
+			</includes>
+			<binaries>
+				<outputDirectory>lib</outputDirectory>
+				<!-- default targets are 'jar' so keep them packed -->
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+		<!-- Scripts: binary attachment = '*-scripts' -->
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>*:ptk-vbrowser-start</include>
+			</includes>
+			<binaries>
+				<attachmentClassifier>scripts</attachmentClassifier>
+				<outputDirectory>bin/</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+				<unpack>true</unpack>
+			</binaries>
+		</moduleSet>
+		<!-- Icons -->
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>*:ptk-ui</include>
+				<include>*:ptk-vbrowser-ui</include>
+			</includes>
+			<binaries>
+				<attachmentClassifier>icons</attachmentClassifier>
+				<!-- Note: icon assemblies should have directory 'icons/' already as 
+					prefixed root directory so the the preferred output directory becomes lib/icons. 
+					This should match expected classpath prefix of "icons/" when appending "lib/" 
+					to the application classpath. This way custom 'icons' directories are possible, 
+					for example "lib/icons-theme/" -->
+				<outputDirectory>lib</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+				<unpack>true</unpack>
+			</binaries>
+		</moduleSet>
+		<!-- External libraries: "*-lib-ext" -> lobobrowser only -->
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>*:ptk-vbrowser-viewers-loboviewer</include>
+			</includes>
+			<binaries>
+				<!-- The lib-ext is used here to specify custom, non maven, library dependencies 
+					These jars are in ${module}/lib/* directory. Modules must export them with 
+					the "-lib-ext" identifier. -->
+				<attachmentClassifier>lib-ext</attachmentClassifier>
+				<outputDirectory>lib</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+				<unpack>true</unpack>
+			</binaries>
+		</moduleSet>
+		<!-- linux binaries-->
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>*:ptk-util-vterm</include>
+			</includes>
+			<binaries>
+				<!--  put linux executable under bin/ -->
+				<attachmentClassifier>linux-bin</attachmentClassifier>
+				<outputDirectory>bin/</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+				<unpack>true</unpack>
+			</binaries>
+		</moduleSet>	
+	</moduleSets>
+	
+	<fileSets>
+		<fileSet>
+			<!-- From Platinum Root -->
+			<directory>${project.basedir}</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>README*</include>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+
+</assembly>

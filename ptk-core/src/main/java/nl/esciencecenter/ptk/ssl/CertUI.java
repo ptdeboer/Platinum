@@ -52,8 +52,8 @@ public class CertUI {
         return null;
     }
 
-    public static boolean interactiveImportCertificate(CertificateStore cacerts, String hostname,
-            int port, CaCertOptions options) throws Exception {
+    public static boolean interactiveImportCertificate(CertificateStore cacerts, String hostname, int port,
+            CaCertOptions options) throws Exception {
         boolean result = interactiveImportCertificate(cacerts, hostname, port, null, options);
         return result;
     }
@@ -62,8 +62,8 @@ public class CertUI {
      * Interactive ask to accept Certificate or not. If accepted the Certificate Store will contain
      * the accepted cerificate.
      */
-    private static boolean interactiveImportCertificate(CertificateStore certStore, String host,
-            int port, String optPassphrase, CaCertOptions options) throws Exception {
+    private static boolean interactiveImportCertificate(CertificateStore certStore, String host, int port,
+            String optPassphrase, CaCertOptions options) throws Exception {
         // use defaults;
 
         if (options == null)
@@ -90,8 +90,7 @@ public class CertUI {
             Exception certificateException = findCertificateException(e);
 
             sslErrorMessage = e.getMessage();
-            logger.logException(PLogger.DEBUG, e,
-                    "<<< Initial SSL Handshake failed. Exception=%s\n", sslErrorMessage);
+            logger.logException(PLogger.DEBUG, e, "<<< Initial SSL Handshake failed. Exception=%s\n", sslErrorMessage);
             logger.debugPrintf("Certificate Exception= %s\n", certificateException);
 
             if (certificateException == null)
@@ -132,20 +131,16 @@ public class CertUI {
         if (options.interactive == true) {
             logger.infoPrintf("Asking interactive for:%s\n", host);
 
-            opt = CertificateDialog.showDialog("Certificate Received from: " + host + "\n"
-                    + "Accept certificate ?", chainMessage);
+            opt = CertificateDialog.showDialog("Certificate Received from: " + host + "\n" + "Accept certificate ?",
+                    chainMessage);
 
             if ((opt == CertificateDialog.NO) || (opt == CertificateDialog.CANCEL))
                 return false;
         } else if (options.alwaysAccept == false) {
-            logger.infoPrintf(
-                    "Rejecting Cert. Interactive==false and alwaysAccept==false for host:%s\n",
-                    host);
+            logger.infoPrintf("Rejecting Cert. Interactive==false and alwaysAccept==false for host:%s\n", host);
             return false;
         } else {
-            logger.infoPrintf(
-                    "Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n",
-                    host);
+            logger.infoPrintf("Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n", host);
             // continue
         }
 
@@ -167,16 +162,14 @@ public class CertUI {
         // interactive save
         if (options.interactive == true) {
             if (opt != CertificateDialog.TEMPORARY) {
-                logger.infoPrintf(
-                        "Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n",
+                logger.infoPrintf("Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n",
                         host);
                 certStore.saveKeystore();
             }
         }
         // not interactive:
         else if (options.storeAccepted == true) {
-            logger.infoPrintf(
-                    "Saving keystore after (default) accepting certificate from host:%s\n", host);
+            logger.infoPrintf("Saving keystore after (default) accepting certificate from host:%s\n", host);
             certStore.saveKeystore();
         }
 

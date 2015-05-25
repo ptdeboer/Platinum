@@ -142,7 +142,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         if (str != null)
             return str;
         if (isResourceFolder()) {
-            String iconUrl = "info/vle-world-folder.png";
+            String iconUrl = "icons/info/vle-world-folder.png";
             attributes.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
             return iconUrl;
         } else {
@@ -349,7 +349,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
             return this.createFolder(name);
         } else if (StringUtil.equals(type, InfoRSConstants.RESOURCELINK)) {
             // create link with dummy VRL;
-            VRL vrl = this.resolvePathVRL("NewLink");
+            VRL vrl = this.resolveVRL("NewLink");
             return this.createResourceLink(vrl, name);
         } else {
             throw new VrsException("Resource type not supported:" + type);

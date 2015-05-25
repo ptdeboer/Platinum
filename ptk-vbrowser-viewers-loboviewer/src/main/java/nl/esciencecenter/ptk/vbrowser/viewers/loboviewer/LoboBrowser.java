@@ -33,7 +33,7 @@ import nl.esciencecenter.ptk.data.Pair;
 import nl.esciencecenter.ptk.ssl.CertUI;
 import nl.esciencecenter.ptk.ssl.CertificateStore.CaCertOptions;
 import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEvent;
@@ -46,7 +46,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class LoboBrowser extends EmbeddedViewer implements ToolPlugin
+public class LoboBrowser extends ViewerJPanel implements ToolPlugin
 {
     private static final long serialVersionUID = 3652578919344065278L;
 
@@ -127,6 +127,9 @@ public class LoboBrowser extends EmbeddedViewer implements ToolPlugin
     protected void doUpdate(VRL location) throws VrsException
     {
         debugPrintf("Update location:%s\n", location);
+        if (location==null) {
+            return;
+        }
 
         try
         {
@@ -298,7 +301,9 @@ public class LoboBrowser extends EmbeddedViewer implements ToolPlugin
     public boolean handleLink(VRL loc, boolean openNew) throws VrsException
     {
         String mimeType = this.getResourceHandler().getMimeTypeOf(loc);
-
+        
+        logger.error("*** handleLink{}:mimeType:{}", mimeType); 
+      
         if (isMyMimeType(mimeType) == false)
         {
             if (isStartedAsStandalone() || openNew)

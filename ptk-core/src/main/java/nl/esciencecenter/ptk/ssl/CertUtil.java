@@ -70,8 +70,8 @@ public class CertUtil {
      * @throws FileURISyntaxException
      * @throws CertificateException
      */
-    public static X509Certificate loadPEMCertificate(String filename)
-            throws FileURISyntaxException, IOException, CertificateException {
+    public static X509Certificate loadPEMCertificate(String filename) throws FileURISyntaxException, IOException,
+            CertificateException {
         CertificateStore.logger.debugPrintf("Loading (PEM) Certificate :%s\n", filename);
 
         String pemStr = FSUtil.getDefault().readText(filename);
@@ -94,12 +94,12 @@ public class CertUtil {
      * @throws FileURISyntaxException
      * @throws CertificateException
      */
-    public static X509Certificate loadDERCertificate(String filename)
-            throws FileURISyntaxException, IOException, CertificateException {
+    public static X509Certificate loadDERCertificate(String filename) throws FileURISyntaxException, IOException,
+            CertificateException {
         CertificateStore.logger.debugPrintf("Loading (DER ENCODED) Certificate :%s\n", filename);
 
         FSUtil fsUtil = FSUtil.getDefault();
-        InputStream finps = fsUtil.newFSPath(filename).createInputStream();
+        InputStream finps = fsUtil.createInputStream(fsUtil.newFSPath(filename));
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate x590 = (X509Certificate) cf.generateCertificate(finps);
@@ -116,8 +116,8 @@ public class CertUtil {
         return x590;
     }
 
-    public static String toString(X509Certificate cert, String indent, String eolStr)
-            throws NoSuchAlgorithmException, CertificateEncodingException {
+    public static String toString(X509Certificate cert, String indent, String eolStr) throws NoSuchAlgorithmException,
+            CertificateEncodingException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         sha1.update(cert.getEncoded());

@@ -129,7 +129,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
     }
 
     @Override
-    public void notifyVRSEvent(VRSEvent e) {
+    public void notifyEvent(VRSEvent e) {
         logger.debugPrintf("notifyDataSourceEvent:%s\n", e);
 
         VRL parent = e.getParent();
@@ -139,16 +139,16 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
             case RESOURCES_DELETED:
                 deleteNodes(sources);
                 break;
-            case REFRESH_RESOURCES:
+            case RESOURCES_UPDATED:
                 update(sources, null);
                 break;
-            case RESOURCES_ADDED:
+            case RESOURCES_CREATED:
                 addNodes(parent, sources);
                 break;
             case RESOURCES_RENAMED:
                 renameNodes(parent, sources, e.getOtherResources());
                 break;
-            case ATTRIBUTES_CHANGED:
+            case ATTRIBUTES_UPDATED:
                 updateAttributes(e.getParent(), e.getResources(), e.getAttributeNames());
                 break;
             default:

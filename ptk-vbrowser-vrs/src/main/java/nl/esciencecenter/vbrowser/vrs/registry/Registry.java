@@ -39,7 +39,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.webrs.WebRSFactory;
 
 /**
- * Registry for VResourceSystemFactories.
+ * Static Registry for VResourceSystemFactories. <br>
+ * Currently there is only a singleton Registry. ResourceSystems are linked to a VRSContext.
  */
 public class Registry {
 
@@ -142,6 +143,9 @@ public class Registry {
         }
     }
 
+    /**
+     * Register the ResourceSystemFactory in the singleton Registry.<br>
+     */
     public void registerFactory(Class<? extends VResourceSystemFactory> vrsClass) throws InstantiationException,
             IllegalAccessException {
         VResourceSystemFactory vrsInstance;
@@ -190,7 +194,7 @@ public class Registry {
                 for (int i = listSize - 1; i >= 0; i--) {
                     SchemeInfo entry = list.get(i);
 
-                    if (entry.vrsFactory == vrsInstance) {
+                    if (entry.vrsFactory.equals(vrsInstance)) {
                         list.remove(i);
                         listSize = list.size();
                     }

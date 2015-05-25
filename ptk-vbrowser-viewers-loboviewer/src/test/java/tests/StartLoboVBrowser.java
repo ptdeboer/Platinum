@@ -40,7 +40,7 @@ public class StartLoboVBrowser
 
             VRSContext context = platform.getVRSContext(); 
             context.getRegistry().registerFactory(nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.resfs.ResFS.class);
-            platform.getViewerRegistry().registerViewer(LoboBrowser.class);
+            platform.getViewerRegistry().registerPlugin(LoboBrowser.class);
             
             LoboBrowserInit.initPlatform(platform);
             

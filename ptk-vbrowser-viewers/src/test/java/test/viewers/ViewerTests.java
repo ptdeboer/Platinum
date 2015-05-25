@@ -27,7 +27,7 @@ public class ViewerTests {
         ViewerPlugin newViewer = getViewerRegistry().createViewer(class1);
         ViewerFrame frame = createViewerFrame(newViewer, true);
 
-        ViewerContext context = new ViewerContext(getViewerRegistry(), null, vrl, true);
+        ViewerContext context = new ViewerContext(getViewerRegistry(), null, null,vrl, true);
         context.setViewerEventDispatcher(new ViewerEventDispatcher(true));
         newViewer.initViewer(context);
 

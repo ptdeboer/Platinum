@@ -101,7 +101,7 @@ public class FSNodeProxyNode extends ProxyNode {
         }
 
         try {
-            String[] list = file.list();
+            FSPath[] list = file.listNodes();
             return ((list != null) && (list.length > 0));
         } catch (IOException e) {
             return false;
@@ -137,7 +137,7 @@ public class FSNodeProxyNode extends ProxyNode {
     }
 
     protected FSNodeProxyNode createNewNode(FSPath fsNode) throws ProxyException {
-        return new FSNodeProxyNode(getProxyFactory(), new VRL(fsNode.getURI()), fsNode);
+        return new FSNodeProxyNode(getProxyFactory(), new VRL(fsNode.toURI()), fsNode);
     }
 
     @Override
@@ -208,12 +208,12 @@ public class FSNodeProxyNode extends ProxyNode {
     @Override
     protected ProxyNode doCreateNew(String type, String optNewName) throws ProxyException {
         try {
-            FSPath newPath = file.resolvePath(optNewName);
+            FSPath newPath = file.resolve(optNewName);
             if (StringUtil.equals(type, FSPath.FILE_TYPE)) {
                 newPath.create();
                 return createNewNode(newPath);
             } else if (StringUtil.equals(type, FSPath.FILE_TYPE)) {
-                newPath.mkdir();
+                newPath.getFSInterface().mkdir(newPath);
                 return createNewNode(newPath);
             } else {
                 throw new ProxyException("Create: unrecognized type:" + type);

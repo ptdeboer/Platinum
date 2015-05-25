@@ -40,7 +40,7 @@ public class InfoConfigNode extends InfoRSPathNode {
     }
 
     public String getIconURL(int size) {
-        return "info/configure-128.png";
+        return "icons/info/configure-128.png";
     }
 
     public String getName() {

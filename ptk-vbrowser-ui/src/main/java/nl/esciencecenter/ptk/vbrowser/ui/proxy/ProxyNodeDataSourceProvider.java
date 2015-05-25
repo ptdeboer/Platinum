@@ -86,7 +86,7 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource {
 
     @Override
     public void addDataSourceEventListener(VRSEventListener listener) {
-        eventNotifier.addListener(listener);
+        eventNotifier.addListener(listener, null);
     }
 
     @Override

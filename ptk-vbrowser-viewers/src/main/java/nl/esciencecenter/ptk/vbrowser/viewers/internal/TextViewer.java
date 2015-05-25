@@ -57,7 +57,7 @@ import nl.esciencecenter.ptk.ui.fonts.FontToolbarListener;
 import nl.esciencecenter.ptk.ui.fonts.FontUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -65,7 +65,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Embedded textviewer for the VBrowser.
  */
-public class TextViewer extends EmbeddedViewer implements ActionListener, FontToolbarListener {
+public class TextViewer extends ViewerJPanel implements ActionListener, FontToolbarListener {
     private static final long serialVersionUID = -2866218889160789305L;
 
     // --
@@ -82,9 +82,8 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     /**
      * The mimetypes i can view
      */
-    private static String mimeTypes[] = { MimeTypes.MIME_TEXT_PLAIN, MimeTypes.MIME_TEXT_HTML,
-            "text/x-c", "text/x-cpp", "text/x-java", "application/x-sh", "application/x-csh",
-            "application/x-shellscript",
+    private static String mimeTypes[] = { MimeTypes.MIME_TEXT_PLAIN, MimeTypes.MIME_TEXT_HTML, "text/x-c",
+            "text/x-cpp", "text/x-java", "application/x-sh", "application/x-csh", "application/x-shellscript",
             // MimeTypes.MIME_BINARY, -> Now handled by MimeType mapping!
             "application/vlet-type-definition",
             // nfo files: uses CP437 Encoding (US Extended ASCII)!
@@ -279,7 +278,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                     {
                         refreshButton = new JButton();
                         toolbar.add(refreshButton);
-                        refreshButton.setIcon(getIconOrBroken("menu/refresh.gif"));
+                        refreshButton.setIcon(getIconOrBroken("texteditor/refresh.gif"));
 
                         refreshButton.setActionCommand("refresh");
                         refreshButton.addActionListener(this);
@@ -293,7 +292,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                     {
                         saveConfigButton = new JButton();
                         optionsToolbar.add(saveConfigButton);
-                        saveConfigButton.setIcon(getIconOrBroken("menu/saveconfig.png"));
+                        saveConfigButton.setIcon(getIconOrBroken("texteditor/saveconfig.png"));
                         saveConfigButton.setActionCommand("saveConfig");
                         saveConfigButton.addActionListener(this);
                         saveConfigButton.setToolTipText("Save setings");
@@ -301,7 +300,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                     {
                         enableEditButton = new JToggleButton();
                         optionsToolbar.add(enableEditButton);
-                        enableEditButton.setIcon(getIconOrBroken("menu/enableedit.png"));
+                        enableEditButton.setIcon(getIconOrBroken("texteditor/enableedit.png"));
 
                         enableEditButton.setActionCommand("enableEdit");
                         enableEditButton.addActionListener(this);
@@ -311,7 +310,7 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                     {
                         saveButton = new JButton();
                         optionsToolbar.add(saveButton);
-                        saveButton.setIcon(getIconOrBroken("menu/save.png"));
+                        saveButton.setIcon(getIconOrBroken("texteditor/save.png"));
 
                         saveButton.setActionCommand("save");
                         saveButton.addActionListener(this);
@@ -444,18 +443,18 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
                 return; // receive stop signal BEFORE getContents...
             }
 
-            // Special Replica handling:
-            if (this.getResourceHandler().hasReplicas(getVRL())) {
-                VRL vrls[] = getResourceHandler().getReplicas(getVRL());
-
-                if ((vrls == null) || (vrls.length <= 0)) {
-                    // Use Exception dialog as Warning Dialog
-                    throw new IOException(
-                            "Warning:File doesn't have any replicas.\n"
-                                    + "You can start editing this file and when saving this file a new replica will be created.");
-
-                }
-            }
+            //            // Special Replica handling:
+            //            if (this.getResourceHandler().hasReplicas(getVRL())) {
+            //                VRL vrls[] = getResourceHandler().getReplicas(getVRL());
+            //
+            //                if ((vrls == null) || (vrls.length <= 0)) {
+            //                    // Use Exception dialog as Warning Dialog
+            //                    throw new IOException(
+            //                            "Warning:File doesn't have any replicas.\n"
+            //                                    + "You can start editing this file and when saving this file a new replica will be created.");
+            //
+            //                }
+            //            }
             //
 
             txt = getResourceHandler().readText(uri, textEncoding);
@@ -509,21 +508,6 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
         return mimeTypes;
     }
 
-    // @Override
-    // public void startViewer(URI location, String optMethodName, ActionContext
-    // actionContext) throws VrsException
-    // {
-    // setURI(location);
-    //
-    // // update location first (load text)
-    // if (location != null)
-    // updateLocation(location);
-    //
-    // // perform action method:
-    // if (StringUtil.isWhiteSpace(optMethodName)==false)
-    // this.doMethod(optMethodName,actionContext);
-    // }
-
     @Override
     public void doStopViewer() {
         this.muststop = true;
@@ -547,13 +531,11 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String actionCmd = e.getActionCommand();
-
         // FontToolbar events are handled by that component:
         if ((source == this.refreshButton) || (source == this.refreshMenuItem)) {
             try {
                 if (isSaving()) {
-                    notifyException("Still Saving!", new Exception(
-                            "Still waiting for previous save to finished!"));
+                    notifyException("Still Saving!", new Exception("Still waiting for previous save to finished!"));
                     return;
                 }
                 doUpdate(getVRL());
@@ -600,16 +582,13 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
         this.textEncoding = val;
     }
 
-    private void showWarnEncoding() {
+    protected void showWarnEncoding() {
         if (this._showWarningEncoding == false)
             return;
 
-        super.showMessage(
-                "Encoding has changed",
-                "Warning: You are changing the encoding of this text.\n"
-                        + "Either:\n"
-                        + "(1) Reload this file to read the original text using the new encoding, or\n"
-                        + "(2) Save this resource to encode the current text using the new encoding.");
+        super.showMessage("Encoding warning", "Warning: You are changing the encoding of this text.\n"
+                + "Either:\n" + "(1) Reload this file to read the original text using the new encoding, or\n"
+                + "(2) Save this resource to encode the current text using the new encoding.");
 
         // I will zay thiz zonly wanz:
         this._showWarningEncoding = false;
@@ -763,62 +742,14 @@ public class TextViewer extends EmbeddedViewer implements ActionListener, FontTo
     @Override
     public Map<String, List<String>> getMimeMenuMethods() {
         // Use HashMapList to keep order of menu entries: first is default(!)
-
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
         for (int i = 0; i < mimeTypes.length; i++) {
-            List<String> list = new StringList(new String[] { ACTION_VIEW + ":View Text",
-                    ACTION_EDIT + ":Edit Text" });
+            List<String> list = new StringList(new String[] { ACTION_VIEW + ":View Text", ACTION_EDIT + ":Edit Text" });
             mappings.put(mimeTypes[i], list);
         }
 
         return mappings;
     }
-
-    // public Vector<ActionMenuMapping> getActionMappings()
-    // {
-    // ActionMenuMapping viewMapping=new ActionMenuMapping("viewText",
-    // "View Text");
-    // ActionMenuMapping editMapping=new ActionMenuMapping("editText",
-    // "Edit Text");
-    // ActionMenuMapping viewBinMapping=new ActionMenuMapping("viewText",
-    // "View As Text");
-    // // '/' is not a RE character
-    //
-    // Pattern txtPatterns[]=new Pattern[mimeTypes.length-1];
-    // Pattern binPatterns[]=new Pattern[1];
-    //
-    // for (int i=0;i<mimeTypes.length-1;i++)
-    // {
-    // txtPatterns[i]=Pattern.compile(mimeTypes[i]);
-    // }
-    //
-    // binPatterns[0]=Pattern.compile(MimeTypes.MIME_BINARY);
-    //
-    // viewMapping.addMimeTypeMapping(txtPatterns);
-    // editMapping.addMimeTypeMapping(txtPatterns);
-    // viewBinMapping.addMimeTypeMapping(binPatterns);
-    //
-    // Vector<ActionMenuMapping> mappings=new Vector<ActionMenuMapping>();
-    // mappings.add(viewMapping);
-    // mappings.add(editMapping);
-    // mappings.add(viewBinMapping);
-    //
-    // return mappings;
-    // }
-
-    // public void doMethod(String methodName, ActionContext actionContext)
-    // throws VrsException
-    // {
-    // if (actionContext.getSource()!=null)
-    // {
-    // this.updateLocation(actionContext.getSource());
-    //
-    // if (StringUtil.compare(methodName,"editText")==0)
-    // {
-    // this.enableEdit(true);
-    // }
-    // }
-    // }
 
 }

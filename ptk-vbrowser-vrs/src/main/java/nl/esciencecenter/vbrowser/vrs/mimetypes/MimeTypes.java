@@ -33,8 +33,6 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * MimeType util class.
- * 
- * @author P.T. de Boer
  */
 public class MimeTypes {
     // default mime types.
@@ -77,13 +75,12 @@ public class MimeTypes {
 
     private void init() {
         try {
-            // Load default mime.type file from classpath.
-            String confFile = "etc/mime.types";
+            // Load default mime.types file from classpath.
+            String confFile = "mime.types";
             URL result = getClass().getClassLoader().getResource(confFile);
 
             if (result == null) {
-                // no mime.type file in etc/ check optional other location.
-                confFile = "mime.types";
+                confFile = "default_mime.types";
                 result = getClass().getClassLoader().getResource(confFile);
             }
 
@@ -91,7 +88,7 @@ public class MimeTypes {
                 InputStream inps = result.openStream();
                 typemap = new MimetypesFileTypeMap(inps);
             } else {
-                logger.warnPrintf("Couldn't locate ANY mime.types file on classpath \n");
+                logger.warn("Couldn't locate ANY mime.types file on classpath");
                 typemap = new MimetypesFileTypeMap();
             }
         } catch (IOException e) {

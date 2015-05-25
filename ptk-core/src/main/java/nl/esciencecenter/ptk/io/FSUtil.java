@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -34,6 +35,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,22 +48,20 @@ import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.util.ContentReader;
+import nl.esciencecenter.ptk.util.ContentWriter;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
- * File System util and resource provoder work with local file paths and URIs. <br>
- * Pathnames are resolved to absolute paths and normalizes to URI style paths.<br>
+ * File System util and resource provider works with local file-paths and URIs. <br>
+ * Pathnames are resolved to absolute paths and normalized to URI style paths.<br>
  * <br>
- * For example: <code>'file:///C:/Users/Bob/'</code>
+ * For example: <code>'C:Bob'</code> => <code>'file:///C:/Users/Bob/'</code>
  */
-public class FSUtil implements ResourceProvider, FSPathProvider {
+public class FSUtil implements ResourceProvider, FSInterface {
 
     private static final PLogger logger = PLogger.getLogger(FSUtil.class);
-
-    public static final String ENCODING_UTF8 = "UTF8";
-
-    public static final String ENCODING_ASCII = "ASCII";
 
     private static FSUtil instance = null;
 
@@ -86,6 +87,10 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
          */
         public LinkOption linkOption = null;
 
+        /**
+         * Default character encoding;
+         */
+        public String charEncoding = ResourceLoader.CHARSET_UTF8;
     }
 
     // ========================================================================
@@ -172,6 +177,15 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
         }
     }
 
+    @Override
+    public LinkOption[] linkOptions() {
+        if (this.fsOptions.linkOption == null) {
+            return null;
+        } else {
+            return new LinkOption[] { fsOptions.linkOption };
+        }
+    }
+
     // ========================================================================
     // Resolve
     // ========================================================================
@@ -181,7 +195,8 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
     }
 
     /**
-     * Return new FileSystem Node specified by the URI.
+     * @return new FileSystem Path specified by the URI.
+     * @throws FileURISyntaxException
      */
     public FSPath resolvePath(URI uri) throws FileURISyntaxException {
         if (uri.isAbsolute() == false) {
@@ -191,11 +206,26 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
     }
 
     /**
-     * Resolve relative path against current working directory and return absolute URI. Note: URI
-     * has an absolute and forward slash style path.
+     * Return new FileSystem Path specified by the URL.
+     * 
+     * @throws FileURISyntaxException
+     */
+    public FSPath resolvePath(URL url) throws FileURISyntaxException {
+        try {
+            return new FSPath(this, Paths.get(url.toURI()));
+        } catch (URISyntaxException e) {
+            throw new FileURISyntaxException("Not a valid URI:" + url, url.toString(), e);
+        }
+    }
+
+    /**
+     * Resolve relative path against current working directory and return absolute URI.<br>
+     * Note: URI has an absolute path and uses a forward slash as File seperator.
+     * 
+     * @return normalized and absolute URI path.
      */
     public URI resolvePathURI(String path) throws FileURISyntaxException {
-        return resolvePath(workingDir, userHome, fsOptions.resolveTilde, path).getURI();
+        return resolvePath(workingDir, userHome, fsOptions.resolveTilde, path).toURI();
     }
 
     /**
@@ -203,8 +233,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
      * localized paths, 'C:\Home' are well as normalized URI path are allowed '/C:/Home/'.<br>
      * For a complete URI like "file:///C:/Home" use {@link #resolvePath(URI)}
      */
-    public FSPath resolvePath(Path cwd, Path home, boolean resolveTilde, String path)
-            throws FileURISyntaxException {
+    public FSPath resolvePath(Path cwd, Path home, boolean resolveTilde, String path) throws FileURISyntaxException {
         //
         String newPath = path;
         if (resolveTilde) {
@@ -221,8 +250,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
         String newPath = path;
         // patch: allow URI style paths like "/C:/Home/...".
         if (GlobalProperties.isWindows()) {
-            boolean uriDosPath = (path.length() > 2) && (path.charAt(0) == '/')
-                    && (path.charAt(2) == ':');
+            boolean uriDosPath = (path.length() > 2) && (path.charAt(0) == '/') && (path.charAt(2) == ':');
             if (uriDosPath) {
                 newPath = newPath.substring(1);
             }
@@ -316,8 +344,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public String[] list(String dirPath, LinkOption... linkOptions) throws IOException,
-            FileURISyntaxException {
+    public List<FSPath> list(String dirPath, LinkOption... linkOptions) throws IOException, FileURISyntaxException {
         FSPath file = resolvePath(resolvePathURI(dirPath));
 
         if (file.exists(linkOptions) == false) {
@@ -328,17 +355,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
             return null;
         }
 
-        String strs[] = file.list();
-        if ((strs == null) || (strs.length <= 0)) {
-            return null;
-        }
-
-        // sanitize:
-        for (int i = 0; i < strs.length; i++) {
-            strs[i] = resolvePath(dirPath + "/" + strs[i]).getPathname();
-        }
-
-        return strs;
+        return file.list();
     }
 
     public void deleteFile(String filename) throws IOException, FileURISyntaxException {
@@ -361,16 +378,19 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
         return createOutputStream(newFSPath(filename), false);
     }
 
-    public FSPath mkdir(String path) throws IOException {
-        FSPath dir = this.newFSPath(path);
-        dir.mkdir();
-        return dir;
+    public FSPath mkdir(FSPath path) throws IOException {
+        Path newPath = Files.createDirectory(path.path());
+        return new FSPath(this, newPath);
+    }
+
+    public FSPath mkdirs(FSPath path) throws IOException {
+        Path newPath = Files.createDirectories(path.path());
+        return new FSPath(this, newPath);
     }
 
     public FSPath mkdirs(String path) throws IOException {
-        FSPath dir = this.newFSPath(path);
-        dir.mkdirs();
-        return dir;
+        FSPath dirs = this.newFSPath(path);
+        return this.mkdirs(dirs);
     }
 
     public FSPath getLocalTempDir() throws IOException {
@@ -497,8 +517,7 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
     public List<FSPath> listRoots() {
         ArrayList<FSPath> roots = new ArrayList<FSPath>();
 
-        Iterator<Path> iterator = java.nio.file.FileSystems.getDefault().getRootDirectories()
-                .iterator();
+        Iterator<Path> iterator = java.nio.file.FileSystems.getDefault().getRootDirectories().iterator();
 
         while (iterator.hasNext()) {
             Path path = iterator.next();
@@ -604,31 +623,67 @@ public class FSUtil implements ResourceProvider, FSPathProvider {
         return new FSWriter((resolvePath(uri)._path));
     }
 
-    public ResourceLoader getResourceLoader() {
-        return new ResourceLoader(this, null);
+    // ============
+    // Attributes
+    // ============
+
+    public BasicFileAttributes getBasicAttributes(FSPath path, LinkOption... linkOptions) throws IOException {
+        try {
+            return Files.readAttributes(path.path(), BasicFileAttributes.class, linkOptions);
+        } catch (IOException e) {
+            // Auto dereference in the case of a borken link:
+            if (path.isBrokenLink()) {
+                return Files.readAttributes(path.path(), BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    public PosixFileAttributes getPosixAttributes(FSPath path, LinkOption... linkOptions) throws IOException {
+        try {
+            return Files.readAttributes(path.path(), PosixFileAttributes.class);
+        } catch (IOException e) {
+            // auto dereference in the case of a borken link:
+            if (path.isBrokenLink()) {
+                return Files.readAttributes(path.path(), PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            } else {
+                throw e;
+            }
+        } catch (UnsupportedOperationException e) {
+            return null;
+        }
     }
 
     // ============
     // Util methods
     // ============
 
-    public String readText(String filename) throws IOException {
-        URI uri = this.resolvePathURI(filename);
-        return this.getResourceLoader().readText(uri);
+    public String getCharEncoding() {
+        return fsOptions.charEncoding;
     }
 
-    public void writeText(String filePath, String text) throws IOException {
-        URI uri = this.resolvePathURI(filePath);
-        this.getResourceLoader().writeTextTo(uri, text);
+    public String readText(String filePath) throws IOException {
+        FSPath path = this.newFSPath(filePath);
+        return readText(path);
     }
 
-    @Override
-    public LinkOption[] linkOptions() {
-        if (this.fsOptions.linkOption == null) {
-            return null;
-        } else {
-            return new LinkOption[] { fsOptions.linkOption };
+    public String readText(FSPath path) throws IOException {
+        try (InputStream inps = this.createInputStream(path)) {
+            return new ContentReader(inps, this.fsOptions.charEncoding, false).readString();
         }
+        // autoclose 
     }
 
+    public void writeText(String filePath, String message) throws IOException {
+        FSPath path = this.newFSPath(filePath);
+        writeText(path, message);
+    }
+
+    public void writeText(FSPath filePath, String message) throws IOException {
+        try (OutputStream outps = this.createOutputStream(filePath, false)) {
+            new ContentWriter(outps, this.fsOptions.charEncoding, false).write(message);
+        }
+        // autoclose 
+    }
 }

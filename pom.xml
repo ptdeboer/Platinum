@@ -8,7 +8,7 @@
 	<artifactId>platinum</artifactId>
 	<packaging>pom</packaging>
 	<name>Platinum</name>
-	<version>1.0.0-vlet</version>
+	<version>1.1.0-SNAPSHOT</version>
 
 	<properties>
 		<ptk.version>${project.version}</ptk.version>
@@ -26,12 +26,12 @@
 		<module>ptk-util-vterm</module>
 		<module>ptk-vbrowser-vrs</module>
 		<module>ptk-vbrowser-vrs-sftp</module>
-		<module>ptk-vbrowser-ui-icons</module>
 		<module>ptk-vbrowser-ui</module>
 		<module>ptk-vbrowser-viewers</module>
 		<module>ptk-vbrowser-viewers-loboviewer</module>
 		<module>ptk-vbrowser-vrs-integration-tests</module>
 		<module>ptk-vbrowser-start</module>
+		<!--  last one here doens't mean it will be executed last -->
 		<module>ptk-zipdist</module>
 	</modules>
 
@@ -47,8 +47,7 @@
 						<source>1.8</source>
 						<target>1.8</target>
 						<files>
-							<file>project.prop</file>
-							<file>local.prop</file>
+							<!-- <file>project.prop</file> -->
 						</files>
 					</configuration>
 				</plugin>
@@ -63,7 +62,7 @@
 					<version>2.5.4</version>
 					<configuration>
 						<descriptors>
-							<descriptor>src/assembly/bin.xml</descriptor>
+							<descriptor>src/assembly/dist.xml</descriptor>
 						</descriptors>
 					</configuration>
 				</plugin>
@@ -117,6 +116,7 @@
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>properties-maven-plugin</artifactId>
 			<version>1.0-alpha-2</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

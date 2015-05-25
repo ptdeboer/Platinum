@@ -36,8 +36,8 @@ import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.exec.LocalExec;
 import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.MimeViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -47,7 +47,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * Start Webstart application.
  */
-public class JavaWebStarter extends EmbeddedViewer implements ActionListener, ViewerPlugin,
+public class JavaWebStarter extends ViewerJPanel implements ActionListener, ViewerPlugin,
         MimeViewer {
     private static final long serialVersionUID = -8153274632131510572L;
 
@@ -191,7 +191,7 @@ public class JavaWebStarter extends EmbeddedViewer implements ActionListener, Vi
     }
 
     @Override
-    public EmbeddedViewer getViewerPanel() {
+    public ViewerJPanel getViewerPanel() {
         return this;
     }
 }

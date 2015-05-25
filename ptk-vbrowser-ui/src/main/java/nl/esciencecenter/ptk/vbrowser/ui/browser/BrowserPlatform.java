@@ -29,6 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.TransferHandler;
 
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
+import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
@@ -124,7 +125,7 @@ public class BrowserPlatform {
 
         // root Frame and Icon Renderer/provider:
         this.rootFrame = new JFrame();
-        this.iconProvider = new IconProvider(rootFrame, vrsClient.createResourceLoader());
+        this.iconProvider = new IconProvider(rootFrame, new ResourceLoader(vrsClient, null));
 
         // ===================================
         // Init Viewers and ViewerPlugins.
@@ -155,8 +156,7 @@ public class BrowserPlatform {
 
     protected void initViewers() throws Exception {
         // create custom sub-directory for viewer settings. 
-        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient,
-                createCustomConfigDir("viewers"));
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient, "viewers");
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
     }
@@ -264,8 +264,16 @@ public class BrowserPlatform {
         }
     }
 
+    public String getAboutText() {
+        return "" + //
+                "      === Platinum Toolkit ===     \n" + //
+                "  VBrowser 2.0 (Under construction)\n" + //
+                "                                   \n";
+
+    }
+
     // ==============  
-    // Dispose
+    // Dispose/Misc.
     // ==============
 
     /**
@@ -279,16 +287,20 @@ public class BrowserPlatform {
      * Immediately close and dipose all registered resources;
      */
     public void dispose() {
-        vrsClient.dispose();
-        vrsContext.dispose();
-        this.vrsClient = null;
+        if (vrsClient!=null) { 
+            vrsClient.dispose();
+        }
+        if (vrsContext!=null) { 
+            vrsContext.dispose();
+        }
         this.viewerEventDispatcher.stop();
         this.viewerEventDispatcher.dispose();
-        vrsClient = null;
-        vrsContext = null;
+        this.vrsClient = null;
+        this.vrsContext = null;
     }
 
     public String toString() {
         return "BrowserPlatform:[platformID='" + this.platformID + "']";
     }
+
 }

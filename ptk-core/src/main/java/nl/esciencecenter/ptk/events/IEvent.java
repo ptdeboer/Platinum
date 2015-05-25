@@ -20,10 +20,10 @@
 
 package nl.esciencecenter.ptk.events;
 
-public interface IEvent<SourceT, EventEnumT> {
+public interface IEvent<EventTypeT> {
 
-    public SourceT getEventSource();
+    public EventTypeT getEventType();
 
-    public EventEnumT getEventType();
+    public Object getEventSource();
 
 }

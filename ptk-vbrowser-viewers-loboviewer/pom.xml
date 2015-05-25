@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
 		<artifactId>platinum</artifactId>
-		<version>1.0.0-vlet</version>
+		<version>1.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -19,7 +19,35 @@
 				<directory>src/resources/icons</directory>
 			</resource>
 		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/lobo-ext.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>lobo-ext</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
 	</build>
+
+	<repositories>
+		<repository>
+			<id>local</id>
+			<name>local</name>
+			<url>file:///${project.basedir}/m2</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<!-- ptk -->
@@ -61,18 +89,20 @@
 		<!-- lobo local jars! -->
 		<dependency>
 			<groupId>org.lobobrowser</groupId>
-			<artifactId>lobobrowser-patched</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/lobo-patched.jar</systemPath>
+			<artifactId>lobo-patched</artifactId>
+			<version>0.98.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.lobobrowser</groupId>
-			<artifactId>lobobrowser</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/lobo-pub.jar</systemPath>
+			<artifactId>lobo-pub</artifactId>
+			<version>0.98.4</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

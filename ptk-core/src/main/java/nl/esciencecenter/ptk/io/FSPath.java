@@ -21,13 +21,13 @@
 package nl.esciencecenter.ptk.io;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -62,15 +62,9 @@ public class FSPath {
     /** The nio file path */
     protected Path _path;
 
-    /** Basic file attributes are supported by all filesystem implementations. */
-    protected BasicFileAttributes basicAttrs;
+    protected FSInterface fsHandler = null;
 
-    protected FSPathProvider fsHandler = null;
-
-    /** Holds posix attributes, if the are supported. Is null otherwise. */
-    protected PosixFileAttributes posixAttrs;
-
-    protected FSPath(FSPathProvider fsHandler, Path path) {
+    protected FSPath(FSInterface fsHandler, Path path) {
         this.fsHandler = fsHandler;
         init(path);
     }
@@ -79,8 +73,22 @@ public class FSPath {
         this._path = path;
     }
 
-    protected Path path() {
+    /**
+     * @return nio.file.Path
+     */
+    public Path path() {
         return _path;
+    }
+
+    /**
+     * @return nio.file.FileSystem
+     */
+    public FileSystem getFileSystem() {
+        return _path.getFileSystem();
+    }
+
+    public FSInterface getFSInterface() {
+        return this.fsHandler;
     }
 
     // ==========================
@@ -99,18 +107,6 @@ public class FSPath {
         return this;
     }
 
-    public FSPath createDir(String subdir) throws IOException, FileURISyntaxException {
-        FSPath dir = resolvePath(subdir);
-        dir.mkdir();
-        return dir;
-    }
-
-    public FSPath createFile(String filepath) throws IOException, FileURISyntaxException {
-        FSPath file = resolvePath(filepath);
-        file.create();
-        return file;
-    }
-
     public boolean delete(LinkOption... linkOptions) throws IOException {
         Files.delete(_path);
         return true;
@@ -125,7 +121,7 @@ public class FSPath {
     }
 
     public FSPath renameTo(String relativeOrAbsolutePath) throws IOException {
-        FSPath other = this.resolvePath(relativeOrAbsolutePath);
+        FSPath other = this.resolve(relativeOrAbsolutePath);
 
         Path targetPath = other._path;
         @SuppressWarnings("unused")
@@ -142,7 +138,7 @@ public class FSPath {
      * Returns creation time in milli seconds since EPOCH, if supported. Returns -1 otherwise.
      */
     public FileTime getAccessTime() throws IOException {
-        BasicFileAttributes attrs = this.getBasicAttributes();
+        BasicFileAttributes attrs = this.fsHandler.getBasicAttributes(this);
 
         if (attrs == null) {
             return null;
@@ -168,26 +164,8 @@ public class FSPath {
         }
     }
 
-    public BasicFileAttributes getBasicAttributes(LinkOption... linkOptions) throws IOException {
-        try {
-            if (basicAttrs == null) {
-                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class, linkOptions);
-            }
-        } catch (IOException e) {
-            // Auto dereference in the case of a borken link:
-            if (isBrokenLink()) {
-                basicAttrs = Files.readAttributes(_path, BasicFileAttributes.class,
-                        LinkOption.NOFOLLOW_LINKS);
-            } else {
-                throw e;
-            }
-        }
-
-        return basicAttrs;
-    }
-
     public FileTime getCreationTime() throws IOException {
-        BasicFileAttributes attrs = this.getBasicAttributes();
+        BasicFileAttributes attrs = this.fsHandler.getBasicAttributes(this);
 
         if (attrs == null) {
             return null;
@@ -205,7 +183,7 @@ public class FSPath {
     }
 
     public long getFileSize() throws IOException {
-        BasicFileAttributes attrs = this.getBasicAttributes();
+        BasicFileAttributes attrs = this.fsHandler.getBasicAttributes(this);
 
         if (attrs == null)
             return 0;
@@ -213,12 +191,8 @@ public class FSPath {
         return attrs.size();
     }
 
-    public String getHostname() {
-        return _path.toUri().getHost();
-    }
-
     public FileTime getModificationTime() throws IOException {
-        BasicFileAttributes attrs = this.getBasicAttributes();
+        BasicFileAttributes attrs = this.fsHandler.getBasicAttributes(this);
 
         if (attrs == null) {
             return null;
@@ -280,11 +254,6 @@ public class FSPath {
                 return pathStr;
             }
         }
-
-    }
-
-    public int getPort() {
-        return _path.toUri().getPort();
     }
 
     /**
@@ -299,34 +268,8 @@ public class FSPath {
         return new FSPath(fsHandler, target);
     }
 
-    public URI getURI() {
+    public URI toURI() {
         return _path.toUri();
-    }
-
-    /**
-     * Return encoded (web) URL.
-     * <p>
-     * This method uses toUri().toURL() which encodes the paths in the URL.<br>
-     * <strong>note:</strong> as URLs do not do encoding nor decoding of special characters, use the
-     * file URI (toURI()) to ensure consistency between encoded and decoded paths.
-     * 
-     * @return encoded URI compatible URL.
-     * @throws MalformedURLException
-     * @throws URISyntaxException
-     */
-    public URL getWebURL() throws MalformedURLException {
-        return _path.toUri().toURL();
-    }
-
-    /**
-     * @return Returns decoded directory URI as URL with a the path ending with a slash ('/').
-     * @see URIFactory#toDirURL()
-     * @throws MalformedURLException
-     * @throws URISyntaxException
-     */
-    public URL getDirURL() throws MalformedURLException, URISyntaxException {
-        // use uri factory:
-        return new URIFactory(_path.toUri()).toDirURL();
     }
 
     public boolean isBrokenLink() throws IOException {
@@ -397,25 +340,9 @@ public class FSPath {
     // Directory methods
     // ==========================
 
-    public String[] list() throws IOException {
-        DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path);
-        try {
-            Iterator<Path> dirIterator = dirStream.iterator();
-            ArrayList<String> list = new ArrayList<String>();
+    public List<FSPath> list() throws IOException {
 
-            while (dirIterator.hasNext()) {
-                list.add(dirIterator.next().getFileName().toString());
-            }
-
-            return list.toArray(new String[0]);
-        } finally {
-            dirStream.close();
-        }
-    }
-
-    public FSPath[] listNodes() throws IOException {
-        DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path);
-        try {
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(_path)) {
             Iterator<Path> dirIterator = dirStream.iterator();
             ArrayList<FSPath> list = new ArrayList<FSPath>();
 
@@ -423,36 +350,29 @@ public class FSPath {
                 list.add(new FSPath(fsHandler, dirIterator.next()));
             }
 
-            return list.toArray(new FSPath[0]);
-
-        } finally {
-            dirStream.close();
+            return list;
         }
-
     }
 
-    public FSPath mkdir() throws IOException {
-        Files.createDirectory(_path);
-        return this;
-    }
-
-    public FSPath mkdirs() throws IOException {
-        Files.createDirectories(_path);
-        return this;
+    public FSPath[] listNodes() throws IOException {
+        List<FSPath> entries = list();
+        if (entries == null)
+            return null;
+        return entries.toArray(new FSPath[0]);
     }
 
     // ==================
     // Resolve Methods
     // ==================
 
-    public FSPath resolvePath(String relativePath) throws IOException {
-        FSPath file = this.fsHandler.resolvePath(resolvePathURI(relativePath));
+    public FSPath resolve(String relativePath) throws IOException {
+        FSPath file = this.fsHandler.resolvePath(resolveURI(relativePath));
         return file;
     }
 
-    public URI resolvePathURI(String relPath) throws FileURISyntaxException {
+    public URI resolveURI(String relPath) throws FileURISyntaxException {
         try {
-            return URIUtil.resolvePathURI(getURI(), relPath);
+            return URIUtil.resolvePathURI(toURI(), relPath);
         } catch (URISyntaxException e) {
             throw new FileURISyntaxException(e.getMessage(), relPath, e);
         }
@@ -466,23 +386,7 @@ public class FSPath {
      * @return Posix File Attributes if supported by the file system.
      */
     public PosixFileAttributes getPosixAttributes() throws IOException {
-        try {
-            if (posixAttrs == null) {
-                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class);
-            }
-        } catch (IOException e) {
-            // auto dereference in the case of a borken link:
-            if (isBrokenLink()) {
-                posixAttrs = Files.readAttributes(_path, PosixFileAttributes.class,
-                        LinkOption.NOFOLLOW_LINKS);
-            } else {
-                throw e;
-            }
-        } catch (UnsupportedOperationException e) {
-            return null;
-        }
-
-        return posixAttrs;
+        return this.fsHandler.getPosixAttributes(this);
     }
 
     public int getUnixFileMode() throws IOException {
@@ -519,24 +423,11 @@ public class FSPath {
     }
 
     // =======================
-    // IO Methods
-    // =======================
-
-    public InputStream createInputStream() throws IOException {
-        return fsHandler.createInputStream(this);
-    }
-
-    public OutputStream createOutputStream(boolean append) throws IOException {
-        return fsHandler.createOutputStream(this, append);
-    }
-
-    // =======================
     // Misc.
     // =======================
 
     public boolean sync() {
-        this.basicAttrs = null;
-        this.posixAttrs = null;
+        // notting cached.
         return true;
     }
 
@@ -545,7 +436,11 @@ public class FSPath {
     }
 
     public String toString() {
-        return "FSPath:[uri=" + this.getURI().toString() + "]";
+        return _path.toString();
+    }
+
+    public URL toURL() throws MalformedURLException {
+        return this.toURI().toURL();
     }
 
 }

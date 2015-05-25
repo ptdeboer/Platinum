@@ -169,4 +169,10 @@ public class ResourceSystemInfoRegistry {
         return true;
     }
 
+    public void dispose () 
+    {
+        this.resourceInfos.clear(); 
+        this.resourceInfos=null;
+        this.vrsContext=null;
+    }
 }

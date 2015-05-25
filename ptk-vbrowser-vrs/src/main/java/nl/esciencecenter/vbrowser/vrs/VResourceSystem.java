@@ -25,14 +25,17 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Factory interface for VPaths.
+ * 
+ * @see VRL
+ * @see VPath
  */
 public interface VResourceSystem {
 
     public VRSContext getVRSContext();
 
     /**
-     * Server location also counts as unique identigyin ID. Equivalent ResourceSystems should have
-     * similar Server VRL().
+     * Server location also counts as unique identifying ID. Equivalent ResourceSystems should have
+     * similar Server VRLs.
      * 
      * @return server VRL.
      */
@@ -42,8 +45,8 @@ public interface VResourceSystem {
      * Resolve relative path against this ResourceSystem.
      * 
      * @param path
-     *            relative path
-     * @return absolute VRL
+     *            - relative path.
+     * @return absolute and normalized VRL.
      * @throws VrsException
      *             if path contains invalid characters.
      */
@@ -53,22 +56,22 @@ public interface VResourceSystem {
      * Resolve relative path and return VPath.
      * 
      * @param path
-     *            relative path
+     *            - absolute and normalized VPath.
      * @return resolve VPath
      * @throws VrsException
      *             if path contains invalid characters.
      */
-    public VPath resolvePath(String path) throws VrsException;
+    public VPath resolve(String path) throws VrsException;
 
     /**
      * Resolve relative or absolute VRL to VPath.
      * 
      * @param vrl
-     *            relative or absolute VRL
+     *            - virtual resource locator.
      * @return resolve VPath
      * @throws VrsException
      *             if VRL contains an invalid path.
      */
-    public VPath resolvePath(VRL vrl) throws VrsException;
+    public VPath resolve(VRL vrl) throws VrsException;
 
 }

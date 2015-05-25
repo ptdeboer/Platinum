@@ -31,8 +31,7 @@ public interface RandomReadable extends AutoCloseable {
      * @throws IOException
      * @see java.io.RandomAccessFile#readBytes
      */
-    public int readBytes(long fileOffset, byte buffer[], int bufferOffset, int nrBytes)
-            throws IOException;
+    public int readBytes(long fileOffset, byte buffer[], int bufferOffset, int nrBytes) throws IOException;
 
     /**
      * @return length of random readable resource, -1 if unknown.

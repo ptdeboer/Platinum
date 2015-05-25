@@ -64,13 +64,13 @@ public class ResResourceSystem implements VResourceSystem
     }
 
     @Override
-    public VPath resolvePath(String path) throws VrsException
+    public VPath resolve(String path) throws VrsException
     {
-        return resolvePath(resolveVRL(path)); 
+        return resolve(resolveVRL(path)); 
     }
 
     @Override
-    public VPath resolvePath(VRL vrl) throws VrsException
+    public VPath resolve(VRL vrl) throws VrsException
     {
         return new ResFile(this,vrl); 
     }

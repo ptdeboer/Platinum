@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
 		<artifactId>platinum</artifactId>
-		<version>1.0.0-vlet</version>
+		<version>1.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -25,6 +25,30 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<!-- add linux binaries -->
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/linux-bin.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>linux-bin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 
 </project>
 

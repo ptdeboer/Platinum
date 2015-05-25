@@ -10,16 +10,48 @@
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
 		<artifactId>platinum</artifactId>
-		<version>1.0.0-vlet</version>
+		<version>1.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<build>
 		<resources>
 			<resource>
-				<directory>src/resources/icons</directory>
+				<directory>src/resources/images</directory>
 			</resource>
 		</resources>
+
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<!-- exclude icons from default jar -->
+				<configuration>
+					<excludes>
+						<exclude>icons/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<!-- create custom *-icons zip -->
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/icons.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>icons</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 	<dependencies>

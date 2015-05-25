@@ -88,13 +88,11 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher> {
 
     }
 
-    public StringHasher(String hashType) throws NoSuchAlgorithmException,
-            UnsupportedEncodingException {
+    public StringHasher(String hashType) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         init(hashType, "UTF8");
     }
 
-    public StringHasher(String hashType, String charSet) throws NoSuchAlgorithmException,
-            UnsupportedEncodingException {
+    public StringHasher(String hashType, String charSet) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         init(hashType, charSet);
     }
 
@@ -119,8 +117,7 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher> {
         return hasher;
     }
 
-    protected void init(String hashType, String encoding) throws UnsupportedEncodingException,
-            NoSuchAlgorithmException {
+    protected void init(String hashType, String encoding) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         setEncoding(encoding);
         setHashType(hashType);
     }
@@ -143,8 +140,7 @@ public class StringHasher implements Cloneable, Duplicatable<StringHasher> {
     public void setHashType(String hashType) throws NoSuchAlgorithmException {
         messageDigest = MessageDigest.getInstance(hashType);
 
-        if ((StringUtil.equalsIgnoreCase(hashType, MD5))
-                || (StringUtil.equalsIgnoreCase(hashType, SHA_1)))
+        if ((StringUtil.equalsIgnoreCase(hashType, MD5)) || (StringUtil.equalsIgnoreCase(hashType, SHA_1)))
             logger.warnPrintf("Don't use outdated MD5 od SHA-1\n");
     }
 

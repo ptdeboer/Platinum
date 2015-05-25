@@ -20,6 +20,12 @@
 
 package nl.esciencecenter.vbrowser.vrs.event;
 
-public interface VRSEventListener {
-    void notifyVRSEvent(VRSEvent e);
+import nl.esciencecenter.ptk.events.IEventListener;
+
+public interface VRSEventListener extends IEventListener<VRSEvent>{
+    
+    // Explicit type inference.
+    @Override
+    void notifyEvent(VRSEvent e);
+
 }

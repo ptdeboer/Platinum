@@ -23,14 +23,20 @@ package nl.esciencecenter.vbrowser.vrs;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/**
+ * An VFileSystem interface is a factory interface for VFSPaths.
+ * 
+ * @see VRL
+ * @see VFSPAth
+ */
 public interface VFileSystem extends VResourceSystem {
 
-    public VRL resolvePathVRL(String path) throws VrsException;
+    public VRL resolveVRL(String path) throws VrsException;
 
     // Downcast to VFSPath
-    public VFSPath resolvePath(String path) throws VrsException;
+    public VFSPath resolve(String path) throws VrsException;
 
     // Downcast to VFSPath 
-    public VFSPath resolvePath(VRL vrl) throws VrsException;
+    public VFSPath resolve(VRL vrl) throws VrsException;
 
 }

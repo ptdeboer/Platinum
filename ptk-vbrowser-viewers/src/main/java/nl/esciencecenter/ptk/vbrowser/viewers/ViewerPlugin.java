@@ -27,8 +27,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Default interface for Viewer Plugins.
- * <p>
+ * Default interface for Viewer Plugins.<br>
  * All Browser Viewer plugins implement this interface. <br>
  * Some optional interfaces may be implemented as well for example the ToolPlugin or MimeViewer
  * plugin.
@@ -59,8 +58,7 @@ public interface ViewerPlugin {
 
     /**
      * Init viewer and create UI Components, this method will be called <strong>during</strong> the
-     * Swing Event Thread.
-     * <p>
+     * Swing Event Thread. <br>
      * Do not load contents yet. After initViewer(), startViewer() will be called with the actual
      * VRL to view.
      * 
@@ -71,30 +69,29 @@ public interface ViewerPlugin {
     public void initViewer(ViewerContext viewerContext);
 
     /**
-     * Start actual viewer or update with new VRL and resume the viewer.
-     * <p>
+     * Start actual viewer or update with new VRL and resume the viewer.<br>
      * This method may be called multiple times to either indicate an update or an method being
      * invoked. If called after a <code>stopViewer()</code> call, this viewer is expected to resume.
      * 
      * @param vrl
-     *            - The VRL to view
+     *            - the VRL to view
      * @param optMenuMethod
-     *            - Optional method called by user through interactive menu.
+     *            - optional method called by user through interactive menu, for example "Edit" or
+     *            "View".
      * @throws VrsException
      */
     public void startViewer(VRL vrl, String optMenuMethod) throws VrsException;
 
     /**
-     * Stop this viewer and suspend all (background) activity.
-     * <p>
+     * Stop this viewer and suspend all (background) activity.<br>
      * Suspend all background processing, but do no dispose viewer. The startViewer() method may be
      * called to start this viewer again (with an updated VRL).
      */
     public void stopViewer();
 
     /**
-     * Dispose viewer. After this methods <code>startViewer</code> and <code>stopViewer</code> won't
-     * be called. Since gui elements might hold (native) resources, please cleanup those resources.
+     * Dispose viewer and release resources. After this method <code>startViewer</code> and
+     * <code>stopViewer</code> may not be called anymore.
      */
     public void disposeViewer();
 
@@ -103,7 +100,6 @@ public interface ViewerPlugin {
     // ==================================
 
     /**
-     * 
      * @return true if, the viewer will manage it's own scrolling and panning.
      */
     public boolean haveOwnScrollPane();

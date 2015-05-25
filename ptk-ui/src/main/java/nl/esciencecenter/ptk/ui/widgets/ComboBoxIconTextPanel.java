@@ -23,19 +23,27 @@ package nl.esciencecenter.ptk.ui.widgets;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(AutoCompleteTextField.class);
+
     private static final long serialVersionUID = -3502306954828479242L;
+
     private AutoCompleteTextField textField;
     private JLabel iconLabel;
     private ActionListener textFieldListener;
-    private String comboBoxEditedCommand;
-    private String comboBoxUpdateSelectionCommand;
+    private String comboBoxChangedCmd;
+    private String comboBoxAutocompletedCmd;
 
     public ComboBoxIconTextPanel() {
         super();
@@ -82,10 +90,6 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
         this.repaint();
     }
 
-    public void setComboActionCommand(String str) {
-        this.textField.setActionCommand(str);
-    }
-
     public String getText() {
         return this.textField.getText();
     }
@@ -101,27 +105,39 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
         this.textField.addActionListener(this);
     }
 
-    public void setComboEditedCommand(String str) {
-        this.comboBoxEditedCommand = str;
+    public void setComboActionCommands(String comboChanged, String comboAutocompleted) {
+        this.comboBoxChangedCmd = comboChanged;
+        this.comboBoxAutocompletedCmd = comboAutocompleted;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        logger.error("Event:{}", e);
+
         String cmd = e.getActionCommand();
 
-        if (cmd.equals(AutoCompleteTextField.COMBOBOXEDITED))
-            cmd = this.comboBoxEditedCommand;
+        if (cmd.equals(AutoCompleteTextField.COMBOBOX_CHANGED))
+            cmd = this.comboBoxChangedCmd;
 
-        if (cmd.equals(AutoCompleteTextField.UPDATESELECTION))
-            cmd = this.comboBoxUpdateSelectionCommand;
+        if (cmd.equals(AutoCompleteTextField.COMBOBOX_AUTOCOMPLETED))
+            cmd = this.comboBoxAutocompletedCmd;
 
-        if (cmd == null)
+        if (cmd == null) {
+            logger.info("NULL command for event:{}", e);
             return; // filter out combo command.  
+        }
 
-        ActionEvent wrapEvent = new ActionEvent(e.getSource(), e.getID(), cmd, e.getWhen(),
-                e.getModifiers());
+        ActionEvent wrapEvent = new ActionEvent(e.getSource(), e.getID(), cmd, e.getWhen(), e.getModifiers());
 
         this.textFieldListener.actionPerformed(wrapEvent);
+    }
+
+    public List<String> getHistory() {
+        return this.textField.getHistory();
+    }
+
+    public void setHistory(List<String> history) {
+        this.textField.setHistory(history);
     }
 
 }

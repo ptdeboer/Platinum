@@ -22,68 +22,54 @@ package nl.esciencecenter.vbrowser.vrs.event;
 
 import java.io.Serializable;
 
+import nl.esciencecenter.ptk.events.IEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSEvent implements Serializable {
+public class VRSEvent implements IEvent<VRSEventType>, Serializable  {
 
     private static final long serialVersionUID = -6655387700048315217L;
-
-    public static enum VRSEventType {
-        RESOURCES_ADDED, RESOURCES_DELETED, RESOURCES_RENAMED, ATTRIBUTES_CHANGED, REFRESH_RESOURCES
-    }
 
     // ========================================================================
     //
     // ========================================================================
 
     public static VRSEvent createChildsAddedEvent(VRL optionalParent, VRL childs[]) {
-        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_ADDED);
-        event.parent = optionalParent;
+        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_CREATED);
         event.resources = childs;
         return event;
     }
 
     public static VRSEvent createChildAddedEvent(VRL parent, VRL child) {
-        VRL childs[] = new VRL[1];
-        childs[0] = child;
-        return createChildsAddedEvent(parent, childs);
+        return createChildsAddedEvent(parent, new VRL[]{child});
     }
 
     public static VRSEvent createChildsDeletedEvent(VRL optionalParent, VRL childs[]) {
-        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_DELETED);
-        event.parent = optionalParent;
+        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_DELETED);
         event.resources = childs;
         return event;
     }
 
     public static VRSEvent createChildDeletedEvent(VRL optionalParent, VRL child) {
-        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_DELETED);
-        event.parent = optionalParent;
-        event.resources = new VRL[1];
-        event.resources[0] = child;
+        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_DELETED,new VRL[]{child});
         return event;
     }
 
     public static VRSEvent createNodesDeletedEvent(VRL nodeVrls[]) {
-        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_DELETED);
+        VRSEvent event = new VRSEvent(null,VRSEventType.RESOURCES_DELETED);
         // multi event without parent.
-        event.parent = null;
         event.resources = nodeVrls;
         return event;
     }
 
     public static VRSEvent createRefreshEvent(VRL optionalParent, VRL res) {
-        VRSEvent event = new VRSEvent(VRSEventType.REFRESH_RESOURCES);
-        event.parent = optionalParent;
+        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_UPDATED);
         event.resources = new VRL[1];
         event.resources[0] = res;
         return event;
     }
 
     public static VRSEvent createNodeRenamedEvent(VRL optParentVRL, VRL oldVrl, VRL newVrl) {
-        VRSEvent event = new VRSEvent(VRSEventType.RESOURCES_RENAMED);
-        // multi event with optional parent.
-        event.parent = optParentVRL;
+        VRSEvent event = new VRSEvent(optParentVRL,VRSEventType.RESOURCES_RENAMED);
         event.resources = new VRL[] { oldVrl };
         event.otherResources = new VRL[] { newVrl };
         return event;
@@ -98,7 +84,7 @@ public class VRSEvent implements Serializable {
     /**
      * Optional parent resource.
      */
-    protected VRL parent;
+    protected VRL parentSource;
 
     /**
      * Sources this event applies to
@@ -111,12 +97,20 @@ public class VRSEvent implements Serializable {
     protected VRL[] otherResources;
 
     /**
-     * Optional attribute names involved
+     * Optional attribute names involved.
      */
     protected String attributeNames[];
 
-    protected VRSEvent(VRSEventType type) {
+
+    public VRSEvent(VRL sourceVRL, VRSEventType type) {
+        this.parentSource=sourceVRL;
+        this.type=type;
+    }
+
+    protected VRSEvent(VRL optionalParent, VRSEventType type, VRL[] vrls) {
         this.type = type;
+        this.parentSource=optionalParent;
+        this.resources=vrls;
     }
 
     public VRSEventType getType() {
@@ -138,7 +132,7 @@ public class VRSEvent implements Serializable {
      * getResources()
      */
     public VRL getParent() {
-        return parent;
+        return parentSource;
     }
 
     /** Attributes this event applies to if this is an Attribute Event */
@@ -148,7 +142,7 @@ public class VRSEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "DataSourceEvent:" + this.type + ":(parent=" + parent + ", resources={" + flattenStr(resources) + "})";
+        return "DataSourceEvent:" + this.type + ":(parentSource=" + parentSource + ", resources={" + flattenStr(resources) + "})";
     }
 
     private String flattenStr(VRL[] locs) {
@@ -161,6 +155,16 @@ public class VRSEvent implements Serializable {
                 str += ",";
         }
         return str;
+    }
+
+    @Override
+    public VRSEventType getEventType() {
+        return this.type;
+    }
+
+    @Override
+    public Object getEventSource() {
+      return parentSource;
     }
 
 }

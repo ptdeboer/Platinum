@@ -1,0 +1,18 @@
+<assembly>
+	<id>scripts</id>
+	<formats>
+		<format>dir</format>
+		<format>zip</format>
+	</formats>
+	 <includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>src/scripts</directory>
+			<outputDirectory></outputDirectory>
+			<includes>
+				<include>*.*</include>
+			</includes>
+			<fileMode>0755</fileMode>
+		</fileSet>
+	</fileSets>
+</assembly>

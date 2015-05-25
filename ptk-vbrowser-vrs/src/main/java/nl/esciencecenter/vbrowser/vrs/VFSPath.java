@@ -31,7 +31,7 @@ import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Virtual File System Path.
+ * Virtual File System Path exends VPath and add FileSystem methods. 
  */
 public interface VFSPath extends VPath, VRenamable, VPathRenamable, VFSDeletable, VDeletable {
 
@@ -39,11 +39,11 @@ public interface VFSPath extends VPath, VRenamable, VPathRenamable, VFSDeletable
     public VFileSystem getFileSystem() throws VrsException;
 
     @Override
-    public VRL resolvePathVRL(String path) throws VrsException;
+    public VRL resolveVRL(String path) throws VrsException;
 
     // Downcast VPath to VFSPath: 
     @Override
-    public VFSPath resolvePath(String path) throws VrsException;
+    public VFSPath resolve(String path) throws VrsException;
 
     // Downcast VPath to VFSPath:
     @Override
@@ -92,7 +92,7 @@ public interface VFSPath extends VPath, VRenamable, VPathRenamable, VFSDeletable
     /**
      * Create path as zero length file.
      * 
-     * @return true
+     * @return true if create is supported and was succesfull. 
      */
     public abstract boolean createFile(boolean ignoreExisting) throws VrsException;
 

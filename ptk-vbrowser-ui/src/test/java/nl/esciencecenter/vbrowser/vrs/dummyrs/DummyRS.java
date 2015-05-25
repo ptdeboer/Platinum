@@ -29,12 +29,12 @@ public class DummyRS implements VResourceSystem {
     }
 
     @Override
-    public VPath resolvePath(String path) throws VrsException {
+    public VPath resolve(String path) throws VrsException {
         return createNode(resolveVRL(path));
     }
 
     @Override
-    public VPath resolvePath(VRL vrl) throws VrsException {
+    public VPath resolve(VRL vrl) throws VrsException {
         return new DummyNode(this, vrl, false);
     }
 

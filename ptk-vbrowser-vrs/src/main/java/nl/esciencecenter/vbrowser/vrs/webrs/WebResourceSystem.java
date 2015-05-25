@@ -41,6 +41,9 @@ import nl.esciencecenter.vbrowser.vrs.node.VResourceSystemNode;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+/**
+ * Adaptor for (web) URLs.
+ */
 public class WebResourceSystem extends VResourceSystemNode {
 
     public static final String DEFAULT_HTTPRS_SERVERID = "webrs";
@@ -194,7 +197,7 @@ public class WebResourceSystem extends VResourceSystemNode {
         return this.getServerVRL();
     }
 
-    public VRL resolve(String path) throws VRLSyntaxException {
+    public VRL resolveVRL(String path) throws VRLSyntaxException {
         return sourceVrl.uriResolve(path);
     }
 
@@ -203,7 +206,7 @@ public class WebResourceSystem extends VResourceSystemNode {
     }
 
     @Override
-    public VPath resolvePath(VRL vrl) throws VrsException {
+    public VPath resolve(VRL vrl) throws VrsException {
         return new WebNode(this, vrl);
     }
 

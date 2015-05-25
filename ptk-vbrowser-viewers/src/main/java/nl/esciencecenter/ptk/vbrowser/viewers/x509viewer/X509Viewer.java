@@ -31,13 +31,12 @@ import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.ssl.CertUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
-import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class X509Viewer extends EmbeddedViewer implements CertPanelListener {
+public class X509Viewer extends ViewerJPanel implements CertPanelListener {
     private static final long serialVersionUID = 5397354476414010762L;
 
     public static final String ADD_METHOD = "addCert";
@@ -97,7 +96,7 @@ public class X509Viewer extends EmbeddedViewer implements CertPanelListener {
         getCertUtil().addCACertificate(cert, save);
     }
 
-    protected CertificateStore getCertUtil() throws CertificateStoreException {
+    protected CertificateStore getCertUtil() throws VrsException {
         return this.getResourceHandler().getCertificateStore();
     }
 

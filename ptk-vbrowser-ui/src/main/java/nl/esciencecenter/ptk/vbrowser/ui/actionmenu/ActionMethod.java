@@ -48,11 +48,14 @@ public enum ActionMethod implements Serializable {
     BROWSE_BACK("BrowseBack"), //
     BROWSE_FORWARD("BrowseForward"), //
     BROWSE_UP("BrowseUp"), //
+    // Viewers
     VIEW_AS_ICONS("ViewAsIcons"), //
     VIEW_AS_ICON_LIST("ViewAsList"), //
     VIEW_AS_TABLE("ViewAsTable"), //
     VIEW_OPEN_DEFAULT("ViewDefault"), //
     VIEW_WITH("ViewWith"),
+    // Tools
+    STARTTOOL("StartTool"),
     // Tab Nav
     NEW_TAB("NewTab"), //
     OPEN_IN_NEW_TAB("OpenInNewTab"), //

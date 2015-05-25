@@ -36,7 +36,7 @@ public class BooleanHolder implements VARHolder<Boolean> {
     }
 
     public boolean booleanValue() {
-        if (value==null) {
+        if (value == null) {
             throw new NullPointerException("Value in IntegerHolder is NULL");
         }
         return value;
@@ -46,7 +46,7 @@ public class BooleanHolder implements VARHolder<Boolean> {
      * Returns Holder value or defValue if holder does not contain any value.
      */
     public boolean booleanValue(boolean defValue) {
-        if (value==null)
+        if (value == null)
             return defValue;
         return value;
     }

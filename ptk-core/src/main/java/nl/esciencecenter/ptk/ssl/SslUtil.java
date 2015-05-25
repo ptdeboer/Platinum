@@ -50,8 +50,9 @@ public class SslUtil {
      * @param open
      *            - create and open socket.
      */
-    public static SSLSocket createSSLv3Socket(CertificateStore cacerts, String host, int port,
-            int timeOut, boolean open) throws Exception {
+    public static SSLSocket
+            createSSLv3Socket(CertificateStore cacerts, String host, int port, int timeOut, boolean open)
+                    throws Exception {
         SSLContext sslContext = cacerts.createSSLContext(SslConst.PROTOCOL_SSLv3);
         return createSSLSocket(sslContext, host, port, timeOut, open);
     }
@@ -59,8 +60,8 @@ public class SslUtil {
     /**
      * Open SSL socket using specified SSLContext.
      */
-    public static SSLSocket createSSLSocket(SSLContext context, String host, int port, int timeOut,
-            boolean open) throws Exception {
+    public static SSLSocket createSSLSocket(SSLContext context, String host, int port, int timeOut, boolean open)
+            throws Exception {
         SSLSocketFactory factory = context.getSocketFactory();
 
         logger.debugPrintf("Opening connection to %s:%d...\n", host, port);

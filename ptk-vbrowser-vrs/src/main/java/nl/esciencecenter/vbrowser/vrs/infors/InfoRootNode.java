@@ -20,8 +20,12 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
+import nl.esciencecenter.ptk.util.ContentReader;
+import nl.esciencecenter.ptk.util.ContentWriter;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRS;
@@ -194,8 +198,10 @@ public class InfoRootNode extends InfoResourceNode {
                 logger.infoPrintf("Creating new config dir:%s\n", dir);
                 dir.mkdirs(true);
             }
-
-            vrsClient.createResourceLoader().writeTextTo(configVrl.toURI(), xml);
+            try (OutputStream outps=vrsClient.createOutputStream(path,false)) {
+                new ContentWriter(outps,false).write(xml);
+            }
+            
         } catch (Exception e) {
             throw new VrsException(e.getMessage(), e);
         }
@@ -224,8 +230,10 @@ public class InfoRootNode extends InfoResourceNode {
                 logger.infoPrintf("Root config XML file not found:%s", loadVrl);
                 return;
             }
-
-            String xml = vrsClient.createResourceLoader().readText(loadVrl.toURI());
+            String xml;
+            try (InputStream inps=vrsClient.createInputStream(path)){
+                 xml=new ContentReader(inps).readString(); 
+            }
             XMLData data = new XMLData(this.getVRSContext());
             data.addXMLResourceNodesTo(this, xml);
 

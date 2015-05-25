@@ -20,6 +20,9 @@
 
 package nl.esciencecenter.ptk.events;
 
+/**
+ * Interface to recognize EventSources for a specific EventType.
+ */
 public interface IEventSource<EventType> {
 
 }

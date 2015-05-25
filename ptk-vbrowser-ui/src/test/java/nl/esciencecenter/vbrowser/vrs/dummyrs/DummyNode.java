@@ -43,13 +43,13 @@ public class DummyNode implements VPath {
     }
 
     @Override
-    public VRL resolvePathVRL(String path) throws VrsException {
+    public VRL resolveVRL(String path) throws VrsException {
         return vrl.resolvePath(path);
     }
 
     @Override
-    public VPath resolvePath(String path) throws VrsException {
-        return this.dummyRS.createNode(resolvePathVRL(path));
+    public VPath resolve(String path) throws VrsException {
+        return this.dummyRS.createNode(resolveVRL(path));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class DummyNode implements VPath {
 
     @Override
     public VPath create(String type, String name) throws VrsException {
-        return dummyRS.createNode(resolvePathVRL(name));
+        return dummyRS.createNode(resolveVRL(name));
     }
 
 }

@@ -21,7 +21,14 @@
 package nl.esciencecenter.ptk.vbrowser.viewers.events;
 
 import nl.esciencecenter.ptk.events.IEventSource;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 
 public interface ViewerEventSource extends IEventSource<ViewerEvent> {
+
+    /**
+     * @return The associated ViewerPlugin. Typically this is the ViewerEventSource object itself,
+     *         but the event source might be a different object.
+     */
+    public ViewerPlugin getViewer();
 
 }

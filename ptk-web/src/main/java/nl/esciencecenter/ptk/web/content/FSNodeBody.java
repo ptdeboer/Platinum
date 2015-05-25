@@ -65,7 +65,7 @@ public class FSNodeBody extends AbstractContentBody {
     }
 
     public InputStream getInputStream() throws IOException {
-        return fsNode.createInputStream();
+        return fsNode.getFSInterface().createInputStream(fsNode);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class FSNodeBody extends AbstractContentBody {
             throw new IllegalArgumentException("Output stream may not be null");
         }
 
-        InputStream in = fsNode.createInputStream();
+        InputStream in = fsNode.getFSInterface().createInputStream(fsNode);
 
         try {
             byte[] tmp = new byte[defaultChunkSize];

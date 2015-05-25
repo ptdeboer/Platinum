@@ -2,7 +2,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
-import nl.esciencecenter.vbrowser.vrs.event.VRSEvent.VRSEventType;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
@@ -17,18 +17,18 @@ public class ProxyNodeCacheUpdater implements VRSEventListener {
     }
 
     @Override
-    public void notifyVRSEvent(VRSEvent e) {
+    public void notifyEvent(VRSEvent e) {
         //
         VRSEventType type = e.getType();
         VRL parentVrl = e.getParent();
         VRL vrls[] = e.getResources();
         //
         switch (type) {
-            case RESOURCES_ADDED:
+            case RESOURCES_CREATED:
             case RESOURCES_DELETED:
             case RESOURCES_RENAMED:
-            case REFRESH_RESOURCES:
-            case ATTRIBUTES_CHANGED: {
+            case RESOURCES_UPDATED:
+            case ATTRIBUTES_UPDATED: {
                 if (parentVrl != null) {
                     factory.refreshChilds(parentVrl);
                 }

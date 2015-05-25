@@ -20,10 +20,13 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.events;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import nl.esciencecenter.ptk.events.IEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType> {
+public class ViewerEvent implements IEvent<ViewerEventType> {
 
     public static ViewerEvent createStartedEvent(ViewerEventSource source) {
         return new ViewerEvent(source, ViewerEventType.VIEWER_STARTED);
@@ -33,18 +36,28 @@ public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType> {
         return new ViewerEvent(source, ViewerEventType.VIEWER_STARTED);
     }
 
-    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source,
-            ViewerEventType eventType, VRL vrl) {
+    public static ViewerEvent createDisposedEvent(ViewerEventSource source) {
+        return new ViewerEvent(source, ViewerEventType.VIEWER_DISPOSED);
+    }
+    
+    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source, ViewerEventType eventType, VRL vrl) {
         ViewerEvent event = new ViewerEvent(source, eventType);
         event.setVrl(vrl);
         return event;
     }
 
-    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source,
-            ViewerEventType eventType, VRL parent, VRL vrl) {
+    public static ViewerEvent createHyperLinkEvent(ViewerEventSource source, ViewerEventType eventType, VRL parent,
+            VRL vrl) {
         ViewerEvent event = new ViewerEvent(source, eventType);
         event.setParentVrl(parent);
         event.setVrl(vrl);
+        return event;
+    }
+
+    public static ViewerEvent createExceptionEvent(ViewerEventSource source,String message, Throwable ex) {
+        ViewerEvent event=new ViewerEvent(source, ViewerEventType.VIEWER_ERROR);
+        event.eventProperties=new HashMap<String,String>(); 
+        event.eventProperties.put("exception", ex.getMessage());
         return event;
     }
 
@@ -52,13 +65,15 @@ public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType> {
     //
     // ===============
 
-    protected ViewerEventSource eventSource;
-
     protected ViewerEventType eventType;
 
     protected VRL optionalVrl;
 
     protected VRL parentVrl;
+
+    protected ViewerEventSource eventSource;
+
+    protected Map<String, String> eventProperties = null;
 
     public VRL getVrl() {
         return optionalVrl;
@@ -81,6 +96,12 @@ public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType> {
         this.eventType = type;
     }
 
+    public ViewerEvent(ViewerEventSource source, ViewerEventType type, Map<String,String> eventProperties) {
+        this.eventSource = source;
+        this.eventType = type;
+        this.eventProperties=eventProperties;
+    }
+    
     @Override
     public ViewerEventSource getEventSource() {
         return this.eventSource;
@@ -93,8 +114,14 @@ public class ViewerEvent implements IEvent<ViewerEventSource, ViewerEventType> {
 
     @Override
     public String toString() {
-        return "ViewerEvent[eventSource=" + eventSource + ", eventType=" + eventType
-                + ", optionalVrl=" + optionalVrl + ", parentVrl=" + parentVrl + "]";
+        return "ViewerEvent[eventType=" + eventType + ", optionalVrl=" + optionalVrl
+                + ", parentVrl=" + parentVrl + ", eventSource=" + eventSource + "]";
     }
+
+    protected Map<String, String> getEvents() {
+        return this.eventProperties;
+    }
+
+
 
 }

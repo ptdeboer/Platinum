@@ -169,7 +169,7 @@ public abstract class ProxyFactory {
     }
 
     protected void initProxyEventCacheUpdater() {
-        platform.getVRSEventNotifier().addListener(new ProxyNodeCacheUpdater(this));
+        platform.getVRSEventNotifier().addListener(new ProxyNodeCacheUpdater(this),null);
     }
 
     // ========================================================================

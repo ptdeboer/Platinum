@@ -95,13 +95,13 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
 
     @Override
     public VFSPath getParent() throws VrsException {
-        return resolvePath(getDirname());
+        return resolve(getDirname());
     }
 
     @Override
-    public VFSPath resolvePath(String relativePath) throws VrsException {
+    public VFSPath resolve(String relativePath) throws VrsException {
         VRL resolvedVrl = vrl.resolvePath(relativePath);
-        return getFileSystem().resolvePath(resolvedVrl);
+        return getFileSystem().resolve(resolvedVrl);
     }
 
     @Override
@@ -255,7 +255,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
             throw new VrsException("Files can not create child nodes");
         }
 
-        VFSPath path = this.resolvePath(name);
+        VFSPath path = this.resolve(name);
 
         if (StringUtil.equals(type, VRSTypes.FILE_TYPE)) {
             path.createFile(ignoreExisting);
@@ -315,7 +315,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
     public VFSPath renameTo(String nameOrPath) throws VrsException {
         // resolve name against parent directory, the names applies to this location.
         VFSPath parentDir = this.getParent();
-        VFSPath newPath = parentDir.resolvePath(nameOrPath);
+        VFSPath newPath = parentDir.resolve(nameOrPath);
         return this.renameTo(newPath);
     }
 

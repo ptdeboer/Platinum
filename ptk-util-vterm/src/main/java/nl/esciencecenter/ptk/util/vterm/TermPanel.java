@@ -41,8 +41,12 @@ import nl.esciencecenter.ptk.ui.fonts.FontInfo;
 public class TermPanel extends JPanel implements ComponentListener {
     private static final long serialVersionUID = -6433404098046770571L;
 
-    static String splashText[] = { " ***   VLTerm VT100+ Emulator     *** ",
-            "***  (C) VL-e consortium/Piter.NL  ***", " ***  Author Piter T. de Boer     *** ", };
+    static String splashText[] = { //
+    // indent comment
+            " *** VTerm VT100/XTerm Emulator *** ",//
+            "***    (C) 2008-2015 Piter.NL    ***",// 
+            " ***   Author Piter T. de Boer  *** ",//
+    };
 
     private CharPane charPane;
     private EmulatorKeyMapper keyMapper;

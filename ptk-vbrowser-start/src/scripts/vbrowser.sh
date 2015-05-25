@@ -12,8 +12,6 @@
 # settings 
 
 # defaults: 
-VERSION="1.1.0-SNAPSHOT" 
-BOOTSTRAP_JAR="ptk-vbrowser-start-${VERSION}.jar"
 JAVA=java
 VBROWSER_CLASS=nl.esciencecenter.ptk.vbrowser.ui.StartVRSBrowser
 
@@ -40,6 +38,13 @@ else
    # Continue with defaults 
 fi 
 
+# Defaults
+VBROWSER_INSTALL="${VBROWSER_INSTALL-${BASE_DIR}}"
+VBROWSER_LIBDIR="${VBROWSER_LIBDIR-${BASE_DIR}/lib}"
+VBROWSER_SYSCONFDIR="${VBROWSER_SYSCONFDIR-${BASE_DIR}/etc}"
+
+CLASSPATH="${INSTALL_DIR}:${VBROWSER_LIBDIR}:${VBROWSER_LIBDIR}/*" 
+
 ###
 # Startup 
 
@@ -65,6 +70,7 @@ export VBROWSER_INSTALL VBROWSER_SYSCONFDIR
 #
 
 echo "VBROWSER_INSTALL     ="$VBROWSER_INSTALL 
+echo "VBROWSER_LIBDIR      ="$VBROWSER_LIBDIR 
 echo "VBROWSER_SYSCONFDIR  ="$VBROWSER_SYSCONFDIR 
 echo "BOOTSTRAP_JAR        ="$BOOTSTRAP_JAR 
 echo "JAVA_HOME            ="$JAVA_HOME 
@@ -73,6 +79,6 @@ echo "VBROWSER_CLASS       ="$VBROWSER_CLASS
 echo "Command line options ="$OPTS
 
 # bootstrap class sets up real enviromment: 
-echo "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/${BOOTSTRAP_JAR}" "$VBROWSER_CLASS" $OPTS
-"$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" -jar "${BASE_DIR}/lib/${BOOTSTRAP_JAR}" "$VBROWSER_CLASS" $OPTS
+echo "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" "$VBROWSER_CLASS" $OPTS
+"$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" "$VBROWSER_CLASS" $OPTS
 

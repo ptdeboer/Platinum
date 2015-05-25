@@ -23,22 +23,24 @@ package nl.esciencecenter.vbrowser.vrs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.ListHolder;
 import nl.esciencecenter.ptk.data.VARListHolder;
-import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
+import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.ptk.object.Disposable;
+import nl.esciencecenter.ptk.util.ContentReader;
+import nl.esciencecenter.ptk.util.ContentWriter;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceTypeMismatchException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
@@ -48,13 +50,12 @@ import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
 import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
-import nl.esciencecenter.vbrowser.vrs.util.VRSResourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-/** 
- * Client to the VRS Systems
+/**
+ * Client to Virtual Resource System.
  */
-public class VRSClient implements Disposable{
+public class VRSClient implements Disposable, ResourceProvider {
 
     protected VRSContext vrsContext = null;
 
@@ -81,7 +82,7 @@ public class VRSClient implements Disposable{
 
     public VPath openPath(VRL vrl) throws VrsException {
         VResourceSystem resourceSystem = getVResourceSystemFor(vrl);
-        return resourceSystem.resolvePath(vrl);
+        return resourceSystem.resolve(vrl);
     }
 
     public VFSPath openVFSPath(VRL vrl) throws VrsException {
@@ -179,15 +180,6 @@ public class VRSClient implements Disposable{
         return this.vrsContext.getResourceSystemInfoFor(vrl, autoCreate);
     }
 
-    /**
-     * Create statefull resourceloader using this VRSClient.
-     */
-    public ResourceLoader createResourceLoader() {
-        VRSResourceProvider prov = new VRSResourceProvider(this);
-        ResourceLoader loader = new ResourceLoader(prov, null);
-        return loader;
-    }
-
     public VPath copyFileToDir(VRL sourceFile, VRL destDirectory) throws VrsException {
         VARListHolder<VPath> resultPathsH = new ListHolder<VPath>();
         boolean result = transferManager.doCopyMove(new ExtendedList<VRL>(sourceFile), destDirectory, false, null,
@@ -266,30 +258,6 @@ public class VRSClient implements Disposable{
         }
     }
 
-    public byte[] readContents(VPath file) throws VrsException {
-        InputStream inps = this.createInputStream(file);
-        byte[] bytes;
-        try {
-            bytes = new ResourceLoader().readBytes(inps);
-            return bytes;
-        } catch (IOException e) {
-            throw new VrsIOException(e.getMessage(), e);
-        } finally {
-            IOUtil.autoClose(inps);
-        }
-    }
-
-    public void writeContents(VPath file, byte bytes[]) throws VrsException {
-        OutputStream outps = this.createOutputStream(file, false);
-        try {
-            new ResourceLoader().writeBytes(outps, bytes);
-        } catch (IOException e) {
-            throw new VrsIOException(e.getMessage(), e);
-        } finally {
-            IOUtil.autoClose(outps);
-        }
-    }
-
     public VFSPath moveFileToDir(VFSPath file, VFSPath destinationDir) throws VrsException {
         VARListHolder<VFSPath> resultPathsH = new ListHolder<VFSPath>();
         VARListHolder<VPath> deletedNodesH = new ListHolder<VPath>();
@@ -333,18 +301,90 @@ public class VRSClient implements Disposable{
             optSubdirectoryName = sourceDir.getVRL().getBasename();
         }
 
-        VFSPath targetDir = destinationPARENTDir.resolvePath(optSubdirectoryName);
+        VFSPath targetDir = destinationPARENTDir.resolve(optSubdirectoryName);
         targetDir.mkdir(false);
         this.transferManager.copyMoveDirContents(sourceDir, targetDir, true, null);
         return targetDir;
     }
-   
+
     public void dispose() {
         this.currentPathVRL = null;
         this.homeVRL = null;
         this.transferManager.dispose();
         this.transferManager = null;
         this.vrsContext = null;
+    }
+
+    // ====================================
+    // Read/Writer helpers
+    // ====================================
+
+    public void writeContents(VPath file, String xml) throws VrsException {
+        try (OutputStream outps = createOutputStream(file, false)) {
+            new ContentWriter(outps, false).write(xml);
+        } catch (IOException e) {
+            throw new VrsException("Failed to write String contents to:" + file, e);
+        }
+    }
+
+    public void writeContents(VPath file, byte[] bytes) throws VrsException {
+        try (OutputStream outps = createOutputStream(file, false)) {
+            new ContentWriter(outps, false).write(bytes);
+        } catch (IOException e) {
+            throw new VrsException("Failed to write Byte contents to:" + file, e);
+        }
+    }
+
+    public String readContentsAsString(VPath file) throws VrsException {
+        try (InputStream inps = this.createInputStream(file)) {
+            return new ContentReader(inps, this.vrsContext.getCharEncoding(), false).readString();
+        } catch (IOException e) {
+            throw new VrsException("Failed to read String contents from:" + file);
+        }
+    }
+
+    public byte[] readContents(VPath file) throws VrsException {
+        try (InputStream inps = this.createInputStream(file)) {
+            return new ContentReader(inps, this.vrsContext.getCharEncoding(), false).readBytes();
+        } catch (IOException e) {
+            throw new VrsException("Failed to read Byte contents from:" + file);
+        }
+    }
+    
+    /** 
+     * Create URI/URL base Resource loader using this VRSClient 
+     */ 
+    public ResourceLoader createResourceLoader() {
+        return new ResourceLoader(this, null);
+    }
+
+    // ====================================
+    // URI Based ResourceProvider interface 
+    // ====================================
+
+    @Override
+    public URI resolvePathURI(String relpath) throws Exception {
+        return this.vrsContext.getCurrentPathVRL().resolvePath(relpath).toURI();
+    }
+
+    @Override
+    public OutputStream createOutputStream(URI uri) throws Exception {
+        return this.createOutputStream(new VRL(uri));
+    }
+
+    @Override
+    public InputStream createInputStream(URI uri) throws Exception {
+        return this.createInputStream(new VRL(uri));
+    }
+
+    @Override
+    public RandomReadable createRandomReader(URI uri) throws Exception {
+        return this.createRandomReader(openPath(new VRL(uri)));
+    }
+
+    @Override
+    public RandomWritable createRandomWriter(URI uri) throws Exception {
+        return this.createRandomWriter(openPath(new VRL(uri)));
     }
 
 }

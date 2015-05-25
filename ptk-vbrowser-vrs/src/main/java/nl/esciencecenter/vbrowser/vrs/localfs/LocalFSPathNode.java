@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.io.FSPath;
+import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.util.logging.PLogger;
@@ -52,7 +53,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     protected FSPath fsNode;
 
     protected LocalFSPathNode(LocalFileSystem fileSystem, FSPath node) {
-        super(fileSystem, new VRL(node.getURI()));
+        super(fileSystem, new VRL(node.toURI()));
         this.localfs = fileSystem;
         this.fsNode = node;
     }
@@ -101,7 +102,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     @Override
     public VFSFileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException {
         try {
-            return new LocalFileAttributes(fsNode.getBasicAttributes(linkOptions));
+            return new LocalFileAttributes(fsNode.getFSInterface().getBasicAttributes(fsNode, linkOptions));
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to get FileAttributes from:" + getVRL(), e);
         }
@@ -109,15 +110,19 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
 
     public OutputStream createOutputStream(boolean append) throws VrsException {
         try {
-            return fsNode.createOutputStream(append);
+            return getFSUtil().createOutputStream(fsNode, append);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create OutputStream from:" + getVRL(), e);
         }
     }
 
+    public FSUtil getFSUtil() {
+        return localfs.getFSUtil();
+    }
+
     public InputStream createInputStream() throws VrsException {
         try {
-            return fsNode.createInputStream();
+            return getFSUtil().createInputStream(fsNode);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create InputStream from:" + getVRL(), e);
         }
@@ -150,7 +155,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
                 }
 
             }
-            fsNode.mkdir();
+            fsNode.getFSInterface().mkdir(fsNode);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create directory:" + getVRL(), e);
         }
@@ -166,9 +171,8 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     public boolean delete(LinkOption... options) throws VrsException {
         try {
             if (fsNode.isDirectory(options)) {
-                String[] nodes = fsNode.list();
-
-                if ((nodes != null) && (nodes.length > 0)) {
+                List<FSPath> nodes = fsNode.list();
+                if ((nodes != null) && (nodes.size() > 0)) {
                     throw new ResourceNotEmptyException("Directory is not empty:" + fsNode, null);
                 }
             }
@@ -177,7 +181,6 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't delete:" + getVRL(), e);
         }
-
         return true;
     }
 
@@ -185,11 +188,10 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     public VFSPath renameTo(VFSPath other) throws VrsException {
         try {
             String newPath = fsNode.renameTo(other.getVRL().getPath()).getPathname();
-            return this.resolvePath(newPath);
+            return this.resolve(newPath);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't rename:" + getVRL(), e);
         }
-
     }
 
     @Override

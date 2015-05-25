@@ -21,13 +21,16 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
 import java.awt.BorderLayout;
+
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.ui.object.UIDisposable;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 
 /**
  * Managed Tab Panel
@@ -138,4 +141,14 @@ public class TabContentPanel extends JPanel {
         }
     }
 
+    public void dispose() { 
+        JComponent content = getContent();
+        if (content instanceof Disposable) {
+            ((Disposable) content).dispose();
+        }
+
+        if (content instanceof ViewerPlugin) {
+            ((ViewerPlugin)content).disposeViewer();
+        }
+    }
 }

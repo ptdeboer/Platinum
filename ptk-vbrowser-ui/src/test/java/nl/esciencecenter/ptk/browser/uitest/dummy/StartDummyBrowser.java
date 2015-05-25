@@ -38,7 +38,7 @@ public class StartDummyBrowser {
 
             platform.registerProxyFactory(dummyFac);
 
-            platform.getViewerRegistry().registerViewer(DummyViewer.class);
+            platform.getViewerRegistry().registerPlugin(DummyViewer.class);
 
         }
         return platform;

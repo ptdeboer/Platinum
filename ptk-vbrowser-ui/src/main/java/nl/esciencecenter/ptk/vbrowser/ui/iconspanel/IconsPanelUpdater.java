@@ -90,7 +90,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
     }
 
     @Override
-    public void notifyVRSEvent(VRSEvent e) {
+    public void notifyEvent(VRSEvent e) {
         VRL vrls[] = e.getResources();
         VRL parent = e.getParent();
 
@@ -102,7 +102,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
         }
 
         switch (e.getType()) {
-            case RESOURCES_ADDED: {
+            case RESOURCES_CREATED: {
                 if (parent == null) {
                     logger.errorPrintf("Cannot check if new resource are for me. parent==null!\n");
                     return;

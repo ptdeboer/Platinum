@@ -41,8 +41,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowDat
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
-import nl.esciencecenter.vbrowser.vrs.event.VRSEvent.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
+import nl.esciencecenter.vbrowser.vrs.event.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUpdater {
@@ -297,7 +297,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
     }
 
     @Override
-    public void notifyVRSEvent(VRSEvent e) {
+    public void notifyEvent(VRSEvent e) {
         // handle event and update table:
         logger.debugPrintf("notifyVRSEvent():%s\n", e);
 
@@ -313,7 +313,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
         VRSEventType eventType = e.getType();
 
         switch (eventType) {
-            case RESOURCES_ADDED: {
+            case RESOURCES_CREATED: {
                 if (parentVRL == null) {
                     logger.errorPrintf("FIXME: Cannot added resource if parent is not given!\n");
                     return;
@@ -325,8 +325,8 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
                 removeRows(vrls);
                 break;
             }
-            case ATTRIBUTES_CHANGED:
-            case REFRESH_RESOURCES: {
+            case ATTRIBUTES_UPDATED:
+            case RESOURCES_UPDATED: {
                 refresh(vrls);
                 break;
             }

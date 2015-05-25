@@ -161,7 +161,7 @@ public class HeapCopy {
         // Recursive heap scan, composite first, leafs later.
         for (VPath node : nodes) {
             if (node.isComposite()) {
-                VFSPath subTargetDir = targetDir.resolvePath(node.getVRL().getBasename());
+                VFSPath subTargetDir = targetDir.resolve(node.getVRL().getBasename());
 
                 monitorLogPrintf(" - scanning directory:%s\n", node.getVRL());
                 heapAddPath(targetDir, node, node.getResourceType());
@@ -222,7 +222,7 @@ public class HeapCopy {
             if (sourcePath instanceof VFSPath) {
                 boolean status = false;
 
-                VFSPath resolvedTargetPath = heapEl.destDirPath.resolvePath(sourcePath.getVRL().getBasename());
+                VFSPath resolvedTargetPath = heapEl.destDirPath.resolve(sourcePath.getVRL().getBasename());
                 heapEl.resolvedDestPath = resolvedTargetPath;
 
                 logger.debugPrintf("Resolved targetFile: '%s' + '%s' => '%s'\n", targetDirPath.getVRL(), sourcePath

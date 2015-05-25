@@ -53,7 +53,7 @@ public class LocalSystem extends InfoRSPathNode {
     }
 
     public String getIconURL(int size) {
-        return "info/system-128.png";
+        return "icons/info/system-128.png";
     }
 
     protected void initChilds() throws VrsException {
@@ -77,11 +77,11 @@ public class LocalSystem extends InfoRSPathNode {
             throw new VrsIOException(e.getMessage(), e);
         }
 
-        URI uri = home.getURI();
+        URI uri = home.toURI();
         VRL vrl = new VRL(uri);
         String name = vrl.getPath();
         String subPath = "Home";
-        homeNode = createSubPathLinkNode(subPath, vrl, name, "info/home_folder-48.png");
+        homeNode = createSubPathLinkNode(subPath, vrl, name, "icons/info/home_folder-48.png");
         this.addSubNode(homeNode);
         return homeNode;
     }
@@ -92,14 +92,14 @@ public class LocalSystem extends InfoRSPathNode {
         int index = 0;
 
         for (FSPath root : roots) {
-            URI uri = root.getURI();
+            URI uri = root.toURI();
             VRL vrl = new VRL(uri);
 
             String name = vrl.getPath();
 
             String subPath = "Root " + index++;
 
-            this.addSubNode(createSubPathLinkNode(subPath, vrl, name, "info/hdd_mount-128.png"));
+            this.addSubNode(createSubPathLinkNode(subPath, vrl, name, "icons/info/hdd_mount-128.png"));
         }
     }
 

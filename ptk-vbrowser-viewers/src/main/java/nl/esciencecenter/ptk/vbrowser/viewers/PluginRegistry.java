@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.esciencecenter.ptk.data.Pair;
+import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
@@ -40,24 +41,29 @@ import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
  * Viewer and Tool Plugin Registry for the VBrowser.
  */
 public class PluginRegistry {
+
     private static PLogger logger = PLogger.getLogger(PluginRegistry.class);
 
-    public class ViewerEntry {
-        protected Class<? extends ViewerPlugin> viewerClass;
+    public class PluginEntry {
+        protected Class<? extends ViewerPlugin> pluginClass;
 
-        protected String viewerName;
+        protected String pluginName;
 
-        ViewerEntry(String viewerName, Class<? extends ViewerPlugin> viewerClass) {
-            this.viewerClass = viewerClass;
-            this.viewerName = viewerName;
+        PluginEntry(String viewerName, Class<? extends ViewerPlugin> viewerClass) {
+            this.pluginClass = viewerClass;
+            this.pluginName = viewerName;
         }
 
         public Class<? extends ViewerPlugin> getViewerClass() {
-            return viewerClass;
+            return pluginClass;
         }
 
         public String getName() {
-            return viewerName;
+            return pluginName;
+        }
+
+        public String toString() {
+            return "PluginEntry:[pluginName='" + pluginName + "',pluginClass='" + pluginClass + "']";
         }
     }
 
@@ -66,9 +72,9 @@ public class PluginRegistry {
 
         protected String menuName;
 
-        protected ViewerEntry viewerEntry;
+        protected PluginEntry viewerEntry;
 
-        public MenuEntry(String method, String menuNameValue, ViewerEntry entry) {
+        public MenuEntry(String method, String menuNameValue, PluginEntry entry) {
             methodName = method;
             menuName = menuNameValue;
             viewerEntry = entry;
@@ -83,7 +89,7 @@ public class PluginRegistry {
         }
 
         public String getViewerClassName() {
-            return viewerEntry.viewerClass.getCanonicalName();
+            return viewerEntry.pluginClass.getCanonicalName();
         }
     }
 
@@ -91,17 +97,22 @@ public class PluginRegistry {
     // Instance Fields
     // ===============
 
-    private ArrayList<ViewerEntry> viewerPlugins = new ArrayList<ViewerEntry>();
+    private ArrayList<PluginEntry> viewerPlugins = new ArrayList<PluginEntry>();
 
-    private Map<String, List<ViewerEntry>> mimeTypeViewers = new HashMap<String, List<ViewerEntry>>();
+    private Map<String, List<PluginEntry>> mimeTypeViewers = new HashMap<String, List<PluginEntry>>();
 
     private Map<String, List<MenuEntry>> mimeMenuMappings = new HashMap<String, List<MenuEntry>>();
 
     private List<Pair<MenuMapping, MenuEntry>> toolMenuMappings = new ArrayList<Pair<MenuMapping, MenuEntry>>();
 
-    private ArrayList<ViewerEntry> toolPlugins = new ArrayList<ViewerEntry>();
+    private ArrayList<PluginEntry> toolPlugins = new ArrayList<PluginEntry>();
 
     private ViewerResourceLoader resourceHandler = null;
+
+    /**
+     * Unsorted tool menu list. Entries are appended as is.
+     */
+    protected List<Pair<List<String>, PluginEntry>> toolMenu = new ArrayList<Pair<List<String>, PluginEntry>>();
 
     public PluginRegistry(ViewerResourceLoader resourceHandler) {
         this.resourceHandler = resourceHandler;
@@ -109,18 +120,18 @@ public class PluginRegistry {
     }
 
     protected void initDefaultViewers() {
-        registerViewer(TextViewer.class);
-        registerViewer(ImageViewer.class);
-        registerViewer(HexViewer.class);
-        registerViewer(X509Viewer.class);
-        registerViewer(JavaWebStarter.class);
+        registerPlugin(TextViewer.class);
+        registerPlugin(ImageViewer.class);
+        registerPlugin(HexViewer.class);
+        registerPlugin(X509Viewer.class);
+        registerPlugin(JavaWebStarter.class);
     }
 
-    public void registerViewer(Class<? extends ViewerPlugin> viewerClass) {
+    public void registerPlugin(Class<? extends ViewerPlugin> viewerClass) {
         try {
             ViewerPlugin viewer = viewerClass.newInstance();
             String viewerName = viewer.getViewerName();
-            ViewerEntry entry = new ViewerEntry(viewerName, viewerClass);
+            PluginEntry entry = new PluginEntry(viewerName, viewerClass);
             viewerPlugins.add(entry);
 
             if (viewer instanceof MimeViewer) {
@@ -134,17 +145,16 @@ public class PluginRegistry {
             }
 
         } catch (InstantiationException | IllegalAccessException e) {
-            logger.logException(PLogger.ERROR, e, "Failed to register viewer class:%s\n",
-                    viewerClass);
+            logger.logException(PLogger.ERROR, e, "Failed to register viewer class:%s\n", viewerClass);
         }
     }
 
-    private void registerTool(ToolPlugin toolPlugin, ViewerEntry entry) {
+    protected void registerTool(ToolPlugin toolPlugin, PluginEntry entry) {
         toolPlugins.add(entry);
 
         if (toolPlugin.addToToolMenu()) {
             String menuPath[] = toolPlugin.getToolMenuPath();
-            updateToolMenu(menuPath, toolPlugin.getToolName());
+            updateToolMenu(menuPath, toolPlugin.getToolName(), toolPlugin, entry);
         }
 
         List<Pair<MenuMapping, List<String>>> mappings = toolPlugin.getMenuMappings();
@@ -153,21 +163,20 @@ public class PluginRegistry {
         }
     }
 
-    protected void updateToolMenu(String[] menuPath, String toolName) {
-        logger.errorPrintf("FIXME:updateToolMenu() for toolName=%s\n", toolName);
+    protected void updateToolMenu(String[] menuPath, String toolName, ToolPlugin toolPlugin, PluginEntry pluginEntry) {
+        toolMenu.add(new Pair<List<String>, PluginEntry>(new StringList(menuPath), pluginEntry));
     }
 
-    protected void registerMimeTypes(String[] mimeTypes, ViewerEntry entry) {
+    protected void registerMimeTypes(String[] mimeTypes, PluginEntry entry) {
         if (mimeTypes == null) {
-            logger.warnPrintf("No mime types for Viewer:<%s:>%s\n", entry.viewerClass,
-                    entry.viewerName);
+            logger.warnPrintf("No mime types for Viewer:<%s:>%s\n", entry.pluginClass, entry.pluginName);
             return;
         }
         for (String type : mimeTypes) {
-            List<ViewerEntry> list = this.mimeTypeViewers.get(type);
+            List<PluginEntry> list = this.mimeTypeViewers.get(type);
 
             if (list == null) {
-                list = new ArrayList<ViewerEntry>();
+                list = new ArrayList<PluginEntry>();
                 mimeTypeViewers.put(type, list);
             }
 
@@ -176,7 +185,7 @@ public class PluginRegistry {
         }
     }
 
-    protected void registerMimeMenuMappings(Map<String, List<String>> map, ViewerEntry entry) {
+    protected void registerMimeMenuMappings(Map<String, List<String>> map, PluginEntry entry) {
         if ((map == null) || (map.size() <= 0)) {
             return;
         }
@@ -214,8 +223,7 @@ public class PluginRegistry {
         }
     }
 
-    protected void registerToolMenuMappings(List<Pair<MenuMapping, List<String>>> mappings,
-            ViewerEntry viewerEntry) {
+    protected void registerToolMenuMappings(List<Pair<MenuMapping, List<String>>> mappings, PluginEntry viewerEntry) {
         if ((mappings == null) || (mappings.size() <= 0)) {
             return;
         }
@@ -228,14 +236,13 @@ public class PluginRegistry {
                 continue;
             for (String methodDef : methodDefs) {
                 MenuEntry menuEntry = this.createMenuEntry(methodDef, viewerEntry);
-                Pair<MenuMapping, MenuEntry> menuPair = new Pair<MenuMapping, MenuEntry>(menuMap,
-                        menuEntry);
+                Pair<MenuMapping, MenuEntry> menuPair = new Pair<MenuMapping, MenuEntry>(menuMap, menuEntry);
                 toolMenuMappings.add(menuPair);
             }
         }
     }
 
-    private MenuEntry createMenuEntry(String methodDef, ViewerEntry viewerEntry) {
+    private MenuEntry createMenuEntry(String methodDef, PluginEntry viewerEntry) {
         // Split: "<methodName>:<Menu Name>"
         String strs[] = methodDef.split(":");
 
@@ -249,8 +256,8 @@ public class PluginRegistry {
         return menuEntry;
     }
 
-    public Class<? extends ViewerPlugin> getMimeTypeViewerClass(String mimeType) {
-        List<ViewerEntry> list = this.mimeTypeViewers.get(mimeType);
+    public Class<? extends ViewerPlugin> getMimeTypeViewerClass(String mimeType, String resourceType, String resourceStatus) {
+        List<PluginEntry> list = this.mimeTypeViewers.get(mimeType);
 
         if ((list == null) || (list.size() < 0)) {
             return null;
@@ -275,15 +282,20 @@ public class PluginRegistry {
         return resourceHandler;
     }
 
-    public ViewerEntry[] getViewers() {
-        // return array
-        return this.viewerPlugins.toArray(new ViewerEntry[0]);
+    public PluginEntry[] getViewers() {
+        // return private array
+        return this.viewerPlugins.toArray(new PluginEntry[0]);
+    }
+
+    public List<Pair<List<String>, PluginEntry>> getToolMenus() {
+        return this.toolMenu;
     }
 
     /**
-     * Returns list of Menu entries for the specified mimeType.
+     * Addes menu entries for the specified mimeType to the MenuEntry List
      * 
-     * @param entries
+     * @param entries - List to add entries to
+     * @param mimeType
      */
     public int addMimeMenuEntries(List<MenuEntry> entries, String mimeType) {
         List<MenuEntry> list = mimeMenuMappings.get(mimeType);

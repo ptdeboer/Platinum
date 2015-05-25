@@ -32,6 +32,15 @@ public class UserUI implements UserInfo, UIKeyboardInteractive {
         return new String(secretH.getChars());
     }
 
+    public String askPassword(String message) {
+        SecretHolder secretH = new SecretHolder();
+        contextUI.askAuthentication(message, secretH);
+        if (secretH.isSet()==false) {
+            return null;
+        }
+        return new String(secretH.getChars());
+    }
+    
     @Override
     public boolean promptPassphrase(String message) {
         // boolean opt = contextUI.askYesNo("promptPassphrase", message, true);
@@ -68,9 +77,21 @@ public class UserUI implements UserInfo, UIKeyboardInteractive {
             System.out.printf(" - prompt:'%s'\n", prompt);
         }
 
-        if ((prompts.length == 1) && (prompts[0].toLowerCase().startsWith(("password:")))) {
-            String pwd = getPassword();
-            return new String[] { pwd };
+        if (prompts.length == 1) {
+            if (prompts[0].toLowerCase().startsWith(("password:"))) {
+                String pwd = askPassword("Please provide Password for:"+destination);
+                if (pwd==null)
+                    return null;
+                return new String[] { pwd };
+            }
+            else
+            {
+                String pwd = askPassword("Authentication needed for:"+destination+"\n"+prompts[0]);
+                if (pwd==null)
+                    return null;
+                return new String[] { pwd };
+                
+            }
         }
 
         return null;

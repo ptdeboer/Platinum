@@ -30,7 +30,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Resource Abstraction.<br>
- * A VPath points to a URI, File of other resource which can be access by an URI.
+ * A VPath typically is an URL, Virtual File, Virtual Directory or other Resource which can be
+ * accessable by an URI. It has an Virtual Resource Locator which is an URI compatible locator.
  * 
  * @see VRL
  * @see java.net.URI
@@ -39,7 +40,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public interface VPath {
 
     /**
-     * The Virtual Resource Locator of this Path. Is an URI Compatible path.
+     * The Virtual Resource Locator (VRL) of this Path. This is an URI compatible path.
      * 
      * @see VRL
      * @see java.net.URI
@@ -48,7 +49,7 @@ public interface VPath {
     public VRL getVRL();
 
     /**
-     * Return short name or logical name. Default is basename of VRL.
+     * Return short name or logical name. Default name is the basename of the VRL.
      * 
      * @return short name or logical name of this resource.
      */
@@ -60,8 +61,8 @@ public interface VPath {
     public String getResourceType() throws VrsException;
 
     /**
-     * @return ResourceSystem of this VPath. This is the resource factory interface. For a File this
-     *         a VFileSystem.
+     * @return ResourceSystem of this VPath. This is the resource factory interface. For a VFSPath
+     *         this a VFileSystem.
      * @see VFileSystem
      */
     public VResourceSystem getResourceSystem() throws VrsException;
@@ -69,12 +70,12 @@ public interface VPath {
     /**
      * Resolve relative string against this VPath and return normalized and absolute VRL.
      */
-    public VRL resolvePathVRL(String path) throws VrsException;
+    public VRL resolveVRL(String path) throws VrsException;
 
     /**
      * Resolve relative string against this VPath and return absolute and normalized VPath.
      */
-    public VPath resolvePath(String path) throws VrsException;
+    public VPath resolve(String path) throws VrsException;
 
     /**
      * Return parent VPath of this VPath. Default implementation returns directory name. Logical
@@ -89,19 +90,44 @@ public interface VPath {
      * @param size
      *            - indication of the size of the Icon. Actual width and height of icon should be
      *            equal or greater then the given 'size'.
-     * @return actual iconURL of icon to show.
+     * @return absolute or relative iconURL of icon.
      * @throws VrsException
      */
     public String getIconURL(int size) throws VrsException;
 
+    /**
+     * @return mime-type of this resource if applicable. For example "text/html".
+     * @throws VrsException
+     */
     public String getMimeType() throws VrsException;
 
+    /**
+     * @return The state of this resource if applicable.
+     * @throws VrsException
+     */
     public String getResourceStatus() throws VrsException;
 
+    /**
+     * @return Description of all Attributes this resource has.
+     * @throws VrsException
+     */
     public Map<String, AttributeDescription> getAttributeDescriptions() throws VrsException;
 
-    public List<Attribute> getAttributes(String names[]) throws VrsException;
+    /**
+     * Return list of attributes preferably in the same order as given in the array. If attribute
+     * are not supported they may be omitted in the returned list.
+     * 
+     * @param attributeNames
+     *            - names of the attributes
+     * @return Attribute List.
+     * @throws VrsException
+     */
+    public List<Attribute> getAttributes(String attributeNames[]) throws VrsException;
 
+    /**
+     * @return list of attribute names this resource supports.
+     * @throws VrsException
+     */
     public List<String> getAttributeNames() throws VrsException;
 
     /**
@@ -118,19 +144,24 @@ public interface VPath {
     // VComposite Interface
     // =====================
 
+    /**
+     * @return true if this resource path can have sub paths.
+     * @throws VrsException
+     */
     public boolean isComposite() throws VrsException;
 
     /**
-     * List of allow child resource types. These types will be use as allowed types for Create and
-     * the (Copy)Drop methods
+     * List of allowed child resource types. These types will be used as allowed types for Create
+     * and the (Copy)Drop methods
      * 
      * @throws VrsException
      */
     public List<String> getChildResourceTypes() throws VrsException;
 
     /**
-     * List unfiltered child nodes of this resource. Preferably do not sort the list but return the
-     * order as-is.
+     * List unfiltered child nodes of this resource.<br>
+     * Implementation note: do not sort the list but return the order as-is including hidden
+     * resources.
      */
     public List<? extends VPath> list() throws VrsException;
 
@@ -138,15 +169,12 @@ public interface VPath {
      * Create new resource with this VPath as parent. Type must be one of getChildResourceTypes().
      * 
      * @param type
-     *            - one of getChildResourceTypes() to be created.
+     *            - one of getChildResourceTypes() to be created, for example "Dir" or "File".
      * @param name
      *            - logical name.
      * @return - new created VPath.
      * @throws VrsException
      */
     public VPath create(String type, String name) throws VrsException;
-
-    // public Map<String,List<Attribute>> getChildAttributes(List<String> childNames, List<String> attrNames) throws
-    // VrsException;
 
 }

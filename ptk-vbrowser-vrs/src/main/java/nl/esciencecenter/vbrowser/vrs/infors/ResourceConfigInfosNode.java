@@ -48,7 +48,7 @@ public class ResourceConfigInfosNode extends InfoRSPathNode {
 
     public String getIconURL(int size) {
         // need better icon.
-        return "info/system-configs-48.png";
+        return "icons/info/system-configs-48.png";
     }
 
     protected void initChilds() throws VrsException {
@@ -103,7 +103,7 @@ public class ResourceConfigInfosNode extends InfoRSPathNode {
             String name = "Server " + serverVrl.getScheme() + ":" + hostname + ":" + port;
             String subPath = "ServerConfig-" + index++;
 
-            this.addSubNode(createResourceSystemInfoNode(subPath, info, name, "info/server-fs-network-48.png"));
+            this.addSubNode(createResourceSystemInfoNode(subPath, info, name, "icons/info/server-fs-network-48.png"));
         }
     }
 
@@ -111,7 +111,7 @@ public class ResourceConfigInfosNode extends InfoRSPathNode {
             String iconUrl) throws VRLSyntaxException {
         VRL logicalVrl = this.createSubPathVRL(subPath);
 
-        ResourceSystemInfoNode node = new ResourceSystemInfoNode(this, logicalVrl, info);
+        ResourceConfigInfoNode node = new ResourceConfigInfoNode(this, logicalVrl, info);
         node.setLogicalName(name);
         node.setIconUrl(iconUrl);
         return node;

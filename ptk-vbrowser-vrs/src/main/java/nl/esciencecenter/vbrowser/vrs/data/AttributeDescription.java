@@ -28,6 +28,9 @@ import java.util.Set;
 import nl.esciencecenter.ptk.data.HashSetList;
 import nl.esciencecenter.ptk.data.StringList;
 
+/**
+ * The AttributeDescription class holds meta-data about an Attribute.
+ */
 public class AttributeDescription {
 
     public static Map<String, AttributeDescription> createMap(StringList list, AttributeType type, boolean editable) {
@@ -39,6 +42,8 @@ public class AttributeDescription {
         }
         return descs;
     }
+
+    // === Instance === 
 
     protected String name;
 

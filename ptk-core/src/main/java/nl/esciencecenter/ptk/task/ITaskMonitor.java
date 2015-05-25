@@ -49,8 +49,8 @@ public interface ITaskMonitor {
         protected TaskStats() {
         }
 
-        public TaskStats(String taskName, long taskTodo, long taskDone, long taskStartTime,
-                long taskEndTime, long todoUpdateTime, long doneUpdateTime) {
+        public TaskStats(String taskName, long taskTodo, long taskDone, long taskStartTime, long taskEndTime,
+                long todoUpdateTime, long doneUpdateTime) {
             this.name = taskName;
             this.todo = taskTodo;
             this.done = taskDone;

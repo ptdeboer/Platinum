@@ -36,7 +36,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.MenuEntry;
-import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.ViewerEntry;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.PluginEntry;
+
 
 public class ActionMenu extends JPopupMenu {
 
@@ -362,10 +363,10 @@ public class ActionMenu extends JPopupMenu {
     protected void createViewersMenu(Object eventSource, ViewNode viewNode) {
         PluginRegistry viewReg = platform.getViewerRegistry();
 
-        ViewerEntry[] viewers = viewReg.getViewers();
+        PluginEntry[] viewers = viewReg.getViewers();
         JMenu subMenu = new JMenu("View with");
 
-        for (ViewerEntry viewer : viewers) {
+        for (PluginEntry viewer : viewers) {
             JMenuItem item = createItem(eventSource, viewer.getName(), ActionMethod.VIEW_WITH,
                     viewer.getViewerClass().getCanonicalName());
             subMenu.add(item);

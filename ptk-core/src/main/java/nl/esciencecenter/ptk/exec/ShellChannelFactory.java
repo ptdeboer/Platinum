@@ -32,7 +32,7 @@ import nl.esciencecenter.ptk.crypt.Secret;
  */
 public interface ShellChannelFactory {
 
-    public ShellChannel createChannel(URI uri, String username, Secret password,
-            ChannelOptions options) throws IOException;
+    public ShellChannel createChannel(URI uri, String username, Secret password, ChannelOptions options)
+            throws IOException;
 
 }

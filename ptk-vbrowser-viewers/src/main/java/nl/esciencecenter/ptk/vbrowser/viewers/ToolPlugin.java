@@ -58,7 +58,7 @@ public interface ToolPlugin {
 
     /**
      * @return Default method name to use when the viewer is started from the Tool Menu. see
-     *         {@link EmbeddedViewer#startViewerFor(VRL, String)}
+     *         {@link ViewerJPanel#startViewerFor(VRL, String)}
      */
     public String defaultToolMethod();
 

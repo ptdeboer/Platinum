@@ -20,24 +20,17 @@
 
 package nl.esciencecenter.ptk.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Enumeration;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.RandomReadable;
-import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.io.ResourceProvider;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.logging.PLogger;
@@ -79,8 +72,8 @@ public class ResourceLoader {
     /**
      * Supported character sets.
      */
-    public static final String charEncodings[] = { CHARSET_UTF8, CHARSET_UTF16BE, CHARSET_UTF16LE,
-            CHARSET_US_ASCII, CHARSET_ISO_8859_1, CHARSET_LATIN, CHARSET_CP437 };
+    public static final String charEncodings[] = { CHARSET_UTF8, CHARSET_UTF16BE, CHARSET_UTF16LE, CHARSET_US_ASCII,
+            CHARSET_ISO_8859_1, CHARSET_LATIN, CHARSET_CP437 };
 
     private static ResourceLoader instance;
 
@@ -96,8 +89,7 @@ public class ResourceLoader {
 
         protected URLClassLoader classLoader = null;
 
-        public URLResolver(URLClassLoader parentClassLoader, URL[] urls)
-                throws MalformedURLException {
+        public URLResolver(URLClassLoader parentClassLoader, URL[] urls) throws MalformedURLException {
             init(parentClassLoader, toDirUrls(urls));
         }
 
@@ -142,9 +134,7 @@ public class ResourceLoader {
                 resolvedUrl = optClassLoader.getResource(urlStr);
 
                 if (resolvedUrl != null) {
-                    logger.debugPrintf(
-                            "resolveUrl() I: Resolved URL by using extra class loader:%s\n",
-                            resolvedUrl);
+                    logger.debugPrintf("resolveUrl() I: Resolved URL by using extra class loader:%s\n", resolvedUrl);
                 }
             }
 
@@ -153,9 +143,7 @@ public class ResourceLoader {
                 resolvedUrl = this.classLoader.getResource(urlStr);
 
                 if (resolvedUrl != null) {
-                    logger.debugPrintf(
-                            "resolveURL() II:Resolved URL by using resource classloader:%s\n",
-                            resolvedUrl);
+                    logger.debugPrintf("resolveURL() II:Resolved URL by using resource classloader:%s\n", resolvedUrl);
                 }
             }
 
@@ -164,9 +152,7 @@ public class ResourceLoader {
                 resolvedUrl = this.getClass().getClassLoader().getResource(urlStr);
 
                 if (resolvedUrl != null) {
-                    logger.debugPrintf(
-                            "resolveURL() III:Resolved URL by using global classloader:%s\n",
-                            resolvedUrl);
+                    logger.debugPrintf("resolveURL() III:Resolved URL by using global classloader:%s\n", resolvedUrl);
                 }
             }
 
@@ -233,8 +219,6 @@ public class ResourceLoader {
     // Instance
     // =================================================================
 
-    protected String charEncoding = DEFAULT_CHARSET;
-
     protected URLResolver urlResolver = null;
 
     protected ResourceProvider resourceProvider;
@@ -278,19 +262,6 @@ public class ResourceLoader {
         }
     }
 
-    /**
-     * Returns default characted encoding which is used when reading text.
-     */
-    public String getCharEncoding() {
-        return charEncoding;
-    }
-
-    /**
-     * Specify default character encoding which is used when reading text.
-     */
-    public void setCharEncoding(String encoding) {
-        charEncoding = encoding;
-    }
 
     // =================================================================
     // URI/URL resolving
@@ -301,7 +272,7 @@ public class ResourceLoader {
     }
 
     /**
-     * Resolve URL string to absolute URL
+     * Resolve URL string to absolute URL using the URLResolver.
      * 
      * @see ResourceLoader#resolveUrl(ClassLoader, String)
      */
@@ -341,25 +312,6 @@ public class ResourceLoader {
     // =================================================================
 
     /**
-     * Resolves relative URL string and returns InputStream to resource. If the urlstr is an
-     * absolute URL this method is similar to <code>URL.openConnection().getInputStream()</code>.
-     * 
-     * @see #resolveUrl(ClassLoader, String)
-     * 
-     * @param urlstr
-     *            - can be both relative (classpath) url or absolute URI
-     * @return InputStream - InputStream to resource.
-     * @throws IOException
-     */
-    public InputStream createInputStream(String urlstr) throws IOException {
-        URL url = resolveUrl(null, urlstr);
-        if (url == null) {
-            throw new FileNotFoundException("Couldn't resolve:" + urlstr);
-        }
-        return createInputStream(url);
-    }
-
-    /**
      * Creates a new InputStream from the specified URL.
      */
     public InputStream createInputStream(URL url) throws IOException {
@@ -370,23 +322,11 @@ public class ResourceLoader {
             return resourceProvider.createInputStream(new URIFactory(url).toURI());
         } catch (URISyntaxException e) {
             // wrap:
-            throw new IOException("Invalid URL: Cannot get inputstream from" + url + "\n"
-                    + e.getMessage(), e);
+            throw new IOException("Invalid URL: Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
             throw new IOException("Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
-        }
-    }
-
-    public InputStream createInputStream(URI uri) throws IOException {
-        // use URI Provider:
-        try {
-            return resourceProvider.createInputStream(uri);
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IOException(e.getMessage(), e);
         }
     }
 
@@ -395,14 +335,13 @@ public class ResourceLoader {
      */
     public OutputStream createOutputStream(URL url) throws IOException {
         if (url == null) {
-            throw new NullPointerException("createOutputStream():URL is NULL!");
+            throw new NullPointerException("createInputStream():URL is NULL!");
         }
         try {
             return resourceProvider.createOutputStream(new URIFactory(url).toURI());
         } catch (URISyntaxException e) {
             // wrap:
-            throw new IOException("Invalid URL: Cannot create OutputStream from" + url + "\n"
-                    + e.getMessage(), e);
+            throw new IOException("Invalid URL: Cannot get inputstream from" + url + "\n" + e.getMessage(), e);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -410,238 +349,63 @@ public class ResourceLoader {
         }
     }
 
-    public OutputStream createOutputStream(URI uri) throws IOException {
+    /**
+     * Creates a new InputStream from the specified URI.
+     */
+    public InputStream createInputStream(java.net.URI uri) throws IOException {
+        if (uri == null) {
+            throw new NullPointerException("createInputStream():URL is NULL!");
+        }
+        try {
+            return resourceProvider.createInputStream(uri);
+        } catch (URISyntaxException e) {
+            // wrap:
+            throw new IOException("Invalid URL: Cannot get inputstream from" + uri + "\n" + e.getMessage(), e);
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Cannot get inputstream from" + uri + "\n" + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Creates a new InputStream from the specified URI.
+     */
+    public OutputStream createOutputStream(java.net.URI uri) throws IOException {
+        if (uri == null) {
+            throw new NullPointerException("createInputStream():URL is NULL!");
+        }
         try {
             return resourceProvider.createOutputStream(uri);
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
-
-    // =================================================================
-    // Random IO Interface
-    // =================================================================
-
-    /**
-     * Returns RandomReader if supported by the URI scheme.
-     * 
-     * @throws IOException
-     */
-    public RandomReadable createRandomReader(URI loc) throws IOException {
-        try {
-            return resourceProvider.createRandomReader(loc);
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IOException(e.getMessage(), e);
-        }
-
-    }
-
-    /**
-     * Returns RandomWriter if supported by the URI scheme.
-     * 
-     * @throws IOException
-     */
-    public RandomWritable createRandomWriter(URI loc) throws IOException {
-        try {
-            return resourceProvider.createRandomWriter(loc);
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
-
-    // =================================================================
-    // Read and Write methods
-    // =================================================================
-
-    public String readText(URL location) throws IOException {
-        return readText(location, this.charEncoding);
-    }
-
-    public String readText(URI location) throws IOException {
-        return readText(location, this.charEncoding);
-    }
-
-    /**
-     * Returns resource as String.
-     */
-    public String readText(URL location, String charset) throws IOException {
-        try (InputStream inps = createInputStream(location)) {
-            String text = readText(inps, charset);
-            return text;
-        }
-    }
-
-    public String readText(URI uri, String charset) throws IOException {
-        try (InputStream inps = createInputStream(uri)) {
-            return readText(inps, charset);
-        }
-    }
-
-    public byte[] readBytes(String pathOrUrl) throws IOException {
-        try (InputStream inps = createInputStream(pathOrUrl)) {
-            byte bytes[] = readBytes(inps);
-            return bytes;
-        }
-    }
-
-    /**
-     * Read text from InputSream using charset as String encoding. Default is UTF-8.
-     * 
-     * @param inps
-     *            - The InputStream. all byte will be read, but the InputStream won't be closed
-     * @param charset
-     *            - Optional Character Encoding. Can be null.
-     */
-    public String readText(InputStream inps, String charset) throws IOException {
-        if (charset == null) {
-            charset = charEncoding;
-        }
-        // just read all:
-        try {
-            byte bytes[] = readBytes(inps);
-            return new String(bytes, charset);
-        } catch (UnsupportedEncodingException e) {
-            throw new IOException("UnsupportedEncoding:" + charset, e);
-        }
-    }
-
-    /**
-     * Read all bytes from InputStream until an EOF or other IOException occored. InputStream won't
-     * be closed.
-     */
-    public byte[] readBytes(InputStream inps) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        byte[] buf = new byte[32 * 1024]; // typical TCP/IP packet size:
-        int len = 0;
-
-        try {
-            while ((len = inps.read(buf)) > 0) {
-                bos.write(buf, 0, len);
-            }
-        } catch (IOException e) {
-            throw new IOException("Couldn't read from input stream", e);
-        }
-
-        byte[] data = bos.toByteArray();
-        return data;
-    }
-
-    public Properties loadProperties(URL url) throws IOException {
-        // delegate to universal URI method:
-        try {
-            return loadProperties(url.toURI());
         } catch (URISyntaxException e) {
-            throw new IOException(e.getMessage(), e);
+            // wrap:
+            throw new IOException("Invalid URL: Cannot get inputstream from" + uri + "\n" + e.getMessage(), e);
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Cannot get inputstream from" + uri + "\n" + e.getMessage(), e);
         }
     }
+
+    // =================================================================
+    // Properties
+    // =================================================================
 
     /**
      * Load properties file from specified location.<br>
      */
-    public Properties loadProperties(URI uri) throws IOException {
-        //
-        Properties props = new Properties();
-        try (InputStream inps = this.resourceProvider.createInputStream(uri)) {
-            props.load(inps);
-            logger.debugPrintf("Read properties from:%s\n", uri);
-        } catch (IOException e) {
-            throw new IOException("Couldn't load properties from:" + uri + "\n" + e.getMessage(), e);
-        }
-        // In the case of applet startup: Not all files are
-        // accessable, wrap exception for gracefull exception handling.
-        catch (java.security.AccessControlException ex) {
-            // Applet/Servlet environment !
-            throw new IOException("Security Exception: Permission denied for:" + uri, ex);
-        } catch (Exception e) {
-            throw new IOException("Couldn't load properties from:" + uri + "\n" + e.getMessage(), e);
-        }
-        //
-        for (Enumeration<Object> keys = props.keys(); keys.hasMoreElements();) {
-            String key = (String) keys.nextElement();
-            String value = props.getProperty(key);
-            logger.debugPrintf("Read property='%s'='%s'\n", key, value);
-        }
-        //
-        return props;
+    public Properties loadProperties(URL url) throws IOException {
+        return new ContentReader(this.createInputStream(url), true).loadProperties();
     }
 
     /**
      * Save properties file to specified location.
      */
-    public void saveProperties(URI loc, Properties props) throws IOException {
-        saveProperties(loc, props, "Properties file");
-    }
-
-    /**
-     * Save properties file to specified location.
-     */
-    public void saveProperties(URI loc, Properties props, String comments) throws IOException {
+    public void saveProperties(URL loc, Properties props, String comments) throws IOException {
         try (OutputStream outps = createOutputStream(loc)) {
             props.store(outps, comments);
-        }
-    }
-
-    /**
-     * Save properties file to specified location.
-     */
-    public void writeTextTo(URI loc, String text) throws IOException {
-        writeBytesTo(loc, text.getBytes(this.charEncoding));
-    }
-
-    /**
-     * Save properties file to specified location.
-     */
-    public void writeTextTo(URI loc, String text, String charset) throws IOException {
-        writeBytesTo(loc, text.getBytes(charset));
-    }
-
-    /**
-     * Save properties file to specified location.
-     */
-    public void writeTextTo(URL loc, String text, String charset) throws IOException {
-        writeBytesTo(loc, text.getBytes(charset));
-    }
-
-    /**
-     * Write bytes to URI location.
-     * 
-     * @param uri
-     *            - URI of location. URI scheme must support OutputStreams.
-     * @param bytes
-     *            - bytes to write to the location
-     * @throws IOException
-     */
-    public void writeBytesTo(URI uri, byte[] bytes) throws IOException {
-        try (OutputStream outps = createOutputStream(uri)) {
-            outps.write(bytes);
             outps.flush();
         }
-    }
-
-    /**
-     * Write bytes to URI location.
-     * 
-     * @param uri
-     *            - URI of location. URI scheme must support OutputStreams.
-     * @param bytes
-     *            - bytes to write to the location
-     * @throws IOException
-     */
-    public void writeBytesTo(URL url, byte[] bytes) throws IOException {
-        try (OutputStream outps = createOutputStream(url)) {
-            outps.write(bytes);
-        }
-    }
-
-    public void writeBytes(OutputStream outps, byte[] bytes) throws IOException {
-        outps.write(bytes);
     }
 
 }

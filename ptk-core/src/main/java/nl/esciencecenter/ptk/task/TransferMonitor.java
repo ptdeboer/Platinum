@@ -57,8 +57,7 @@ public class TransferMonitor extends TaskMonitorAdaptor {
     /**
      * Create Transfer monitor with optional Resource Types.
      */
-    public TransferMonitor(String action, URI sourceUris[], String sourceTypes[], URI destVri,
-            String destType) {
+    public TransferMonitor(String action, URI sourceUris[], String sourceTypes[], URI destVri, String destType) {
         this.transferId = transferCounter++;
         this.actionType = action;
         this.sources = sourceUris;
@@ -123,9 +122,9 @@ public class TransferMonitor extends TaskMonitorAdaptor {
 
     @Override
     public String toString() {
-        return "TransferMonitor:[transferId:" + transferId + ",sources:" + Arrays.toString(sources)
-                + ",sourceTypes:" + Arrays.toString(sourceTypes) + ",dest:" + dest + ",destType:"
-                + destType + ",actionType:" + actionType + ",sourcesDone:" + sourcesDone + "]";
+        return "TransferMonitor:[transferId:" + transferId + ",sources:" + Arrays.toString(sources) + ",sourceTypes:"
+                + Arrays.toString(sourceTypes) + ",dest:" + dest + ",destType:" + destType + ",actionType:"
+                + actionType + ",sourcesDone:" + sourcesDone + "]";
     }
 
 }

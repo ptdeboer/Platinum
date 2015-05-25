@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -45,7 +45,6 @@ import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
@@ -55,7 +54,7 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
  * This class manages a Java Keystore which contains X509Certificates. <br>
  * Added support for PEM and DER Certificates so that grid certificates can be stored as well in one
  * single 'cacerts' file.
- * 
+ *
  * @author Piter T. de Boer
  */
 public class CertificateStore {
@@ -79,20 +78,17 @@ public class CertificateStore {
     /**
      * Custom property ssl.cacerts.policy.interactive
      */
-    public static final String SSL_CACERT_POLICY_INTERACTIVE = PROP_SSL_CACERT_POLICY + "."
-            + OPT_INTERACTIVE;
+    public static final String SSL_CACERT_POLICY_INTERACTIVE = PROP_SSL_CACERT_POLICY + "." + OPT_INTERACTIVE;
 
     /**
      * Custom property ssl.cacerts.policy.storeAccepted
      */
-    public static final String SSL_CACERT_POLICY_STOREACCEPTED = PROP_SSL_CACERT_POLICY + "."
-            + OPT_STOREACCEPTED;
+    public static final String SSL_CACERT_POLICY_STOREACCEPTED = PROP_SSL_CACERT_POLICY + "." + OPT_STOREACCEPTED;
 
     /**
      * Custom property sssl.cacerts.policy.alwaysAccept
      */
-    public static final String SSL_CACERT_POLICY_ALWAYSACCEPT = PROP_SSL_CACERT_POLICY + "."
-            + OPT_ALWAYSACCEPT;
+    public static final String SSL_CACERT_POLICY_ALWAYSACCEPT = PROP_SSL_CACERT_POLICY + "." + OPT_ALWAYSACCEPT;
 
     /**
      * Global 'cacerts' instance is loaded from classpath. Cannot be saved!
@@ -103,7 +99,7 @@ public class CertificateStore {
 
     static {
         logger = PLogger.getLogger(CertificateStore.class);
-        //logger.setLevelToDebug(); 
+        //logger.setLevelToDebug();
     }
 
     /**
@@ -134,11 +130,10 @@ public class CertificateStore {
 
     /**
      * Load default 'cacerts' file from classpath or creates an empty one if autoinit==true.
-     * 
+     *
      * @return new CertificateStore either loaded from classpathor a new empty keystore.
      */
-    public static synchronized CertificateStore getDefault(boolean autoinit)
-            throws CertificateStoreException {
+    public static synchronized CertificateStore getDefault(boolean autoinit) throws CertificateStoreException {
         // autoinit?
         if (instance == null) {
             CertificateStore certStore = new CertificateStore();
@@ -169,16 +164,15 @@ public class CertificateStore {
      * Loads default 'cacerts' on classpath or creates an empty one if none can be found and
      * autoinit==true.
      */
-    public static KeyStore loadDefaultKeystore(Secret secret, boolean autoinit)
-            throws CertificateStoreException {
+    public static KeyStore loadDefaultKeystore(Secret secret, boolean autoinit) throws CertificateStoreException {
         //
         if ((secret == null) || (secret.isEmpty())) {
             throw new NullPointerException("Keystore cannot have NULL password.");
         }
         //
         try {
-            // Check classpath to resolve 'cacerts' file. 
-            // This file might be a non writable location. 
+            // Check classpath to resolve 'cacerts' file.
+            // This file might be a non writable location.
             URL url = Thread.currentThread().getContextClassLoader().getResource("cacerts");
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 
@@ -196,14 +190,11 @@ public class CertificateStore {
         } catch (IOException e) {
             throw new CertificateStoreException("Could not create new key store.", e);
         } catch (NoSuchAlgorithmException e) {
-            throw new CertificateStoreException(
-                    "NoSuchAlgorithmException: Could not create new key store.", e);
+            throw new CertificateStoreException("NoSuchAlgorithmException: Could not create new key store.", e);
         } catch (CertificateException e) {
-            throw new CertificateStoreException("CertificateException:Could create new key store.",
-                    e);
+            throw new CertificateStoreException("CertificateException:Could create new key store.", e);
         } catch (KeyStoreException e) {
-            throw new CertificateStoreException(
-                    "KeyStoreException: Could not create new empty store at.", e);
+            throw new CertificateStoreException("KeyStoreException: Could not create new empty store at.", e);
         }
     }
 
@@ -213,8 +204,7 @@ public class CertificateStore {
             keystore.load(null, passwd.getChars());
             return keystore;
         } catch (Exception e) {
-            throw new CertificateStoreException("Could not create new (empty) key store.\n"
-                    + e.getMessage(), e);
+            throw new CertificateStoreException("Could not create new (empty) key store.\n" + e.getMessage(), e);
         }
     }
 
@@ -222,7 +212,7 @@ public class CertificateStore {
      * Loads CertificateStore from specified location using the specifed password to unlock it. If
      * the keystore doesn't exist and autoInitiliaze is true a default keystore will be created. Set
      * persistant to true to autosave changes to this location.
-     * 
+     *
      * @param keyStoreLocation
      * @param passthing
      *            password or passphrase.
@@ -280,7 +270,7 @@ public class CertificateStore {
     public static boolean isPasswordException(Exception e) {
         //
         Throwable cause = e;
-        //      
+        //
         while (cause != null) {
             String msg = cause.getMessage();
 
@@ -312,17 +302,18 @@ public class CertificateStore {
             ; //
         }
 
+        @Override
         public X509Certificate[] getAcceptedIssuers() {
             return null; // throw new UnsupportedOperationException();
         }
 
-        public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             throw new UnsupportedOperationException();
         }
 
-        public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             this.chain = chain;
 
             // auto initialize:
@@ -379,7 +370,7 @@ public class CertificateStore {
 
     //    public CertificateStore(KeyStore keyStore, Secret passwd)
     //    {
-    //        init(); 
+    //        init();
     //        setKeyStore(keyStore,passwd);
     //    }
 
@@ -477,32 +468,22 @@ public class CertificateStore {
 
                     // Try to load:
                     if (fsUtil.existsFile(keyStoreLocation, true)) {
-                        InputStream in = null;
-
-                        try {
+                        try (InputStream in = fsUtil.createInputStream(fsUtil.resolvePathURI(keyStoreLocation))) {
                             _keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-
-                            in = fsUtil.createInputStream(fsUtil.resolvePathURI(keyStoreLocation));
                             _keyStore.load(in, passphrase);
-                            IOUtil.autoClose(in);
                         } catch (Exception e1) {
-                            logger.logException(PLogger.WARN, e1,
-                                    "Warning: Couldn't read keystore\n");
+                            logger.logException(PLogger.WARN, e1, "Warning: Couldn't read keystore\n");
                             // password error: DO NOT AUTOINITIALIZE;
                             _keyStore = null;
-
                             if (isPasswordException(e1)) {
-                                throw new CertificateStoreException(
-                                        "Invalid password for keystore."
-                                                + "please update password or remove keystore file:"
-                                                + keyStoreLocation, e1);
+                                throw new CertificateStoreException("Invalid password for keystore."
+                                        + "please update password or remove keystore file:" + keyStoreLocation, e1);
                             }
                         }
                     }
                 }
             } catch (IOException e) {
-                throw new CertificateStoreException("Syntax Error: Invalid keyStore location:"
-                        + keyStoreLocation, e);
+                throw new CertificateStoreException("Syntax Error: Invalid keyStore location:" + keyStoreLocation, e);
             }
 
             // pass CertificateStoreExceptions
@@ -535,7 +516,7 @@ public class CertificateStore {
 
     /**
      * Add extra certificates form specified locations.
-     * 
+     *
      * @param certificateDirectories
      *            - directories which contains custom certificates.
      */
@@ -551,27 +532,26 @@ public class CertificateStore {
                 continue;
             }
 
-            String files[] = null;
-
+            List<FSPath> files = null;
             try {
                 files = fsUtil.list(dir);
-            } catch (FileURISyntaxException e) {
-                logger.logException(PLogger.ERROR, e, "Syntax Error on location:%s", dir);
+            } catch (FileURISyntaxException e1) {
+                logger.logException(PLogger.ERROR, e1, "Syntax Error on location:%s", dir);
                 return;
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+            } catch (IOException e2) {
+                logger.logException(PLogger.ERROR, e2, "Failed to list location:%s", dir);
             }
 
-            if ((files == null) || (files.length <= 0)) {
+            if ((files == null) || (files.size() <= 0)) {
                 continue;
             }
 
-            for (String file : files) {
-                if (hasCertExtension(file)) {
+            for (FSPath file : files) {
+                String pathName = file.getPathname();
+                if (hasCertExtension(pathName)) {
                     try {
-                        // Add, but do not save now, only after reading all the certificates. 
-                        this.addPEMCertificate(file, false);
+                        // Add, but do not save now, only after reading all the certificates.
+                        this.addPEMCertificate(pathName, false);
                         logger.infoPrintf(" - > added Custom Certificate:%s\n", file);
                     } catch (Exception e) {
                         logger.logException(PLogger.INFO, e,
@@ -595,8 +575,7 @@ public class CertificateStore {
             if ((reinit == false) && (defaultTrustManager != null))
                 return defaultTrustManager;
 
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory
-                    .getDefaultAlgorithm());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             // INIT
             if (this._keyStore == null)
                 reloadKeystore();
@@ -613,7 +592,7 @@ public class CertificateStore {
 
     /**
      * SSLContext factory method to create a custom SSLContext using this certificate store.
-     * 
+     *
      * @param sslProtocol
      *            - the SSL protocol for example "SSLv3" or "TLS".
      */
@@ -646,7 +625,7 @@ public class CertificateStore {
     /**
      * SSLContext factory method to create a custom SSLContext using this certificate store. Adds a
      * private key manager to the SSLContext.
-     * 
+     *
      * @param sslProtocol
      *            - SSL protocol to use, for example "SSLv3".
      */
@@ -659,8 +638,7 @@ public class CertificateStore {
 
             savingTrustManager = new SavingTrustManager();
 
-            sslContext.init(new KeyManager[] { privateKeyManager },
-                    new TrustManager[] { savingTrustManager }, null);
+            sslContext.init(new KeyManager[] { privateKeyManager }, new TrustManager[] { savingTrustManager }, null);
 
             return sslContext;
         } catch (Exception e) {
@@ -676,8 +654,7 @@ public class CertificateStore {
      * Save keystore if this keystore is persistent and there is a keyStoreLocation.
      */
     protected void autoSaveKeystore() throws CertificateStoreException {
-        logger.debugPrintf("autoSaveKeystore() (persistant=%s):%s\n", isPersistent,
-                keyStoreLocation);
+        logger.debugPrintf("autoSaveKeystore() (persistant=%s):%s\n", isPersistent, keyStoreLocation);
 
         if ((isPersistent == true) && (this.keyStoreLocation != null)) {
             saveKeystoreTo(keyStoreLocation, keystorePassword);
@@ -687,8 +664,7 @@ public class CertificateStore {
         }
     }
 
-    protected void saveKeystoreTo(String location, Secret password)
-            throws CertificateStoreException {
+    protected void saveKeystoreTo(String location, Secret password) throws CertificateStoreException {
         logger.debugPrintf("saveKeyStoreTo:%s\n", location);
 
         if ((location == null) && (this.keyStoreLocation == null)) {
@@ -717,17 +693,13 @@ public class CertificateStore {
                 ;
             }
         } catch (IOException e) {
-            throw new CertificateStoreException(
-                    "IO Error when saving keystore to file:" + location, e);
+            throw new CertificateStoreException("IO Error when saving keystore to file:" + location, e);
         } catch (KeyStoreException e) {
-            throw new CertificateStoreException("KeyStoreException:When saving keystore to file:"
-                    + location, e);
+            throw new CertificateStoreException("KeyStoreException:When saving keystore to file:" + location, e);
         } catch (NoSuchAlgorithmException e) {
-            throw new CertificateStoreException(
-                    "NoSuchAlgorithmException: When saving keystore to file:" + location, e);
+            throw new CertificateStoreException("NoSuchAlgorithmException: When saving keystore to file:" + location, e);
         } catch (CertificateException e) {
-            throw new CertificateStoreException(
-                    "CertificateException: When saving keystore to file:" + location, e);
+            throw new CertificateStoreException("CertificateException: When saving keystore to file:" + location, e);
         }
     }
 
@@ -737,11 +709,10 @@ public class CertificateStore {
 
     /**
      * DER encoded Certificate .cer .crt .der
-     * 
+     *
      * @throws Exception
      */
-    public X509Certificate addDERCertificate(String filename, boolean autoSave)
-            throws CertificateStoreException {
+    public X509Certificate addDERCertificate(String filename, boolean autoSave) throws CertificateStoreException {
         X509Certificate x590;
 
         try {
@@ -751,25 +722,23 @@ public class CertificateStore {
 
         } catch (FileURISyntaxException e) {
             throw new CertificateStoreException(
-                    "FileURISyntaxException: Couldn't not load certificate. Invalid file/URI:"
-                            + filename + "\n" + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new CertificateStoreException("IOException: Couldn't not load certificate:"
-                    + filename + "\n" + e.getMessage(), e);
-        } catch (CertificateException e) {
-            throw new CertificateStoreException(
-                    "CertificateException: Couldn't not load certificate:" + filename + "\n"
+                    "FileURISyntaxException: Couldn't not load certificate. Invalid file/URI:" + filename + "\n"
                             + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new CertificateStoreException("IOException: Couldn't not load certificate:" + filename + "\n"
+                    + e.getMessage(), e);
+        } catch (CertificateException e) {
+            throw new CertificateStoreException("CertificateException: Couldn't not load certificate:" + filename
+                    + "\n" + e.getMessage(), e);
         }
     }
 
     /**
      * Load .pem Certificate file
-     * 
+     *
      * @param save
      */
-    public X509Certificate addPEMCertificate(String filename, boolean autoSave)
-            throws CertificateStoreException {
+    public X509Certificate addPEMCertificate(String filename, boolean autoSave) throws CertificateStoreException {
         X509Certificate x590;
         try {
             x590 = CertUtil.loadPEMCertificate(filename);
@@ -777,45 +746,41 @@ public class CertificateStore {
             return addCertificate(alias, x590, autoSave);
         } catch (FileURISyntaxException e) {
             throw new CertificateStoreException(
-                    "FileURISyntaxException: Couldn't not load certificate. Invalid file/URI:"
-                            + filename + "\n" + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new CertificateStoreException("IOException: Couldn't not load certificate:"
-                    + filename + "\n" + e.getMessage(), e);
-        } catch (CertificateException e) {
-            throw new CertificateStoreException(
-                    "CertificateException: Couldn't not load certificate:" + filename + "\n"
+                    "FileURISyntaxException: Couldn't not load certificate. Invalid file/URI:" + filename + "\n"
                             + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new CertificateStoreException("IOException: Couldn't not load certificate:" + filename + "\n"
+                    + e.getMessage(), e);
+        } catch (CertificateException e) {
+            throw new CertificateStoreException("CertificateException: Couldn't not load certificate:" + filename
+                    + "\n" + e.getMessage(), e);
         }
     }
 
     /**
      * Add String encoded DER certificate to certificate store.
      */
-    public X509Certificate
-            addDERCertificate(String alias, String derEncodedString, boolean autoSave)
-                    throws CertificateStoreException {
+    public X509Certificate addDERCertificate(String alias, String derEncodedString, boolean autoSave)
+            throws CertificateStoreException {
         try {
             X509Certificate x590 = CertUtil.createDERCertificateFromString(derEncodedString);
             return addCertificate(alias, x590, autoSave);
         } catch (CertificateException e) {
-            throw new CertificateStoreException("CertificateException: Couldn't add certificate:"
-                    + alias + "\n" + e.getMessage(), e);
+            throw new CertificateStoreException("CertificateException: Couldn't add certificate:" + alias + "\n"
+                    + e.getMessage(), e);
         } catch (UnsupportedEncodingException e) {
-            throw new CertificateStoreException(
-                    "UnsupportedEncodingException: Couldn't add certificate:" + alias + "\n"
-                            + e.getMessage(), e);
+            throw new CertificateStoreException("UnsupportedEncodingException: Couldn't add certificate:" + alias
+                    + "\n" + e.getMessage(), e);
         }
     }
 
-    public void addCACertificate(X509Certificate cert, boolean save)
-            throws CertificateStoreException {
+    public void addCACertificate(X509Certificate cert, boolean save) throws CertificateStoreException {
         addCertificate(cert.getIssuerDN().getName(), cert, save);
     }
 
     /**
      * Store X509Certificate with the speficate alias to the KeyStore.
-     * 
+     *
      * @param autoSave
      * @throws CertificateStoreException
      */
@@ -840,20 +805,19 @@ public class CertificateStore {
             this.defaultTrustManager = null;
             this.getTrustManager(true);
 
-            // only autosave when this is a persistant keystore 
+            // only autosave when this is a persistant keystore
             if (autoSave && this.isPersistent) {
                 autoSaveKeystore();
             }
             return x590;
         } catch (KeyStoreException e) {
-            throw new CertificateStoreException("KeyStoreException: Couldn't add certificate:"
-                    + alias, e);
+            throw new CertificateStoreException("KeyStoreException: Couldn't add certificate:" + alias, e);
         }
     }
 
     /**
      * Returns alias list of certificates stored in this CertificateStore.
-     * 
+     *
      * @throws KeyStoreException
      * @throws CertificateStoreException
      */
@@ -899,8 +863,7 @@ public class CertificateStore {
 
             return alias;
         } catch (Exception e) {
-            throw new CertificateStoreException(
-                    "Couldn't access keystore while searching for aliasses.", e);
+            throw new CertificateStoreException("Couldn't access keystore while searching for aliasses.", e);
         }
     }
 
@@ -917,8 +880,7 @@ public class CertificateStore {
                 return this._keyStore.getCertificateChain(alias);
             } catch (Exception e) {
                 throw new CertificateStoreException(
-                        "Error accessing KeyStore while getting certificate chain for alias:"
-                                + alias, e);
+                        "Error accessing KeyStore while getting certificate chain for alias:" + alias, e);
             }
         }
     }
@@ -928,15 +890,15 @@ public class CertificateStore {
             try {
                 return this._keyStore.getCertificate(alias);
             } catch (Exception e) {
-                throw new CertificateStoreException(
-                        "Error accessing KeyStore while getting certificate for alias:" + alias, e);
+                throw new CertificateStoreException("Error accessing KeyStore while getting certificate for alias:"
+                        + alias, e);
             }
         }
     }
 
     /**
      * Return private key specified by the alias.
-     * 
+     *
      * @param alias
      *            - the alias of the private user key.
      * @return - The Private Key stored in this KeyStore.
@@ -949,8 +911,7 @@ public class CertificateStore {
                 PrivateKey key = (PrivateKey) this._keyStore.getKey(alias, passwd.getChars());
                 return key;
             } catch (Exception e) {
-                throw new CertificateStoreException(
-                        "Error accessing KeyStore while looking for alias" + alias, e);
+                throw new CertificateStoreException("Error accessing KeyStore while looking for alias" + alias, e);
             }
         }
     }
@@ -966,16 +927,13 @@ public class CertificateStore {
                 logger.infoPrintf("KeyStore: Found private key alias=%s\n", alias);
 
                 if (getPrivateKey(alias) == null) {
-                    logger.infoPrintf("KeyStore: Warning: No Private key detected for alias:%s\n",
-                            alias);
+                    logger.infoPrintf("KeyStore: Warning: No Private key detected for alias:%s\n", alias);
                 }
                 if (_keyStore.getCertificateChain(alias) == null) {
                     logger.infoPrintf(
-                            "KeyStore: Error: Private key found, but has no Certificate Chaing for alias:%s\n",
-                            alias);
+                            "KeyStore: Error: Private key found, but has no Certificate Chaing for alias:%s\n", alias);
                 } else {
-                    logger.infoPrintf("KeyStore: Found Certificate chain for Private Key:%s\n",
-                            alias);
+                    logger.infoPrintf("KeyStore: Found Certificate chain for Private Key:%s\n", alias);
                 }
             }
         } catch (Exception e) {
@@ -997,8 +955,7 @@ public class CertificateStore {
             try {
                 this._keyStore.setKeyEntry(alias, privKey, this.getPassphrase().getChars(), chain);
             } catch (KeyStoreException e) {
-                throw new CertificateStoreException("Couldn't set private key entry for alias:"
-                        + alias, e);
+                throw new CertificateStoreException("Couldn't set private key entry for alias:" + alias, e);
             }
         }
 
@@ -1028,8 +985,7 @@ public class CertificateStore {
         // Multiple private keys could be added here!
         if (certificateChain == null) {
             logger.infoPrintf("Private key not found:%s\n", alias);
-            throw new CertificateStoreException(
-                    "Couldn't find Certificate Chain for private key alias:" + alias);
+            throw new CertificateStoreException("Couldn't find Certificate Chain for private key alias:" + alias);
         }
 
         logger.infoPrintf("Using default user private key:%s\n", alias);

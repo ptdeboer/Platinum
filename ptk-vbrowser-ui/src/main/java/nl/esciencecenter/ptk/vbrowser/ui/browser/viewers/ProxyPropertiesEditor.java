@@ -38,13 +38,13 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Properties Viewer/Editor. Uses ProxyNode as attribute source.
  */
-public class ProxyPropertiesEditor extends EmbeddedViewer implements ProxyViewer {
+public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
 
     private static final long serialVersionUID = -5320614535536348580L;
 

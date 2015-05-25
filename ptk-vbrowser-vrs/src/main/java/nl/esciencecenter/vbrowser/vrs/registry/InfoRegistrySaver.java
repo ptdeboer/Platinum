@@ -1,14 +1,12 @@
 package nl.esciencecenter.vbrowser.vrs.registry;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
@@ -63,13 +61,12 @@ public class InfoRegistrySaver {
 
             infoXML = xmlData.toXML(ResourceSystemInfoRegistry.getVersionInfo(), infoSetList);
             saveXML(infoXML, configDir, fileName);
-        } catch (VrsException | IOException e) {
-
+        } catch (VrsException e) {
+            logger.warn("save(): Exception when saving to:{}/{}", configDir, fileName);
         }
     }
 
-    protected void saveXML(String xml, VRL configDirVrl, String fileName) throws VrsException, MalformedURLException,
-            IOException {
+    protected void saveXML(String xml, VRL configDirVrl, String fileName) throws VrsException {
         //
         logger.info("Saving ResourceSystemInfoRegistry to:{}/{}", configDirVrl, fileName);
         VRSClient vrsClient = new VRSClient(infoRegistry.getVRSContext());
@@ -77,28 +74,24 @@ public class InfoRegistrySaver {
         xml = XMLData.prettyFormat(xml, 3);
         VFSPath path = vrsClient.openVFSPath(configDirVrl);
         VFSPath dir = path;
-        VFSPath file = path.resolvePath(fileName);
+        VFSPath file = path.resolve(fileName);
         if (dir.exists() == false) {
             logger.info("Creating new config dir:{}", dir);
             dir.mkdirs(true);
         }
-        vrsClient.createResourceLoader().writeTextTo(file.getVRL().toURL(), xml, ResourceLoader.CHARSET_UTF8);
-
+        vrsClient.writeContents(file, xml);
     }
 
-    protected List<ResourceConfigInfo> load() throws VrsException, MalformedURLException, IOException {
+    protected List<ResourceConfigInfo> load() throws VrsException, IOException {
         VRSClient vrsClient = new VRSClient(infoRegistry.getVRSContext());
         VFSPath path = vrsClient.openVFSPath(configDir);
-        VFSPath file = path.resolvePath(fileName);
+        VFSPath file = path.resolve(fileName);
 
         if (file.exists() == false) {
             logger.info("Persistant system info registry not found:{}", file);
             return null;
         }
-
-        String xml = vrsClient.createResourceLoader().readText(file.getVRL().toURL(), ResourceLoader.CHARSET_UTF8);
-
-        return parseXML(xml);
+        return parseXML(vrsClient.readContentsAsString(file)); 
     }
 
     protected List<ResourceConfigInfo> parseXML(String xml) throws XMLDataException {
@@ -112,8 +105,7 @@ public class InfoRegistrySaver {
             String id = set.getStringValue(PERSISTANT_CONFIG_ID);
             set.remove(PERSISTANT_CONFIG_ID);
             ResourceConfigInfo info = infoRegistry.createFrom(set, id);
-            logger.info("new ResourceConfigInfo:{}", info);
-            ;
+            logger.info("new ResourceConfigInfo:{}", info);           
             infos.add(info);
         }
 

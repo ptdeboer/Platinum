@@ -191,10 +191,13 @@ public class DnDData {
         return false;
     }
 
+    /**
+     * Retrieve VRLs if URL/URI style dataflavors are supported. 
+     */
     public static List<VRL> getVRLsFrom(Transferable t) throws VRLSyntaxException,
             UnsupportedFlavorException, IOException {
         // X) Drop of a single URL 
-        // Note: Firefox/IE might also provide a (java)File ending with .URL containing the actual URL. 
+        // Note: Firefox/IE might also provide a (java)File ending with ".URL" containing the actual URL. 
         if (t.isDataFlavorSupported(DnDFlavors.javaURLFlavor)) {
             java.net.URL url = (java.net.URL) t.getTransferData(DnDFlavors.javaURLFlavor);
             Vector<VRL> vris = new Vector<VRL>();
@@ -226,7 +229,7 @@ public class DnDData {
             List<VRL> vris = DnDData.getJavaFileListVRLs(t);
 
             // ---
-            // Although some browser claim they can export an URL to a JavaFile
+            // Although some browsers claim they can export an URL to a JavaFile
             // Some URLs are not actual files. Only return non empty lists!
             // ---
 
@@ -247,7 +250,7 @@ public class DnDData {
     }
 
     /**
-     * Handle Java File List. Both windows and KDE can drop actual Java Files.
+     * Retrieve Java File List. Both windows and KDE can drop actual Java Files.
      * 
      * @throws IOException
      * @throws UnsupportedFlavorException
@@ -274,6 +277,9 @@ public class DnDData {
         return vris;
     }
 
+    /** 
+     * Get dropped data as text if a String Flavor is supported. 
+     */
     public String getText(Transferable t) throws UnsupportedFlavorException, IOException {
         if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             String str = (String) t.getTransferData(DataFlavor.stringFlavor);

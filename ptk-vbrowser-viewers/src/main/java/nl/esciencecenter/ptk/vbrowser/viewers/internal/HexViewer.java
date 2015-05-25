@@ -51,7 +51,7 @@ import nl.esciencecenter.ptk.ui.fonts.FontToolbarListener;
 import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -62,7 +62,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * 
  * @author Piter.NL.
  */
-public class HexViewer extends EmbeddedViewer implements FontToolbarListener// , ToolPlugin
+public class HexViewer extends ViewerJPanel implements FontToolbarListener// , ToolPlugin
 {
     private static final PLogger logger = PLogger.getLogger(HexViewer.class);
 

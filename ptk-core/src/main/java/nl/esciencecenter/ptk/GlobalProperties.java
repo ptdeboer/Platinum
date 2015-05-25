@@ -25,7 +25,6 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.ClassLogger;
 
 /**
  * Global properties and other runtime configurations.
@@ -209,10 +208,6 @@ public class GlobalProperties {
 
     public static String getJavaHome() {
         return getStringProperty("java.home");
-    }
-
-    public static ClassLogger getRootLogger() {
-        return ClassLogger.getRootLogger();
     }
 
 }

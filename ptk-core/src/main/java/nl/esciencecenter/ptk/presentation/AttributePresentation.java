@@ -160,8 +160,7 @@ public class AttributePresentation implements Duplicatable<AttributePresentation
 
     @Override
     public String toString() {
-        return "AttributePresentation:[widths=" + widths + ", attributeFieldResizable="
-                + attributeFieldResizable + "]";
+        return "AttributePresentation:[widths=" + widths + ", attributeFieldResizable=" + attributeFieldResizable + "]";
     }
 
 }

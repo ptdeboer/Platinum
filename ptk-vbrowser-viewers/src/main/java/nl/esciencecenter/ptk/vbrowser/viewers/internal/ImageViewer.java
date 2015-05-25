@@ -24,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -39,14 +38,14 @@ import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.ui.image.ImagePane;
 import nl.esciencecenter.ptk.ui.image.ImagePane.ImageWaiter;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Implementation of an Image Viewer.<br>
  */
-public class ImageViewer extends EmbeddedViewer {
+public class ImageViewer extends ViewerJPanel {
     private static final long serialVersionUID = 5768234709523116729L;
 
     /** The mimetypes I can view */
@@ -132,10 +131,11 @@ public class ImageViewer extends EmbeddedViewer {
     @Override
     public void doDisposeViewer() {
         // Help the garbage collector, images can be big:
-        this.imagePane.dispose();
-        this.remove(imagePane);
+        if (imagePane!=null){ 
+            this.imagePane.dispose();
+            this.remove(imagePane);
+        }
         this.imagePane = null;
-
         // this.remove(imageLabel);
         // this.imageLabel=null;
     }
@@ -204,39 +204,7 @@ public class ImageViewer extends EmbeddedViewer {
 
         imagePane.setImage(image, wait);
     }
-
-    // /**
-    // * // @Overide update&paint methods for speed: public void update(Graphics
-    // * g) { //this.setSize(imagePane.getSize());
-    // * //this.setPreferredSize(imagePane.getSize()); imagePane.paint(g); }
-    // *
-    // * public void paint(Graphics g) { imagePane.paint(g); }
-    // **/
-    //
-    // public Vector<ActionMenuMapping> getActionMappings()
-    // {
-    // ActionMenuMapping mapping = new ActionMenuMapping("viewImage", "View Image");
-    // // '/' is not a RE character
-    // Pattern patterns[] = new Pattern[mimeTypes.length];
-    //
-    // for (int i = 0; i < mimeTypes.length; i++)
-    // patterns[i] = Pattern.compile(mimeTypes[i]);
-    //
-    // mapping.addMimeTypeMapping(patterns);
-    //
-    // Vector<ActionMenuMapping> mappings = new Vector<ActionMenuMapping>();
-    // mappings.add(mapping);
-    // return mappings;
-    // }
-
-    // public void doMethod(String methodName, ActionContext actionContext) throws VrsException
-    // {
-    //
-    // if (actionContext.getSource() != null)
-    // this.updateLocation(actionContext.getSource());
-    //
-    // }
-
+   
     /**
      * I manage my own scrollpane for panning/autoscrolling
      */

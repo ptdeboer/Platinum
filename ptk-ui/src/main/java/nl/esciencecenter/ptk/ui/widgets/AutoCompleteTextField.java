@@ -33,18 +33,22 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-import nl.esciencecenter.ptk.GlobalProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
 
-public class AutoCompleteTextField extends JComboBox {
-    public final static String COMBOBOXEDITED = "comboBoxEdited";
+public class AutoCompleteTextField extends JComboBox<String> {
 
-    public final static String UPDATESELECTION = "updateSelection";
+    private static final Logger logger = LoggerFactory.getLogger(AutoCompleteTextField.class);
 
     private static final long serialVersionUID = 2531178303560053536L;
+
+    public final static String COMBOBOX_CHANGED = "COMBOBOX_CHANGED";
+
+    public final static String COMBOBOX_AUTOCOMPLETED = "COMBOBOX_AUTOCOMPLETED";
 
     // === instance === 
 
@@ -53,8 +57,7 @@ public class AutoCompleteTextField extends JComboBox {
     public class CBDocument extends PlainDocument {
         private static final long serialVersionUID = -7002767598883985096L;
 
-        public void insertString(int offset, String str, AttributeSet a)
-                throws BadLocationException {
+        public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
             if (str == null)
                 return;
 
@@ -62,7 +65,8 @@ public class AutoCompleteTextField extends JComboBox {
             String clear = str.replaceAll("\\p{Cntrl}", "");
 
             if (!StringUtil.isEmpty(clear)) {
-                // completeText();
+                // doesn't work yet:
+                //completeText();
             }
         }
     }
@@ -84,56 +88,61 @@ public class AutoCompleteTextField extends JComboBox {
             if (tf != null) {
                 tf.setDocument(new CBDocument());
                 addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        if (evt.getActionCommand().equals(COMBOBOXEDITED)) {
-                            addFieldToHistory();
-                        }
+                    public void actionPerformed(ActionEvent event) {
+                        AutoCompleteTextField.this.handleTextFieldEvent(event);
                     }
                 });
             }
         }
-
         this.setEditable(true);
+        this.setActionCommand(COMBOBOX_CHANGED);
+    }
+
+    public void setActionCommand(String comboboChangeCmd) {
+        super.setActionCommand(comboboChangeCmd);
+    }
+
+    protected void handleTextFieldEvent(ActionEvent event) {
+        logger.info("handleTextFieldEvent():{}", event);
+        if (event.getActionCommand().equals(this.getActionCommand())) {
+            addFieldToHistory();
+        }
     }
 
     protected void completeText() {
         JTextField tf = getTextField();
         String text = tf.getText();
 
-        ComboBoxModel aModel = getModel();
+        ComboBoxModel<String> aModel = getModel();
         String current;
 
         //        StringList tmp = new StringList();
-        //        for (int i = 0; i < aModel.getSize(); i++)
-        //        {
+        //        for (int i = 0; i < aModel.getSize(); i++) {
         //            current = aModel.getElementAt(i).toString();
         //
-        //            if (current.toLowerCase().startsWith(text.toLowerCase()))
-        //            {
+        //            if (current.toLowerCase().startsWith(text.toLowerCase())) {
         //                tmp.addUnique(current);
         //            }
         //        }
         //
-        //        if (!tmp.isEmpty())
-        //        {
-        //            ComboBoxModel tmpListModel = new DefaultComboBoxModel(tmp.toArray());
+        //        if (!tmp.isEmpty()) {
+        //            ComboBoxModel<String> tmpListModel = new DefaultComboBoxModel<String>(tmp.toArray());
         //            setModel(tmpListModel);
         //        }
 
-        for (int i = 0; i < aModel.getSize(); i++) {
-            current = aModel.getElementAt(i).toString();
+        for (int index = 0; index < aModel.getSize(); index++) {
+            current = aModel.getElementAt(index).toString();
 
             if (current.toLowerCase().startsWith(text.toLowerCase())) {
                 tf.setText(current);
                 tf.setSelectionStart(text.length());
                 tf.setSelectionEnd(current.length());
-                int old = this.getSelectedIndex();
+                int currentSelected = this.getSelectedIndex();
 
-                if (old != i) {
-                    String orgCmd = this.getActionCommand();
-                    this.setActionCommand(UPDATESELECTION);
-                    setSelectedIndex(i);
-                    this.setActionCommand(orgCmd);
+                if (currentSelected != index) {
+                    this.setActionCommand(COMBOBOX_AUTOCOMPLETED);
+                    setSelectedIndex(index);
+                    this.setActionCommand(COMBOBOX_CHANGED);
                 }
                 break;
             }
@@ -156,7 +165,7 @@ public class AutoCompleteTextField extends JComboBox {
     }
 
     protected void updateHistoryToComboBox() {
-        ComboBoxModel historyListModel = new DefaultComboBoxModel(history.toArray());
+        ComboBoxModel<String> historyListModel = new DefaultComboBoxModel<String>(history.toArray());
         setModel(historyListModel);
     }
 
@@ -169,7 +178,7 @@ public class AutoCompleteTextField extends JComboBox {
             return true; // already selected 
         } else {
             String orgCmd = this.getActionCommand();
-            this.setActionCommand(UPDATESELECTION);
+            this.setActionCommand(COMBOBOX_AUTOCOMPLETED);
             setSelectedIndex(index);
             this.setActionCommand(orgCmd);
             return true;
@@ -199,7 +208,10 @@ public class AutoCompleteTextField extends JComboBox {
     }
 
     public void setHistory(List<String> history) {
-        this.history = new StringList(history);
+        StringList list = new StringList(history);
+        list.sort();
+        this.history = list;
+        this.updateHistoryToComboBox();
     }
 
 }

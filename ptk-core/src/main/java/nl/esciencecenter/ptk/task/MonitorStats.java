@@ -33,8 +33,7 @@ public class MonitorStats {
      * Monitor stats types the taskMonitor could provide.
      */
     public enum MonitorStatsType {
-        TOTAL_BYTES_TRANSFERRED, CURRENT_BYTES_TRANSFERRED, TOTAL_SOURCES_COPIED,
-        TOTAL_SOURCES_DELETED
+        TOTAL_BYTES_TRANSFERRED, CURRENT_BYTES_TRANSFERRED, TOTAL_SOURCES_COPIED, TOTAL_SOURCES_DELETED
     };
 
     // ========================================================================
@@ -381,12 +380,10 @@ public class MonitorStats {
         String amountStr = sizeString(stats.done) + " (of " + sizeString(stats.todo) + ")";
 
         // done can be 0, but update time must be > start time (divide by zero error).
-        if ((stats == null) || (stats.done < 0)
-                || (stats.doneLastUpdateTimeMillies <= stats.startTimeMillies)) {
+        if ((stats == null) || (stats.done < 0) || (stats.doneLastUpdateTimeMillies <= stats.startTimeMillies)) {
             speedStr = "(?)KB/s";
         } else {
-            speedStr = stats.done / (stats.doneLastUpdateTimeMillies - stats.startTimeMillies + 1)
-                    + "KB/s";
+            speedStr = stats.done / (stats.doneLastUpdateTimeMillies - stats.startTimeMillies + 1) + "KB/s";
         }
 
         return amountStr + " " + speedStr;

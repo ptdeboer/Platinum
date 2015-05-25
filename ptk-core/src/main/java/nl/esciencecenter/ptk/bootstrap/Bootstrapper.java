@@ -58,7 +58,7 @@ public class Bootstrapper {
      */
     public static class BootOptions {
 
-        public String toolPrefix = "boot";
+        public String toolPrefix = "ptk";
 
         public String confSubDir = "etc";
 
@@ -350,7 +350,7 @@ public class Bootstrapper {
 
         // recursive read jars from:
         addJarsToLibUrls(libDir, true, 0);
-        addJarToLibUrls(javaHome + "/lib/ext/jfxrt.jar", false);
+        //addJarToLibUrls(javaHome + "/lib/ext/jfxrt.jar", false);
         // Add java.libary.path
         setJavaLibraryPath(appProps);
 

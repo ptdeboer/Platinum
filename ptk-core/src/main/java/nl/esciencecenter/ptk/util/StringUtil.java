@@ -24,6 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nl.esciencecenter.ptk.data.StringList;
 
@@ -32,8 +34,8 @@ import nl.esciencecenter.ptk.data.StringList;
  */
 public class StringUtil {
 
-    public static final char[] HEX_CHAR_TABLE = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'A', 'B', 'C', 'D', 'E', 'F' };
+    public static final char[] HEX_CHAR_TABLE = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+            'E', 'F' };
 
     public static byte[] HEX_CHAR_TABLE_reverse = new byte[256];
 
@@ -426,23 +428,32 @@ public class StringUtil {
         }
     }
 
-    public static boolean matchWildcard(String string, String wildCardStr, boolean matchCase,
-            boolean completeMatch) {
-        return matchRE(string, Wildcard2Regex.wildcardToRegex(wildCardStr), matchCase,
-                completeMatch);
+    public static boolean matchWildcard(String string, String wildCardStr, boolean matchCase, boolean completeMatch) {
+        return matchRE(string, Wildcard2Regex.wildcardToRegex(wildCardStr), matchCase, completeMatch);
     }
 
-    public static boolean matchRE(String string, String RE) {
-        StringMatcher matcher = new StringMatcher(RE, true);
-        boolean prefix = matcher.matches(string, true);
-        return prefix;
+    public static boolean matchRE(String source, String RE) {
+        int flags = 0;
+        Pattern pattern = Pattern.compile(RE, flags);
+        Matcher m = pattern.matcher(source);
+        return m.matches();
     }
 
-    public static boolean
-            matchRE(String string, String RE, boolean matchCase, boolean completeMatch) {
-        StringMatcher matcher = new StringMatcher(RE, matchCase);
-        boolean prefix = matcher.matches(string, completeMatch);
-        return prefix;
+    public static boolean matchRE(String source, String RE, boolean matchCase, boolean completeMatch) {
+        int flags = 0;
+        if (matchCase == false) {
+            flags |= Pattern.CASE_INSENSITIVE;
+        }
+        Pattern pattern = Pattern.compile(RE, flags);
+        Matcher m = pattern.matcher(source);
+        boolean match = m.matches();
+        if (match == false) {
+            return false;
+        }
+        if (completeMatch) {
+            return (m.end() >= source.length());
+        }
+        return true;
     }
 
     /**
@@ -539,8 +550,7 @@ public class StringUtil {
      * Format integer value to Hexadecimal string with optional prefix and a number of digits >=
      * numberOfDigits. A zero is prefix for each digits missing.
      */
-    public static String
-            toHexString(String prefix, int value, boolean upperCase, int numberOfDigits) {
+    public static String toHexString(String prefix, int value, boolean upperCase, int numberOfDigits) {
         StringBuilder sb = new StringBuilder();
         String hexStr = Integer.toHexString(value);
         if (prefix != null) {

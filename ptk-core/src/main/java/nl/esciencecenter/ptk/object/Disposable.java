@@ -21,7 +21,7 @@
 package nl.esciencecenter.ptk.object;
 
 /**
- * Interface for Objects which must be disposed off to clean up resources. 
+ * Interface for Objects which must be disposed off to clean up resources.
  */
 public interface Disposable {
     /**

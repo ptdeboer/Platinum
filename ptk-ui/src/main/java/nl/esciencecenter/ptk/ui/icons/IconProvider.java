@@ -32,13 +32,10 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -89,22 +86,22 @@ public class IconProvider {
 
     /** Use image render cache for pre-rendered icons. */
     private Hashtable<String, Image> iconHash = new Hashtable<String, Image>();
-
+    
     /** path prefix for the mimetype icons: <theme>/<size>/<type> */
-    private String mime_icons_theme_path = "gnome/48x48/mimetypes";
+    private String mime_icons_theme_path = "icons/gnome/48x48/mimetypes";
 
     /** default file icon */
-    private String file_icon_url = "filesystem/file.png";
+    private String file_icon_url = "icons/filesystem/file.png";
 
     /** default folder icon */
-    private String folder_icon_url = "filesystem/folder.png";
+    private String folder_icon_url = "icons/filesystem/folder.png";
 
     /** default home folder icon */
-    private String home_icon_url = "filesystem/home_folder.png";
+    private String home_icon_url = "icons/filesystem/home_folder.png";
 
-    private String brokenimage_url = "generic/brokenimage.png";
+    private String brokenimage_url = "icons/generic/brokenimage.png";
 
-    private String link_icon_url = "generic/linkimage.png";
+    private String link_icon_url = "icons/generic/linkimage.png";
 
     private ImageRenderer iconRenderer;
 
@@ -174,11 +171,10 @@ public class IconProvider {
      * <li>III) Scales to size, optionally adds link icon and performs grey out.
      * </ul>
      */
-    public Icon createDefaultIcon(String iconUrl, boolean isComposite, boolean isLink,
-            String mimetype, int size, boolean greyOut, boolean focus) {
-        logger.debugPrintf(
-                "createDefaultIcon [size=%d, greyOut=%b, focus=%b, isComposite=%b, isLink=%b]\n",
-                size, greyOut, focus, isComposite, isLink);
+    public Icon createDefaultIcon(String iconUrl, boolean isComposite, boolean isLink, String mimetype, int size,
+            boolean greyOut, boolean focus) {
+        logger.debugPrintf("createDefaultIcon [size=%d, greyOut=%b, focus=%b, isComposite=%b, isLink=%b]\n", size,
+                greyOut, focus, isComposite, isLink);
 
         // for plugins, must use classLoader of plugin class !
         ClassLoader classLoader = getClassLoader();
@@ -187,8 +183,7 @@ public class IconProvider {
         if (StringUtil.isEmpty(iconUrl) == false) {
             logger.debugPrintf("createDefaultIcon: I)");
 
-            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size),
-                    greyOut, focus);
+            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut, focus);
 
             if (icon != null) {
                 logger.debugPrintf("createDefaultIcon: I) not NULL\n");
@@ -200,8 +195,7 @@ public class IconProvider {
         // default mimetype for Composite nodes.
         // Set to null to trigger 'default' icons further in this method:
         //
-        if ((mimetype != null) && (isComposite)
-                && (mimetype.compareToIgnoreCase("application/octet-stream") == 0)) {
+        if ((mimetype != null) && (isComposite) && (mimetype.compareToIgnoreCase("application/octet-stream") == 0)) {
             mimetype = null;
         }
 
@@ -214,8 +208,7 @@ public class IconProvider {
 
             // try again using full (theme) mimetype path: ./<themes
             // path>/iconURL
-            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size),
-                    greyOut, focus);
+            Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut, focus);
 
             if (icon != null) {
                 logger.debugPrintf("createDefaultIcon: using theme mimetype IIb):%s\n", iconUrl);
@@ -237,14 +230,12 @@ public class IconProvider {
 
         logger.debugPrintf("createDefaultIcon: IV):%s\n", iconUrl);
 
-        Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut,
-                focus);
+        Icon icon = createIcon(classLoader, iconUrl, isLink, new Dimension(size, size), greyOut, focus);
 
         if (icon != null)
             return icon;
 
-        return createIcon(classLoader, file_icon_url, isLink, new Dimension(size, size), greyOut,
-                focus);
+        return createIcon(classLoader, file_icon_url, isLink, new Dimension(size, size), greyOut, focus);
     }
 
     /**
@@ -306,8 +297,8 @@ public class IconProvider {
      * perform a grey out. The resulted icon image is cached for reuse, but the returned Icon object
      * is always a new Icon Object. Warning: Method does NOT yet work with animated Icons !
      */
-    public Icon createIcon(ClassLoader optClassLoader, String iconURL, boolean showAsLink,
-            Dimension prefSize, boolean greyOut, boolean focus) {
+    public Icon createIcon(ClassLoader optClassLoader, String iconURL, boolean showAsLink, Dimension prefSize,
+            boolean greyOut, boolean focus) {
         logger.debugPrintf("createIcon(): %s{%b,%s,%b}\n", iconURL, showAsLink, prefSize, greyOut);
 
         if (iconURL == null)
@@ -316,8 +307,8 @@ public class IconProvider {
         Image image = getImageFromHash(iconURL, showAsLink, prefSize, greyOut, focus);
 
         if (image != null) {
-            logger.debugPrintf("Returning icon created from hashed image: %s{%b,%s,%b}\n", iconURL,
-                    showAsLink, prefSize, greyOut);
+            logger.debugPrintf("Returning icon created from hashed image: %s{%b,%s,%b}\n", iconURL, showAsLink,
+                    prefSize, greyOut);
             return createImageIcon(image);
         }
 
@@ -335,8 +326,7 @@ public class IconProvider {
             putImageToHash(image, iconURL, showAsLink, prefSize, greyOut, focus);
             return createImageIcon(image);
         } else {
-            logger.debugPrintf("createIcon: *** Error: renderIcon failed for non null icon:%s\n",
-                    iconURL);
+            logger.debugPrintf("createIcon: *** Error: renderIcon failed for non null icon:%s\n", iconURL);
         }
 
         return null;
@@ -441,8 +431,8 @@ public class IconProvider {
         }
     }
 
-    private void putImageToHash(Image image, String iconURL, boolean showAsLink, Dimension size,
-            boolean greyOut, boolean focus) {
+    private void putImageToHash(Image image, String iconURL, boolean showAsLink, Dimension size, boolean greyOut,
+            boolean focus) {
         if (image == null)
             return;
 
@@ -452,8 +442,7 @@ public class IconProvider {
         }
     }
 
-    private String createHashID(String iconURL, boolean showAsLink, Dimension size,
-            boolean greyOut, boolean focus) {
+    private String createHashID(String iconURL, boolean showAsLink, Dimension size, boolean greyOut, boolean focus) {
         String sizeStr = "-";
         if (size != null)
             sizeStr = size.height + "-" + size.width;
@@ -461,13 +450,11 @@ public class IconProvider {
         return iconURL + "-" + showAsLink + "-" + sizeStr + "-" + greyOut + "-" + focus;
     }
 
-    private Image getImageFromHash(String iconURL, boolean showAsLink, Dimension size,
-            boolean greyOut, boolean focus) {
+    private Image getImageFromHash(String iconURL, boolean showAsLink, Dimension size, boolean greyOut, boolean focus) {
         synchronized (this.iconHash) {
             String id = createHashID(iconURL, showAsLink, size, greyOut, focus);
             Image image = this.iconHash.get(id);
-            logger.debugPrintf("> getIconFromHash:%s for '%s'\n",
-                    ((image != null) ? "HIT" : "MISS"), id);
+            logger.debugPrintf("> getIconFromHash:%s for '%s'\n", ((image != null) ? "HIT" : "MISS"), id);
             return image;
         }
     }
@@ -530,12 +517,22 @@ public class IconProvider {
 
     public Icon getMiniBrokenImageIcon() {
         // create image on the fly:
-        String imageStr = ".x............x.\n" + "xRx..........xRx\n" + "xRRx........xRRx\n"
-                + ".xRRx......xRRx.\n" + "..xRRx....xRRx..\n" + "...xRRx..xRRx...\n"
-                + "....xRRxxRRx....\n" + ".....xRRRRx.....\n" + ".....xRRRRx.....\n"
-                + "....xRRxxRRx....\n" + "...xRRx..xRRx...\n" + "..xRRx....xRRx..\n"
-                + ".xRRx......xRRx.\n" + "xRRx........xRRx\n" + "xRx..........xRx\n"
-                + ".x............x.\n";
+        String imageStr = ""//
+                + ".x............x.\n"//
+                + "xRx..........xRx\n"//
+                + "xRRx........xRRx\n"// 
+                + ".xRRx......xRRx.\n"//
+                + "..xRRx....xRRx..\n"//
+                + "...xRRx..xRRx...\n"//
+                + "....xRRxxRRx....\n"//
+                + ".....xRRRRx.....\n"//
+                + ".....xRRRRx.....\n"//
+                + "....xRRxxRRx....\n"//
+                + "...xRRx..xRRx...\n"//
+                + "..xRRx....xRRx..\n"//
+                + ".xRRx......xRRx.\n"//
+                + "xRRx........xRRx\n"//
+                + "xRx..........xRx\n" + ".x............x.\n";
 
         Map<String, java.awt.Color> colorMap = new HashMap<String, java.awt.Color>();
         colorMap.put(".", Color.WHITE);

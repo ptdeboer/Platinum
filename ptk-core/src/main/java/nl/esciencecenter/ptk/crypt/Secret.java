@@ -35,7 +35,7 @@ import nl.esciencecenter.ptk.object.Disposable;
 public class Secret implements Disposable {
     /**
      * Wrap Secret object around character array. The actual character array is used inside this
-     * object. Array is not cleared. 
+     * object. Array is not cleared.
      */
     public static Secret wrap(char[] chars) {
         Secret secret = new Secret();
@@ -64,8 +64,8 @@ public class Secret implements Disposable {
      * @param source
      *            - char array of secret characters
      * @param clearSource
-     *            - set to true if source needs to be cleared so that the 'secret' is moved into this
-     *            Secrect object
+     *            - set to true if source needs to be cleared so that the 'secret' is moved into
+     *            this Secrect object
      */
     public Secret(char[] source, boolean clearSource) {
         init(source, clearSource);

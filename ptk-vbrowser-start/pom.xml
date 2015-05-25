@@ -5,11 +5,12 @@
 
 	<artifactId>ptk-vbrowser-start</artifactId>
 	<name>ptk-vbrowser-start ${project.version}</name>
+	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
 		<artifactId>platinum</artifactId>
-		<version>1.0.0-vlet</version>
+		<version>1.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -33,29 +34,26 @@
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-vbrowser-vrs-sftp</artifactId>
 			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-util-vterm</artifactId>
 			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-vbrowser-viewers</artifactId>
 			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-vbrowser-ui</artifactId>
 			<version>${project.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>nl.esciencecenter.platinum</groupId>
+			<artifactId>ptk-vbrowser-viewers-loboviewer</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -68,10 +66,28 @@
 					<archive>
 						<manifest>
 							<mainClass>nl.esciencecenter.ptk.vbrowser.ui.StartVRSBrowser</mainClass>
-							<addClasspath>true</addClasspath>
+							<!--  set to false to allow custom CLASSPATH (or -cp) -->
+							<!--  <addClasspath>false</addClasspath> -->
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/scripts.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>copy-scripts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,5 +1,6 @@
 package nl.esciencecenter.ptk.vbrowser.viewers;
 
+import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -17,17 +18,20 @@ public class ViewerContext {
 
     protected ViewerEventDispatcher eventDispatcher;
 
+    private UI ui;
+
     public ViewerContext(PluginRegistry viewerRegistry) {
         this.pluginRegistry = viewerRegistry;
         ; // default: nill context.
     }
 
-    public ViewerContext(PluginRegistry viewerRegistry, String startMethod, VRL vrl,
+    public ViewerContext(PluginRegistry viewerRegistry, UI proxyUI, String startMethod, VRL vrl,
             boolean standAlone) {
         this.startMethod = startMethod;
         this.startVRL = vrl;
         this.startedAsStandalone = standAlone;
         this.pluginRegistry = viewerRegistry;
+        this.ui=proxyUI;
     }
 
     public void setViewerEventDispatcher(ViewerEventDispatcher dispatcher) {
@@ -50,7 +54,7 @@ public class ViewerContext {
     }
 
     /**
-     * @return false if this viewer is embeded inside the VBrowser or true if started in a stand
+     * @return false if this viewer is embedded inside the VBrowser or true if started in a stand
      *         alone (viewer)Frame.
      */
     public boolean getStartedAsStandalone() {
@@ -63,6 +67,10 @@ public class ViewerContext {
 
     public ViewerEventDispatcher getViewerEventDispatcher() {
         return eventDispatcher;
+    }
+
+    public UI getUI() {
+        return this.ui;
     }
 
 }

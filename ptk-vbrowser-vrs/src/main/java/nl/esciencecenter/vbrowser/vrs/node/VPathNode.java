@@ -86,7 +86,7 @@ public class VPathNode implements VPath {
         return this.resourceSystem;
     }
 
-    public VRL resolvePathVRL(String relativeUri) throws VRLSyntaxException {
+    public VRL resolveVRL(String relativeUri) throws VRLSyntaxException {
         return vrl.resolvePath(relativeUri);
     }
 
@@ -235,7 +235,7 @@ public class VPathNode implements VPath {
     }
 
     @Override
-    public VPath resolvePath(String path) throws VrsException {
+    public VPath resolve(String path) throws VrsException {
         // Since a filesystem extends PathNode itself, check for cycle.
         if (this.resourceSystem == this) {
             throw new Error(
@@ -243,7 +243,7 @@ public class VPathNode implements VPath {
                             + this);
         }
 
-        return this.resourceSystem.resolvePath(path);
+        return this.resourceSystem.resolve(path);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class VPathNode implements VPath {
         }
 
         String parentPath = this.vrl.getDirname();
-        return resourceSystem.resolvePath(parentPath);
+        return resourceSystem.resolve(parentPath);
     }
 
     @Override

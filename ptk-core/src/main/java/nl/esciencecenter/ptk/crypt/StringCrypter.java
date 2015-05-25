@@ -42,7 +42,8 @@ import javax.crypto.spec.SecretKeySpec;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 /**
- * String Encrypter/Decryptor class. Can also be used to encrypt/decrypt byte arrays, name is kept for backwards compatibilty. 
+ * String Encrypter/Decryptor class. Can also be used to encrypt/decrypt byte arrays, name is kept
+ * for backwards compatibilty.
  */
 public class StringCrypter {
 
@@ -100,33 +101,30 @@ public class StringCrypter {
 
     private CryptScheme cryptScheme;
 
-    public StringCrypter(Secret encryptionKey) throws EncryptionException,
-            NoSuchAlgorithmException, UnsupportedEncodingException {
+    public StringCrypter(Secret encryptionKey) throws EncryptionException, NoSuchAlgorithmException,
+            UnsupportedEncodingException {
         init(encryptionKey, CryptScheme.DESEDE_ECB_PKCS5, StringHasher.SHA_256, CHARSET_UTF8);
     }
 
-    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme)
-            throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme) throws EncryptionException,
+            NoSuchAlgorithmException, UnsupportedEncodingException {
         init(encryptionKey, encryptionScheme, StringHasher.SHA_256, CHARSET_UTF8);
     }
 
-    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme,
-            String keyHashingScheme, String charEncoding) throws EncryptionException,
-            NoSuchAlgorithmException, UnsupportedEncodingException {
+    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme, String keyHashingScheme,
+            String charEncoding) throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
         init(encryptionKey, encryptionScheme, keyHashingScheme, charEncoding);
     }
 
-    public StringCrypter(byte encryptionKey[], CryptScheme encryptionScheme,
-            String keyHashingScheme, String charEncoding) throws EncryptionException,
-            NoSuchAlgorithmException, UnsupportedEncodingException {
+    public StringCrypter(byte encryptionKey[], CryptScheme encryptionScheme, String keyHashingScheme,
+            String charEncoding) throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
         setCharacterEncoding(charEncoding);
         keyHasher = MessageDigest.getInstance(keyHashingScheme);
         initKey(encryptionKey, null, encryptionScheme);
     }
 
-    private void init(Secret encryptionKey, CryptScheme encryptionScheme, String keyHasherScheme,
-            String charEncoding) throws EncryptionException, NoSuchAlgorithmException,
-            UnsupportedEncodingException {
+    private void init(Secret encryptionKey, CryptScheme encryptionScheme, String keyHasherScheme, String charEncoding)
+            throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
         if (encryptionKey == null) {
             throw new IllegalArgumentException("Encryption key was null");
         }
@@ -171,8 +169,7 @@ public class StringCrypter {
         return keyBytes;
     }
 
-    protected void initKey(byte rawKey[], byte IV[], CryptScheme encryptionScheme)
-            throws EncryptionException {
+    protected void initKey(byte rawKey[], byte IV[], CryptScheme encryptionScheme) throws EncryptionException {
         if (rawKey == null) {
             throw new NullPointerException("Encryption key is null!");
         }
@@ -201,8 +198,8 @@ public class StringCrypter {
                     byte subkey[] = null;
 
                     if (rawKey.length < keyLen) {
-                        throw new EncryptionException("AES Key length to short. Length="
-                                + rawKey.length + ", must be at least:" + keyLen, null);
+                        throw new EncryptionException("AES Key length to short. Length=" + rawKey.length
+                                + ", must be at least:" + keyLen, null);
                     }
 
                     subkey = new byte[keyLen];
@@ -218,8 +215,7 @@ public class StringCrypter {
                     break;
                 }
                 default: {
-                    throw new IllegalArgumentException("Encryption scheme not supported: "
-                            + encryptionScheme);
+                    throw new IllegalArgumentException("Encryption scheme not supported: " + encryptionScheme);
                 }
             } // switch
 
@@ -264,8 +260,7 @@ public class StringCrypter {
     public byte[] encrypt(String unencryptedString) throws EncryptionException {
         //
         if (StringUtil.isWhiteSpace(unencryptedString)) {
-            throw new IllegalArgumentException(
-                    "unencrypted string was null or contains only whitespace.");
+            throw new IllegalArgumentException("unencrypted string was null or contains only whitespace.");
         }
         return encrypt(unencryptedString.getBytes(charSet));
     }

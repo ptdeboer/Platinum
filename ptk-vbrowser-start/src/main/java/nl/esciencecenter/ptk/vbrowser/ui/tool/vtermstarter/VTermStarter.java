@@ -23,7 +23,7 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.util.vterm.StartVTerm;
 import nl.esciencecenter.ptk.util.vterm.VTerm;
 import nl.esciencecenter.ptk.util.vterm.VTermChannelProvider;
-import nl.esciencecenter.ptk.vbrowser.viewers.EmbeddedViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -34,7 +34,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * VTerm factory implemented as EmbeddedViewer.
  */
-public class VTermStarter extends EmbeddedViewer implements ActionListener, ToolPlugin {
+public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPlugin {
     private static final PLogger logger = PLogger.getLogger(VTermStarter.class);
 
     private static final long serialVersionUID = 6104695556400295643L;
@@ -122,11 +122,15 @@ public class VTermStarter extends EmbeddedViewer implements ActionListener, Tool
         logger.info("startVTerm for:{}", vrl);
 
         try {
+            java.net.URI uri=null;
+            if (vrl!=null) {
+                uri=vrl.toURI();
+            }
             // Share Context !
             VRSContext context = this.getResourceHandler().getVRSClient().getVRSContext();
             VTermChannelProvider provider = new VTermChannelProvider();
             provider.registerChannelFactory("SSH", new SSHShellChannelFactory(context));
-            VTerm term = StartVTerm.startVTerm(provider, vrl.toURI(), shellChan);
+            VTerm term = StartVTerm.startVTerm(provider, uri, shellChan);
             register(term);
         } catch (URISyntaxException e) {
             throw new VrsException("URI Syntax exeption:" + vrl, e);
@@ -148,7 +152,7 @@ public class VTermStarter extends EmbeddedViewer implements ActionListener, Tool
     }
 
     @Override
-    public EmbeddedViewer getViewerPanel() {
+    public ViewerJPanel getViewerPanel() {
         return this;
     }
 

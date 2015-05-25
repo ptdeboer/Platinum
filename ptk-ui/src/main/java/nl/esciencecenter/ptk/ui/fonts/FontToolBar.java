@@ -46,8 +46,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
     // ========================================================================
 
     // text viewer attributes:
-    private String fontSizes[] = { "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18",
-            "20", "24", "36", "48" };
+    private String fontSizes[] = { "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "36", "48" };
 
     private String[] fontFamilyNames;
 
@@ -85,9 +84,12 @@ public class FontToolBar extends JToolBar implements ActionListener {
         initGUI();
     }
 
+    public void setListener(FontToolbarListener listener) {
+        this.listener = listener;
+    }
+
     private void initFonts() {
-        String systemFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getAvailableFontFamilyNames();
+        String systemFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         fontFamilyNames = new String[2 + systemFonts.length];
 
         fontFamilyNames[0] = "default";
@@ -146,7 +148,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
             antiAliasingButton = new JToggleButton();
             add(antiAliasingButton);
             // antiAliasingButton.setSelected();
-            antiAliasingButton.setIcon(getIconOrDefault("menu/antialiasing.png"));
+            antiAliasingButton.setIcon(getIconOrDefault("fonttoolbar/antialiasing.png"));
             antiAliasingButton.setActionCommand("antiAliasing");
             antiAliasingButton.setToolTipText("Toggle anti-aliasing");
             antiAliasingButton.addActionListener(this);
@@ -157,7 +159,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
             boldButton = new JToggleButton();
             add(boldButton);
             // boldButton.setText("B");
-            boldButton.setIcon(getIconOrDefault("menu/bold.png"));
+            boldButton.setIcon(getIconOrDefault("fonttoolbar/bold.png"));
             boldButton.setActionCommand("bold");
             boldButton.setToolTipText("Toggle Bold text");
             boldButton.addActionListener(this);
@@ -166,7 +168,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
             italicButton = new JToggleButton();
             add(italicButton);
             // boldButton.setText("B");
-            italicButton.setIcon(getIconOrDefault("menu/italic.png"));
+            italicButton.setIcon(getIconOrDefault("fonttoolbar/italic.png"));
             italicButton.setActionCommand("italic");
             italicButton.setToolTipText("Toggle Italic text");
             italicButton.addActionListener(this);
@@ -175,7 +177,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
 
     private Icon getIconOrDefault(String iconstr) {
         try {
-            return getIcon(iconstr);
+            return getIcon("icons/" + iconstr);
         } catch (FileNotFoundException e) {
             e.fillInStackTrace();
             // todo: B0rken image here. 
@@ -228,8 +230,14 @@ public class FontToolBar extends JToolBar implements ActionListener {
 
         fontInfo.setAntiAliasing(this.antiAliasingButton.isSelected());
 
-        // check antialiasing/rendering hints. 
-        this.listener.updateFont(fontInfo.createFont(), fontInfo.getRenderingHints());
+        fireUpdateEvent();
+    }
+
+    public void fireUpdateEvent() {
+        if (listener != null) {
+            // check antialiasing/rendering hints. 
+            this.listener.updateFont(fontInfo.createFont(), fontInfo.getRenderingHints());
+        }
     }
 
     public void setFontInfo(FontInfo info) {

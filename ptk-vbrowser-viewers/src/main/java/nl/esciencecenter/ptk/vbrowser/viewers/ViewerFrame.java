@@ -24,11 +24,17 @@ import java.awt.Component;
 
 import javax.swing.JFrame;
 
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
 /**
  * Viewer Frame for stand alone Viewer Panels.
  */
 public class ViewerFrame extends JFrame {
+
     private static final long serialVersionUID = 3613838609500660102L;
+
+    // ===
 
     protected ViewerPlugin viewerPlugin;
 
@@ -46,16 +52,20 @@ public class ViewerFrame extends JFrame {
         return viewerPlugin;
     }
 
-    public static ViewerFrame createViewerFrame(ViewerPlugin viewer, ViewerContext context,
-            boolean initViewer) {
-        if (initViewer) {
-            viewer.initViewer(context);
-        }
-        ViewerFrame frame = new ViewerFrame(viewer);
-        frame.pack();
-        frame.setSize(frame.getPreferredSize());
-        // frame.setSize(800,600);
-
-        return frame;
+    public void initViewer(ViewerContext context) {
+        this.viewerPlugin.initViewer(context);
     }
+
+    public void startViewer(VRL vrl, String optMenuMethod) throws VrsException { 
+        this.viewerPlugin.startViewer(vrl, optMenuMethod);
+    }
+
+    public void stopViewer() { 
+        this.viewerPlugin.stopViewer();
+    }
+
+    public void disposeViewer() { 
+        this.viewerPlugin.disposeViewer();
+    }
+
 }

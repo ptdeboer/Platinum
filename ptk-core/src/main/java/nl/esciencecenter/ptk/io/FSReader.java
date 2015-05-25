@@ -40,8 +40,7 @@ public class FSReader implements Readable, RandomReadable, AutoCloseable {
      * Perform stateless read which opens and closes file again after reading.
      */
     @Override
-    public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes)
-            throws IOException {
+    public int readBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException {
         // perform 'atomic' read.
         try (RandomAccessFile rafile = new RandomAccessFile(_path.toFile(), "r")) {
             // Seek sets position starting from beginnen, not current seek position.

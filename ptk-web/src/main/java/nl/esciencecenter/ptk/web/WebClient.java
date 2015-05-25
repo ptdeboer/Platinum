@@ -34,11 +34,13 @@ import nl.esciencecenter.ptk.data.SecretHolder;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
+import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ssl.SslConst;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
+import nl.esciencecenter.ptk.util.ContentReader;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
@@ -636,7 +638,6 @@ public class WebClient {
                     "Response Entity is NULL");
         }
 
-        InputStream contentInputstream = null;
         Header contentEncoding = entity.getContentEncoding();
         Header contentType = entity.getContentType();
         String contentTypeValue = null;
@@ -665,9 +666,9 @@ public class WebClient {
             }
         }
 
-        try {
-            contentInputstream = entity.getContent();
-            String text = resourceLoader.readText(contentInputstream, "UTF-8");
+        try (InputStream contentInputstream = entity.getContent()) {
+            
+            String text = new ContentReader(contentInputstream,true).readString(); 
 
             try {
                 contentInputstream.close();

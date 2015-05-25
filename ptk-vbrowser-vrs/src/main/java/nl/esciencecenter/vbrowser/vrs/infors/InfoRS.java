@@ -61,7 +61,7 @@ public class InfoRS extends VResourceSystemNode // implements VStreamCreator
     }
 
     @Override
-    public InfoRSPathNode resolvePath(VRL vrl) throws VrsException {
+    public InfoRSPathNode resolve(VRL vrl) throws VrsException {
         if (!vrl.getScheme().equals("info")) {
             throw new VrsException("Can only handle 'info:' nodes:" + vrl);
         }

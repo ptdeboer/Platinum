@@ -55,8 +55,8 @@ public abstract class VResourceSystemNode implements VResourceSystem {
         return this.getServerVRL().resolvePath(path);
     }
 
-    public VPath resolvePath(String path) throws VrsException {
-        return resolvePath(resolveVRL(path));
+    public VPath resolve(String path) throws VrsException {
+        return resolve(resolveVRL(path));
     }
 
     public VRSContext getVRSContext() {
@@ -106,6 +106,6 @@ public abstract class VResourceSystemNode implements VResourceSystem {
      * @throws VrsException
      *             if VRL contains an invalid path.
      */
-    abstract public VPath resolvePath(VRL vrl) throws VrsException;
+    abstract public VPath resolve(VRL vrl) throws VrsException;
 
 }

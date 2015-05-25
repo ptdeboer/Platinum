@@ -30,16 +30,13 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import org.lobobrowser.ua.NavigationEvent;
 import org.lobobrowser.ua.NavigationVetoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoboPanelController implements org.lobobrowser.ua.NavigationListener
 {
-    private static final PLogger logger; 
+    private static final Logger logger=LoggerFactory.getLogger(LoboPanelController.class);
     
-    static
-    {
-        logger=PLogger.getLogger(LoboPanelController.class); 
-        //logger.setLevelToDebug(); 
-    }
 
     private LoboBrowser loboBrowser;
     
@@ -50,12 +47,12 @@ public class LoboPanelController implements org.lobobrowser.ua.NavigationListene
 
     public void debugPrintf(String format,Object... args)
     {
-        logger.debugPrintf(format,args); 
+        logger.debug(String.format(format,args)); 
     }
 
     void handle(String msg,Throwable e)
     {
-        logger.logException(PLogger.ERROR,e,"%s\n",msg); 
+        logger.error("Exception:{} => {}",msg,e); 
         ExceptionDialog.show(this.loboBrowser, "Lobo Exception", new VrsException("Lobo Error:"+msg+"\n"+e.getMessage(),e),false);
     }
 
@@ -68,7 +65,7 @@ public class LoboPanelController implements org.lobobrowser.ua.NavigationListene
     public void beforeLocalNavigate(NavigationEvent event) throws NavigationVetoException 
     {
         java.net.URL url=event.getURL();
-        logger.debugPrintf("beforeLocalNavigate:%s\n",url);
+        logger.debug("beforeLocalNavigate:{}",url);
 
         
         try
@@ -95,7 +92,7 @@ public class LoboPanelController implements org.lobobrowser.ua.NavigationListene
          java.net.URL url=event.getURL();
          VRL vrl=null; 
       
-         logger.debugPrintf("beforeNavigate %s\n",url);
+         logger.debug("beforeNavigate:{}",url);
          
          try
          {  
@@ -135,7 +132,7 @@ public class LoboPanelController implements org.lobobrowser.ua.NavigationListene
      {
          // Object linkObject = event.getLinkObject();
          java.net.URL url=event.getURL(); 
-         logger.debugPrintf("beforeWindowOpen:%s\n",url);
+         logger.debug("beforeWindowOpen:{}",url);
          
          try
          {

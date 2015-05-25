@@ -17,10 +17,10 @@ import settings.Settings;
 
 /**
  * Test FSUtil with URLResolver to ensure consistency between created FSNodes and resolved URLs.<br>
- * To make sure URLs are normalized the Java recommended construction URI.toURL() is used to compare URIs.
+ * To make sure URLs are normalized the Java recommended construction URI.toURL() is used to compare
+ * URIs.
  */
-public class IntegrationTest_FSUtil_URLResolver
-{
+public class IntegrationTest_FSUtil_URLResolver {
     protected Settings settings = Settings.getInstance();
 
     protected FSPath testDir = null;
@@ -29,14 +29,12 @@ public class IntegrationTest_FSUtil_URLResolver
     // FSUtil methods
     // =================
 
-    public FSPath FSUtil_getCreateTestDir() throws Exception
-    {
-        
-        if (testDir == null)
-        {
-            testDir=settings.getFSUtil_testDir(true); 
+    public FSPath FSUtil_getCreateTestDir() throws Exception {
+
+        if (testDir == null) {
+            testDir = settings.getFSUtil_testDir(true);
         }
-        
+
         return testDir;
     }
 
@@ -45,66 +43,51 @@ public class IntegrationTest_FSUtil_URLResolver
     // ========================================================================
 
     @Test
-    public void test_CreateAndResolve() throws Exception
-    {
+    public void test_CreateAndResolve() throws Exception {
         FSPath baseDir = FSUtil_getCreateTestDir();
         test_CreateAndResolve(baseDir);
-        
-        FSPath subDir=baseDir.resolvePath("sub dir");
-        if (subDir.exists())
-        {
-        	outPrintf("Warning:test directory already exists:%s\n",subDir);
+
+        FSPath subDir = baseDir.resolve("sub dir");
+        if (subDir.exists()) {
+            outPrintf("Warning:test directory already exists:%s\n", subDir);
+        } else {
+            settings.getFSUtil().mkdir(subDir);
         }
-        else
-        {
-        	subDir.mkdir();
-        }
-        
-        Assert.assertTrue("Sub-directory must exists:"+subDir,subDir.exists()); 
-        
+
+        Assert.assertTrue("Sub-directory must exists:" + subDir, subDir.exists());
+
         test_CreateAndResolve(subDir);
-        	
-        subDir.delete(LinkOption.NOFOLLOW_LINKS); 
-        
-        Assert.assertFalse("After deletion, sub-directory may not exit anymore:"+subDir,subDir.exists()); 
-        
+
+        subDir.delete(LinkOption.NOFOLLOW_LINKS);
+
+        Assert.assertFalse("After deletion, sub-directory may not exit anymore:" + subDir, subDir.exists());
+
     }
-    
-//    @Test
-//    public void test_CreateAndResolveCDrive() throws Exception
-//    {
-//        FSNode baseDir = FSUtil.getDefault().newFSNode("file:/C:/");
-//        test_CreateAndResolve(baseDir); 
-//    }
-    
-    public void test_CreateAndResolve(FSPath baseDir) throws Exception
-    {
-        boolean isWindows=settings.isWindows(); 
-        
+
+    public void test_CreateAndResolve(FSPath baseDir) throws Exception {
+        boolean isWindows = settings.isWindows();
 
         testCreateResolve(baseDir, "file1", true, true);
         testCreateResolve(baseDir, "file2 space", true, true);
         testCreateResolve(baseDir, " prefixSpaced3", true, true);
-        
-        if (isWindows==false)
-        {
-        	// postfix spaced not allowed under windows... 
-        	testCreateResolve(baseDir, "postfixSpaced4 ", true, true);
+
+        if (isWindows == false) {
+            // postfix spaced not allowed under windows... 
+            testCreateResolve(baseDir, "postfixSpaced4 ", true, true);
         }
-        
-        FSPath subDir = baseDir.resolvePath("subDir1").mkdir();
+
+        FSPath subDir = settings.getFSUtil().mkdir(baseDir.resolve("subDir1"));
         testCreateResolve(baseDir, "subDir1/subFile5", true, true);
 
-        FSPath subDirSpaced = baseDir.resolvePath("subDir Spaced6").mkdir();
+        FSPath subDirSpaced = settings.getFSUtil().mkdir(baseDir.resolve("subDir Spaced6"));
         testCreateResolve(baseDir, "subDir Spaced6/subFile7", true, true);
         testCreateResolve(baseDir, "subDir Spaced6/subFile Spaced8", true, true);
-        if (isWindows)
-        {
+        if (isWindows) {
             // check backslash here. Backslashes should be auto converted to URL/URI forward slash. 
             testCreateResolve(baseDir, "subDir Spaced6\\File9", true, true);
             testCreateResolve(baseDir, "subDir Spaced6\\Spaced File10", true, true);
         }
-        
+
         subDir.delete();
         subDirSpaced.delete();
 
@@ -125,65 +108,65 @@ public class IntegrationTest_FSUtil_URLResolver
 
     }
 
-    protected void testCreateResolve(FSPath baseDir, String relativePath, boolean isFilePath, boolean create) throws Exception
-    {
+    protected void testCreateResolve(FSPath baseDir, String relativePath, boolean isFilePath, boolean create)
+            throws Exception {
         //
         // I) Create file first. URLs must always point to existing files.
         // 
-        FSPath filePath = baseDir.resolvePath(relativePath);
-        if (filePath.exists() == false)
-        {
-            if (isFilePath)
-            {
+        FSPath filePath = baseDir.resolve(relativePath);
+        if (filePath.exists() == false) {
+            if (isFilePath) {
                 filePath.create();
-            }
-            else
-            {
-                filePath.mkdir(); 
+            } else {
+                settings.getFSUtil().mkdir(filePath);
             }
         }
 
         //
         // Use normalized URI from FSNode as reference here and not the URL.
         //
-        URI normalizedFSNodeURI = normalize(filePath.getURI()); 
-        
+        URI normalizedFSNodeURI = normalize(filePath.toURI());
+
         //
         // II) Manually create absolute and encoded URI 
         //
-        String baseUrlStr = baseDir.getPathname(); 
+        String baseUrlStr = baseDir.getPathname();
         // avoid double slashes here.
-        if (baseUrlStr.endsWith("/"))
-        {
+        if (baseUrlStr.endsWith("/")) {
             baseUrlStr = baseUrlStr.substring(0, baseUrlStr.length() - 1);
         }
 
-        URI baseUri = normalize(new URI("file:" + URIFactory.encodePath(baseUrlStr))); 
+        URI baseUri = normalize(new URI("file:" + URIFactory.encodePath(baseUrlStr)));
         URI expectedUri = normalize(URIUtil.resolvePathURI(baseUri, relativePath)); // use URI resolve as standard here!
 
-        Assert.assertEquals("Pre URLSolver: File URI from FSNode doesn't match expected URI from URIUtil.resolvePathURI():", expectedUri, normalizedFSNodeURI);
+        Assert.assertEquals(
+                "Pre URLSolver: File URI from FSNode doesn't match expected URI from URIUtil.resolvePathURI():",
+                expectedUri, normalizedFSNodeURI);
 
         //
         // III) test URLResolver with specified URL base path:
         //
-        
+
         URL urls[] = new URL[] { baseUri.toURL() };
-        URLResolver resolver = new URLResolver(null,urls);
+        URLResolver resolver = new URLResolver(null, urls);
         URL resolvedUrl = resolver.resolveUrlPath(relativePath);
 
         // URLs only works when file actually exists: 
-        Assert.assertNotNull("URLResolver couldn't resolve URL. Has the file been created ? [base,relativePath]=[" + baseUri + ","
-                + relativePath + "]", resolvedUrl);
+        Assert.assertNotNull("URLResolver couldn't resolve URL. Has the file been created ? [base,relativePath]=["
+                + baseUri + "," + relativePath + "]", resolvedUrl);
 
         //
         // Check decoded URL paths here only as URI and URL may have different authentication parts.
         //
-        Assert.assertEquals("Resulted URL from URLResolver doesn't match expected", expectedUri.toURL().getPath(), resolvedUrl.getPath());
-        Assert.assertEquals("File URL from FSNode doesn't match resolved URL", normalizedFSNodeURI.toURL().getPath(), resolvedUrl.getPath());
+        Assert.assertEquals("Resulted URL from URLResolver doesn't match expected", expectedUri.toURL().getPath(),
+                resolvedUrl.getPath());
+        Assert.assertEquals("File URL from FSNode doesn't match resolved URL", normalizedFSNodeURI.toURL().getPath(),
+                resolvedUrl.getPath());
 
-        String decodedPath=resolvedUrl.getPath(); 
-        outPrintf("resolveURL[baseUrl,relativePath]=['%s','%s']=>%s (Decoded path='%s')\n", baseUri, relativePath, resolvedUrl,decodedPath);
-        
+        String decodedPath = resolvedUrl.getPath();
+        outPrintf("resolveURL[baseUrl,relativePath]=['%s','%s']=>%s (Decoded path='%s')\n", baseUri, relativePath,
+                resolvedUrl, decodedPath);
+
         // -------------
         // POST: cleanup
         // -------------
@@ -192,29 +175,26 @@ public class IntegrationTest_FSUtil_URLResolver
 
     }
 
+    protected URI normalize(URI orgUri) throws URISyntaxException {
+        URI uri = orgUri.normalize();
+        URI newUri = uri;
+        String auth = uri.getAuthority();
+        String scheme = uri.getScheme();
 
-    protected URI normalize(URI orgUri) throws URISyntaxException
-    {
-        URI uri=orgUri.normalize();
-        URI newUri=uri; 
-        String auth=uri.getAuthority(); 
-        String scheme=uri.getScheme(); 
-        
-        String path=uri.getPath(); 
-        if (path.endsWith("/"))
-        {
-            path=path.substring(0, path.length()-1);
+        String path = uri.getPath();
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
         }
-        
+
         //normalize 'file:/' and 'file:///' which are equivalent but not equal. To get the file:/// in an URI
         // recreated it with an empty auth part. 
-        newUri=new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),path,uri.getQuery(),uri.getFragment()); 
-        
+        newUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), path, uri.getQuery(),
+                uri.getFragment());
+
         return newUri;
     }
 
-    public static void outPrintf(String format, Object... args)
-    {
+    public static void outPrintf(String format, Object... args) {
         System.out.printf(format, args);
     }
 

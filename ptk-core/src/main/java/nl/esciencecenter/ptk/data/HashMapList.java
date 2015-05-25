@@ -152,9 +152,8 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
                 if (value instanceof Duplicatable<?>) {
                     dup.put(key, ((Duplicatable<TV>) value).duplicate(false));
                 } else {
-                    throw new Error(
-                            "Value class does not implement non-shallow Duplicatable<> interface:"
-                                    + value.getClass());
+                    throw new Error("Value class does not implement non-shallow Duplicatable<> interface:"
+                            + value.getClass());
                 }
             }
         }

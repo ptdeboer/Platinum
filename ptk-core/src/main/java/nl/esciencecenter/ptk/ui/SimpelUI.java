@@ -78,14 +78,12 @@ public class SimpelUI implements UI {
     public boolean askOkCancel(String title, String message, boolean defaultValue) {
         //
         if (enabled == false) {
-            logger.infoPrintf("askOkCancel(): UI disabled, [title]:message=[%s]:%s\n", title,
-                    message);
+            logger.infoPrintf("askOkCancel(): UI disabled, [title]:message=[%s]:%s\n", title, message);
             return defaultValue;
         }
 
-        int result = JOptionPane.showOptionDialog(null, message, title,
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null,
-                JOptionPane.NO_OPTION);
+        int result = JOptionPane.showOptionDialog(null, message, title, JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE, null, null, JOptionPane.NO_OPTION);
 
         return (result == JOptionPane.OK_OPTION);
     }
@@ -95,14 +93,12 @@ public class SimpelUI implements UI {
     public int askYesNoCancel(String title, String message) {
         //
         if (enabled == false) {
-            logger.infoPrintf("askYesNoCancel(): UI disabled, [title]:message=[%s]:%s\n", title,
-                    message);
+            logger.infoPrintf("askYesNoCancel(): UI disabled, [title]:message=[%s]:%s\n", title, message);
             return JOptionPane.CANCEL_OPTION;
         }
 
-        int result = JOptionPane.showOptionDialog(null, message, title,
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, null,
-                JOptionPane.CANCEL_OPTION);
+        int result = JOptionPane.showOptionDialog(null, message, title, JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE, null, null, JOptionPane.CANCEL_OPTION);
 
         return result;
     }
@@ -130,8 +126,7 @@ public class SimpelUI implements UI {
         }
 
         Object[] inputFields = { message, textField };
-        int result = JOptionPane.showConfirmDialog(null, inputFields, title,
-                JOptionPane.WARNING_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(null, inputFields, title, JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
             return textField.getText();
@@ -141,16 +136,14 @@ public class SimpelUI implements UI {
     }
 
     // Wrapper for JOptionPane.
-    public int showOptionDialog(String title, Object message, int optionType, int messageType,
-            Icon icon, Object[] options, Object initialValue) {
+    public int showOptionDialog(String title, Object message, int optionType, int messageType, Icon icon,
+            Object[] options, Object initialValue) {
         //
         if (enabled == false) {
-            logger.infoPrintf("showOptionDialog(): UI disabled, [title]:message=[%s]:%s\n", title,
-                    message);
+            logger.infoPrintf("showOptionDialog(): UI disabled, [title]:message=[%s]:%s\n", title, message);
             return CANCEL_OPTION;
         }
-        return JOptionPane.showOptionDialog(null, message, title, optionType, messageType, icon,
-                options, initialValue);
+        return JOptionPane.showOptionDialog(null, message, title, optionType, messageType, icon, options, initialValue);
     }
 
     public boolean askAuthentication(String message, SecretHolder secret) {

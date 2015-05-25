@@ -43,8 +43,8 @@ public class URIUtil {
         return new URIFactory(uri).setHostname(newHostname).toURI();
     }
 
-    public static URI resolvePath(URI workingDir, URI userHome, boolean resolveTilde,
-            String relativePath) throws URISyntaxException {
+    public static URI resolvePath(URI workingDir, URI userHome, boolean resolveTilde, String relativePath)
+            throws URISyntaxException {
         if ((resolveTilde) && (relativePath != null) && relativePath.contains("~")) {
             String homePath = URIFactory.uripath(userHome.getPath());
             relativePath = URIFactory.resolveTilde(homePath, relativePath);

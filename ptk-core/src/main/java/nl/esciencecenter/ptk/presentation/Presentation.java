@@ -202,8 +202,7 @@ public class Presentation implements Duplicatable<Presentation> {
             cont = 1;
         }
 
-        if ((cont == 1) || (M != now.get(GregorianCalendar.MONTH))
-                || (D != now.get(GregorianCalendar.DAY_OF_MONTH))) {
+        if ((cont == 1) || (M != now.get(GregorianCalendar.MONTH)) || (D != now.get(GregorianCalendar.DAY_OF_MONTH))) {
             tstr = tstr + PresentationConst.getMonthNames()[M];
 
             tstr += " " + to2decimals(D);
@@ -252,13 +251,11 @@ public class Presentation implements Duplicatable<Presentation> {
         }
     }
 
-    public static Presentation getMasterPresentationFor(String scheme, String resourceType,
-            Boolean autoCreate) {
+    public static Presentation getMasterPresentationFor(String scheme, String resourceType, Boolean autoCreate) {
         return getPresentation(createKey(scheme, null, resourceType), autoCreate);
     }
 
-    public static Presentation getPresentationFor(String scheme, String host, String type,
-            boolean autoCreate) {
+    public static Presentation getPresentationFor(String scheme, String host, String type, boolean autoCreate) {
         return getPresentation(createKey(scheme, host, type), autoCreate);
     }
 
@@ -286,8 +283,7 @@ public class Presentation implements Duplicatable<Presentation> {
      * @param nrDecimalsBehindPoint
      *            number of decimals behind the point.
      */
-    public static String createSizeString(long size, boolean base1024, int unitScaleThreshold,
-            int nrDecimals) {
+    public static String createSizeString(long size, boolean base1024, int unitScaleThreshold, int nrDecimals) {
         // boolean negative;
         String prestr = "";
 
@@ -508,9 +504,9 @@ public class Presentation implements Duplicatable<Presentation> {
         int seconds = gmtTime.get(GregorianCalendar.SECOND);
         int millies = gmtTime.get(GregorianCalendar.MILLISECOND);
 
-        String timeStr = to4decimals(yearSign * year) + "-" + to2decimals(month) + "-"
-                + to2decimals(day) + " " + to2decimals(hours) + ":" + to2decimals(minutes) + ":"
-                + to2decimals(seconds) + "." + to3decimals(millies);
+        String timeStr = to4decimals(yearSign * year) + "-" + to2decimals(month) + "-" + to2decimals(day) + " "
+                + to2decimals(hours) + ":" + to2decimals(minutes) + ":" + to2decimals(seconds) + "."
+                + to3decimals(millies);
 
         if (timeZone != null) {
             timeStr += " " + timeZone;
@@ -890,8 +886,7 @@ public class Presentation implements Duplicatable<Presentation> {
         return vals;
     }
 
-    public void setAttributePreferredWidths(String attrname, int minWidth, int prefWidth,
-            int maxWidth) {
+    public void setAttributePreferredWidths(String attrname, int minWidth, int prefWidth, int maxWidth) {
         //
         AttributePresentation pres = this.attributePresentations.get(attrname);
 
@@ -971,13 +966,12 @@ public class Presentation implements Duplicatable<Presentation> {
 
     @Override
     public String toString() {
-        return "Presentation:[defaultUnitScaleThreshold:'" + defaultUnitScaleThreshold
-                + "', defaultNrDecimals:'" + defaultNrDecimals + "', useBase1024:'" + useBase1024
-                + "', sortOption:'" + sortOption + "', contentAttributeNames:'"
-                + contentAttributeNames + "', sortFields:'" + sortFields + "', locale:'" + locale
-                + "', jtableColumnsAutoResizeMode:'" + jtableColumnsAutoResizeMode
-                + "', attributePresentations:'" + attributePresentations + "', iconAttributeName:'"
-                + iconAttributeName + "']";
+        return "Presentation:[defaultUnitScaleThreshold:'" + defaultUnitScaleThreshold + "', defaultNrDecimals:'"
+                + defaultNrDecimals + "', useBase1024:'" + useBase1024 + "', sortOption:'" + sortOption
+                + "', contentAttributeNames:'" + contentAttributeNames + "', sortFields:'" + sortFields + "', locale:'"
+                + locale + "', jtableColumnsAutoResizeMode:'" + jtableColumnsAutoResizeMode
+                + "', attributePresentations:'" + attributePresentations + "', iconAttributeName:'" + iconAttributeName
+                + "']";
     }
 
 }

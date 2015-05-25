@@ -67,7 +67,7 @@ public class Test_FSUtil
 
             if (testDir.exists() == false)
             {
-                testDir.mkdir();
+                getFSUtil().mkdir(testDir);
             }
 
             Assert.assertTrue("Local test directory MUST exist!", testDir.exists());
@@ -108,7 +108,7 @@ public class Test_FSUtil
         FSPath tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSPath file = tDir.resolvePath(fileName);
+        FSPath file = tDir.resolve(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
         file.create();
         Assert.assertTrue("Test file must exist after mkdir():" + file, file.exists());
@@ -130,9 +130,9 @@ public class Test_FSUtil
         FSPath tDir = getTestDir();
         String path = tDir.getPathname();
         String subdir = "subdir";
-        FSPath subDir = tDir.resolvePath(subdir);
+        FSPath subDir = tDir.resolve(subdir);
         Assert.assertFalse("Subdirectory already exists:" + subDir, subDir.exists());
-        subDir.mkdir();
+        getFSUtil().mkdirs(subDir);
         Assert.assertTrue("Subdirectory must exist after mkdir():" + subDir, subDir.exists());
         Assert.assertTrue("Subdirectory must be directory after mkdir():" + subDir, subDir.isDirectory());
         if (subDir.isLocal())
@@ -158,10 +158,10 @@ public class Test_FSUtil
         FSPath tDir = getTestDir();
         String path = tDir.getPathname();
 
-        FSPath file = tDir.resolvePath(fileName);
+        FSPath file = tDir.resolve(fileName);
         Assert.assertFalse("Test file already exists:" + file, file.exists());
-
-        OutputStream outps = file.createOutputStream(false);
+        
+        OutputStream outps = getFSUtil().createOutputStream(file,false);
 
         byte buffer[] =
         {
@@ -171,7 +171,7 @@ public class Test_FSUtil
         outps.close();
 
         byte buffer2[] = new byte[4];
-        InputStream inps = file.createInputStream();
+        InputStream inps = getFSUtil().createInputStream(file);
         inps.read(buffer2, 0, 4);
         inps.close();
 

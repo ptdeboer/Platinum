@@ -36,17 +36,17 @@ public abstract class VFileSystemNode extends VResourceSystemNode implements VFi
         super(context, serverVrl);
     }
 
-    public VRL resolvePathVRL(String relativePath) throws VRLSyntaxException {
+    public VRL resolveVRL(String relativePath) throws VRLSyntaxException {
         return this.getServerVRL().resolvePath(relativePath);
     }
 
     @Override
-    public VFSPath resolvePath(String relativePath) throws VrsException {
-        return resolvePath(resolvePathVRL(relativePath));
+    public VFSPath resolve(String relativePath) throws VrsException {
+        return resolve(resolveVRL(relativePath));
     }
 
     @Override
-    public VFSPath resolvePath(VRL vrl) throws VrsException {
+    public VFSPath resolve(VRL vrl) throws VrsException {
         return createVFSNode(vrl);
     }
 

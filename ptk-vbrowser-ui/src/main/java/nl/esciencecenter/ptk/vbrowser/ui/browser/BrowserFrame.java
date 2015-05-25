@@ -42,7 +42,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.border.EtchedBorder;
 
-import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionMethod;
@@ -64,8 +63,7 @@ public class BrowserFrame extends JFrame {
 
     public static enum BrowserViewMode {
 
-        ICONS16(16), ICONS48(48), ICONS96(96), ICONLIST16(16), ICONSLIST48(48), TABLE,
-        CONTENT_VIEWER;
+        ICONS16(16), ICONS48(48), ICONS96(96), ICONLIST16(16), ICONSLIST48(48), TABLE, CONTENT_VIEWER;
 
         int iconSize = 48;
 
@@ -183,8 +181,7 @@ public class BrowserFrame extends JFrame {
                             uiViewBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons.png"));
-                            uiViewAsIconsBtn
-                                    .setActionCommand(ActionMethod.VIEW_AS_ICONS.toString());
+                            uiViewAsIconsBtn.setActionCommand(ActionMethod.VIEW_AS_ICONS.toString());
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -193,8 +190,7 @@ public class BrowserFrame extends JFrame {
                             uiViewBar.add(uiViewAsIconListBtn);
                             // viewAsIconRows.setText("ICR");
                             uiViewAsIconListBtn.setIcon(loadIcon("menu/viewasiconlist_medium.png"));
-                            uiViewAsIconListBtn.setActionCommand(ActionMethod.VIEW_AS_ICON_LIST
-                                    .toString());
+                            uiViewAsIconListBtn.setActionCommand(ActionMethod.VIEW_AS_ICON_LIST.toString());
                             uiViewAsIconListBtn.addActionListener(menuActionListener);
                             uiViewAsIconListBtn.setEnabled(true);
                         }
@@ -202,8 +198,7 @@ public class BrowserFrame extends JFrame {
                             uiViewAsTableBtn = new JButton();
                             uiViewBar.add(uiViewAsTableBtn);
                             // viewAsListBut.setText("AL");
-                            uiViewAsTableBtn
-                                    .setActionCommand(ActionMethod.VIEW_AS_TABLE.toString());
+                            uiViewAsTableBtn.setActionCommand(ActionMethod.VIEW_AS_TABLE.toString());
                             uiViewAsTableBtn.addActionListener(menuActionListener);
                             uiViewAsTableBtn.setIcon(loadIcon("menu/viewastablelist.png"));
                             // uiViewAsTableBtn.setEnabled(false);
@@ -260,8 +255,7 @@ public class BrowserFrame extends JFrame {
         this.setSize(1000, 600);
     }
 
-    protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus,
-            boolean withScrollPane) {
+    protected TabContentPanel addTab(String name, JComponent comp, boolean setFocus, boolean withScrollPane) {
         TabContentPanel tabPanel = TabContentPanel.createTab(name, comp, withScrollPane);
 
         int newIndex = uiRightTabPane.getTabCount();
@@ -352,7 +346,7 @@ public class BrowserFrame extends JFrame {
         tbl.setDataSource(node, true);
     }
 
-    protected void addViewerPanel(ViewerPlugin viewer, boolean setFocus) {
+    public void addViewerPanel(ViewerPlugin viewer, boolean setFocus) {
         // TabContentPanel currentTab = this.getCurrentTab();
         TabContentPanel tab = this.addTab(viewer.getViewerName() + ":", null, setFocus,
                 (viewer.haveOwnScrollPane() == false));
@@ -415,20 +409,13 @@ public class BrowserFrame extends JFrame {
             mainMenu.add(jSeparator);
         }
 
-        // "View" Menu
+        // "Tools" Menu
         {
-            JMenu viewMenu = new JMenu();
-            menu.add(viewMenu);
-            viewMenu.setText("Tools");
-            viewMenu.setMnemonic(KeyEvent.VK_T);
-            {
-                JMenuItem viewMI = new JMenuItem();
-                viewMenu.add(viewMI);
-                viewMI.setText("Tools");
-                // viewMI.setMnemonic(KeyEvent.VK_W);
-                viewMI.addActionListener(actionListener);
-                // viewNewWindowMenuItem.setActionCommand(ActionMethod.CREATE_NEW_WINDOW.toString());
-            }
+            JMenu toolsMenu = new JMenu();
+            menu.add(toolsMenu);
+            toolsMenu.setText("Tools");
+            toolsMenu.setMnemonic(KeyEvent.VK_T);
+            populateToolsMenu(toolsMenu,actionListener);
         }
 
         // ============
@@ -479,6 +466,11 @@ public class BrowserFrame extends JFrame {
         return menu;
     }
 
+    protected void populateToolsMenu(JMenu toolsMenu, ActionListener actionListener) {
+        ToolMenuCreator menuCreator=new ToolMenuCreator(this.browserController.getPlatform().getViewerRegistry());
+        toolsMenu=menuCreator.createMenu(toolsMenu,actionListener); 
+    }
+
     public ResourceTree getResourceTree() {
         return this.uiResourceTree;
     }
@@ -527,10 +519,7 @@ public class BrowserFrame extends JFrame {
         }
 
         if (disposeContent) {
-            JComponent content = tab.getContent();
-            if (content instanceof Disposable) {
-                ((Disposable) content).dispose();
-            }
+            tab.dispose();
         }
 
         return true;
@@ -549,7 +538,7 @@ public class BrowserFrame extends JFrame {
     }
 
     private ImageIcon loadIcon(String urlstr) {
-        return new ImageIcon(getClass().getClassLoader().getResource(urlstr));
+        return new ImageIcon(getClass().getClassLoader().getResource("icons/" + urlstr));
     }
 
     public void setViewMode(BrowserViewMode mode) {
@@ -558,13 +547,11 @@ public class BrowserFrame extends JFrame {
             case ICONS16:
             case ICONS48:
             case ICONS96:
-                this.getIconsPanel(true).updateUIModel(
-                        UIViewModel.createIconsModel(mode.getIconSize()));
+                this.getIconsPanel(true).updateUIModel(UIViewModel.createIconsModel(mode.getIconSize()));
                 break;
             case ICONLIST16:
             case ICONSLIST48:
-                this.getIconsPanel(true).updateUIModel(
-                        UIViewModel.createIconsListModel(mode.getIconSize()));
+                this.getIconsPanel(true).updateUIModel(UIViewModel.createIconsListModel(mode.getIconSize()));
                 break;
             case TABLE:
                 this.updateTableTab(true, this.getViewedProxyNode());

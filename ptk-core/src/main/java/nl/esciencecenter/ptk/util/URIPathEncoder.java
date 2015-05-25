@@ -115,10 +115,8 @@ public class URIPathEncoder {
                 sbuf.append((char) ch);
             } else if (ch == ' ') { // P.T. de Boer: changed '+' into %20
                 sbuf.append(hex[ch]);
-            } else if (ch == '-'
-                    || ch == '_' // unreserved
-                    || ch == '.' || ch == '!' || ch == '~' || ch == '*' || ch == '\'' || ch == '('
-                    || ch == ')' ||
+            } else if (ch == '-' || ch == '_' // unreserved
+                    || ch == '.' || ch == '!' || ch == '~' || ch == '*' || ch == '\'' || ch == '(' || ch == ')' ||
                     // P.T. de Boer added these:
                     ch == '/' || ch == ':') {
                 sbuf.append((char) ch);

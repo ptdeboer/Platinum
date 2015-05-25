@@ -25,6 +25,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.tool.vtermstarter.VTermStarter;
+import nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.LoboBrowser;
+import nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.LoboBrowserInit;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.sftp.SftpFileSystemFactory;
@@ -34,6 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Start VBrowser with Virtual Resource System.
  */
 public class StartVRSBrowser {
+    
     public static void main(String args[]) {
         try {
             startVBrowser(args);
@@ -50,13 +53,29 @@ public class StartVRSBrowser {
         try {
             context.getRegistry().registerFactory(SftpFileSystemFactory.class);
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            handleError("Couldn't register VRS:" + SftpFileSystemFactory.class.getCanonicalName(), e);
         }
 
     }
 
+    private static void handleError(String message, Throwable e) {
+        System.err.printf("Exception:%s:%s\n", message, e);
+        e.printStackTrace();
+    }
+
     public static void initVRSViewers(BrowserPlatform platform) {
-        platform.getViewerRegistry().registerViewer(VTermStarter.class);
+        VRSContext context = platform.getVRSContext();
+        platform.getViewerRegistry().registerPlugin(VTermStarter.class);
+
+        try
+        {
+            context.getRegistry().registerFactory(nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.resfs.ResFS.class);
+            platform.getViewerRegistry().registerPlugin(LoboBrowser.class);
+            LoboBrowserInit.initPlatform(platform);
+        }
+        catch (Throwable e) { 
+            handleError("Couldn't register LoboBrowser |+ResFS", e);
+        }
     }
 
     public static ProxyBrowserController startVBrowser(String args[]) throws Exception {
@@ -92,8 +111,8 @@ public class StartVRSBrowser {
 
         rootNode.addResourceLink("My Links", "Root:/", new VRL("file:///"), null, false);
         rootNode.addResourceLink("My Links", "Home/", context.getHomeVRL(), null, false);
-        rootNode.addResourceLink("My Links", "sftp://" + user + "@localhost:22/", new VRL("sftp://"
-                + user + "@localhost:22/"), null, false);
+        rootNode.addResourceLink("My Links", "sftp://" + user + "@localhost:22/", new VRL("sftp://" + user
+                + "@localhost:22/"), null, false);
 
         // main location to start browsing:
         ProxyNode root = fac.openLocation("info:/");

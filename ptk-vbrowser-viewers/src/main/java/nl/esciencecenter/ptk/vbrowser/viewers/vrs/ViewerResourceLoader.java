@@ -20,58 +20,55 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.vrs;
 
+import java.awt.Component;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
-import nl.esciencecenter.ptk.ssl.CertificateStoreException;
-import nl.esciencecenter.ptk.util.ResourceLoader;
+import nl.esciencecenter.ptk.ui.icons.IconProvider;
+import nl.esciencecenter.ptk.util.ContentReader;
+import nl.esciencecenter.ptk.util.ContentWriter;
 import nl.esciencecenter.ptk.util.logging.PLogger;
+import nl.esciencecenter.vbrowser.vrs.VFSPath;
+import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Content Factory and Resource Manager for the various embedded Viewers.
+ * Content Factory and Resource Manager for the various embedded Viewers.<br>
+ * 
  */
 public class ViewerResourceLoader {
-    private static PLogger logger = PLogger.getLogger(ViewerResourceLoader.class);
 
-    // ========
-    // Instance
-    // ======== 
+    private static Logger logger = LoggerFactory.getLogger(ViewerResourceLoader.class);
+
+    // === Instance === 
+
     private VRSClient vrsClient;
 
-    private ResourceLoader resourceLoader;
+    private String viewersConfigSubDirName;
 
-    private VRL viewersConfigDir;
-
-    private CertificateStore certificateStore;
-
-    // === //
-
-    public ViewerResourceLoader(VRSClient vrsClient, VRL viewersConfigDir) {
+    public ViewerResourceLoader(VRSClient vrsClient, String viewersConfigSubDirName) {
+        logger.info("ViewerResourceLoader():viewersConfigSubDirName={}", viewersConfigSubDirName);
+        this.viewersConfigSubDirName = viewersConfigSubDirName;
         this.vrsClient = vrsClient;
-        this.resourceLoader = vrsClient.createResourceLoader();
-        logger.infoPrintf("ViewerConfigDir=%s\n", viewersConfigDir);
-        this.viewersConfigDir = viewersConfigDir;
-    }
-
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
-    protected void setViewerConfigDir(VRL configDir) {
-        this.viewersConfigDir = configDir;
     }
 
     public VRL getViewerConfigDir() {
-        return viewersConfigDir;
+        VRL conf = vrsClient.getVRSContext().getPersistantConfigLocation();
+        if (conf == null)
+            return null;
+        return conf.appendPath(viewersConfigSubDirName);
     }
 
     public InputStream openInputStream(VRL uri) throws Exception {
@@ -79,68 +76,60 @@ public class ViewerResourceLoader {
         return vrsClient.createInputStream(uri);
     }
 
-    public ResourceLoader getResourceLoader() {
-        return resourceLoader;
-    }
-
     public void writeText(VRL vrl, String txt, String encoding) throws Exception {
-        resourceLoader.writeTextTo(vrl.toURI(), txt, encoding);
+        try (OutputStream outps = vrsClient.createOutputStream(vrl)) {
+            new ContentWriter(outps, encoding, false).write(txt);
+        }
+        // autoclose
     }
 
     public String readText(VRL vrl, String textEncoding) throws Exception {
-        return resourceLoader.readText(vrl.toURI(), textEncoding);
-    }
-
-    /**
-     * Legacy method.
-     */
-    public boolean hasReplicas(VRL vrl) {
-        return false;
-    }
-
-    /**
-     * Legacy method.
-     */
-    public VRL[] getReplicas(VRL vrl) {
-        return null;
+        try (InputStream inps = vrsClient.createInputStream(vrl)) {
+            return new ContentReader(inps, textEncoding, false).readString();
+        }
+        // autoclose
     }
 
     public Properties loadProperties(VRL vrl) throws Exception {
         if (vrl == null)
             return null;
 
-        return resourceLoader.loadProperties(vrl.toURI());
+        try (InputStream inps = vrsClient.createInputStream(vrl)) {
+            return new ContentReader(inps).loadProperties();
+        }
     }
 
-    public void saveProperties(VRL vrl, Properties properties) throws Exception {
-        logger.infoPrintf("Saving Properties to:" + vrl);
-        if (vrl == null)
-            return;
-
-        resourceLoader.saveProperties(vrl.toURI(), properties);
+    public void saveProperties(VRL vrl, Properties properties, String comments) throws Exception {
+        createViewersConfigDir();
+        logger.info("Saving Properties to:{}", vrl);
+        try (OutputStream outps = vrsClient.createOutputStream(vrl)) {
+            new ContentWriter(outps).saveProperties(properties, comments);
+        }
+        //finally: autoclose
     }
 
-    public void syncReadBytes(RandomReadable reader, long fileOffset, byte[] buffer,
-            int bufferOffset, int numBytes) throws IOException {
+    protected void createViewersConfigDir() throws VrsException {
+        VRL vrl = this.getViewerConfigDir();
+        VFSPath path = vrsClient.openVFSPath(vrl);
+        if (path.exists()==false) { 
+            path.mkdir(true);
+        }
+    }
+
+    public void syncReadBytes(RandomReadable reader, long fileOffset, byte[] buffer, int bufferOffset, int numBytes)
+            throws IOException {
         // delegate to IOUtil
-        IOUtil.syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
+        IOUtil.readAll(reader, fileOffset, buffer, bufferOffset, numBytes);
         // reader.close();
     }
 
-    public void syncWriteBytes(RandomWritable writer, long fileOffset, byte[] buffer,
-            int bufferOffset, int numBytes) throws IOException {
+    public void syncWriteBytes(RandomWritable writer, long fileOffset, byte[] buffer, int bufferOffset, int numBytes)
+            throws IOException {
         writer.writeBytes(fileOffset, buffer, bufferOffset, numBytes);
     }
 
-    public CertificateStore getCertificateStore() throws CertificateStoreException {
-        if (this.certificateStore == null) {
-            certificateStore = CertificateStore.getDefault(true);
-        }
-        return certificateStore;
-    }
-
-    public void setCertificateStore(CertificateStore store) {
-        this.certificateStore = store;
+    public CertificateStore getCertificateStore() throws VrsException {
+        return vrsClient.getVRSContext().getCertificateStore();
     }
 
     public String getMimeType(String path) {
@@ -155,12 +144,8 @@ public class ViewerResourceLoader {
         return vrsClient.createRandomWriter(vrsClient.openPath(loc));
     }
 
-    /**
-     * @Deprecated Must use connected URL to determine reported mimetype from server.
-     */
-    @Deprecated
     public String getMimeTypeOf(VRL vrl) throws VrsException {
-        return MimeTypes.getDefault().getMimeType(vrl.getPath());
+        return vrsClient.openPath(vrl).getMimeType();
     }
 
     /**
@@ -168,6 +153,10 @@ public class ViewerResourceLoader {
      */
     public VRSClient getVRSClient() {
         return this.vrsClient;
+    }
+
+    public IconProvider createIconProvider(Component component) {
+        return new IconProvider(component, vrsClient.createResourceLoader());
     }
 
 }

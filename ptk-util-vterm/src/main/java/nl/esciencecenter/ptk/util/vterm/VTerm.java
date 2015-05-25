@@ -29,11 +29,8 @@ import java.awt.Frame;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -86,105 +83,19 @@ public class VTerm extends JFrame implements Runnable {
 
     private static final String SESSION_SHELLCHANNEL = "SHELLCHANNEL";
 
-    private static final String aboutText = "<html><center>VLTerm VT100+ Emulator<br>"
-            + "(beta version)<br>" + "(C) VL-e consortium<br>" + "Author Piter T. de Boer<br>"
-            + "Render Engine (C) Piter.NL</center></html>";
+    private static final String aboutText = "<html><center>VTerm VT100+ Emulator<br>"
+            + "(beta version)<br>" + "Author Piter T. de Boer<br>"
+            + "(C) Piter.NL</center></html>";
 
-    // ========================================================================
-
-    // ========================================================================
-
-    public class TermController implements WindowListener, ComponentListener, EmulatorListener,
-            ActionListener {
-        private String shortTitle;
-
-        private String longTitle;
-
-        public TermController() {
-
-        }
-
-        public void componentHidden(ComponentEvent e) {
-
-        }
-
-        public void componentMoved(ComponentEvent e) {
-        }
-
-        public void componentResized(ComponentEvent e) {
-            if (e.getSource() == terminalPanel) {
-                sendTermSize(terminalPanel.getColumnCount(), terminalPanel.getRowCount());
-            }
-        }
-
-        public void componentShown(ComponentEvent e) {
-            //vlTerm.charPane.startRenderers(); 
-            //vlTerm.charPane.repaint(); 
-        }
-
-        public void notifyGraphMode(int type, String arg) {
-            if (type == 1)
-                this.shortTitle = arg;
-            else
-                this.longTitle = arg;
-
-            if (shortTitle == null)
-                shortTitle = "";
-
-            if (longTitle == null)
-                longTitle = "";
-
-            // System.err.println(">>> NR="+type+" => "+token.strArg);  
-            setTitle("[" + shortTitle + "] " + longTitle);
-        }
-
-        public void notifyCharSet(String charSet) {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            VTerm.this.actionPerformed(e);
-        }
-
-        public void windowActivated(WindowEvent e) {
-        }
-
-        public void windowClosed(WindowEvent e) {
-        }
-
-        public void windowClosing(WindowEvent e) {
-        }
-
-        public void windowDeactivated(WindowEvent e) {
-            //vlTerm.charPane.stopRenderers(); 
-        }
-
-        public void windowDeiconified(WindowEvent e) {
-            terminalPanel.activate(); // charPane.startRenderers(); 
-        }
-
-        public void windowIconified(WindowEvent e) {
-            terminalPanel.inactivate(); // charPane.stopRenderers(); 
-        }
-
-        public void windowOpened(WindowEvent e) {
-            terminalPanel.activate(); // charPane.startRenderers(); 
-        }
-
-        public void notifyResized(int columns, int rows) {
-            // charPane has already been resized: Update frame!
-            VTerm.this.updateFrameSize();
-        }
-
-    }
-
+    
     // =======================================================================
     //
     // =======================================================================
 
     // options/config: 
-    boolean _saveConfigEnabled = true;
+    protected boolean _saveConfigEnabled = true;
 
-    String termType = VT10xEmulatorDefs.TERM_XTERM;
+    protected String termType = VT10xEmulatorDefs.TERM_XTERM;
 
     // =======================
     // Session fields
@@ -192,11 +103,11 @@ public class VTerm extends JFrame implements Runnable {
 
     protected java.net.URI startURI = null;
 
-    String sessionType = SESSION_SSH;
+    protected String sessionType = SESSION_SSH;
 
-    TermPanel terminalPanel;
+    protected TermPanel terminalPanel;
 
-    Thread thread = null;
+    private Thread thread = null;
 
     private ShellChannel shellChannel;
 
@@ -219,7 +130,7 @@ public class VTerm extends JFrame implements Runnable {
     private JMenuItem startSSHMenuItem;
     private JCheckBoxMenuItem menuTypeVt100CB;
     private JCheckBoxMenuItem menuTypeXtermCB;
-    private TermController termController;
+    private VTermController termController;
     private JCheckBoxMenuItem optionsSyncScrolling;
 
     /** Current view properties */
@@ -252,7 +163,7 @@ public class VTerm extends JFrame implements Runnable {
 
         this.setLayout(new BorderLayout());
 
-        this.termController = new TermController();
+        this.termController = new VTermController(this);
 
         {
             terminalPanel = new TermPanel();
@@ -1119,6 +1030,8 @@ public class VTerm extends JFrame implements Runnable {
     }
 
     protected Emulator getEmulator() {
+        if (terminalPanel==null)
+            return null; //terminal already disposed.
         return terminalPanel.getEmulator();
     }
 
@@ -1207,10 +1120,10 @@ public class VTerm extends JFrame implements Runnable {
 
     protected Properties loadProperties() {
         try {
-            URI propFileUri = getPropertiesFileURI();
+            java.net.URL propFileUri = getPropertiesFileURL();
             return new ResourceLoader().loadProperties(propFileUri);
         } catch (Exception e) {
-            logger.logException(PLogger.WARN, e, "VLTerm:Couldn't load config vlterm.prop\n");
+            logger.logException(PLogger.INFO, e, "VTerm:Couldn't load default properties: vterm.prop\n");
             return new Properties();
         }
     }
@@ -1228,16 +1141,16 @@ public class VTerm extends JFrame implements Runnable {
         saveConfig();
     }
 
-    URI getPropertiesFileURI() throws IOException {
+    public java.net.URL getPropertiesFileURL() throws IOException {
         FSUtil fsUtils = FSUtil.getDefault();
-        return fsUtils.getUserHomeDir().resolvePathURI(".vterm/vterm.prop");
+        return fsUtils.getUserHomeDir().resolveURI(".vterm/vterm.prop").toURL();
     }
 
-    void saveConfig() {
-        URI propFileUri = null;
+    protected void saveConfig() {
+        java.net.URL propFileUri = null;
 
         try {
-            propFileUri = getPropertiesFileURI();
+            propFileUri = getPropertiesFileURL();
             new ResourceLoader().saveProperties(propFileUri, persistantProperties,
                     "VTerm Properties");
         } catch (Exception e) {

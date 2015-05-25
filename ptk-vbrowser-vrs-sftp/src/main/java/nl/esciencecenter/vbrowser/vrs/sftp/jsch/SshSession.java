@@ -221,7 +221,7 @@ public class SshSession implements AutoCloseable {
 
         for (String key : keys) {
             try {
-                FSPath keyFile = configPath.resolvePath(key);
+                FSPath keyFile = configPath.resolve(key);
                 if (keyFile.exists()) {
                     logger.info("addUserIDFiles(): adding existing identity:{}\n", keyFile);
                     jsch.addIdentity(keyFile.getPathname());
@@ -252,7 +252,7 @@ public class SshSession implements AutoCloseable {
         try {
             if (configDir != null) {
                 configPath = FSUtil.getDefault().resolvePath(configDir);
-                FSPath hostsFile = configPath.resolvePath(knownHostsFile);
+                FSPath hostsFile = configPath.resolve(knownHostsFile);
                 if (hostsFile.exists()) {
                     jsch.setKnownHosts(hostsFile.getPathname());
                 }

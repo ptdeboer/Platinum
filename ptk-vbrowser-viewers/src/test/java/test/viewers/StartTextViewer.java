@@ -11,7 +11,7 @@ public class StartTextViewer {
 
         try {
             ViewerTests.testViewer(TextViewer.class, new VRL(
-                    "file:///home/ptdeboer/tests/testText.txt"));
+                    "file:///home/piter/tests/testText.txt"));
 
             // viewStandAlone(null);
         } catch (Exception e) {

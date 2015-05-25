@@ -41,8 +41,7 @@ public class FSWriter implements Writable, RandomWritable, AutoCloseable {
      * Perform stateless write which opens and closes file again after writing.
      */
     @Override
-    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes)
-            throws IOException {
+    public void writeBytes(long fileOffset, byte[] buffer, int bufferOffset, int nrBytes) throws IOException {
         try (RandomAccessFile randomFile = new RandomAccessFile(_path.toFile(), "rw")) {
             randomFile.seek(fileOffset);
             randomFile.write(buffer, bufferOffset, nrBytes);
