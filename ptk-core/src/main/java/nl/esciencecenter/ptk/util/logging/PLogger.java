@@ -20,11 +20,11 @@
 
 package nl.esciencecenter.ptk.util.logging;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.Level;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * SLF4J Logger facade.<br>

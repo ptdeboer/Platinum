@@ -20,7 +20,10 @@
 
 package nl.esciencecenter.ptk.crypt;
 
+import nl.esciencecenter.ptk.util.StringUtil;
 import org.junit.Assert;
+
+import java.nio.charset.Charset;
 
 public class Demo_CryptoHash
 {
@@ -54,21 +57,27 @@ public class Demo_CryptoHash
         testEncrypt("12345", "patient01", "xC5gLUJ1UxI=", CryptScheme.DESEDE_ECB_PKCS5, "SHA-256", StringCrypter.CHARSET_UTF8);
     }
 
-    protected void testEncrypt(String password, String value, String expectedCrypt, CryptScheme encryptionScheme,
+    protected void testEncrypt(String password, String plainText, String expectedCrypt, CryptScheme encryptionScheme,
             String keyHashingScheme, String charsetUtf8) throws Exception
     {
         StringCrypter crypter = new StringCrypter(Secret.wrap(password.toCharArray()), encryptionScheme,
                 keyHashingScheme, charsetUtf8);
-        String encryptStr = crypter.encryptToBase64(value);
+
+        Charset charset = Charset.forName(charsetUtf8);
+        byte[] plainBytes = plainText.getBytes(charset);
+        byte[] cryptBytes = crypter.encrypt(plainText.getBytes(charset));
+        String encryptStrBase64 = crypter.encryptToBase64(plainText);
 
         outPrintf(">Encoding: Hash:%s, Crypt:%s (charset=%s)\n", keyHashingScheme, encryptionScheme, charsetUtf8);
-        outPrintf(" - password = %s\n", password);
-        outPrintf(" - encrypt  = %s -> %s \n", value, encryptStr);
+        outPrintf(" - password   = %s\n", password);
+        outPrintf(" - plainBytes = '%s' -> '%s' \n", plainText, StringUtil.toHexString(plainBytes));
+        outPrintf(" - cryptBytes = '%s' -> '%s' \n", plainText, StringUtil.toHexString(cryptBytes));
+        outPrintf(" - encrypt    = '%s' -> '%s' \n", plainText, encryptStrBase64);
 
-        Assert.assertEquals("Encrypted String doesn match expected!", expectedCrypt, encryptStr);
+        Assert.assertEquals("Encrypted String doesn match expected!", expectedCrypt, encryptStrBase64);
 
-        String decryptedValue = crypter.decryptString(encryptStr);
-        Assert.assertEquals("Decrypted String doesn't match expected1", value, decryptedValue);
+        String decryptedValue = crypter.decryptString(encryptStrBase64);
+        Assert.assertEquals("Decrypted String doesn't match expected1", plainText, decryptedValue);
     }
 
     protected static void outPrintf(String format, Object... args)
