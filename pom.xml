@@ -46,9 +46,6 @@
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
-						<files>
-							<!-- <file>project.prop</file> -->
-						</files>
 					</configuration>
 				</plugin>
 				<!-- Reporting -->
