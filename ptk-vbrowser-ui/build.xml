@@ -65,7 +65,7 @@
 		<jar jarfile="${comp.dist.lib.jar}" basedir="${comp.build.classes}" />
 
 		<!-- creat jar file out of icons -->
-		<jar jarfile="${comp.dist.lib.icons.jar}" basedir="${comp.icons}" />
+		<!--<jar jarfile="${comp.dist.lib.icons.jar}" basedir="${comp.icons}" />-->
 
 	</target>
 
@@ -91,9 +91,9 @@
 		</copy>
 
 		<!-- scripts -->
-		<copy todir="${project.dist}">
-			<fileset file="scripts/vbrowser.sh" />
-		</copy>
+		<!--<copy todir="${project.dist}">-->
+			<!--<fileset file="scripts/vbrowser.sh" />-->
+		<!--</copy>-->
 
 		<!-- icons -->
 		<mkdir dir="${project.dist.lib}/icons" />

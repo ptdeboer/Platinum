@@ -11,3 +11,6 @@
 .project
 .settings
 .classpath
+/.idea
+*.iml
+*.versionsBackup
