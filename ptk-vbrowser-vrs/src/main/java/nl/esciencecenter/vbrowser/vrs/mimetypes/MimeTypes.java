@@ -27,8 +27,8 @@ import java.net.URL;
 
 import javax.activation.MimetypesFileTypeMap;
 
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicMatch;
+//import net.sf.jmimemagic.Magic;
+//import net.sf.jmimemagic.MagicMatch;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
@@ -120,49 +120,4 @@ public class MimeTypes {
         return typemap.getContentType(path);
     }
 
-    /**
-     * Returns the 'magic' MimeType by checking the first bytes of a file against known 'magic'
-     * values.
-     * 
-     * @param firstBytes
-     *            The first bytes of a file
-     * @return Mime Type.
-     * @throws Exception
-     */
-    public String getMagicMimeType(byte firstBytes[]) throws Exception {
-        MagicMatch match;
-        match = Magic.getMagicMatch(firstBytes);
-        return match.getMimeType();
-
-        //        catch (MagicParseException e)
-        //        {
-        //            throw new Exception("MagicParseException:\n" + e.getMessage(), e);
-        //        }
-        //        catch (MagicMatchNotFoundException e)
-        //        {
-        //            throw new Exception("MagicMatchNotFoundException\n" + e.getMessage(), e);
-        //        }
-        //        catch (MagicException e)
-        //        {
-        //            throw new Exception("MagicException\n" + e.getMessage(), e);
-        //        }
-    }
-
-    /**
-     * Check magic type of file. Read first byte of the file and checks against known magic values.
-     * 
-     * @param file
-     *            the file to check. File must exists.
-     * @return
-     */
-    public String getMagicMimeType(File file) {
-        MagicMatch match;
-        try {
-            match = Magic.getMagicMatch(file, false);
-            return match.getMimeType();
-        } catch (Exception e) {
-            logger.logException(PLogger.WARN, e, "Couldn't parse MagicMime type for:%s\n", file);
-        }
-        return null;
-    }
 }

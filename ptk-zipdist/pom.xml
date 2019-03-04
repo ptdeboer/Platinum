@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>ptk-zipdist</artifactId>
-	<name>ptk-zipdist ${project.version} - Platinum ZIP Distribution Module</name>
+	<name>Platinum ZIP Dist ${project.version}</name>
 	<packaging>pom</packaging>
 
 	<parent>

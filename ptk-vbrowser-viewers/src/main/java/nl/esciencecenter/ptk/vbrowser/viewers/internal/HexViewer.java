@@ -40,7 +40,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
-import net.sf.jmimemagic.MagicMatchNotFoundException;
+//import net.sf.jmimemagic.MagicMatchNotFoundException;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.RandomReadable;
@@ -931,18 +931,18 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     }
 
     public void _updateMagic() {
-        try {
-            String magic = MimeTypes.getDefault().getMagicMimeType(buffer);
-            logger.infoPrintf("Magic Type=%s\n", magic);
-            this.magicField.setText(magic);
-        } catch (MagicMatchNotFoundException e) {
-            logger.logException(PLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL()
-                    .getPath());
-            // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
-        } catch (Exception e) {
-            logger.logException(PLogger.ERROR, e, "Exception when updating magic\n");
-        }
-
+        this.magicField.setText("?");
+//        try {
+//            String magic = MimeTypes.getDefault().getMagicMimeType(buffer);
+//            logger.infoPrintf("Magic Type=%s\n", magic);
+//            this.magicField.setText(magic);
+//        } catch (MagicMatchNotFoundException e) {
+//            logger.logException(PLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL()
+//                    .getPath());
+//            // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
+//        } catch (Exception e) {
+//            logger.logException(PLogger.ERROR, e, "Exception when updating magic\n");
+//        }
     }
 
 }
