@@ -20,40 +20,52 @@
 
 package tests;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.StartVBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.LoboBrowser;
 import nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.LoboBrowserInit;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 
+import java.net.URL;
 
-public class StartLoboVBrowser
-{
-    protected static BrowserPlatform platform = null;
+/**
+ * Run from dev environment.
+ */
+@Slf4j
+public class StartLoboVBrowser {
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
 
-        try
-        {
+        try {
+            // Run Dev from test resource directory:
+            URL testLibDir = Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
+            log.error("extDirUrl={}", testLibDir);
+            String extDir="lib/lobo/ext";
+
+            if (testLibDir!=null) {
+                extDir = testLibDir.getPath().replaceFirst("target/test-classes/log4j.xml", "lib/lobo/ext");
+                log.warn("*** Using 'ext' library directory:{}", extDir);
+            } else {
+                log.error("*** Failed to dynamically resolve 'ext' dir needed for Lobo");
+            }
+
+            // From DEV environment:
+            System.setProperty("ext.dirs",extDir);
             BrowserPlatform platform = StartVBrowser.getPlatform();
 
-            VRSContext context = platform.getVRSContext(); 
+            VRSContext context = platform.getVRSContext();
             context.getRegistry().registerFactory(nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.resfs.ResFS.class);
             platform.getViewerRegistry().registerPlugin(LoboBrowser.class);
             
             LoboBrowserInit.initPlatform(platform);
             
-            StartVBrowser.startVBrowser(args); 
+            new StartVBrowser().start(args);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-
-        // frame.setRoot(root);
-
     }
-
     
 }

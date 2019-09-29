@@ -51,7 +51,7 @@ public class ImageUtil {
     //        // 
     //        
     //        byte bytes[]=ResourceLoader.getDefault().getBytes(url.toString()); 
-    //        infoPrintf("Read #%d bytes\n",bytes.length);
+    //        debugPrintf("Read #%d bytes\n",bytes.length);
     //        
     //        SeekableStream sStream=new ByteArraySeekableStream(bytes,0,bytes.length); 
     //        
@@ -63,7 +63,7 @@ public class ImageUtil {
     //        //Raster raster = gifDec.decodeAsRaster();
     //        // is null 
     //        //ImageDecodeParam param = gifDec.getParam();
-    //        //infoPrintf("param=%s\n",param); 
+    //        //debugPrintf("param=%s\n",param);
     //        
     //        // ===============================
     //        // Image 0: Decode first image: Must Exist!
@@ -73,7 +73,7 @@ public class ImageUtil {
     //        RenderedImage renImg = gifDec.decodeAsRenderedImage();
     //        ImageDecodeParam param = gifDec.getParam(); 
     //        
-    //        infoPrintf(" - param= %s\n",param); 
+    //        debugPrintf(" - param= %s\n",param);
     //        
     //        // Can't determine nr of images, so just try to decode as much as possible 
     //        try
@@ -85,21 +85,21 @@ public class ImageUtil {
     //                // ================
     //                Raster data=renImg.getData(); 
     //                Rectangle b = data.getBounds();
-    //                infoPrintf("--- raster #%d ---\n",numPages); 
-    //                infoPrintf("raster bounds    = %d,%d,%d,%d \n",b.x,b.y,b.width,b.height);
+    //                debugPrintf("--- raster #%d ---\n",numPages);
+    //                debugPrintf("raster bounds    = %d,%d,%d,%d \n",b.x,b.y,b.width,b.height);
     //                
     //                String[] names = renImg.getPropertyNames();
     //                
     //                if ((names==null) || (names.length<=0)) 
-    //                    infoPrintf(" - NULL properties \n"); 
+    //                    debugPrintf(" - NULL properties \n");
     //                else
     //                    for (String name:names)
     //                    {
-    //                        infoPrintf(" prop: '%10s'=%s\n",name,""); 
+    //                        debugPrintf(" prop: '%10s'=%s\n",name,"");
     //                    }
-    //                infoPrintf(" - renImg = %s\n",data); 
-    //                infoPrintf(" - data   = %s\n",data); 
-    //                 infoPrintf(" - parent = %s\n",data.getParent()); 
+    //                debugPrintf(" - renImg = %s\n",data);
+    //                debugPrintf(" - data   = %s\n",data);
+    //                 debugPrintf(" - parent = %s\n",data.getParent());
     //                
     //                ColorModel cm = renImg.getColorModel(); 
     //               
@@ -137,21 +137,21 @@ public class ImageUtil {
     //        
     //        int loopc=gifDec.getLoopCount(); 
     //        
-    //        //infoPrintf(" --- header ---\n");
-    //        //infoPrintf("  - num frames = %d\n",num);  
-    //        //infoPrintf("  - loop count = %dn",loopc);  
-    //        //infoPrintf("  - frame size = %dx%d\n",size.width,size.height);  
+    //        //debugPrintf(" --- header ---\n");
+    //        //debugPrintf("  - num frames = %d\n",num);
+    //        //debugPrintf("  - loop count = %dn",loopc);
+    //        //debugPrintf("  - frame size = %dx%d\n",size.width,size.height);
     //    
     //        List<BufferedImage> images=new ArrayList<BufferedImage>(); 
     //        List<ImageSequence.FrameInfo> infos=new ArrayList<ImageSequence.FrameInfo>();
     //        // get frames; 
     //        for (int i=0;i<num;i++)
     //        {
-    //            //infoPrintf(" --- frame #%d ---\n",i);
+    //            //debugPrintf(" --- frame #%d ---\n",i);
     //            
     //            BufferedImage frame = gifDec.getFrame(i);
     //            int delay=gifDec.getDelay(i); 
-    //            //infoPrintf("  - delay = %d\n",delay);
+    //            //debugPrintf("  - delay = %d\n",delay);
     //            images.add(frame);
     //            // 1st = 1st image,etc. 
     //            //inf.imageNr=i;

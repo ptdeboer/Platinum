@@ -94,9 +94,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     /**
      * Needed by swing
      */
-    private static final long serialVersionUID = 4959020834564707156L;
-
-    /** The mimetypes I can view */
+       /** The mimetypes I can view */
     private static String mimeTypes[] = { "application/octet-stream", };
 
     static private boolean default_show_font_toolbar = false;
@@ -569,7 +567,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
             logger.errorPrintf("Offset exceeds Integer.MIN_VALUE:%d\n,value");
         }
 
-        logger.infoPrintf("setScrollBarValue(): %d\n", value);
+        logger.debugPrintf("setScrollBarValue(): %d\n", value);
         this.scrollbar.setValue((int) value);
     }
 
@@ -580,7 +578,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
             logger.errorPrintf("Maximum exceeds Integer.MAX_VALUE\n");
         }
 
-        logger.infoPrintf("updateScrollBarRange(): range=[%d,%d], block,unit=[%d,%d]\n", min, max,
+        logger.debugPrintf("updateScrollBarRange(): range=[%d,%d], block,unit=[%d,%d]\n", min, max,
                 blockIncrement, unitIncrement);
         this.scrollbar.setMinimum(min);
         this.scrollbar.setMaximum((int) max);
@@ -934,7 +932,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
         this.magicField.setText("?");
 //        try {
 //            String magic = MimeTypes.getDefault().getMagicMimeType(buffer);
-//            logger.infoPrintf("Magic Type=%s\n", magic);
+//            logger.debugPrintf("Magic Type=%s\n", magic);
 //            this.magicField.setText(magic);
 //        } catch (MagicMatchNotFoundException e) {
 //            logger.logException(PLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL()

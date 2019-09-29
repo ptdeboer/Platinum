@@ -172,7 +172,7 @@ public class ViewerManager implements ViewerListener {
 
     public void viewerFrameClosing(ViewerFrame frame, WindowEvent e) {
         ViewerPlugin viewer = frame.getViewer();
-        logger.info("WindowsClosing:{}", viewer);
+        logger.debug("WindowsClosing:{}", viewer);
         try {
             viewer.disposeViewer();
             unregister(viewer);
@@ -184,7 +184,7 @@ public class ViewerManager implements ViewerListener {
 
     @Override
     public void notifyEvent(ViewerEvent theEvent) {
-        logger.info("ViewerEvent:{}", theEvent);
+        logger.debug("ViewerEvent:{}", theEvent);
         ViewerPlugin viewer = theEvent.getEventSource().getViewer();
 
         if (theEvent.getEventType() == ViewerEventType.VIEWER_DISPOSED) {

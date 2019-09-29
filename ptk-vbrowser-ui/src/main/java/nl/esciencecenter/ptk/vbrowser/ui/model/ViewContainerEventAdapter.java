@@ -30,7 +30,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 
 /**
@@ -260,11 +260,11 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     // =========
 
     private void fireNodeSelectionAction(ViewNode node) {
-        this.nodeActionListener.handleNodeActionEvent(node, Action.createSelectionAction(node));
+        this.nodeActionListener.handleNodeActionEvent(node, ActionCmd.createSelectionAction(node));
     }
 
     private void fireNodeDefaultAction(ViewNode node) {
-        this.nodeActionListener.handleNodeActionEvent(node, Action.createDefaultAction(node));
+        this.nodeActionListener.handleNodeActionEvent(node, ActionCmd.createDefaultAction(node));
     }
 
     protected void notifySetSelectionRange(ViewNodeContainer viewC, ViewNode node1, ViewNode node2,

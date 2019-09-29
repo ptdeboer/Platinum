@@ -32,9 +32,7 @@ import javax.swing.border.BevelBorder;
  * Docks panels in vertical Boxed JPanel container. Can be used for multiple chained (sub)Tasks.
  */
 public class DockingPanel extends JPanel {
-    private static final long serialVersionUID = -1629058136015889725L;
-
-    public DockingPanel() {
+       public DockingPanel() {
         super();
         initGUI();
     }

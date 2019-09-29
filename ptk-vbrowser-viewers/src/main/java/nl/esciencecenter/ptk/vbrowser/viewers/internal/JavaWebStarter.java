@@ -49,9 +49,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class JavaWebStarter extends ViewerJPanel implements ActionListener, ViewerPlugin,
         MimeViewer {
-    private static final long serialVersionUID = -8153274632131510572L;
-
-    private JTextPane mainTP;
+       private JTextPane mainTP;
 
     private JButton okB;
 

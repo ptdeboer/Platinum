@@ -27,9 +27,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSEvent implements IEvent<VRSEventType>, Serializable  {
 
-    private static final long serialVersionUID = -6655387700048315217L;
-
-    // ========================================================================
+       // ========================================================================
     //
     // ========================================================================
 

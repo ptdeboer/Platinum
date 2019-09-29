@@ -4,11 +4,15 @@
 		<format>dir</format>
 		<format>zip</format>
 	</formats>
+
+
 	<!-- strip the 'target/MODULES-VERSION-bin/MODULE-VERSION/' basedir -->
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<moduleSets>
 		<moduleSet>
-			<!-- Enable access to all projects in the current multimodule build! -->
+			<!-- Enable access to all projects in the current multimodule build
+			     This will also drag in their dependencies ?
+			  -->
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<!-- Now, select which projects to include in this module-set, this will 
 				include dependencies to other modules available in the reactor vat -->
@@ -22,19 +26,21 @@
 				<include>*:ptk-vbrowser-ui</include>
 				<include>*:ptk-vbrowser-viewers</include>
 				<include>*:ptk-vbrowser-viewers-loboviewer</include>
-				<include>*:ptk-vbrowser-start</include>
+				<include>*:ptk-vbrowser-z-start</include>
 			</includes>
+
 			<binaries>
 				<outputDirectory>lib</outputDirectory>
 				<!-- default targets are 'jar' so keep them packed -->
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
+
 		<!-- Scripts: binary attachment = '*-scripts' -->
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
-				<include>*:ptk-vbrowser-start</include>
+				<include>*:ptk-vbrowser-z-start</include>
 			</includes>
 			<binaries>
 				<attachmentClassifier>scripts</attachmentClassifier>
@@ -43,7 +49,22 @@
 				<unpack>true</unpack>
 			</binaries>
 		</moduleSet>
-		<!-- Icons -->
+
+		<!-- Configuration: '*-conf' -->
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>*:ptk-vbrowser-z-start</include>
+			</includes>
+			<binaries>
+				<attachmentClassifier>conf</attachmentClassifier>
+				<outputDirectory>etc/</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+				<unpack>true</unpack>
+			</binaries>
+		</moduleSet>
+
+		<!-- Icons: '*-icons' -->
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
@@ -62,6 +83,7 @@
 				<unpack>true</unpack>
 			</binaries>
 		</moduleSet>
+
 		<!-- External libraries: "*-lib-ext" -> lobobrowser only -->
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
@@ -78,22 +100,23 @@
 				<unpack>true</unpack>
 			</binaries>
 		</moduleSet>
-		<!-- linux binaries-->
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>*:ptk-util-vterm</include>
-			</includes>
-			<binaries>
-				<!--  put linux executable under bin/ -->
-				<attachmentClassifier>linux-bin</attachmentClassifier>
-				<outputDirectory>bin/</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>true</unpack>
-			</binaries>
-		</moduleSet>	
 	</moduleSets>
-	
+
+	<dependencySets>
+		<dependencySet>
+<!--			<useProjectArtifact>false</useProjectArtifact>-->
+<!--			<useProjectAttachments>true</useProjectAttachments>-->
+			<unpack>true</unpack>
+<!--			<scope>runtime</scope>-->
+			<includes>
+				<!-- Full pattern: groupId:artifactId:type:classifier -->
+				<include>nl.piter.vterm:vterm-emulator:zip:linux-bin</include>
+			</includes>
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+			<outputDirectory>bin/</outputDirectory>
+		</dependencySet>
+	</dependencySets>
+
 	<fileSets>
 		<fileSet>
 			<!-- From Platinum Root -->

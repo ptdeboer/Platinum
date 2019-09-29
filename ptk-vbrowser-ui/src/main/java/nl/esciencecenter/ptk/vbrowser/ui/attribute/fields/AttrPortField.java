@@ -30,9 +30,7 @@ import javax.swing.JOptionPane;
 
 public class AttrPortField extends AttrIntField implements FocusListener {
 
-    private static final long serialVersionUID = 7696454286584865802L;
-
-    public AttrPortField() {
+       public AttrPortField() {
         super();
         super.setText("<AttrPortField>"); // dummy
         // Make Sure I AM the first listener

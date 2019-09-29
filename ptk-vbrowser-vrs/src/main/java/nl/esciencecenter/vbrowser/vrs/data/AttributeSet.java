@@ -56,9 +56,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     // ========================================================================
 
     // = serializable
-    private static final long serialVersionUID = -4407735257687000157L;
-
-    public static final String ATTR_SETNAME = "setName";
+       public static final String ATTR_SETNAME = "setName";
 
     private static PLogger logger = null;
 

@@ -41,9 +41,7 @@ import javax.swing.SwingUtilities;
  * Simple Exception Dialog Author P.T. de Boer
  */
 public class ExceptionDialog extends javax.swing.JDialog implements ActionListener {
-    private static final long serialVersionUID = -7063185378095352711L;
-
-    public static void show(Component parent, Throwable ex) {
+       public static void show(Component parent, Throwable ex) {
         show(parent, null, ex, false);
     }
 

@@ -52,8 +52,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
  * Actual Swing JTree 'View' Component.
  */
 public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll {
-    private static final long serialVersionUID = -3310437371919331098L;
-
     private static PLogger logger;
 
     static {
@@ -99,9 +97,6 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 
     /**
      * Create a new ResourceTree using the UI properties from UIModel and the data from DataSource.
-     * 
-     * @param uiModel
-     *            ViewModel which holds UI properties
      */
     public ResourceTree(BrowserInterface browser, ProxyDataSource viewNodeSource) {
         init(browser, viewNodeSource);

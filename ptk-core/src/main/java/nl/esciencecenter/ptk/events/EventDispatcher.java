@@ -91,7 +91,7 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
                 }
 
                 if (hasEvents()) {
-                    logger.infoPrintf("hasEvents(): Nr of events=%d\n", events.size());
+                    logger.debugPrintf("hasEvents(): Nr of events=%d\n", events.size());
                     handleEvent();
                 } else {
                     try {
@@ -99,9 +99,9 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
                             waitMutex.wait(eventIdleWaitTime);
                         }
 
-                        logger.infoPrintf("Wakeup No events\n");
+                        logger.debugPrintf("Wakeup No events\n");
                     } catch (InterruptedException e) {
-                        logger.infoPrintf("<Interrupted>\n");
+                        logger.debugPrintf("<Interrupted>\n");
                     }
                 }
             }
@@ -286,12 +286,12 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
         EventT event = this.popEvent();
 
         if (event == null) {
-            logger.infoPrintf("No Event\n");
+            logger.debugPrintf("No Event\n");
             return;
         }
 
         if (listeners.size() <= 0) {
-            logger.infoPrintf("No Event Listeners registered for event:%s\n", event);
+            logger.debugPrintf("No Event Listeners registered for event:%s\n", event);
             return;
         }
         // Use iterator

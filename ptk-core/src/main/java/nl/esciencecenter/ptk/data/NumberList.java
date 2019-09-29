@@ -24,9 +24,7 @@ import java.util.List;
 
 public class NumberList extends ExtendedList<Number> {
 
-    private static final long serialVersionUID = -741767804216375724L;
-
-    public NumberList(List<? extends Number> ints) {
+       public NumberList(List<? extends Number> ints) {
         super(ints);
     }
 

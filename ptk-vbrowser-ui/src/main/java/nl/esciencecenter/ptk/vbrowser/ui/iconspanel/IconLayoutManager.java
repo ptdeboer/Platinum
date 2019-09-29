@@ -27,6 +27,7 @@ import java.awt.LayoutManager;
 import java.awt.Point;
 import javax.swing.JViewport;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 
@@ -38,12 +39,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
  * 
  * @author Piter T. de Boer.
  */
+@Slf4j
 public class IconLayoutManager implements LayoutManager {
-    private static PLogger logger = PLogger.getLogger(IconLayoutManager.class);
-
-    {
-        //logger.setLevelToDebug();
-    }
 
     private UIViewModel uiModel;
     private Dimension prefSize = null;
@@ -62,12 +59,12 @@ public class IconLayoutManager implements LayoutManager {
     }
 
     public void addLayoutComponent(String name, Component comp) {
-        logger.debugPrintf(">>> addLayoutComponent:'%s' => %c <<<\n", name, comp);
+        log.debug("addLayoutComponent():'{}' => {}\n", name, comp);
         this.changed = true;
     }
 
     public void layoutContainer(Container parent) {
-        logger.debugPrintf(">>> layoutContainer() <<<\n");
+        log.debug(">>> layoutContainer()");
         checkAlignIcons(parent, true);
     }
 
@@ -79,20 +76,19 @@ public class IconLayoutManager implements LayoutManager {
     }
 
     public Dimension minimumLayoutSize(Container parent) {
-        logger.debugPrintf(">>> minimumLayoutSize() <<<\n");
+        log.trace(">>> minimumLayoutSize()");
         return checkAlignIcons(parent, false);
     }
 
     public Dimension preferredLayoutSize(Container parent) {
-        logger.debugPrintf(">>> preferredLayoutSize() <<<\n");
-
-        // TBI: check bug: align icons now during preferesLayoutSize calculations.  
+        log.trace(">>> preferredLayoutSize()");
+        // TBI: check bug: align icons now during preferesLayoutSize calculations.
         return alignIcons(parent, true);
     }
 
     public void removeLayoutComponent(Component comp) {
         this.changed = true;
-        logger.debugPrintf(">>> removeLayoutComponent: %s <<<\n", comp);
+        log.trace("removeLayoutComponent():{}", comp);
     }
 
     /**
@@ -103,7 +99,7 @@ public class IconLayoutManager implements LayoutManager {
      */
 
     protected Dimension alignIcons(Container container, boolean doLayout) {
-        logger.debugPrintf(">>> alignIcons:" + doLayout + "<<<\n");
+        log.trace("alignIcons(): doLayout={}",doLayout);
 
         int row = 0;
         int column = 0;
@@ -146,7 +142,7 @@ public class IconLayoutManager implements LayoutManager {
         int currentYpos = uiModel.getIconVGap(); // start with offset 
 
         for (Component comp : childs) {
-            logger.debugPrintf("Evaluation:%s\n", comp);
+            log.trace("evaluating Component:{}", comp);
 
             if ((comp == null) || (comp.isVisible() == false)) {
                 continue;
@@ -254,8 +250,7 @@ public class IconLayoutManager implements LayoutManager {
             targetSize = container.getSize();
         }
 
-        logger.debugPrintf("Target Size of container=(%d,%d)\n", targetSize.width,
-                targetSize.height);
+        log.trace("getTargetSize(), size=[{},{}]",targetSize.width,targetSize.height);
         return targetSize;
     }
 

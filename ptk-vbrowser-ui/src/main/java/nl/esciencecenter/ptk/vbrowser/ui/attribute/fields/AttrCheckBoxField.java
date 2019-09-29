@@ -30,7 +30,6 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
  * Maps Boolean Attribute to checkbox field.
  */
 public class AttrCheckBoxField extends JCheckBox implements IAttributeField {
-    private static final long serialVersionUID = 3100398728004063981L;
 
     public AttrCheckBoxField() {
         super();

@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>nl.esciencecenter.platinum</groupId>
 		<artifactId>platinum</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -34,6 +34,11 @@
 			<groupId>nl.esciencecenter.platinum</groupId>
 			<artifactId>ptk-web</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>nl.piter.vterm</groupId>
+			<artifactId>vterm-emulator</artifactId>
+			<version>${vterm.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>

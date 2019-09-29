@@ -21,6 +21,7 @@
 package uitests.panels;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JFrame;
 
@@ -28,17 +29,27 @@ import nl.esciencecenter.ptk.task.TransferMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TransferMonitorDialog;
 
 public class TestTransferMonitorDialog {
-    // === Static === 
 
-    /**
-     * Auto-generated main method to display this JDialog
-     */
-    public static void main(String[] args) {
+
+    public static void main(String args[]) {
+
         try {
-            int max = 1000 * 1024;
-            int dif = 50 * 1024;
-            int step = 1024;
-            int numSources = max / dif;
+            // 50 fps
+            testTransfers(new int[]{20,0}, 1000*1024,50*1024, 1024);
+            testTransfers(new int[]{0,1}, 10*100*1024*1024,500*1024*1024, 100*1024);
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        //        testTranfers(50);
+
+    }
+
+
+    public static void testTransfers(int timeDelta[], long totalSize, int sizePerTransfer, int transferStep) throws URISyntaxException {
+
+
+            int numSources = (int)(totalSize / sizePerTransfer);
 
             URI uris[] = new URI[numSources];
             for (int i = 0; i < numSources; i++)
@@ -54,36 +65,40 @@ public class TestTransferMonitorDialog {
             inst.setVisible(true);
             inst.start();
 
-            transfer.startTask("TransferTask", max);
+            transfer.startTask("TransferTask", totalSize);
 
-            String subTask = "?";
+            String subTaskID = "?";
 
-            for (int i = 0; i <= max; i += step) {
+            for (int i = 0; i <= totalSize; i += transferStep) {
                 if (transfer.isCancelled()) {
                     transfer.logPrintf("\n*** CANCELLED ***\n");
                     break;
                 }
 
-                if ((i % dif) == 0) {
-                    subTask = "Transfer #" + i / dif;
-                    transfer.startSubTask(subTask, dif);
-                    transfer.logPrintf("--- New Transfer:%s ---\n -> nr=" + i / dif + "\n", subTask);
+                int subTaskNr=(i/sizePerTransfer);
+
+                if ((i % sizePerTransfer) == 0) {
+                    subTaskID = "Transfer #" + subTaskNr;
+                    transfer.startSubTask(subTaskID, sizePerTransfer);
+                    transfer.logPrintf("--- New Transfer:%s ---\n -> nr=%d \n", subTaskID,subTaskNr);
                 }
 
                 transfer.updateTaskDone(i);
-                transfer.updateSourcesDone(i / dif);
-                transfer.updateSubTaskDone(subTask, i % dif);
+                transfer.updateSourcesDone(i / sizePerTransfer);
+                transfer.updateSubTaskDone(subTaskID, i % sizePerTransfer);
 
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(timeDelta[0],timeDelta[1]);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                // inclusive boundaries:
+                transfer.updateSubTaskDone(subTaskID,  sizePerTransfer);
+
             }
 
+            // inclusive boundaries: -> update to 100% (note for implementation)
+            transfer.updateTaskDone(totalSize); // -> reach 100% :-)
             transfer.endTask(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+       }
 }

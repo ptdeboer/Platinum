@@ -7,9 +7,7 @@ import java.util.Map;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 
 public class UIProperties extends VRSProperties {
-    private static final long serialVersionUID = -3984791544175204642L;
-
-    // default values: 
+       // default values:
 
     private static Color default_label_selected_bg_color = Color.darkGray;
 
@@ -119,7 +117,7 @@ public class UIProperties extends VRSProperties {
     }
 
     /**
-     * Wrapper to detection 'Action Events' since the PLAF way to detect event doesn't always work.
+     * Wrapper to detection 'ActionCmd Events' since the PLAF way to detect event doesn't always work.
      * Typically this is a single mouse click or a double mouse click.
      * 
      * @param e

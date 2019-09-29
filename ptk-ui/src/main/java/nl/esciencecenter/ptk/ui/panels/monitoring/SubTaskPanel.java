@@ -47,9 +47,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * Mini Status Panel
  */
 public class SubTaskPanel extends JPanel implements ActionListener {
-    private static final long serialVersionUID = -6694878602014623166L;
-
-    private JTextField titleTextField;
+       private JTextField titleTextField;
 
     private JLabel destLabel;
 

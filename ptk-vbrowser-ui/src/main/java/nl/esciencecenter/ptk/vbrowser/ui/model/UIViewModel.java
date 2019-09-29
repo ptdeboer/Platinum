@@ -31,11 +31,11 @@ public class UIViewModel {
     // Class
     // ======
 
-    public static enum UIDirection {
+    public enum UIDirection {
         HORIZONTAL, VERTICAL
     };
 
-    public static enum UIAlignment {
+    public enum UIAlignment {
         LEFT, CENTER, RIGHT, FILL
     };
 
@@ -80,11 +80,6 @@ public class UIViewModel {
     // instance
     // ======================================================================== 
 
-    /**
-     * Hierarchical UI properties, if an int value is -1 or an object value is null, inherit the
-     * value from the parent.
-     */
-    final protected UIViewModel parent;
 
     /** Icons size. -1 = inherit from parent. */
     protected int iconSize = 48;
@@ -111,23 +106,8 @@ public class UIViewModel {
 
     private Color bgColorSelected = Color.LIGHT_GRAY;
 
-    public UIViewModel() {
-        parent = null;
-    }
-
-    public UIViewModel(UIViewModel parent) {
-        this.parent = parent;
-    }
-
-    public UIViewModel getParent() {
-        return this.parent;
-    }
 
     public int getIconSize() {
-        // iconSize=-1 means inherit from parent; 
-        if ((iconSize < 0) && (parent != null))
-            return parent.getIconSize();
-
         return iconSize;
     }
 
@@ -152,9 +132,6 @@ public class UIViewModel {
     // ==============================
 
     public int getMaxIconLabelWidth() {
-        if ((maximumIconLabelWidth < 0) && (parent != null))
-            return parent.getMaxIconLabelWidth();
-
         return this.maximumIconLabelWidth;
     }
 
@@ -164,17 +141,11 @@ public class UIViewModel {
 
     /** Horizontal space between Icons */
     public int getIconHGap() {
-        if ((iconHGap < 0) && (parent != null))
-            return parent.getIconHGap();
-
         return iconHGap;
     }
 
     /** Vertical space between Icons */
     public int getIconVGap() {
-        if ((iconVGap < 0) && (parent != null))
-            return parent.getIconVGap();
-
         return iconVGap;
     }
 
@@ -187,30 +158,18 @@ public class UIViewModel {
     }
 
     public Color getForegroundColor() {
-        if ((fgColor == null) && (parent != null))
-            return parent.fgColor;
-
         return fgColor;
     }
 
     public Color getBackgroundColor() {
-        if ((bgColor == null) && (parent != null))
-            return parent.bgColor;
-
         return bgColor;
     }
 
     public Color getSelectedForegroundColor() {
-        if ((fgColorSelected == null) && (parent != null))
-            return parent.fgColorSelected;
-
         return fgColorSelected;
     }
 
     public Color getSelectedBackgroundColor() {
-        if ((bgColorSelected == null) && (parent != null))
-            return parent.bgColorSelected;
-
         return bgColorSelected;
     }
 

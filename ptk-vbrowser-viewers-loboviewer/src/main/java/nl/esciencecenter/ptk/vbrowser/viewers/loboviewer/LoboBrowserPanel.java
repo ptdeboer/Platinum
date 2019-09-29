@@ -38,9 +38,7 @@ import org.lobobrowser.ua.NavigatorProgressEvent;
  */
 public class LoboBrowserPanel extends BrowserPanel
 {
-    private static final long serialVersionUID = 8270762419862152305L;
-
-    // private VRSClient vrs=VFSClient.getDefault();
+       // private VRSClient vrs=VFSClient.getDefault();
 
     private LoboPanelController controller;
 

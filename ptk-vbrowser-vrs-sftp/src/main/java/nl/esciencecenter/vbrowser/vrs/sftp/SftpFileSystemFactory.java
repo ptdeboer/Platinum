@@ -45,9 +45,12 @@ public class SftpFileSystemFactory implements VResourceSystemFactory {
         this.jsch = new JSch();
     }
 
+    /**
+     * note: Scheme "ssh:" is for Shell Channel. Scheme 'sftp:' is for FileSystem.
+     */
     @Override
     public String[] getSchemes() {
-        return new String[] { "sftp", "ssh-ftp" };
+        return new String[] { "sftp", "ssh-ftp","ssh" };
     }
 
     @Override
@@ -65,7 +68,7 @@ public class SftpFileSystemFactory implements VResourceSystemFactory {
     @Override
     public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info,
             VRL vrl) {
-        logger.info("updateResourceInfo:{}", info);
+        logger.debug("updateResourceInfo:{}", info);
         // comma seperated list: 
         info.setDefaultAttribute(ResourceConfigInfo.ATTR_USER_KEY_FILES, "id_rsa,id_dsa", true);
         info.setDefaultAttribute(ResourceConfigInfo.RESOURCE_USERINFO, context.getUserName(), true);
@@ -74,7 +77,7 @@ public class SftpFileSystemFactory implements VResourceSystemFactory {
         info.setDefaultAttribute(SftpFileSystem.SSH_USER_CONFIGSUBDIR_PROPERTY,
                 SftpConfig.SSH_USER_CONFIG_SIBDUR, true);
         info.store();
-        logger.info("updateResourceInfo:Updated:{}", info);
+        logger.debug("updateResourceInfo:Updated:{}", info);
         return info;
     }
 }

@@ -44,9 +44,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ResourceTableModel extends AbstractTableModel implements
         Iterable<ResourceTableModel.RowData> {
-    private static final long serialVersionUID = 4392816921140385298L;
-
-    private static PLogger logger = PLogger.getLogger(ResourceTableModel.class);
+       private static PLogger logger = PLogger.getLogger(ResourceTableModel.class);
 
     /**
      * Resource Row Data

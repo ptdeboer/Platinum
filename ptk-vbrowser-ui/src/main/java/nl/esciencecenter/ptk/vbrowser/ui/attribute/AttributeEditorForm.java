@@ -43,9 +43,7 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 
 public class AttributeEditorForm extends JDialog {
 
-    private static final long serialVersionUID = 9136623460001660679L;
-
-    private static final PLogger logger = PLogger.getLogger(AttributeEditorForm.class);
+       private static final PLogger logger = PLogger.getLogger(AttributeEditorForm.class);
 
     // ---
     // package protected 

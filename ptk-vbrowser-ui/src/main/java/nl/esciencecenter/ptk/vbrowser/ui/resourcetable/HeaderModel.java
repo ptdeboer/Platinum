@@ -26,9 +26,7 @@ import javax.swing.AbstractListModel;
 import nl.esciencecenter.ptk.data.StringList;
 
 public class HeaderModel extends AbstractListModel<String> {
-    private static final long serialVersionUID = -4513306632211174045L;
-
-    private StringList values;
+       private StringList values;
 
     private boolean isEditable = true;
 

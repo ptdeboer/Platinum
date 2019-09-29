@@ -30,9 +30,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * Progress Panel. Shows progress bar + percentage field + status fields and a mini ETA field.
  */
 public class ProgresPanel extends javax.swing.JPanel {
-    private static final long serialVersionUID = 3420505823487373444L;
-
-    //private JPanel miniButtonPnl;
+       //private JPanel miniButtonPnl;
     private JTextField progressTF;
     private JProgressBar progressBar;
     private JTextField timeTF;

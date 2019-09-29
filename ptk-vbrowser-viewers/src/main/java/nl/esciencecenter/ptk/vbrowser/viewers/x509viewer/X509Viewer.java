@@ -37,9 +37,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class X509Viewer extends ViewerJPanel implements CertPanelListener {
-    private static final long serialVersionUID = 5397354476414010762L;
-
-    public static final String ADD_METHOD = "addCert";
+       public static final String ADD_METHOD = "addCert";
 
     public static final String VIEW_METHOD = "viewCert";
 

@@ -21,12 +21,11 @@
 package nl.esciencecenter.ptk.vbrowser.ui.actions;
 
 import javax.swing.AbstractAction;
-//import javax.swing.Action;
+//import javax.swing.ActionCmd;
 import javax.swing.Action;
 
-public abstract class UIAction extends AbstractAction // implements javax.swing.Action
+public abstract class UIAction extends AbstractAction
 {
-    private static final long serialVersionUID = -2196060232819798830L;
 
     public UIAction(String name) {
         super(name);

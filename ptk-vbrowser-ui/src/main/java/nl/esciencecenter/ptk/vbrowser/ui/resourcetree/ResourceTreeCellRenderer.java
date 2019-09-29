@@ -32,9 +32,7 @@ public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer {
     // public static Color COLOR_LIGHT_BLUE=new Color(128,128,255);
 
     /** */
-    private static final long serialVersionUID = -2947025684699355279L;
-
-    private ResourceTree myTree;
+       private ResourceTree myTree;
 
     public ResourceTreeCellRenderer(ResourceTree tree) {
         this.myTree = tree;

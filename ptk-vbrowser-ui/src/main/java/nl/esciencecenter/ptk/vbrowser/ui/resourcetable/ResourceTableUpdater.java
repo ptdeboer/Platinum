@@ -53,13 +53,9 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
     // ========================================================================
 
     private ProxyDataSource dataSource;
-
     private ResourceTableModel tableModel;
-
     private UIViewModel uiModel;
-
     private ViewNode rootNode;
-
     private ViewNodeContainer tableContainer;
 
     /**
@@ -68,7 +64,11 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
     public ResourceTableUpdater(ViewNodeContainer tableContainer, ProxyNode pnode,
             ResourceTableModel resourceTableModel) {
         this.tableContainer = tableContainer;
-        init(new ProxyNodeDataSourceProvider(pnode), resourceTableModel);
+        if (pnode==null) {
+            init(null, resourceTableModel);
+        } else {
+            init(new ProxyNodeDataSourceProvider(pnode), resourceTableModel);
+        }
     }
 
     /**
@@ -104,6 +104,10 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
         setDataSource(nodeDataSource);
     }
 
+    /**
+     * Set datasource, if null clears the table.
+     * @param nodeDataSource
+     */
     protected void setDataSource(ProxyDataSource nodeDataSource) {
         if (dataSource != null) {
             dataSource.removeDataSourceEventListener(this);
@@ -114,13 +118,19 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
             this.dataSource.addDataSourceEventListener(this);
             this.rootNode = null;
         } else {
-            logger.errorPrintf("FIXME: null ProxyNodeDataSource\n");
+            // feature ?
+            logger.warn("Warning: ProxyNodeDataSource is NULL!");
             tableModel.clearData();
         }
     }
 
     public void createTable(boolean headers, boolean data) throws ProxyException {
-        logger.debugPrintf("createTable()\n");
+        logger.debug("createTable()");
+
+        if (dataSource==null) {
+            logger.warn("No DataSource!");
+            return;
+        }
 
         this.rootNode = dataSource.getRoot(uiModel);
         this.tableModel.setRootViewNode(dataSource.getRoot(uiModel));

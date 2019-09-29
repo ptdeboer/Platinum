@@ -192,7 +192,7 @@ public class ImageRenderer {
                 double xratio = scaleWidth / (double) orgWidth;
                 double yratio = scaleHeight / (double) orgHeight;
 
-                if ((xratio >= 2) || (yratio >= 2)) {
+                if ((xratio >= 3) || (yratio >= 3)) {
                     xratio = xratio / 2.0;
                     yratio = yratio / 2.0;
 

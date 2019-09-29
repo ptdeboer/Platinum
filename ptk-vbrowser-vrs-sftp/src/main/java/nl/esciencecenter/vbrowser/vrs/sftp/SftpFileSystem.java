@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.esciencecenter.ptk.crypt.Secret;
-import nl.esciencecenter.ptk.exec.ShellChannel;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.vbrowser.vrs.VCloseable;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
@@ -49,6 +48,8 @@ import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRLUtil;
 
+import nl.piter.vterm.api.ChannelOptions;
+import nl.piter.vterm.api.ShellChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
             throws VrsException {
         //
         super(context, VRLUtil.getServerVRL(vrl));
-        logger.info("SftpFileSystem:New(): for vrl={}", vrl);
+        logger.debug("SftpFileSystem:New(): for vrl={}", vrl);
         UI ui = context.getUI();
         UserUI userUI = null;
 
@@ -135,7 +136,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
         config.privateKeys = new String[] { "id_rsa", "id_dsa" };
 
         config.sshKnowHostFile = SftpConfig.SSH_USER_KNOWN_HOSTS;
-        logger.info("updateSftpConfig(): config:{}", config);
+        logger.debug("updateSftpConfig(): config:{}", config);
 
         return config;
     }
@@ -311,10 +312,11 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
     }
 
     @Override
-    public ShellChannel createShellChannel(VRL optionalLocation) throws IOException {
+    public ShellChannel createShellChannel(VRL optionalLocation, ChannelOptions options) throws IOException {
         try {
             ChannelShell shellChannel = this.sftpSession.createShellChannel();
-            return new SshShellChannel(this.sftpSession, shellChannel);
+            SshShellChannel sshShellChannel = new SshShellChannel(this.sftpSession, shellChannel,options);
+            return sshShellChannel;
         } catch (JSchException e) {
             throw new IOException("Failed to create (SSH)ShellChannel" + e.getMessage(), e);
         }
@@ -322,7 +324,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
 
     @Override
     public boolean close() throws IOException {
-        logger.info("SftpFileSystem closing:" + this);
+        logger.debug("SftpFileSystem closing:" + this);
         this.sftpChannel.close();
         this.sftpSession.close();
         return true;

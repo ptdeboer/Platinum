@@ -51,16 +51,11 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Icon Item. Combines Icon with a label.
  */
 public class IconItem extends JLabel implements ViewNodeComponent, FocusListener {
-    private static final long serialVersionUID = 4212206705193994742L;
 
     private FontInfo fontInfo;
-
     private int max_icon_width;
-
     private ViewNode viewNode;
-
     private boolean selected;
-
     private UIViewModel uiModel;
 
     public IconItem(ViewNodeContainer parent, UIViewModel uiModel, ViewNode item) {

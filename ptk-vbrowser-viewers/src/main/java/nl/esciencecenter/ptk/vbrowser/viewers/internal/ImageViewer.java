@@ -46,9 +46,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Implementation of an Image Viewer.<br>
  */
 public class ImageViewer extends ViewerJPanel {
-    private static final long serialVersionUID = 5768234709523116729L;
-
-    /** The mimetypes I can view */
+       /** The mimetypes I can view */
     private static String mimeTypes[] = { "image/gif", "image/jpeg", "image/bmp", "image/png" };
 
     private static double zoomOutFactors[] = { 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 };

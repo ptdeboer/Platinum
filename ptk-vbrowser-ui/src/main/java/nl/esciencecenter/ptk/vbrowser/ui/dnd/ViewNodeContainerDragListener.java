@@ -39,8 +39,6 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Gesture Recognizer.
  * 
  * This Drag listener checks and selects the actual selected ViewNode inside a ViewNodeContainer.
- * 
- * @author Piter T. de Boer
  */
 public class ViewNodeContainerDragListener implements DragGestureListener {
 

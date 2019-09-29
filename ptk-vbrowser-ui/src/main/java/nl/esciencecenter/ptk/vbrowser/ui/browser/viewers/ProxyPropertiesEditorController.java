@@ -52,7 +52,7 @@ public class ProxyPropertiesEditorController implements ActionListener {
     }
 
     private void doCancel() {
-        logger.info("Closing");
+        logger.debug("Closing");
         this.editorPanel.closeViewer();
     }
 
@@ -67,17 +67,17 @@ public class ProxyPropertiesEditorController implements ActionListener {
     private void doApply() {
 
         if (this.editorPanel.getConfigAttributePanel().hasChangedAttributes()) {
-            logger.info("Update configuration!");
+            logger.debug("Update configuration!");
             AttributePanel panel = this.editorPanel.getConfigAttributePanel();
             Attribute[] attrs = panel.getChangedAttributes();
 
             for (Attribute attr : attrs) {
-                logger.info("Changed attr:{}", attr);
+                logger.debug("Changed attr:{}", attr);
                 this.configInfo.setAttribute(attr);
             }
             this.configInfo.store();
         } else {
-            logger.info("No changed configartion");
+            logger.debug("No changed configartion");
         }
 
     }
@@ -114,7 +114,7 @@ public class ProxyPropertiesEditorController implements ActionListener {
 
     private void updateNode(ProxyNode proxyNode) throws ProxyException {
 
-        logger.info("updateNode():{}", proxyNode);
+        logger.debug("updateNode():{}", proxyNode);
 
         ViewNode viewNode = this.editorPanel.getViewNode();
 
@@ -150,7 +150,7 @@ public class ProxyPropertiesEditorController implements ActionListener {
 
         if (configInfo == null) {
             this.editorPanel.setEditable(false);
-            logger.info("No Configuration Attributes for:{}", proxyNode);
+            logger.debug("No Configuration Attributes for:{}", proxyNode);
             editorPanel.getConfigAttributePanel().setAttributes(new AttributeSet());
             return;
         }
@@ -161,7 +161,7 @@ public class ProxyPropertiesEditorController implements ActionListener {
         this.editorPanel.setEditable(editConfig);
         AttributeSet configAttrs = configInfo.getConfigAttributeSet();
         for (Attribute attr : configAttrs.toArray()) {
-            logger.info("Got config attr:{}", attr);
+            logger.debug("Got config attr:{}", attr);
         }
 
         editorPanel.getConfigAttributePanel().setAttributes(configAttrs);

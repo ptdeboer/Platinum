@@ -59,7 +59,7 @@ public class ViewerResourceLoader {
     private String viewersConfigSubDirName;
 
     public ViewerResourceLoader(VRSClient vrsClient, String viewersConfigSubDirName) {
-        logger.info("ViewerResourceLoader():viewersConfigSubDirName={}", viewersConfigSubDirName);
+        logger.debug("ViewerResourceLoader():viewersConfigSubDirName={}", viewersConfigSubDirName);
         this.viewersConfigSubDirName = viewersConfigSubDirName;
         this.vrsClient = vrsClient;
     }
@@ -101,7 +101,7 @@ public class ViewerResourceLoader {
 
     public void saveProperties(VRL vrl, Properties properties, String comments) throws Exception {
         createViewersConfigDir();
-        logger.info("Saving Properties to:{}", vrl);
+        logger.debug("Saving Properties to:{}", vrl);
         try (OutputStream outps = vrsClient.createOutputStream(vrl)) {
             new ContentWriter(outps).saveProperties(properties, comments);
         }

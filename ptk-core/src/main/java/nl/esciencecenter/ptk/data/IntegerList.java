@@ -25,9 +25,7 @@ import java.util.List;
 
 public class IntegerList extends NumberList implements Serializable {
 
-    private static final long serialVersionUID = -4874302466681798570L;
-
-    // === instance ===
+       // === instance ===
 
     public IntegerList(List<Integer> ints) {
         super(ints);

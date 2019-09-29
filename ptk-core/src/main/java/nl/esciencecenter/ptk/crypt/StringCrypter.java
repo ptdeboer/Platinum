@@ -49,9 +49,7 @@ public class StringCrypter {
 
     public static class EncryptionException extends Exception {
 
-        private static final long serialVersionUID = 1L;
-
-        public EncryptionException(Throwable t) {
+               public EncryptionException(Throwable t) {
             super(t);
         }
 
@@ -62,9 +60,7 @@ public class StringCrypter {
 
     public static class DecryptionFailedException extends EncryptionException {
 
-        private static final long serialVersionUID = 1L;
-
-        public DecryptionFailedException(Throwable t) {
+               public DecryptionFailedException(Throwable t) {
             super(t);
         }
 

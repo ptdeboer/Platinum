@@ -40,9 +40,7 @@ import nl.esciencecenter.ptk.ui.image.ImageSequence;
  */
 public class AnimatedIcon implements Icon, Serializable {
     // === //
-    private static final long serialVersionUID = -5056027227860438690L;
-
-    // === //
+       // === //
 
     protected String description;
 

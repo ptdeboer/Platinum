@@ -4,42 +4,51 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import nl.esciencecenter.ptk.exec.ShellChannel;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import nl.piter.vterm.api.ChannelOptions;
+import nl.piter.vterm.api.ShellChannel;
 
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSchException;
+import nl.piter.vterm.api.TermConst;
 
+@Slf4j
 public class SshShellChannel implements ShellChannel {
 
-    static final private Logger logger = LoggerFactory.getLogger(SshShellChannel.class);
+    public static class SshChannelOptions {
+        // default!
+        public String termType= "xterm"; //"xterm-256color";
+        public int num_cols=80;
+        public int num_rows=24;
+//        public final boolean xforwarding=false;
+//        public final String xforwaring_host=null;
+//        public final int xforwarding_port=0;
 
-    public static class SsshChannelOptions {
-        public boolean xforwarding = true;
-        public String termType;
+        public SshChannelOptions() {
+        }
+
+        public SshChannelOptions(String termType, int numCols, int numRows) {
+            this.termType=termType;
+            this.num_cols=numCols;
+            this.num_rows=numRows;
+        }
     }
 
     private SshSession session;
-
     private ChannelShell channel;
-
     private Object waitForObject = new Object();
-
-    private SsshChannelOptions options;
-
+    private SshChannelOptions options;
     private OutputStream stdin;
-
     private InputStream stdout;
 
-    private String termType;
-
-    protected SshShellChannel(SshSession sshSession, ChannelShell channel) {
-        this.session = sshSession;
-        this.channel = channel;
+    public SshShellChannel(SshSession sftpSession, ChannelShell shellChannel, ChannelOptions options) {
+        this.session = sftpSession;
+        this.channel = shellChannel;
+        // TODO: proper options forwarding!
+        this.options = new SshChannelOptions(options.getTermType(), options.getDefaultColumns(),options.getDefaultRows());
     }
 
     public void connect() throws IOException {
@@ -52,15 +61,20 @@ public class SshShellChannel implements ShellChannel {
             if (options != null) {
                 if (options.termType != null) {
                     channel.setPtyType(options.termType);
-                    this.termType = options.termType;
                 }
 
-                if (options.xforwarding) {
-                    // actual forwarding settings must be done at session level:
-                    // session.setX11Host(options.xhost);
-                    // session.setX11Port(options.xport);
-                    channel.setXForwarding(true);
-                }
+                channel.setPtySize(options.num_cols, options.num_rows, options.num_cols, options.num_rows);
+
+                //                if (options.xforwarding) {
+//                    // actual forwarding settings must be done at session level:
+//                    // session.setX11Host(options.xhost);
+//                    // session.setX11Port(options.xport);
+//                    channel.setXForwarding(true);
+//                }
+
+            } else {
+                channel.setPtyType(TermConst.TERM_XTERM);
+                channel.setPtySize(80,24,80,24);
             }
 
             this.stdin = channel.getOutputStream();
@@ -111,40 +125,40 @@ public class SshShellChannel implements ShellChannel {
 
     public void setPtySize(int col, int row, int wp, int hp) {
         if (this.isConnected() == false) {
-            logger.error("setPtySize(): NOT connected!");
+            log.error("setPtySize(): NOT connected!");
             return;
         }
         this.channel.setPtySize(col, row, wp, hp);
     }
 
     @Override
-    public String getTermType() {
-        return this.termType;
+    public String getPtyTermType() {
+        return this.options.termType;
     }
 
     public void setPtyType(String type) {
         if (this.isConnected() == false) {
-            logger.error("setPtyType(): NOT connected!");
+            log.error("setPtyType(): NOT connected!");
             return;
         }
-        this.termType = type;
+        this.options.termType = type;
         this.channel.setPtyType(type);
     }
 
     @Override
-    public boolean setTermType(String type) {
+    public boolean setPtyTermType(String type) {
         this.setPtyType(type);
         return true;
     }
 
     @Override
-    public boolean setTermSize(int col, int row, int wp, int hp) {
+    public boolean setPtyTermSize(int col, int row, int wp, int hp) {
         this.setPtySize(col, row, wp, hp);
         return true;
     }
 
     @Override
-    public int[] getTermSize() {
+    public int[] getPtyTermSize() {
         // must use ctrl sequence
         return null;
     }

@@ -41,7 +41,7 @@ public class InfoRegistrySaver {
 
     public void save() throws VrsException {
 
-        logger.info("Saving ResourceSystemInfoRegistry to:{}/{}", configDir, fileName);
+        logger.debug("Saving ResourceSystemInfoRegistry to:{}/{}", configDir, fileName);
 
         List<AttributeSet> infoSetList = new ArrayList<AttributeSet>();
         Map<String, ResourceConfigInfo> infos = infoRegistry.getResourceInfos();
@@ -68,7 +68,7 @@ public class InfoRegistrySaver {
 
     protected void saveXML(String xml, VRL configDirVrl, String fileName) throws VrsException {
         //
-        logger.info("Saving ResourceSystemInfoRegistry to:{}/{}", configDirVrl, fileName);
+        logger.debug("Saving ResourceSystemInfoRegistry to:{}/{}", configDirVrl, fileName);
         VRSClient vrsClient = new VRSClient(infoRegistry.getVRSContext());
         //
         xml = XMLData.prettyFormat(xml, 3);
@@ -76,7 +76,7 @@ public class InfoRegistrySaver {
         VFSPath dir = path;
         VFSPath file = path.resolve(fileName);
         if (dir.exists() == false) {
-            logger.info("Creating new config dir:{}", dir);
+            logger.debug("Creating new config dir:{}", dir);
             dir.mkdirs(true);
         }
         vrsClient.writeContents(file, xml);
@@ -88,7 +88,7 @@ public class InfoRegistrySaver {
         VFSPath file = path.resolve(fileName);
 
         if (file.exists() == false) {
-            logger.info("Persistant system info registry not found:{}", file);
+            logger.debug("Persistant system info registry not found:{}", file);
             return null;
         }
         return parseXML(vrsClient.readContentsAsString(file)); 
@@ -105,7 +105,7 @@ public class InfoRegistrySaver {
             String id = set.getStringValue(PERSISTANT_CONFIG_ID);
             set.remove(PERSISTANT_CONFIG_ID);
             ResourceConfigInfo info = infoRegistry.createFrom(set, id);
-            logger.info("new ResourceConfigInfo:{}", info);           
+            logger.debug("new ResourceConfigInfo:{}", info);
             infos.add(info);
         }
 

@@ -24,9 +24,7 @@ package nl.esciencecenter.vbrowser.vrs.exceptions;
  * File or directory not found.
  */
 public class ResourceNotFoundException extends ResourceException {
-    private static final long serialVersionUID = 1829852296515159771L;
-
-    /**
+       /**
      * Public constructor which holds original system exception.
      */
     public ResourceNotFoundException(String message, Throwable cause) {

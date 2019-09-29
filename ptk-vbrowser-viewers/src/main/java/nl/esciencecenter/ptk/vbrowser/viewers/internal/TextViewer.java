@@ -66,9 +66,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Embedded textviewer for the VBrowser.
  */
 public class TextViewer extends ViewerJPanel implements ActionListener, FontToolbarListener {
-    private static final long serialVersionUID = -2866218889160789305L;
-
-    // --
+       // --
     private static final String viewerSettingsFile = "textviewer.props";
 
     private static final String CONFIG_LINE_WRAP = "textviewer.linewrap";
@@ -417,7 +415,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
     }
 
     protected void _load(VRL uri) {
-        infoPrintf("TextViewer Loading:%s\n", uri);
+        debugPrintf("TextViewer Loading:%s\n", uri);
 
         // reset stop flag:
         this.muststop = false;

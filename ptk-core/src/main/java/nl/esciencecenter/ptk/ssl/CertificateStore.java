@@ -177,7 +177,7 @@ public class CertificateStore {
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 
             if (url != null) {
-                logger.infoPrintf("Loading default keystore from classpath:%s\n", url);
+                logger.debugPrintf("Loading default keystore from classpath:%s\n", url);
                 keystore.load(url.openStream(), secret.getChars());
             } else if (autoinit) {
                 logger.warnPrintf("Creating EMPTY KeyStore!\n");
@@ -439,7 +439,7 @@ public class CertificateStore {
 
     public boolean loadKeystore(String location, Secret secret, boolean autoInitialize)
             throws CertificateStoreException {
-        logger.infoPrintf("[%d]:loadKeystore() from:%s\n", Thread.currentThread().getId(), location);
+        logger.debugPrintf("[%d]:loadKeystore() from:%s\n", Thread.currentThread().getId(), location);
 
         if ((secret == null) || (secret.isEmpty())) {
             throw new NullPointerException("Password can not be null.");
@@ -525,7 +525,7 @@ public class CertificateStore {
 
         for (URL url : certificateDirectories) {
             String dir = url.getPath();
-            logger.infoPrintf(" - checking custom certificate folder:%s\n", dir);
+            logger.debugPrintf(" - checking custom certificate folder:%s\n", dir);
 
             if (fsUtil.existsDir(dir) == false) {
                 logger.warnPrintf(" - ignoring non existing custom certificate folder:%s\n", dir);
@@ -552,7 +552,7 @@ public class CertificateStore {
                     try {
                         // Add, but do not save now, only after reading all the certificates.
                         this.addPEMCertificate(pathName, false);
-                        logger.infoPrintf(" - > added Custom Certificate:%s\n", file);
+                        logger.debugPrintf(" - > added Custom Certificate:%s\n", file);
                     } catch (Exception e) {
                         logger.logException(PLogger.INFO, e,
                                 "Warning: Failed to load Custom Certificate (ignoring):%s\n", file);
@@ -610,13 +610,13 @@ public class CertificateStore {
 
             // Multiple private keys could be added here!
             if ((certificateChain != null) && (privateKey != null)) {
-                logger.infoPrintf("Using default user private key:%s\n", userKeyAlias);
+                logger.debugPrintf("Using default user private key:%s\n", userKeyAlias);
                 myKeymanager = new PrivateX509KeyManager(certificateChain, privateKey);
             } else {
                 logger.warnPrintf("Couldn't find user private key alias:%s", userKeyAlias);
             }
         } else {
-            logger.infoPrintf("NO user private key alias specified. Will not use (private key) user authentication !\n");
+            logger.debugPrintf("NO user private key alias specified. Will not use (private key) user authentication !\n");
         }
 
         return createSSLContext(myKeymanager, sslProtocol);
@@ -678,7 +678,7 @@ public class CertificateStore {
         if (location == null)
             location = this.getKeyStoreLocation();
 
-        logger.infoPrintf("Saving keyStore to:%s\n", location);
+        logger.debugPrintf("Saving keyStore to:%s\n", location);
 
         try {
             FileOutputStream fout = new FileOutputStream(new java.io.File(location));
@@ -917,23 +917,23 @@ public class CertificateStore {
     }
 
     protected void checkKeyStore() {
-        logger.infoPrintf("KeyStore: persistant location:%s\n", this.keyStoreLocation);
+        logger.debugPrintf("KeyStore: persistant location:%s\n", this.keyStoreLocation);
 
         try {
             String alias = getFirstKeyAlias();
             if (alias == null) {
-                logger.infoPrintf("KeyStore: No Private key alias found.\n");
+                logger.debugPrintf("KeyStore: No Private key alias found.\n");
             } else {
-                logger.infoPrintf("KeyStore: Found private key alias=%s\n", alias);
+                logger.debugPrintf("KeyStore: Found private key alias=%s\n", alias);
 
                 if (getPrivateKey(alias) == null) {
-                    logger.infoPrintf("KeyStore: Warning: No Private key detected for alias:%s\n", alias);
+                    logger.debugPrintf("KeyStore: Warning: No Private key detected for alias:%s\n", alias);
                 }
                 if (_keyStore.getCertificateChain(alias) == null) {
-                    logger.infoPrintf(
+                    logger.debugPrintf(
                             "KeyStore: Error: Private key found, but has no Certificate Chaing for alias:%s\n", alias);
                 } else {
-                    logger.infoPrintf("KeyStore: Found Certificate chain for Private Key:%s\n", alias);
+                    logger.debugPrintf("KeyStore: Found Certificate chain for Private Key:%s\n", alias);
                 }
             }
         } catch (Exception e) {
@@ -978,17 +978,17 @@ public class CertificateStore {
 
         // Multiple private keys could be added here!
         if (privateKey == null) {
-            logger.infoPrintf("Private key not found:%s\n", alias);
+            logger.debugPrintf("Private key not found:%s\n", alias);
             throw new CertificateStoreException("Couldn't find private key:" + alias);
         }
 
         // Multiple private keys could be added here!
         if (certificateChain == null) {
-            logger.infoPrintf("Private key not found:%s\n", alias);
+            logger.debugPrintf("Private key not found:%s\n", alias);
             throw new CertificateStoreException("Couldn't find Certificate Chain for private key alias:" + alias);
         }
 
-        logger.infoPrintf("Using default user private key:%s\n", alias);
+        logger.debugPrintf("Using default user private key:%s\n", alias);
 
         return new PrivateX509KeyManager(certificateChain, privateKey);
     }

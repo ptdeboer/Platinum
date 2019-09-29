@@ -28,7 +28,7 @@ import javax.swing.JPopupMenu;
 
 import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.ui.UI;
-import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
@@ -38,15 +38,16 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Master Browser Interface.
  */
 public interface BrowserInterface {
+
     /**
      * Returns master platform this browser is associated with.
      */
-    public BrowserPlatform getPlatform();
+    BrowserPlatform getPlatform();
 
     /**
      * Forward exception to master browser.
      */
-    public void handleException(String actionText, Throwable exception);
+    void handleException(String actionText, Throwable exception);
 
     /**
      * Create custom pop-up menu for specified ViewComponent and optional selected ViewNode. <br>
@@ -65,7 +66,7 @@ public interface BrowserInterface {
      *            not the clicked-on ViewNode.
      * @return
      */
-    public JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode,
+     JPopupMenu createActionMenuFor(ViewNodeComponent viewComponent, ViewNode viewNode,
             boolean canvasMenu);
 
     /**
@@ -78,29 +79,31 @@ public interface BrowserInterface {
      * @param action
      *            - actual action.
      */
-    public void handleNodeAction(ViewNodeComponent viewComponent, ViewNode node, Action action);
+     void handleNodeAction(ViewNodeComponent viewComponent, ViewNode node, ActionCmd action);
 
     /**
      * Return simple UI Interface.
+     * This is a proxy object fore headless environments.
      */
-    public UI getUI();
+     UI getUI();
 
     /**
      * Perform Drop.
      * 
      * @param uiComponent
-     *            - Swing component.
+     *            Swing component.
      * @param optPoint
-     *            - cordinates inside uiComponent.
+     *            coordinates inside uiComponent.
      * @param viewNode
-     *            - effective ViewNode
+     *            effective ViewNode
      * @param dropAction
-     *            - Actual drop action, Copy, Move, Paste or Link.
+     *            Actual drop action, Copy, Move, Paste or Link.
      * @param vris
-     *            - list of resource locations.
-     * @return true - if drop succeed and has finished.
+     *            list of resource locations.
+     * @return true
+ *                if drop succeed and has finished.
      */
-    public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode,
+     boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode,
             DropAction dropAction, List<VRL> vris);
 
     /**
@@ -109,6 +112,6 @@ public interface BrowserInterface {
      * 
      * @return
      */
-    public ITaskSource getTaskSource();
+     ITaskSource getTaskSource();
 
 }

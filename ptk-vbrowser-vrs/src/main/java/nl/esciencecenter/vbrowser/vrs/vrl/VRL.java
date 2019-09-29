@@ -36,9 +36,7 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
  */
 public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>, Serializable {
 
-    private static final long serialVersionUID = -3255450059796404575L;
-
-    public static VRL createVRL(URIFactory factory, boolean duplicateFactory) {
+       public static VRL createVRL(URIFactory factory, boolean duplicateFactory) {
         if (duplicateFactory)
             factory = factory.duplicate();
         return new VRL(factory.duplicate());

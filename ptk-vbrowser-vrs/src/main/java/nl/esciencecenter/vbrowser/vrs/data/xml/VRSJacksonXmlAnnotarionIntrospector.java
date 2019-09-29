@@ -10,9 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
  */
 public class VRSJacksonXmlAnnotarionIntrospector extends JacksonXmlAnnotationIntrospector {
 
-    private static final long serialVersionUID = -6754790211041739285L;
-
-    public VRSJacksonXmlAnnotarionIntrospector() {
+       public VRSJacksonXmlAnnotarionIntrospector() {
         super();
         init();
     }

@@ -50,9 +50,7 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
  * Transfer Monitor dialog for (VFS)Transfers.
  */
 public class TransferMonitorDialog extends javax.swing.JDialog implements ActionListener {
-    private static final long serialVersionUID = -8463719389609233817L;
-
-    private static PLogger logger;
+       private static PLogger logger;
 
     static {
         logger = PLogger.getLogger(TransferMonitorDialog.class);
@@ -124,7 +122,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
             public void doTask() {
                 while (vfsTransferInfo.isDone() == false) {
                     if (suspended == true) {
-                        logger.infoPrintf("Dialog Suspended for: %s\n", vfsTransferInfo.toString());
+                        logger.debugPrintf("Dialog Suspended for: %s\n", vfsTransferInfo.toString());
                         return;
                     }
 
@@ -158,7 +156,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
                     }
                 }// while()
 
-                logger.infoPrintf("Post updateLoop for (done) transfer:%s\n",
+                logger.debugPrintf("Post updateLoop for (done) transfer:%s\n",
                         vfsTransferInfo.toString());
 
                 // task done: final update to show statistics when job is done!
@@ -168,7 +166,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
 
             @Override
             public void stopTask() {
-                logger.infoPrintf("stopTask() called for:%s\n", vfsTransferInfo.toString());
+                logger.debugPrintf("stopTask() called for:%s\n", vfsTransferInfo.toString());
                 // stop THIS task, not the actual Transfer Task !
                 // (must use start() again to the dialog update!
                 suspended = true;

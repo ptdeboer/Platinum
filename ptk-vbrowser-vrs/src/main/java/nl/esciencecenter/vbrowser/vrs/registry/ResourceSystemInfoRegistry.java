@@ -89,10 +89,10 @@ public class ResourceSystemInfoRegistry {
      */
     protected boolean save() {
 
-        logger.info("Saving ResourceSystemInfoRegistry for VRSContext:{}", vrsContext);
+        logger.debug("Saving ResourceSystemInfoRegistry for VRSContext:{}", vrsContext);
 
         if (vrsContext.hasPersistantConfig() == false) {
-            logger.info("No persistant configuration for:" + vrsContext);
+            logger.debug("No persistant configuration for:" + vrsContext);
             return false;
         }
 
@@ -126,7 +126,7 @@ public class ResourceSystemInfoRegistry {
     public boolean reload() {
 
         if (vrsContext.hasPersistantConfig() == false) {
-            logger.info("No persistant configuration for:" + vrsContext);
+            logger.debug("No persistant configuration for:" + vrsContext);
             return false;
         }
 

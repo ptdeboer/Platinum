@@ -164,9 +164,7 @@ public class ImagePane extends JComponent {
     } // imageWaiters 
 
     // needed by swing 
-    private static final long serialVersionUID = 4745630397251453021L;
-
-    // ===============================================================
+       // ===============================================================
     // Instance :
     // ================================================================
 

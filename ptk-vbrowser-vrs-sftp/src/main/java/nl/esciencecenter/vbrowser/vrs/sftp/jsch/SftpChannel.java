@@ -44,7 +44,7 @@ public class SftpChannel implements AutoCloseable {
         try {
             this.userHome = this.channel.pwd();
         } catch (SftpException e) {
-            logger.info("Failed to retrieve PWD for:{}", this);
+            logger.warn("Failed to retrieve PWD for:{}", this);
             this.userHome = null;
         }
     }
@@ -127,7 +127,7 @@ public class SftpChannel implements AutoCloseable {
                 attrs = channel.lstat(remotePath);
             }
 
-            logger.info("statSftpAttrs():remotePath='{}' => stat='{}'", remotePath, attrs);
+            logger.debug("statSftpAttrs():remotePath='{}' => stat='{}'", remotePath, attrs);
             return attrs;
         }
     }

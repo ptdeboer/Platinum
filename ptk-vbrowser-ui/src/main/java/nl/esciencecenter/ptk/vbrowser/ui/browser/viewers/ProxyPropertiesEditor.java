@@ -46,8 +46,6 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
 
-    private static final long serialVersionUID = -5320614535536348580L;
-
     public static final String APPLY_ACTION = "Apply";
 
     public static final String RESET_ACTION = "Reset";

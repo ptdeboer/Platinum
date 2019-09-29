@@ -44,9 +44,7 @@ public class AutoCompleteTextField extends JComboBox<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoCompleteTextField.class);
 
-    private static final long serialVersionUID = 2531178303560053536L;
-
-    public final static String COMBOBOX_CHANGED = "COMBOBOX_CHANGED";
+       public final static String COMBOBOX_CHANGED = "COMBOBOX_CHANGED";
 
     public final static String COMBOBOX_AUTOCOMPLETED = "COMBOBOX_AUTOCOMPLETED";
 
@@ -55,9 +53,7 @@ public class AutoCompleteTextField extends JComboBox<String> {
     private StringList history = new StringList();
 
     public class CBDocument extends PlainDocument {
-        private static final long serialVersionUID = -7002767598883985096L;
-
-        public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
+               public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
             if (str == null)
                 return;
 
@@ -103,7 +99,7 @@ public class AutoCompleteTextField extends JComboBox<String> {
     }
 
     protected void handleTextFieldEvent(ActionEvent event) {
-        logger.info("handleTextFieldEvent():{}", event);
+        logger.debug("handleTextFieldEvent():{}", event);
         if (event.getActionCommand().equals(this.getActionCommand())) {
             addFieldToHistory();
         }

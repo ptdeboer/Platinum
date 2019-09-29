@@ -1,48 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ptk-zipdist</artifactId>
-	<name>Platinum ZIP Dist ${project.version}</name>
-	<packaging>pom</packaging>
+    <artifactId>ptk-zipdist</artifactId>
+    <name>Platinum ZIP Dist ${project.version}</name>
+    <packaging>pom</packaging>
 
-	<parent>
-		<groupId>nl.esciencecenter.platinum</groupId>
-		<artifactId>platinum</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    <parent>
+        <groupId>nl.esciencecenter.platinum</groupId>
+        <artifactId>platinum</artifactId>
+        <version>1.3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-	<dependencies>
-		<!-- Dependency on last module to sort zipdist to the end -->
-		<dependency>
-			<groupId>nl.esciencecenter.platinum</groupId>
-			<artifactId>ptk-vbrowser-start</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <!-- Dependency on last module to sort zipdist to the end -->
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-vbrowser-z-start</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>distro-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>src/assembly/dist.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+        <!-- is already a dependency from pkt-util-vterm -->
+        <!--		<dependency>-->
+        <!--			<groupId>nl.piter.vterm</groupId>-->
+        <!--			<artifactId>vterm-emulator</artifactId>-->
+        <!--			<version>${vterm.version}</version>-->
+        <!--			<classifier>linux-bin</classifier>-->
+        <!--			<type>zip</type>-->
+        <!--			<scope>runtime</scope>-->
+        <!--		</dependency>-->
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>distro-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/dist.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

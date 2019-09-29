@@ -1,7 +1,7 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
 /**
- * Internal ProxyBrowser Viewers.
+ * Interface to detect Internal ProxyBrowser Viewers.
  */
 public interface ProxyViewer {
 

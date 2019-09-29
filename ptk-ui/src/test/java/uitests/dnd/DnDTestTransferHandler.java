@@ -12,9 +12,7 @@ import javax.swing.TransferHandler;
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
 
 public class DnDTestTransferHandler extends TransferHandler {
-    private static final long serialVersionUID = 6542323857970218067L;
-
-    public boolean importData(TransferSupport support) {
+       public boolean importData(TransferSupport support) {
         outPrintf("importData()");
 
         try {

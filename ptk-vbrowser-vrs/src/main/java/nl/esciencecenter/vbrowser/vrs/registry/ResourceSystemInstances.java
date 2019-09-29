@@ -28,9 +28,7 @@ import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 
 public class ResourceSystemInstances extends LinkedHashMap<String, LinkedHashMap<String, VResourceSystem>> {
     // not serializable!
-    private static final long serialVersionUID = 1L;
-
-    public Map<String, VResourceSystem> getResourceSystemsFor(VRSContext vrsContext) {
+       public Map<String, VResourceSystem> getResourceSystemsFor(VRSContext vrsContext) {
         return this.get("" + vrsContext.getID());
     }
 

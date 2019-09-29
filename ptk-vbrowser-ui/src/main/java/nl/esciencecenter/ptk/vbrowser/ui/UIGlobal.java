@@ -54,7 +54,7 @@ public class UIGlobal {
     public static void assertGuiThread(boolean mustBeGuiThread, String msg) throws Error {
         // still happens when trying to read/acces link targets of linknodes 
         if (mustBeGuiThread != UIGlobal.isGuiThread()) {
-            uiLogger.infoPrintf("\n>>>\n    *** Swing GUI Event Assertion Error *** !!!\n>>>\n");
+            uiLogger.errorPrintf("\n>>>\n    *** Swing GUI Event Assertion Error *** !!!\n>>>\n");
             throw new Error("Internal Error. Cannot perform this "
                     + (mustBeGuiThread ? "during" : "outside")
                     + "during the Swing GUI Event thread.\n" + msg);

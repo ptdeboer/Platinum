@@ -24,9 +24,7 @@ package nl.esciencecenter.vbrowser.vrs.exceptions;
  * Class or Type mismatch.
  */
 public class ResourceTypeMismatchException extends ResourceException {
-    private static final long serialVersionUID = 5927781236898146710L;
-
-    public ResourceTypeMismatchException(String message, Throwable cause) {
+       public ResourceTypeMismatchException(String message, Throwable cause) {
         super(message, cause, RESOURCE_TYPE_MISMATCH);
     };
 

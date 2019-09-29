@@ -53,9 +53,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable {
-    private static final long serialVersionUID = -8822489309726132852L;
-
-    private static PLogger logger;
+       private static PLogger logger;
 
     static {
         logger = PLogger.getLogger(IconsPanel.class);

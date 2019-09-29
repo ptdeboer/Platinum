@@ -83,7 +83,7 @@ public class VRSContext {
     }
 
     private void init(VRSProperties privateProperties) {
-        logger.infoPrintf("***New VRSContext(), id=" + id + "***");
+        logger.debugPrintf("***New VRSContext(), id=" + id + "***");
         // default Static Registry ! 
         this.registry = Registry.getInstance();
         this.vrsProperties = privateProperties;
@@ -227,7 +227,7 @@ public class VRSContext {
             }
         }
 
-        logger.infoPrintf("Property not defined or wrong value:%s\n",
+        logger.debugPrintf("Property not defined or wrong value:%s\n",
                 VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
         return null;
     }

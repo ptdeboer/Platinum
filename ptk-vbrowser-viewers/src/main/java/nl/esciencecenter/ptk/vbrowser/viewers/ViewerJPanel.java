@@ -54,9 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerPlugin,
         MimeViewer, ViewerEventSource {
-    private static final long serialVersionUID = 7872709733522871820L;
-
-    // === Instance === //
+       // === Instance === //
 
     private JPanel innerPanel;
     private VRL viewedUri;

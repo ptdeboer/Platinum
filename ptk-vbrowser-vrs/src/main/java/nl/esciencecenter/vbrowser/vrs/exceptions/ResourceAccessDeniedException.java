@@ -25,9 +25,7 @@ package nl.esciencecenter.vbrowser.vrs.exceptions;
  */
 public class ResourceAccessDeniedException extends ResourceException {
 
-    private static final long serialVersionUID = 1829852296515159771L;
-
-    /**
+       /**
      * Public constructor which holds original system exception.
      * 
      * @param sourcePath

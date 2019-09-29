@@ -33,9 +33,7 @@ import nl.esciencecenter.ptk.util.SortUtil;
  */
 public class StringList extends ExtendedList<String> implements Cloneable, Serializable {
 
-    private static final long serialVersionUID = -2559548865729284189L;
-
-    /**
+       /**
      * Factory method to merge two arrays. Duplicates are removed.
      */
     public static String[] merge(String[] arr1, String[] arr2) {

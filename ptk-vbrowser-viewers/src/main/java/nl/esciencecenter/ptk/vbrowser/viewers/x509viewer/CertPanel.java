@@ -34,9 +34,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
 public class CertPanel extends JPanel {
-    private static final long serialVersionUID = -392090763524848492L;
-
-    public static final int CANCEL = -1;
+       public static final int CANCEL = -1;
 
     public static final int OK = 0;
 

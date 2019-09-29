@@ -35,9 +35,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties> {
 
-    private static final long serialVersionUID = 1515535666077358909L;
-
-    /**
+       /**
      * Optional Parent for hierarchical properties.
      */
     protected VRSProperties parent = null;

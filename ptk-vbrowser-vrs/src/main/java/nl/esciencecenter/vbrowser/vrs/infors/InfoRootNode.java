@@ -177,14 +177,14 @@ public class InfoRootNode extends InfoResourceNode {
 
         try {
             saveTo(saveVrl);
-            logger.infoPrintf("Saved to %s\n", saveVrl);
+            logger.debugPrintf("Saved to %s\n", saveVrl);
         } catch (VrsException e) {
             logger.logException(PLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, saveVrl);
         }
     }
 
     protected void saveTo(VRL configVrl) throws VrsException {
-        logger.infoPrintf("Saving InfoRootNode to:%s\n", configVrl);
+        logger.debugPrintf("Saving InfoRootNode to:%s\n", configVrl);
 
         VRSClient vrsClient = this.infors.getVRSClient();
         try {
@@ -195,7 +195,7 @@ public class InfoRootNode extends InfoResourceNode {
             VFSPath dir = path.getParent();
 
             if (dir.exists() == false) {
-                logger.infoPrintf("Creating new config dir:%s\n", dir);
+                logger.debugPrintf("Creating new config dir:%s\n", dir);
                 dir.mkdirs(true);
             }
             try (OutputStream outps=vrsClient.createOutputStream(path,false)) {
@@ -227,7 +227,7 @@ public class InfoRootNode extends InfoResourceNode {
         try {
             VFSPath path = vrsClient.openVFSPath(loadVrl);
             if (path.exists() == false) {
-                logger.infoPrintf("Root config XML file not found:%s", loadVrl);
+                logger.debugPrintf("Root config XML file not found:%s", loadVrl);
                 return;
             }
             String xml;

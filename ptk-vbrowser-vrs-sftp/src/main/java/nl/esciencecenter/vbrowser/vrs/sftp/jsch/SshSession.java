@@ -97,7 +97,7 @@ public class SshSession implements AutoCloseable {
     }
 
     protected void initSession() throws JSchException {
-        logger.info("initSession():{}", this);
+        logger.debug("initSession():{}", this);
 
         try {
             this.session = jsch.getSession(config.user, config.host, config.port);
@@ -215,7 +215,7 @@ public class SshSession implements AutoCloseable {
 
         String keys[] = config.privateKeys;
         if ((keys == null) || (keys.length <= 0)) {
-            logger.info("addUserIDFiles():No private keys");
+            logger.debug("addUserIDFiles():No private keys");
             return;
         }
 
@@ -223,10 +223,10 @@ public class SshSession implements AutoCloseable {
             try {
                 FSPath keyFile = configPath.resolve(key);
                 if (keyFile.exists()) {
-                    logger.info("addUserIDFiles(): adding existing identity:{}\n", keyFile);
+                    logger.debug("addUserIDFiles(): adding existing identity:{}\n", keyFile);
                     jsch.addIdentity(keyFile.getPathname());
                 } else {
-                    logger.info("addUserIDFiles(): ignoring missing identity file:{}\n", keyFile);
+                    logger.debug("addUserIDFiles(): ignoring missing identity file:{}\n", keyFile);
                 }
             } catch (IOException e) {
                 logger.error("Got IOException accessing file:{}/{} => IOException:{}", configPath,

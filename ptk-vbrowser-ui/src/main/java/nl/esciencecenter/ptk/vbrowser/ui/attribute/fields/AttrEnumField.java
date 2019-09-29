@@ -27,8 +27,6 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
 public class AttrEnumField extends SelectionComboBox<String> implements IAttributeField {
 
-    private static final long serialVersionUID = -2524144091178443352L;
-
     boolean enumEditable = false; // whether enum types are editable
 
     public AttrEnumField() {

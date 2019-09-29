@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,32 +20,60 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
-import java.awt.Color;
-import java.awt.Image;
+import nl.esciencecenter.ptk.ui.icons.ImageRenderer;
+
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import nl.esciencecenter.ptk.ui.icons.ImageRenderer;
 
 /**
  * XPM like bitmaps for icons.
  */
 public class MiniIcons {
 
-    public static String tabDeleteMiniColors[][] = { { ".", "#000000" }, { "X", "#ff0000" } };
+    // @formatter:off
+    public static String[][] tabDeleteMiniColors = {
+            { ".", "#000000" },
+            { "X", "#ff0000" }
+    };
 
-    public static String tabDeleteMiniIcon = "...........\n" + ".XX.....XX.\n" + "..XX...XX..\n"
-            + "...XX.XX...\n" + "....XXX....\n" + "...XX.XX...\n" + "..XX...XX..\n"
-            + ".XX.....XX.\n" + "...........\n";
+    // @formatter:off
+    public static String tabDeleteMiniIcon =
+            "...........\n" +
+            ".XX.....XX.\n" +
+            "..XX...XX..\n" +
+            "...XX.XX...\n" +
+            "....XXX....\n" +
+            "...XX.XX...\n" +
+            "..XX...XX..\n" +
+            ".XX.....XX.\n" +
+            "...........\n";
 
-    public static String tabAddMiniIcon = ".........\n" + "....X....\n" + "....X....\n"
-            + "....X....\n" + ".XXXXXXX.\n" + "....X....\n" + "....X....\n" + "....X....\n"
-            + ".........\n";
+    // @formatter:off
+    public static String tabAddMiniIcon =
+            ".........\n" +
+            "....X....\n" +
+            "....X....\n" +
+            "....X....\n" +
+            ".XXXXXXX.\n" +
+            "....X....\n" +
+            "....X....\n" +
+            "....X....\n" +
+            ".........\n";
 
-    public static String tabMiniQuestionMark = ".........\n" + "...XXXX..\n" + "..XX..XX.\n"
-            + "......XX.\n" + ".....XX..\n" + "....XX...\n" + "....XX...\n" + ".........\n"
-            + "....XX...\n";
+    // @formatter:off
+    public static String tabMiniQuestionMark =
+            ".........\n" +
+            "...XXXX..\n" +
+            "..XX..XX.\n" +
+            "......XX.\n" +
+            ".....XX..\n" +
+            "....XX...\n" +
+            "....XX...\n" +
+            ".........\n" +
+            "....XX...\n";
 
+    // @formatter:on
     public static Image getTabDeleteImage() {
         Map<String, Color> colormap = new HashMap<String, Color>();
         colormap.put(".", new Color(0, 0, 0, 0));

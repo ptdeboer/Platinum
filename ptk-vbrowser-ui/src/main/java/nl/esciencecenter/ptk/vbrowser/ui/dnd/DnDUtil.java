@@ -83,7 +83,7 @@ public class DnDUtil {
         } else if ((dndAction & DnDConstants.ACTION_LINK) > 0) {
             return DropAction.LINK;
         } else {
-            throw new Error("Invalid Drop Action:" + dndAction);
+            throw new Error("Invalid Drop ActionCmd:" + dndAction);
         }
     }
 
@@ -115,7 +115,7 @@ public class DnDUtil {
      */
     public static boolean doPasteData(Component uiComponent, ViewNode viewNode, Transferable data,
             DropAction effectiveDnDAction) {
-        DnDUtil.infoPrintf("doPasteData:(action:%s) on:%s\n", effectiveDnDAction, viewNode);
+        DnDUtil.debugPrintf("doPasteData:(action:%s) on:%s\n", effectiveDnDAction, viewNode);
 
         return performAcceptedDrop(uiComponent, null, viewNode, data, null, effectiveDnDAction);
     }
@@ -127,7 +127,7 @@ public class DnDUtil {
     static public boolean performAcceptedDrop(Component uiComponent, Point point,
             ViewNode targetViewNode, Transferable data, DropAction userDropAction,
             DropAction effectiveDropAction) {
-        DnDUtil.infoPrintf("performAcceptedDrop():%s -> %s\n", uiComponent, targetViewNode);
+        DnDUtil.debugPrintf("performAcceptedDrop():%s -> %s\n", uiComponent, targetViewNode);
 
         // Should already be cecked
         if (DnDData.canConvertToVRLs(data) == false) {

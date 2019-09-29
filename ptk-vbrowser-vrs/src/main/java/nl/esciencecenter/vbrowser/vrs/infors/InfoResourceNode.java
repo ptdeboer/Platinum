@@ -306,7 +306,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
 
     public InfoResourceNode addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL,
             boolean save) throws VrsException {
-        logger.infoPrintf(">>>Adding new resourceLink:%s\n", targetLink);
+        logger.debugPrintf(">>>Adding new resourceLink:%s\n", targetLink);
 
         InfoRSPathNode parentNode;
 

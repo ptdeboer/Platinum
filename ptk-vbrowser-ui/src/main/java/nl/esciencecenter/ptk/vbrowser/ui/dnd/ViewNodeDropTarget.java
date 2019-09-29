@@ -45,9 +45,7 @@ import nl.esciencecenter.vbrowser.vrs.VRSTypes;
  * Swing/AWT Compatible DnD Support.
  */
 public class ViewNodeDropTarget extends DropTarget implements DropTargetListener {
-    private static final long serialVersionUID = 1985854014807809151L;
-
-    public ViewNodeDropTarget(Component comp) {
+       public ViewNodeDropTarget(Component comp) {
         super(comp, DnDConstants.ACTION_LINK, null, true);
         this.setComponent(comp);
         // setDefaultActions(DnDConstants.ACTION_COPY);
@@ -116,7 +114,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
             succes = DnDUtil.performAcceptedDrop(uiComp, p, targetNode, transferable,
                     DnDUtil.getDropAction(userDropAction), DnDUtil.getDropAction(effectiveAction));
         } else {
-            DnDUtil.debugPrintf("Effective Action=NONE for:%s\n", dtde);
+            DnDUtil.debugPrintf("Effective ActionCmd=NONE for:%s\n", dtde);
         }
 
         dtde.getDropTargetContext().dropComplete(succes);

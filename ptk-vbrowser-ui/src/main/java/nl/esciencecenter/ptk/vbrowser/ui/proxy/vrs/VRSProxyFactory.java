@@ -95,7 +95,7 @@ public class VRSProxyFactory extends ProxyFactory {
 
     // actual open location: 
     public VRSProxyNode doOpenLocation(VRL locator) throws ProxyException {
-        logger.infoPrintf(">>> doOpenLocation():%s <<<\n", locator);
+        logger.debugPrintf(">>> doOpenLocation():%s <<<\n", locator);
 
         try {
             VPath vnode = vrsClient.openPath(createVRL(locator));

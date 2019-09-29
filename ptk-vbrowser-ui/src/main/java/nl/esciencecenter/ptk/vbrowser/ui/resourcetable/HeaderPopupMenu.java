@@ -35,9 +35,7 @@ import javax.swing.JTable;
  * Table Header popup menu + popup listener. Creates dynamic menu from DataModel.
  */
 public class HeaderPopupMenu extends JPopupMenu {
-    private static final long serialVersionUID = -3678190881308127063L;
-
-    // ========================================================================
+       // ========================================================================
     // Class Stuff
     // ========================================================================
 
@@ -49,7 +47,7 @@ public class HeaderPopupMenu extends JPopupMenu {
     /** Non static ActionListener so that it can access outer class members */
     public class ANPopupListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            // Global.debugPrintln("PopupListener","Action:"+e);
+            // Global.debugPrintln("PopupListener","ActionCmd:"+e);
             // Global.debugPrintln("PopupListener","source:"+e.getSource());
 
             String cmdstr = e.getActionCommand();

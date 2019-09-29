@@ -33,9 +33,7 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import javax.swing.Icon;
 
 public class ResourceTableCellRenderer extends DefaultTableCellRenderer {
-    private static final long serialVersionUID = -7461721298242661750L;
-
-    @Override
+       @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
             boolean hasFocus, int row, int column) {
         UIViewModel uiModel = null;

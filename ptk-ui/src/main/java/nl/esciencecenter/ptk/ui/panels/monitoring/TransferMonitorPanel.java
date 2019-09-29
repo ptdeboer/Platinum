@@ -37,9 +37,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 public class TransferMonitorPanel extends JPanel {
-    private static final long serialVersionUID = -8105023008570959471L;
-
-    // =======================================================================
+       // =======================================================================
 
     private JTextField titleTextField;
     private JLabel destLabel;

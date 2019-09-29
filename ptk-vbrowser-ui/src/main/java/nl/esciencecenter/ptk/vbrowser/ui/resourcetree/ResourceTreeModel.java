@@ -35,9 +35,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Generic ResourceTreeModel containing only ViewNodes and Attributes.
  */
 public class ResourceTreeModel extends DefaultTreeModel {
-    private static final long serialVersionUID = -1155738043667059217L;
-
-    private static PLogger logger;
+       private static PLogger logger;
 
     static {
         logger = PLogger.getLogger(ResourceTreeModel.class);

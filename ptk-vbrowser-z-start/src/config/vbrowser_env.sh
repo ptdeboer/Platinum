@@ -1,0 +1,14 @@
+#!/bin/bash
+##
+#
+
+# Custom environment
+
+### Autoconfiguration START ###
+
+# VBROWSER_INSTALL="@VBROWSER_INSTALL@"
+# VBROWSER_LIBDIR="@VBROWSER_LIBDIR"
+# VBROWSER_BINDIR="@VBROWSER_BINDIR"
+# VBROWSER_SYSCONFDIR="@VBROWSER_SYSCONFDIR@"
+
+### Autoconfiguration END ###

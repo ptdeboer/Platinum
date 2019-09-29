@@ -44,9 +44,7 @@ import nl.esciencecenter.ptk.util.StringUtil;
 
 public class TaskMonitorDialog extends javax.swing.JDialog implements ActionListener,
         WindowListener {
-    private static final long serialVersionUID = -6758655504973209472L;
-
-    // === Static === 
+       // === Static ===
 
     public static TaskMonitorDialog showTaskMonitorDialog(JFrame frame, ActionTask task,
             int delayMillis) {

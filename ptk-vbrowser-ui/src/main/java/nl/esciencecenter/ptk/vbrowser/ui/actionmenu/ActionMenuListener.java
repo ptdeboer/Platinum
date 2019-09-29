@@ -25,6 +25,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 
 public interface ActionMenuListener {
 
-    void handlePopUpMenuAction(ViewNodeComponent viewComp, ViewNode viewNode, Action theAction);
+    void handlePopUpMenuAction(ViewNodeComponent viewComp, ViewNode viewNode, ActionCmd theAction);
 
 }

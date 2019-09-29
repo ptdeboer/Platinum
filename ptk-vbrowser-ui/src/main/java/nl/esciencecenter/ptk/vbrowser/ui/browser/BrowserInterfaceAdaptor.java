@@ -31,7 +31,7 @@ import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -74,7 +74,7 @@ public class BrowserInterfaceAdaptor implements BrowserInterface {
     }
 
     @Override
-    public void handleNodeAction(ViewNodeComponent viewComp, ViewNode node, Action action) {
+    public void handleNodeAction(ViewNodeComponent viewComp, ViewNode node, ActionCmd action) {
         logger.errorPrintf("handleNodeAction:%s", node);
     }
 

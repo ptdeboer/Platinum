@@ -38,9 +38,7 @@ import javax.swing.border.BevelBorder;
  */
 public class CertificateDialog extends javax.swing.JDialog {
 
-    private static final long serialVersionUID = -48781947889542443L;
-
-    public static final int CANCEL = -1;
+       public static final int CANCEL = -1;
     public static final int OK = 0;
     public static final int TEMPORARY = 1;
     public static final int NO = 2;

@@ -134,7 +134,7 @@ public class VRSCopyManager implements VRSTransferManager {
     }
 
     protected VInfoResourcePath doCopyInfoNodeTo(VPath sourcePath, VPath destPath) throws VrsException {
-        logger.infoPrintf("Copying Actual ResourceNode attributes to create link to:%s\n", sourcePath);
+        logger.debugPrintf("Copying Actual ResourceNode attributes to create link to:%s\n", sourcePath);
         // copy/link the original ResourceNode and do not create a link-to-a-link(!)
 
         if ((sourcePath instanceof VInfoResourcePath) == false) {

@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.ui.widgets;
 
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
@@ -27,12 +28,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JToolBar;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
 
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
@@ -40,13 +37,11 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
 import java.awt.dnd.DropTarget;
 
 public class NavigationBar extends JToolBar implements URIDropTargetLister {
-    private static final long serialVersionUID = -7147394442677763506L;
 
     public static final int LOCATION_ONLY = 1;
-
     public static final int LOCATION_AND_NAVIGATION = 2;
 
-    public static enum NavigationAction {
+    public enum NavigationAction {
         BROWSE_BACK, // 
         BROWSE_UP, //
         BROWSE_FORWARD, //
@@ -140,10 +135,14 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         JToolBar navigationToolBar = this;
 
         locationToolBar.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+//        this.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
         // ==================
         // Navigation Buttons
         // ==================
+
+        navigationToolBar.add(Box.createRigidArea(new Dimension(8,0)));
+
         try {
             if (this.getShowNavigationButtons()) {
                 {
@@ -175,13 +174,14 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
                 refreshButton.setActionCommand(NavigationAction.REFRESH.toString());
             }
 
+            navigationToolBar.add(Box.createRigidArea(new Dimension(8,0)));
+
             // ========
             // Location
             // ========
             {
                 locationLabel = new JLabel("Location:");
                 locationToolBar.add(locationLabel);
-
             }
             {
                 locationTextField = new ComboBoxIconTextPanel();
@@ -190,8 +190,9 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
                 locationTextField.setComboActionCommands(NavigationAction.LOCATION_EDITED.toString(),
                         NavigationAction.LOCATION_AUTOCOMPLETED.toString());
 
+
                 // set Preferred Width for the GTK/Window LAF!
-                locationTextField.setMinimumSize(new java.awt.Dimension(300, 28));
+//                locationTextField.setMinimumSize(new java.awt.Dimension(300, 28));
             }
         } catch (Exception e) {
             e.printStackTrace();

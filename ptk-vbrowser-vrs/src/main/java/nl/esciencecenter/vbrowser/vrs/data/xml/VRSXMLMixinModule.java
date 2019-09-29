@@ -8,9 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class VRSXMLMixinModule extends SimpleModule {
 
-    private static final long serialVersionUID = 6075381079249273948L;
-
-    public VRSXMLMixinModule() {
+       public VRSXMLMixinModule() {
         super("VRSXMLMixinModule", new Version(0, 0, 1, "1", "vrs.data.xml", "nl.esciencecenter.ptk.vbrowser"));
     }
 

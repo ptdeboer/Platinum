@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.ui.widgets;
 
+import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +30,8 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +39,6 @@ import org.slf4j.LoggerFactory;
 public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoCompleteTextField.class);
-
-    private static final long serialVersionUID = -3502306954828479242L;
 
     private AutoCompleteTextField textField;
     private JLabel iconLabel;
@@ -51,24 +52,27 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
     }
 
     private void initGUI() {
+
         {
             this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            this.setBorder(new BevelBorder(BevelBorder.LOWERED));
         }
         {
             iconLabel = new JLabel();
             this.add(iconLabel);
+//            iconLabel.setBorder(new EmptyBorder(new Insets(1,1,1,1)));
         }
         {
             textField = new AutoCompleteTextField();
             this.add(textField);
             textField.setText("TextField", false);
-            textField.setLocation(16, 0);
+//            textField.setLocation(16, 0);
         }
 
-        // move border from textfield to panel: 
-        this.setBackground(textField.getBackground());
-        this.setBorder(textField.getBorder());
-        textField.setBorder(null);
+//        // move border from textfield to panel:
+//        this.setBackground(textField.getBackground());
+//        this.setBorder(textField.getBorder());
+//      textField.setBorder(new BevelBorder(BevelBorder.LOWERED));
     }
 
     public void clearHistory() {
@@ -123,7 +127,7 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
             cmd = this.comboBoxAutocompletedCmd;
 
         if (cmd == null) {
-            logger.info("NULL command for event:{}", e);
+            logger.debug("NULL command for event:{}", e);
             return; // filter out combo command.  
         }
 

@@ -27,9 +27,7 @@ public class ResourceCreationException extends ResourceException {
 
     public static final String CREATION_FAILED = "Resource Creation Failed.";
 
-    private static final long serialVersionUID = 1829852296515159771L;
-
-    /**
+       /**
      * Public constructor which holds original system exception.
      */
     public ResourceCreationException(String message, Throwable cause) {

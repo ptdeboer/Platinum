@@ -206,12 +206,12 @@ public class Registry {
     public void cleanupFor(VRSContext vrsContext) {
         //
         String ctxId = "" + vrsContext.getID();
-        logger.info("cleanupFor:{}", ctxId);
+        logger.debug("cleanupFor:{}", ctxId);
         Map<String, VResourceSystem> list = instances.getResourceSystemsFor(vrsContext);
         // 
         for (String key : list.keySet().toArray(new String[0])) {
             VResourceSystem resourceSys = list.get(key);
-            logger.info("cleanupFor:{}: - VResourceSystem instance:{}:{}", ctxId, resourceSys.getServerVRL(),
+            logger.debug("cleanupFor:{}: - VResourceSystem instance:{}:{}", ctxId, resourceSys.getServerVRL(),
                     resourceSys);
             if (resourceSys instanceof VCloseable) {
                 try {

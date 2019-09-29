@@ -114,7 +114,7 @@ public class TaskWatcher implements ITaskSource {
             }
         }
 
-        logger.infoPrintf("deschedule(): Number active/terminated tasks: %d/%d\n", activeTasks.size(),
+        logger.debugPrintf("deschedule(): Number active/terminated tasks: %d/%d\n", activeTasks.size(),
                 terminatedTasks.size());
     }
 

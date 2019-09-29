@@ -32,9 +32,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class ViewerFrame extends JFrame {
 
-    private static final long serialVersionUID = 3613838609500660102L;
-
-    // ===
+       // ===
 
     protected ViewerPlugin viewerPlugin;
 

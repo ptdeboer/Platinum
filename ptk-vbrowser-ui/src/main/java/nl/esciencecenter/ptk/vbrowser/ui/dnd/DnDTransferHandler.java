@@ -40,9 +40,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
  * Default TransgerHandler for ViewNodes.
  */
 public class DnDTransferHandler extends TransferHandler {
-    private static PLogger logger = PLogger.getLogger(DnDTransferHandler.class);
 
-    private static final long serialVersionUID = -115960212645219778L;
+    private static PLogger logger = PLogger.getLogger(DnDTransferHandler.class);
 
     private static DnDTransferHandler defaultTransferHandler = new DnDTransferHandler();
 

@@ -37,9 +37,7 @@ public class KeyMappings {
 
     public static class InputAction extends UIAction {
 
-        private static final long serialVersionUID = -8182833255378132661L;
-
-        InputAction(String name) {
+               InputAction(String name) {
             super(name);
         }
 

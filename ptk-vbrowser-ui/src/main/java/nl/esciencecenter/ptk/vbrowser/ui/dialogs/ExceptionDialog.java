@@ -40,11 +40,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 
 /**
- * Simple Exception Dialog Author P.T. de Boer
+ * Simple Exception Dialog.
  */
 public class ExceptionDialog extends javax.swing.JDialog implements ActionListener {
-
-    private static final long serialVersionUID = -7063185378095352711L;
 
     public static void show(Exception e) {
         show(null, e, false);

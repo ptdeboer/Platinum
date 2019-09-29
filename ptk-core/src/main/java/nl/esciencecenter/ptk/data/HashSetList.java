@@ -28,9 +28,7 @@ import java.util.List;
  */
 public class HashSetList<TK> extends LinkedHashSet<TK> {
 
-    private static final long serialVersionUID = 6450134077211545785L;
-
-    public List<TK> toList(List<TK> list) {
+       public List<TK> toList(List<TK> list) {
         for (TK key : this) {
             list.add(key);
         }

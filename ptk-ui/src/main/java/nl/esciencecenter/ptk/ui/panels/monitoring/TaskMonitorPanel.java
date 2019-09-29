@@ -43,9 +43,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * TaskMonitor Panel uses ProgrssPanel as main panel and a ITaskMonitor as Monitor Source.
  */
 public class TaskMonitorPanel extends JPanel implements ActionListener {
-    private static final long serialVersionUID = -6694878602014623166L;
-
-    private JTextField mainTaskTF;
+       private JTextField mainTaskTF;
     private JTextField mainTaskStatusTF;
 
     private JPanel progresPanel;

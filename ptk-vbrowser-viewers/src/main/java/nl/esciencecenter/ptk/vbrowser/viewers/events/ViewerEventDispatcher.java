@@ -13,7 +13,7 @@ public class ViewerEventDispatcher extends
 
     @Override
     protected boolean matchEventSource(ViewerListener listener, Object wantedEventSource, ViewerEvent event) {
-        LoggerFactory.getLogger(ViewerEventDispatcher.class).info(">>>COMPARE:'{}' <=> '{}'", event.getEventSource(), wantedEventSource);
+        LoggerFactory.getLogger(ViewerEventDispatcher.class).debug(">>>COMPARE:'{}' <=> '{}'", event.getEventSource(), wantedEventSource);
         // filter viewers?
         return super.matchEventSource(listener, wantedEventSource, event);
     }

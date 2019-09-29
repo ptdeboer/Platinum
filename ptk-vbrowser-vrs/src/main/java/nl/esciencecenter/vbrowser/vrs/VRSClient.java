@@ -310,9 +310,14 @@ public class VRSClient implements Disposable, ResourceProvider {
     public void dispose() {
         this.currentPathVRL = null;
         this.homeVRL = null;
-        this.transferManager.dispose();
-        this.transferManager = null;
-        this.vrsContext = null;
+        if (this.transferManager!=null) {
+            this.transferManager.dispose();
+            this.transferManager = null;
+        }
+        if (this.vrsContext!=null) {
+            this.vrsContext.dispose();
+            this.vrsContext = null;
+        }
     }
 
     // ====================================

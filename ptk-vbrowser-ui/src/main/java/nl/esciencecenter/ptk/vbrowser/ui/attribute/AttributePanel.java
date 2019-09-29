@@ -65,9 +65,7 @@ public class AttributePanel extends JPanel {
 
     private static final Logger logger = LoggerFactory.getLogger(AttributePanel.class);
 
-    private static final long serialVersionUID = -7067255541137647977L;
-
-    private static final int default_row_gap = 4;
+       private static final int default_row_gap = 4;
     private static final int default_column_gap = 8;
     private static final int default_border_width = 5;
     private static final int default_border_height = 5;
@@ -167,7 +165,7 @@ public class AttributePanel extends JPanel {
      */
     public void setAttributes(AttributeSet newSet, boolean editable) {
 
-        logger.info(">>> New Attributes:{}", newSet);
+        logger.debug(">>> New Attributes:{}", newSet);
 
         // init
         this.isEditable = editable;

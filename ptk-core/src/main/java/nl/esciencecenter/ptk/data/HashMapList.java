@@ -41,9 +41,7 @@ import nl.esciencecenter.ptk.object.Duplicatable;
 public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serializable,
         Duplicatable<HashMapList<TK, TV>> {
 
-    private static final long serialVersionUID = -8373244037848706796L;
-
-    // =======================================================================
+       // =======================================================================
     //
     // =======================================================================
 

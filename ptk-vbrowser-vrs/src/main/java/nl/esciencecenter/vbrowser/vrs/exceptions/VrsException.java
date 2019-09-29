@@ -32,9 +32,7 @@ import java.io.IOException;
  * providing extra information from the underlying implementation. <br>
  */
 public class VrsException extends Exception {
-    private static final long serialVersionUID = 1338724960830976888L;
-
-    // ===============
+       // ===============
     // Factory
     // ===============
 

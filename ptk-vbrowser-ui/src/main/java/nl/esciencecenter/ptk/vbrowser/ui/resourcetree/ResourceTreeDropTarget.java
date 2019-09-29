@@ -35,9 +35,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
  * @author P.T. de Boer.
  */
 public class ResourceTreeDropTarget extends ViewNodeDropTarget {
-    private static final long serialVersionUID = -9095804562165852802L;
-
-    private static PLogger logger = PLogger.getLogger(ResourceTreeDropTarget.class);
+       private static PLogger logger = PLogger.getLogger(ResourceTreeDropTarget.class);
 
     // === //
 

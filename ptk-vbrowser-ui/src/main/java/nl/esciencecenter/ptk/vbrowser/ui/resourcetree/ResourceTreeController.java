@@ -25,7 +25,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 
 import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
@@ -47,7 +47,7 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
         this.browser = browser;
     }
 
-    public void handleNodeActionEvent(ViewNode node, Action action) {
+    public void handleNodeActionEvent(ViewNode node, ActionCmd action) {
         this.browser.handleNodeAction(tree, node, action);
     }
 

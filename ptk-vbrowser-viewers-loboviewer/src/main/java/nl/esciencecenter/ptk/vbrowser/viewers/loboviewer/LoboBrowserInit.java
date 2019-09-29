@@ -40,6 +40,8 @@ public class LoboBrowserInit
         try
         {
             PlatformInit instance = PlatformInit.getInstance();
+
+
             // disable logging BEFORE initializing Lobo
             instance.initLogging(false);
             instance.initExtensions();

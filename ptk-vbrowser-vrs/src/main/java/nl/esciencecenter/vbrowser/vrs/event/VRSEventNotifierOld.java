@@ -72,7 +72,7 @@ public class VRSEventNotifierOld {
     }
 
     protected void doNotifyLoop() {
-        logger.infoPrintf("Starting notifyerloop");
+        logger.debugPrintf("Starting notifyerloop");
 
         while (doNotify) {
             VRSEvent event = getNextEvent();
@@ -87,7 +87,7 @@ public class VRSEventNotifierOld {
             }
         }
 
-        logger.infoPrintf("Notifyerloop has stopped.");
+        logger.debugPrintf("Notifyerloop has stopped.");
     }
 
     private void notifyEvent(VRSEvent event) {

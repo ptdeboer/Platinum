@@ -33,9 +33,7 @@ import org.apache.http.client.utils.URIBuilder;
  */
 public class URIQueryParameters extends LinkedHashMap<String, String> {
 
-    private static final long serialVersionUID = -2339762351557005626L;
-
-    public URIQueryParameters() {
+       public URIQueryParameters() {
         super();
     }
 

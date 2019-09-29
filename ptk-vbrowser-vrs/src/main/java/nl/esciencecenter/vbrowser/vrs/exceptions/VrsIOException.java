@@ -26,9 +26,7 @@ import java.io.IOException;
  * Chained IO Exception
  */
 public class VrsIOException extends VrsException {
-    private static final long serialVersionUID = -789106405456659909L;
-
-    public VrsIOException(IOException e) {
+       public VrsIOException(IOException e) {
         super(e.getMessage(), e);
     }
 

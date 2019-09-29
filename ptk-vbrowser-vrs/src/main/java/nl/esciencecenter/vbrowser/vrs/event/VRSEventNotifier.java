@@ -39,7 +39,7 @@ public class VRSEventNotifier extends
 
     @Override
     protected boolean matchEventSource(VRSEventListener listener, Object wantedEventSource, VRSEvent event) {
-        logger.info(">>>COMPARE:'{}' <=> '{}'", event.getEventSource(), wantedEventSource);
+        logger.debug(">>>COMPARE:'{}' <=> '{}'", event.getEventSource(), wantedEventSource);
         // filter VRLs?
         return super.matchEventSource(listener, wantedEventSource, event);
     }

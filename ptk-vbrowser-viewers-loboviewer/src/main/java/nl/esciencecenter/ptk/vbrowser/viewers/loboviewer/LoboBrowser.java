@@ -48,9 +48,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class LoboBrowser extends ViewerJPanel implements ToolPlugin
 {
-    private static final long serialVersionUID = 3652578919344065278L;
-
-    private static final PLogger logger = PLogger.getLogger(LoboBrowser.class);
+       private static final PLogger logger = PLogger.getLogger(LoboBrowser.class);
 
     static String mimetypes[] = {
             "text/html"

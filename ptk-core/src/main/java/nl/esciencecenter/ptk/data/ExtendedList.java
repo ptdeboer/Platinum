@@ -35,9 +35,7 @@ import nl.esciencecenter.ptk.util.SortUtil;
  */
 public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializable {
 
-    private static final long serialVersionUID = -7068991019200873766L;
-
-    // ========================================================================
+       // ========================================================================
     //
     // ========================================================================
 

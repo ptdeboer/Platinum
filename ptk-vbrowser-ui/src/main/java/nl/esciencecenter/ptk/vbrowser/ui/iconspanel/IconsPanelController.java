@@ -20,7 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
-import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
@@ -36,7 +36,7 @@ public class IconsPanelController implements ViewNodeActionListener {
     }
 
     @Override
-    public void handleNodeActionEvent(ViewNode node, Action action) {
+    public void handleNodeActionEvent(ViewNode node, ActionCmd action) {
         this.browser.handleNodeAction(iconsPanel, node, action);
     }
 

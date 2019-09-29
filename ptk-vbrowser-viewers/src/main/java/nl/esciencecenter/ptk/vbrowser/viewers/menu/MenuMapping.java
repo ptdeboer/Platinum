@@ -1,12 +1,10 @@
 package nl.esciencecenter.ptk.vbrowser.viewers.menu;
 
 public class MenuMapping {
+
     private String resourceTypeRE;
-
     private String resourceSchemeRE;
-
     private String resourceStatusRE;
-
     private String mimeTypeRE;
 
     public MenuMapping(String type, String scheme, String status, String mimeType) {
@@ -19,7 +17,7 @@ public class MenuMapping {
     public boolean matches(String resourceType, String resourceScheme, String resourceStatus,
             String mimeType) {
 
-        //System.err.printf("Matching this:%s <=> {%s,%s,%s,%s}\n",this,resourceType,resourceScheme,resourceStatus,mimeType); 
+        //System.err.printf("Matching this:%s <=> {%s,%s,%s,%s}\n",this,resourceType,resourceScheme,resourceStatus,mimeType);
 
         if (match(resourceTypeRE, resourceType) == false)
             return false;

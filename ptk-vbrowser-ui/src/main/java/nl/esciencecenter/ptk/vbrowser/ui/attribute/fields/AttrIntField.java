@@ -29,8 +29,6 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
 public class AttrIntField extends AttrParameterField {
 
-    private static final long serialVersionUID = 7696454286584865802L;
-
     public AttrIntField() {
         super("<AttrIntField>");
         init();

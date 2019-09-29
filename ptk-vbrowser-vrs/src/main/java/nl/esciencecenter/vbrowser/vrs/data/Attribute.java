@@ -45,9 +45,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class Attribute implements Cloneable, Serializable, Duplicatable<Attribute> {
 
-    private static final long serialVersionUID = 2911511497535338526L;
-
-    private static final PLogger logger = PLogger.getLogger(Attribute.class);
+       private static final PLogger logger = PLogger.getLogger(Attribute.class);
 
     protected static String[] booleanEnumValues = { "false", "true" };
 

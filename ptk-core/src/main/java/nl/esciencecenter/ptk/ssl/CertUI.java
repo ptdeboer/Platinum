@@ -129,7 +129,7 @@ public class CertUI {
         int opt = 0;
 
         if (options.interactive == true) {
-            logger.infoPrintf("Asking interactive for:%s\n", host);
+            logger.debugPrintf("Asking interactive for:%s\n", host);
 
             opt = CertificateDialog.showDialog("Certificate Received from: " + host + "\n" + "Accept certificate ?",
                     chainMessage);
@@ -137,10 +137,10 @@ public class CertUI {
             if ((opt == CertificateDialog.NO) || (opt == CertificateDialog.CANCEL))
                 return false;
         } else if (options.alwaysAccept == false) {
-            logger.infoPrintf("Rejecting Cert. Interactive==false and alwaysAccept==false for host:%s\n", host);
+            logger.debugPrintf("Rejecting Cert. Interactive==false and alwaysAccept==false for host:%s\n", host);
             return false;
         } else {
-            logger.infoPrintf("Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n", host);
+            logger.debugPrintf("Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n", host);
             // continue
         }
 
@@ -162,14 +162,14 @@ public class CertUI {
         // interactive save
         if (options.interactive == true) {
             if (opt != CertificateDialog.TEMPORARY) {
-                logger.infoPrintf("Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n",
+                logger.debugPrintf("Accepting Certificate. Interactive==false and alwaysAccept==true for host:%s\n",
                         host);
                 certStore.saveKeystore();
             }
         }
         // not interactive:
         else if (options.storeAccepted == true) {
-            logger.infoPrintf("Saving keystore after (default) accepting certificate from host:%s\n", host);
+            logger.debugPrintf("Saving keystore after (default) accepting certificate from host:%s\n", host);
             certStore.saveKeystore();
         }
 

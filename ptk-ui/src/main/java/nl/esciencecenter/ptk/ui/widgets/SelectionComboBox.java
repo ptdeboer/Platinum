@@ -27,9 +27,7 @@ import javax.swing.JComboBox;
  * ComboBox adaptor. Manages a default ComboBoxModel,.
  */
 public class SelectionComboBox<T> extends JComboBox<T> {
-    private static final long serialVersionUID = 407894204251955357L;
-
-    boolean optionsEditable = false; // whether options are editable
+       boolean optionsEditable = false; // whether options are editable
 
     public SelectionComboBox() {
         super();

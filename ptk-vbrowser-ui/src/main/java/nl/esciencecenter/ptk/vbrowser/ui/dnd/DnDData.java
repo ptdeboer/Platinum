@@ -70,9 +70,7 @@ public class DnDData {
             + "-directory";
 
     public static class VRLEntry implements Serializable {
-        private static final long serialVersionUID = -1427923836527803502L;
-
-        public VRL vrl;
+               public VRL vrl;
 
         public String resourceType;
 
@@ -86,9 +84,7 @@ public class DnDData {
     }
 
     public static class VRLEntryList extends ArrayList<VRLEntry> implements Serializable {
-        private static final long serialVersionUID = -8876989751853728967L;
-
-        public VRLEntryList(int n) {
+               public VRLEntryList(int n) {
             super(n);
         }
 

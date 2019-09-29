@@ -31,13 +31,11 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
  */
 public class AttrParameterField extends JTextField implements IAttributeField {
 
-    public static enum AttrFieldType {
+    public enum AttrFieldType {
         INT, STRING, STRINGENUM, VRL, BOOLEAN, CHECKBOX;
     }
 
-    private static final long serialVersionUID = 8089690166449438100L;
-
-    public AttrParameterField() {
+       public AttrParameterField() {
         // names indicates abtract class, should be subclassed. 
         super("<AttrParameterField>");
     }

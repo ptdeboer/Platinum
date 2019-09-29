@@ -21,9 +21,7 @@
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
 public class ValueParseException extends ValueException {
-    private static final long serialVersionUID = -7502543475120242843L;
-
-    protected String valueStr;
+       protected String valueStr;
 
     public ValueParseException(String message, String valueStr) {
         super(message, null, "Value Parse exception for:" + valueStr);

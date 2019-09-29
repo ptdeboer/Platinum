@@ -59,9 +59,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * @author Piter T. de Boer
  */
 public class ResourceTable extends JTable implements UIDisposable, ViewNodeContainer {
-    private static final long serialVersionUID = -8190587704685619938L;
-
-    private static final PLogger logger = PLogger.getLogger(ResourceTable.class);
+       private static final PLogger logger = PLogger.getLogger(ResourceTable.class);
 
     // default presentation
 
@@ -141,12 +139,12 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         // Use Header from DataModel
         String headers[] = getModel().getHeaders();
 
-        logger.infoPrintf("initColumns(): getHeaders() = %s\n", headers.toString());
+        logger.debugPrintf("initColumns(): getHeaders() = %s\n", headers.toString());
 
         if ((headers == null) || (headers.length <= 0)) {
             // Use all attribute names.
             headers = getModel().getAllAttributeNames();
-            logger.infoPrintf("initColumns(): getAllHeaders() = %s\n",
+            logger.debugPrintf("initColumns(): getAllHeaders() = %s\n",
                     new StringList(headers).toString());
         }
 
@@ -467,15 +465,16 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
 
-        // copy current presentation from source.
-        Presentation presentation = proxyNode.getPresentation();
-        if (presentation != null) {
-            setPresentation(presentation.duplicate(true), true);
+        if (proxyNode!=null) {
+            // copy current presentation from source.
+            Presentation presentation = proxyNode.getPresentation();
+            if (presentation != null) {
+                setPresentation(presentation.duplicate(true), true);
+            }
         }
 
         ResourceTableUpdater updater = new ResourceTableUpdater(this, proxyNode, model);
         setDataProducer(updater, update);
-
     }
 
     public void setDataProducer(ResourceTableUpdater producer, boolean update) {

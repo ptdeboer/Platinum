@@ -25,9 +25,7 @@ import java.io.IOException;
 // move to exceptions package?
 public class CertificateStoreException extends IOException {
 
-    private static final long serialVersionUID = 1L;
-
-    public CertificateStoreException(String message) {
+       public CertificateStoreException(String message) {
         super(message);
     }
 

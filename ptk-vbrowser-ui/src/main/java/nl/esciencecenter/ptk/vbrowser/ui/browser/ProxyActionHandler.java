@@ -28,7 +28,7 @@ import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TaskMonitorDialog;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.Action;
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -40,7 +40,7 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
- * Delegated Action Handler class for the Proxy Browser.<br>
+ * Delegated ActionCmd Handler class for the Proxy Browser.<br>
  * Encapsulates Copy, Paste, Create, Delete, Rename, Link and Drag & Drop actions.
  */
 public class ProxyActionHandler {
@@ -54,19 +54,19 @@ public class ProxyActionHandler {
         logger.setLevelToDebug();
     }
 
-    public void handlePaste(Action action, ViewNode node) {
+    public void handlePaste(ActionCmd action, ViewNode node) {
         logger.debugPrintf("*** Paste On:%s\n", node);
     }
 
-    public void handleCopy(Action action, ViewNode node) {
+    public void handleCopy(ActionCmd action, ViewNode node) {
         logger.debugPrintf("*** Copy On:%s\n", node);
     }
 
-    public void handleCopySelection(Action action, ViewNode node) {
+    public void handleCopySelection(ActionCmd action, ViewNode node) {
         logger.debugPrintf("*** Copy Selection:%s\n", node);
     }
 
-    public void handleDeleteSelection(ViewNodeComponent viewComp, Action action, ViewNode node) {
+    public void handleDeleteSelection(ViewNodeComponent viewComp, ActionCmd action, ViewNode node) {
         logger.debugPrintf("Delete Selection: %s\n", node);
         ViewNode selections[] = ((ViewNodeContainer) viewComp).getNodeSelection();
 
@@ -88,8 +88,9 @@ public class ProxyActionHandler {
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public void handleCreate(Action action, final ViewNode node, final String type,
-            final String options) {
+    public void handleCreate(ActionCmd action, final ViewNode node, final String type,
+                             final String options) {
+
         final String name = proxyBrowser.getUI().askInput("New name for:" + type,
                 "Give new name for " + type, "New " + type);
 
@@ -100,7 +101,7 @@ public class ProxyActionHandler {
 
         final VRL locator = node.getVRL();
 
-        BrowserTask task = new BrowserTask(proxyBrowser, "Creating new resource:" + type + ":'"
+        BrowserTask task = new BrowserTask(proxyBrowser, "Creating new resource:<" + type + ">:'"
                 + name + "' at:" + locator) {
             @Override
             protected void doTask() {
@@ -117,7 +118,7 @@ public class ProxyActionHandler {
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public void handleDelete(Action action, ViewNode node) {
+    public void handleDelete(ActionCmd action, ViewNode node) {
         boolean result = proxyBrowser.getUI().askOkCancel("Delete resource" + node + "?",
                 "Do you want to delete:'" + node.getName() + "'(" + node.getVRL() + "')", false);
 
@@ -142,7 +143,7 @@ public class ProxyActionHandler {
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public void handleRename(Action action, ViewNode node) {
+    public void handleRename(ActionCmd action, ViewNode node) {
         String oldName = node.getName();
 
         final String name = proxyBrowser.getUI().askInput("Enter new Name",

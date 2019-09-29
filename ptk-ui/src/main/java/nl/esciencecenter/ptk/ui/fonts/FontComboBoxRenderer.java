@@ -38,9 +38,7 @@ public class FontComboBoxRenderer extends JLabel implements ListCellRenderer {
 
     private FontToolBar fontToolBar;
 
-    private static final long serialVersionUID = -2462866413990104352L;
-
-    public FontComboBoxRenderer(FontToolBar bar) {
+       public FontComboBoxRenderer(FontToolBar bar) {
         this.fontToolBar = bar;
 
         setOpaque(true);

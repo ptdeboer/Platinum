@@ -28,9 +28,7 @@ import java.net.URISyntaxException;
  */
 public class FileURISyntaxException extends IOException {
 
-    private static final long serialVersionUID = -5950527403084197333L;
-
-    protected String fileLocation = null;
+       protected String fileLocation = null;
 
     public FileURISyntaxException(String message, String location) {
         super(message);

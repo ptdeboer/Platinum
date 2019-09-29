@@ -32,9 +32,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class FontSelector extends JDialog implements ActionListener {
-    private static final long serialVersionUID = -4504801059224249846L;
-
-    JColorChooser colorChooser;
+       JColorChooser colorChooser;
 
     JComboBox fontName;
 

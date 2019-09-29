@@ -45,9 +45,7 @@ import nl.esciencecenter.ptk.util.URIPathEncoder;
  */
 public final class URIFactory implements Serializable, Cloneable, Duplicatable<URIFactory> {
 
-    private static final long serialVersionUID = 282430272904693557L;
-
-    /** Path seperator character for URIs = '/' */
+       /** Path seperator character for URIs = '/' */
     public final static char URI_SEP_CHAR = '/';
 
     /** Windows backslash or '\\' */

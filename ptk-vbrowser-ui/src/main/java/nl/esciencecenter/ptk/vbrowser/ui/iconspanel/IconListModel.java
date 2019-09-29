@@ -28,14 +28,12 @@ import javax.swing.event.ListDataListener;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class IconListModel // implements ListModel
-{
-    protected Vector<IconItem> icons = new Vector<IconItem>();
+public class IconListModel { // implements ListModel
 
+    protected Vector<IconItem> icons = new Vector<IconItem>();
     protected Vector<ListDataListener> listeners = new Vector<ListDataListener>();
 
     public IconListModel() {
-
     }
 
     // @Override

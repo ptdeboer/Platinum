@@ -32,9 +32,7 @@ import nl.esciencecenter.ptk.ui.icons.IconAnimator;
  *
  */
 public class JAnimatedLabel extends JLabel {
-    private static final long serialVersionUID = -1199581037837264677L;
-
-    public JAnimatedLabel(AnimatedIcon icon) {
+       public JAnimatedLabel(AnimatedIcon icon) {
         super(icon); // will call setIcon() ! 
     }
 

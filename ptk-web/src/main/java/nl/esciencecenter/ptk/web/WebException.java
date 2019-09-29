@@ -31,9 +31,7 @@ import java.io.IOException;
  */
 public class WebException extends IOException {
 
-    private static final long serialVersionUID = 6695170599026563455L;
-
-    public static enum Reason {
+       public static enum Reason {
 
         HTTP_ERROR("HTTP Error."), //
         HTTP_CLIENTEXCEPTION("HTTP Client Exception."), //

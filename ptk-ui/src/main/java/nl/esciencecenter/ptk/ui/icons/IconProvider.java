@@ -411,7 +411,7 @@ public class IconProvider {
                 return image;
         }
 
-        logger.infoPrintf("loading new icon image:%s\n", url);
+        logger.debugPrintf("loading new icon image:%s\n", url);
         String urlStr = url.toString().toLowerCase();
         // Direct .ico support: do not use resource loader to resolve icons
         if (urlStr.endsWith(".ico")) {
