@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,15 +20,14 @@
 
 package nl.esciencecenter.ptk.web;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
 import nl.esciencecenter.ptk.object.Disposable;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 /**
  * Managed ResponseInputStream from a HttpGet Request. <br>
@@ -77,7 +76,7 @@ public class ResponseInputStream extends InputStream implements WebStream, Dispo
     }
 
     @Override
-    public int read(byte bytes[]) throws IOException {
+    public int read(byte[] bytes) throws IOException {
 
         if (sourceStream == null) {
             return -1;
@@ -92,7 +91,7 @@ public class ResponseInputStream extends InputStream implements WebStream, Dispo
     }
 
     @Override
-    public int read(byte bytes[], int offset, int length) throws IOException {
+    public int read(byte[] bytes, int offset, int length) throws IOException {
 
         if (sourceStream == null) {
             return -1;
@@ -161,9 +160,9 @@ public class ResponseInputStream extends InputStream implements WebStream, Dispo
     /**
      * Close the underlying InputStream. If the InputStream was already closed or an IOException
      * occure this method will return false. If the close was successful the method return true
-     * 
+     *
      * @returns - true if the close was successful, false if the stream was already close or an
-     *          Exception occured.
+     * Exception occured.
      */
     public boolean autoClose() {
         //
@@ -173,7 +172,7 @@ public class ResponseInputStream extends InputStream implements WebStream, Dispo
         //
         try {
             close();
-            //webClient.getLogger().debugPrintf("autoClose(): successful for:"+this);
+            //webClient.getLogger().log.debug("autoClose(): successful for:"+this);
             return true;
         } catch (IOException e) {
             closeException = e;

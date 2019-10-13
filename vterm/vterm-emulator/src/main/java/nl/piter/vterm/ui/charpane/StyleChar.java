@@ -1,11 +1,16 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.ui.charpane;
 
 import java.awt.*;
 
 /**
  * Styled Character. Holder for the character buffer. Keeps char, style color charset (name!).
- *
- OutputStream */
+ * <p>
+ * OutputStream
+ */
 public class StyleChar {
     public static final int STYLE_NONE = 0x0000;
 

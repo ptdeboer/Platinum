@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,24 +20,22 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
-import java.awt.Cursor;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
 import java.awt.event.InputEvent;
 
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
-
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 /**
  * Drag Gesture listener for ViewNodeComponents. Drag Recognized event comes from the Global Drag
  * Gesture Recognizer.
- * 
+ * <p>
  * This Drag listener checks and selects the actual selected ViewNode inside a ViewNodeContainer.
  */
 public class ViewNodeContainerDragListener implements DragGestureListener {
@@ -49,7 +47,7 @@ public class ViewNodeContainerDragListener implements DragGestureListener {
     }
 
     public void dragGestureRecognized(DragGestureEvent dge) {
-        // DnDUtil.errorPrintf("dragGestureRecognized:%s\n", dge);
+        // DnDUtil.log.error("dragGestureRecognized:{}", dge);
         // DnD Stuff:
 
         int action = dge.getDragAction();
@@ -64,7 +62,7 @@ public class ViewNodeContainerDragListener implements DragGestureListener {
         boolean multi = ((dge.getTriggerEvent().getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0);
 
         if ((comp instanceof ViewNodeComponent) == false) {
-            DnDUtil.errorPrintf(this.getClass() + ":Actual component is not a ViewNode:%s\n", comp);
+            DnDUtil.log.error(this.getClass() + ":Actual component is not a ViewNode:{}", comp);
             return;
         }
 
@@ -74,7 +72,7 @@ public class ViewNodeContainerDragListener implements DragGestureListener {
             // node could be the parent itself!
             ViewNodeContainer parent = node.getViewContainer();
 
-            DnDUtil.debugPrintf("Drag from ViewNode!:%s\n", node.getViewNode().getVRL());
+            DnDUtil.log.debug("Drag from ViewNode!:{}", node.getViewNode().getVRL());
 
             // Redirect Drag Selection to Parent to enable multi-select.
             if (parent != null) {
@@ -96,14 +94,14 @@ public class ViewNodeContainerDragListener implements DragGestureListener {
 
         VRL vri = ((ViewNodeComponent) comp).getViewNode().getVRL();
 
-        DnDUtil.debugPrintf("Drag Vri:%s\n", vri);
+        DnDUtil.log.debug("Drag Vri:{}", vri);
 
         // Swing way to initiate a Drag:
         TransferHandler trans = comp.getTransferHandler();
         if (trans != null) {
             trans.exportAsDrag(comp, trigger, DnDConstants.ACTION_COPY);
         } else {
-            DnDUtil.errorPrintf("***Fatal: NULL TransferHandler for:%s\n" + comp);
+            DnDUtil.log.error("***Fatal: NULL TransferHandler for:{}" + comp);
         }
     }
 

@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.channels.impl;
 
 import lombok.extern.slf4j.Slf4j;
@@ -5,7 +9,9 @@ import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.sys.SysEnv;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +24,7 @@ import java.util.List;
  */
 @Slf4j
 public class BASHChannel implements ShellChannel {
+
     private final ChannelOptions options;
     private Process shellProcess = null;
     private InputStream inps = null;
@@ -46,7 +53,7 @@ public class BASHChannel implements ShellChannel {
 
     @Override
     public void connect() throws IOException {
-        log.warn("connect OS:{}", SysEnv.sysEnv().getOsName());
+        log.warn("Connecting to OS:{}", SysEnv.sysEnv().getOsName());
 
         this.shellProcess = null;
 
@@ -108,7 +115,7 @@ public class BASHChannel implements ShellChannel {
 
     private String getExePath(String file) {
 
-        Path path=Paths.get(file).toAbsolutePath();
+        Path path = Paths.get(file).toAbsolutePath();
         if (Files.isRegularFile(path)) {
             log.info("Using executable:{} => {}", file, path);
             return path.toString();
@@ -116,19 +123,19 @@ public class BASHChannel implements ShellChannel {
 
         // Check class path:
         java.net.URL url = Thread.currentThread().getContextClassLoader().getResource(file);
-        String resolvePath=url.getPath();
-        if (resolvePath==null) {
+        String resolvePath = (url != null) ? url.getPath() : null;
+        if (resolvePath == null) {
             // check relative or absolute file:
             path = Paths.get(file);
             if (Files.exists(path) && Files.isRegularFile(path)) {
-                resolvePath=path.toAbsolutePath().toString();
+                resolvePath = path.toAbsolutePath().toString();
             }
         }
         if (resolvePath != null) {
             log.info("Using executable:{} => {}", file, resolvePath);
             return resolvePath;
         } else {
-            log.error("Failed to resolved binary:{}",file);
+            log.error("Failed to resolved binary:{}", file);
             return "bin/" + file;
         }
     }

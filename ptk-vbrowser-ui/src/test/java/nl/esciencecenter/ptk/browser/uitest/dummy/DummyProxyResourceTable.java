@@ -1,10 +1,5 @@
 package nl.esciencecenter.ptk.browser.uitest.dummy;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterfaceAdaptor;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
@@ -16,9 +11,12 @@ import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class DummyProxyResourceTable {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             showTable();
         } catch (Exception e) {

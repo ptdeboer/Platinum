@@ -12,6 +12,7 @@ public class BrowserJTabbedPaneController {
 
     private final JTabbedPane tabPane;
     private final ActionListener delegatedListener;
+
     public BrowserJTabbedPaneController(JTabbedPane tabPane, ActionListener delegatedListener) {
         this.tabPane = tabPane;
         this.delegatedListener = delegatedListener;

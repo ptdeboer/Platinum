@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,22 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.viewers.vrs;
-
-import java.awt.Component;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
@@ -36,17 +27,22 @@ import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ContentReader;
 import nl.esciencecenter.ptk.util.ContentWriter;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
-import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
 
 /**
  * Content Factory and Resource Manager for the various embedded Viewers.<br>
- * 
  */
 public class ViewerResourceLoader {
 
@@ -111,7 +107,7 @@ public class ViewerResourceLoader {
     protected void createViewersConfigDir() throws VrsException {
         VRL vrl = this.getViewerConfigDir();
         VFSPath path = vrsClient.openVFSPath(vrl);
-        if (path.exists()==false) { 
+        if (path.exists() == false) {
             path.mkdir(true);
         }
     }

@@ -1,20 +1,16 @@
 package test.viewers;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-
 import nl.esciencecenter.ptk.vbrowser.viewers.MimeViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 public class DummyViewer implements ViewerPlugin, MimeViewer {
 

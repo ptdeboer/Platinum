@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,15 +20,17 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Virtual Root Info Node to start browsing. Multiple ProxyNodes can be added to this (virtual)
@@ -73,7 +75,7 @@ public class VirtualProxyNodeRoot extends ProxyNode {
 
     @Override
     protected List<? extends ProxyNode>
-            doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException {
+    doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException {
         return ProxyNode.subrange(childs, offset, range);
     }
 
@@ -93,12 +95,21 @@ public class VirtualProxyNodeRoot extends ProxyNode {
     }
 
     @Override
-    protected List<String> doGetAttributeNames() throws ProxyException {
+    protected List<String> doGetAttributeNames()  {
         return null;
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(String names[]) throws ProxyException {
+    protected List<Attribute> doGetAttributes(String[] names) {
+        return null;
+    }
+
+    @Override
+    protected void doUpdateAttributes(Attribute[] attrs) {
+    }
+
+    @Override
+    protected Map<String, AttributeDescription> doGetAttributeDescriptions(String[] names) {
         return null;
     }
 
@@ -107,15 +118,20 @@ public class VirtualProxyNodeRoot extends ProxyNode {
         return null;
     }
 
+    @Override
+    protected boolean doGetIsEditable() {
+        return false;
+    }
+
     public void addChild(ProxyNode node) {
         if (childs == null)
-            childs = new ArrayList<ProxyNode>();
+            childs = new ArrayList<>();
 
         this.childs.add(node);
     }
 
     public void setChilds(List<ProxyNode> nodes) {
-        this.childs = new ArrayList<ProxyNode>(nodes);
+        this.childs = new ArrayList<>(nodes);
     }
 
     public boolean hasChild(VRL locator) {
@@ -133,7 +149,7 @@ public class VirtualProxyNodeRoot extends ProxyNode {
     }
 
     @Override
-    protected String doGetIconURL(String status, int size) throws ProxyException {
+    protected String doGetIconURL(String status, int size) {
         return iconUrl;
     }
 

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,13 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.io;
+
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.GlobalProperties;
+import nl.esciencecenter.ptk.exceptions.FileURISyntaxException;
+import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.util.ContentReader;
+import nl.esciencecenter.ptk.util.ContentWriter;
+import nl.esciencecenter.ptk.util.ResourceLoader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,31 +35,11 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import nl.esciencecenter.ptk.GlobalProperties;
-import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
-import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.util.ContentReader;
-import nl.esciencecenter.ptk.util.ContentWriter;
-import nl.esciencecenter.ptk.util.ResourceLoader;
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import java.util.*;
 
 /**
  * File System util and resource provider works with local file-paths and URIs. <br>
@@ -59,13 +47,12 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
  * <br>
  * For example: <code>'C:Bob'</code> => <code>'file:///C:/Users/Bob/'</code>
  */
+@Slf4j
 public class FSUtil implements ResourceProvider, FSInterface {
-
-    private static final PLogger logger = PLogger.getLogger(FSUtil.class);
 
     private static FSUtil instance = null;
 
-    public static FSUtil getDefault() {
+    public static FSUtil fsutil() {
         if (instance == null) {
             instance = new FSUtil();
         }
@@ -82,8 +69,8 @@ public class FSUtil implements ResourceProvider, FSInterface {
 
         /**
          * Whether to follow links.
-         * 
-         * @see LinkOption.NOFOLLOW_LINKS
+         *
+         * @see LinkOption
          */
         public LinkOption linkOption = null;
 
@@ -154,27 +141,21 @@ public class FSUtil implements ResourceProvider, FSInterface {
     // ========================================================================
 
     protected Path userHome;
-
     protected Path workingDir;
-
     protected Path tmpDir;
-
     protected FSOptions fsOptions = new FSOptions();
 
-    public FSUtil() {
+    protected FSUtil() {
+        log.debug("New FSUtil()");
         init();
     }
 
     private void init() {
-        try {
-            // Resolve against default file system
-            FileSystem fs = FileSystems.getDefault();
-            this.userHome = fs.getPath(GlobalProperties.getGlobalUserHome()).toAbsolutePath();
-            this.workingDir = fs.getPath(GlobalProperties.getGlobalUserDir()).toAbsolutePath();
-            this.tmpDir = fs.getPath(GlobalProperties.getGlobalTempDir()).toAbsolutePath();
-        } catch (Throwable e) {
-            logger.logException(PLogger.FATAL, e, "Initialization Exception:%s\n", e);
-        }
+        // Resolve against default file system
+        FileSystem fs = FileSystems.getDefault();
+        this.userHome = fs.getPath(GlobalProperties.getGlobalUserHome()).toAbsolutePath();
+        this.workingDir = fs.getPath(GlobalProperties.getGlobalUserDir()).toAbsolutePath();
+        this.tmpDir = fs.getPath(GlobalProperties.getGlobalTempDir()).toAbsolutePath();
     }
 
     @Override
@@ -182,7 +163,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
         if (this.fsOptions.linkOption == null) {
             return null;
         } else {
-            return new LinkOption[] { fsOptions.linkOption };
+            return new LinkOption[]{fsOptions.linkOption};
         }
     }
 
@@ -207,7 +188,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
 
     /**
      * Return new FileSystem Path specified by the URL.
-     * 
+     *
      * @throws FileURISyntaxException
      */
     public FSPath resolvePath(URL url) throws FileURISyntaxException {
@@ -220,8 +201,8 @@ public class FSUtil implements ResourceProvider, FSInterface {
 
     /**
      * Resolve relative path against current working directory and return absolute URI.<br>
-     * Note: URI has an absolute path and uses a forward slash as File seperator.
-     * 
+     * Note: URI has an absolute path and uses a forward slash as File separator.
+     *
      * @return normalized and absolute URI path.
      */
     public URI resolvePathURI(String path) throws FileURISyntaxException {
@@ -301,11 +282,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
             }
 
             if (mustBeFileType) {
-                if (file.isFile(linkOptions)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return file.isFile(linkOptions);
             } else {
                 return true;
             }
@@ -328,7 +305,6 @@ public class FSUtil implements ResourceProvider, FSInterface {
             FSPath file = newFSPath(directoryPath);
             if (file.exists(linkOptions) == false)
                 return false;
-
             if (file.isDirectory(linkOptions))
                 return true;
         } catch (FileURISyntaxException e) {
@@ -340,17 +316,16 @@ public class FSUtil implements ResourceProvider, FSInterface {
 
     /**
      * List directory: returns (URI) normalized paths.
-     * 
+     *
      * @throws IOException
      * @throws URISyntaxException
      */
-    public List<FSPath> list(String dirPath, LinkOption... linkOptions) throws IOException, FileURISyntaxException {
+    public List<FSPath> list(String dirPath, LinkOption... linkOptions) throws IOException {
         FSPath file = resolvePath(resolvePathURI(dirPath));
 
         if (file.exists(linkOptions) == false) {
             return null;
         }
-
         if (file.isDirectory(linkOptions) == false) {
             return null;
         }
@@ -358,7 +333,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
         return file.list();
     }
 
-    public void deleteFile(String filename) throws IOException, FileURISyntaxException {
+    public void deleteFile(String filename) throws IOException {
         FSPath file = newFSPath(filename);
         if (file.exists(LinkOption.NOFOLLOW_LINKS) == false)
             return;
@@ -369,9 +344,8 @@ public class FSUtil implements ResourceProvider, FSInterface {
      * Open local file and return OutputStream to write to. The default implementation is to create
      * a new File if it doesn't exists or replace an existing file with the new contents if it
      * exists.
-     * 
-     * @param filename
-     *            - relative or absolute file path (resolves to absolute path on local fileystem)
+     *
+     * @param filename - relative or absolute file path (resolves to absolute path on local fileystem)
      * @throws IOException
      */
     public OutputStream createOutputStream(String filename) throws IOException {
@@ -424,9 +398,8 @@ public class FSUtil implements ResourceProvider, FSInterface {
 
     /**
      * Returns new directory FSPath Object. Path might not exist.
-     * 
-     * @param dirUri
-     *            - location of new Directory
+     *
+     * @param dirUri - location of new Directory
      * @return - new Local Directory object.
      * @throws IOException
      */
@@ -466,30 +439,6 @@ public class FSUtil implements ResourceProvider, FSInterface {
         node.delete();
     }
 
-    public boolean isValidPathSyntax(String relPath, StringHolder reasonH) {
-        if (relPath.matches(".*[!@#$%*()]+")) {
-            if (reasonH != null) {
-                reasonH.value = "Path contains invalid characters!";
-            }
-            return false;
-        }
-
-        try {
-            URI uri = this.resolvePathURI(relPath);
-            FSPath node = resolvePath(uri);
-            // should trigger file system check on path.
-            boolean exists = node.exists();
-            if (reasonH != null) {
-                reasonH.value = "File path is ok. Exists=" + exists;
-            }
-            return true;
-        } catch (IOException ex) {
-            if (reasonH != null) {
-                reasonH.value = "Syntax Error:" + ex.getMessage() + ", path=" + relPath;
-            }
-            return false;
-        }
-    }
 
     public boolean hasPosixFS() {
 
@@ -506,11 +455,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
     }
 
     public boolean isLocalFSUri(URI uri) {
-        if (uri.getScheme().equalsIgnoreCase("file")) {
-            return true;
-        } else {
-            return false;
-        }
+        return uri.getScheme().equalsIgnoreCase("file");
     }
 
     @Override
@@ -527,8 +472,8 @@ public class FSUtil implements ResourceProvider, FSInterface {
     }
 
     /**
-     * Old code which explicitly checks drive "A:" through "Z:"
-     * 
+     * Legacy file-drive check which explicitly checks drive "A:" through "Z:"
+     *
      * @throws IOException
      */
     public List<FSPath> listWindowsDrives(boolean skipFloppyScan) throws IOException {
@@ -548,7 +493,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
         // Run through all possible mount points and check
         // for their existence.
         for (char c = 'C'; c <= 'Z'; c++) {
-            char deviceChars[] = { c, ':', '\\' };
+            char[] deviceChars = {c, ':', '\\'};
             String deviceName = new String(deviceChars);
             FSPath device = newFSPath(deviceName);
 
@@ -585,7 +530,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
 
     public OutputStream createOutputStream(FSPath node, boolean append) throws IOException {
 
-        OpenOption openOptions[];
+        OpenOption[] openOptions;
 
         if (append) {
             openOptions = new OpenOption[4];
@@ -651,6 +596,7 @@ public class FSUtil implements ResourceProvider, FSInterface {
                 throw e;
             }
         } catch (UnsupportedOperationException e) {
+            log.warn("No posix attributes:UnsupportedOperationException:{}", e.getMessage());
             return null;
         }
     }

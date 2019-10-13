@@ -21,7 +21,7 @@ public class ProxyNodeCacheUpdater implements VRSEventListener {
         //
         VRSEventType type = e.getType();
         VRL parentVrl = e.getParent();
-        VRL vrls[] = e.getResources();
+        VRL[] vrls = e.getResources();
         //
         switch (type) {
             case RESOURCES_CREATED:

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,27 +20,22 @@
 
 package nl.esciencecenter.ptk.ui.widgets;
 
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetContext;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.*;
 import java.io.IOException;
 import java.util.List;
-
-import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Handle drops on the Navigation Bar.
  */
+@Slf4j
 public class URIDropHandler implements DropTargetListener {
-    private static PLogger logger = PLogger.getLogger(URIDropHandler.class);
 
     private URIDropTargetLister uriDropTargetListener;
 
@@ -86,18 +81,16 @@ public class URIDropHandler implements DropTargetListener {
                     dtde.dropComplete(true);
                     return;
                 } else {
-                    logger.warnPrintf("drop(): Could not convert to one or more URIs:%s\n",
+                    log.warn("drop(): Could not convert to one or more URIs:{}",
                             new ExtendedList<DataFlavor>(t.getTransferDataFlavors()));
                     dtde.dropComplete(false);
                 }
             } else {
-                logger.warnPrintf("drop(): Dropped data is not valid URI\n");
+                log.warn("drop(): Dropped data is not valid URI");
                 dtde.rejectDrop();
             }
-        } catch (UnsupportedFlavorException e) {
-            logger.logException(PLogger.ERROR, e, "UnsupportedFlavorException:%s\n", e);
-        } catch (IOException e) {
-            logger.logException(PLogger.ERROR, e, "IOException:%s\n", e);
+        } catch (IOException | UnsupportedFlavorException e) {
+            log.error(e.getMessage(), e);
         }
 
         dtde.dropComplete(false);

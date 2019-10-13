@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,13 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.vbrowser.vrs.localfs;
+
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.io.FSPath;
+import nl.esciencecenter.ptk.io.RandomReadable;
+import nl.esciencecenter.ptk.io.RandomWritable;
+import nl.esciencecenter.vbrowser.vrs.VFSPath;
+import nl.esciencecenter.vbrowser.vrs.exceptions.*;
+import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
+import nl.esciencecenter.vbrowser.vrs.io.VRandomAccessable;
+import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
+import nl.esciencecenter.vbrowser.vrs.node.VFSPathNode;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,26 +39,10 @@ import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.esciencecenter.ptk.io.FSPath;
-import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.io.RandomReadable;
-import nl.esciencecenter.ptk.io.RandomWritable;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.vbrowser.vrs.VFSPath;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAlreadyExistsException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotEmptyException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
-import nl.esciencecenter.vbrowser.vrs.io.VRandomAccessable;
-import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
-import nl.esciencecenter.vbrowser.vrs.node.VFSPathNode;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import static nl.esciencecenter.ptk.io.FSUtil.fsutil;
 
+@Slf4j
 public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable {
-
-    private static final PLogger logger = PLogger.getLogger(LocalFSPathNode.class);
 
     protected LocalFileSystem localfs;
 
@@ -80,14 +76,14 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
 
     @Override
     public List<VFSPath> list() throws VrsException {
-        logger.debugPrintf("list():%s\n", this);
+        log.debug("list():{}", this);
 
         try {
-            FSPath nodes[];
+            FSPath[] nodes;
             nodes = fsNode.listNodes();
             ArrayList<VFSPath> pathNodes = new ArrayList<VFSPath>();
             for (FSPath node : nodes) {
-                logger.debugPrintf(" - adding:%s\n", node);
+                log.debug(" - adding:{}", node);
                 pathNodes.add(new LocalFSPathNode(localfs, node));
             }
             return pathNodes;
@@ -110,19 +106,16 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
 
     public OutputStream createOutputStream(boolean append) throws VrsException {
         try {
-            return getFSUtil().createOutputStream(fsNode, append);
+            return fsutil().createOutputStream(fsNode, append);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create OutputStream from:" + getVRL(), e);
         }
     }
 
-    public FSUtil getFSUtil() {
-        return localfs.getFSUtil();
-    }
 
     public InputStream createInputStream() throws VrsException {
         try {
-            return getFSUtil().createInputStream(fsNode);
+            return fsutil().createInputStream(fsNode);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Failed to create InputStream from:" + getVRL(), e);
         }
@@ -211,7 +204,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     @Override
     public RandomReadable createRandomReadable() throws VrsException {
         try {
-            return this.localfs.getFSUtil().createRandomReader(fsNode);
+            return fsutil().createRandomReader(fsNode);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't create RandomReadable from:" + getVRL(), e);
         }
@@ -221,7 +214,7 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     @Override
     public RandomWritable createRandomWritable() throws VrsException {
         try {
-            return this.localfs.getFSUtil().createRandomWriter(fsNode);
+            return fsutil().createRandomWriter(fsNode);
         } catch (IOException e) {
             throw LocalFileSystem.convertException(this, "Couldn't create RandomWriter from:" + getVRL(), e);
         }

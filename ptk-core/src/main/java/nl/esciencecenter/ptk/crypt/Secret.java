@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,11 +20,11 @@
 
 package nl.esciencecenter.ptk.crypt;
 
+import nl.esciencecenter.ptk.object.Disposable;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-
-import nl.esciencecenter.ptk.object.Disposable;
 
 /**
  * Store password in to a character array instead of a String. <br>
@@ -60,12 +60,10 @@ public class Secret implements Disposable {
     /**
      * Copy secret chars and optionally clear source. This way the secret content will be moved from
      * the source into this Secret object.
-     * 
-     * @param source
-     *            - char array of secret characters
-     * @param clearSource
-     *            - set to true if source needs to be cleared so that the 'secret' is moved into
-     *            this Secrect object
+     *
+     * @param source      - char array of secret characters
+     * @param clearSource - set to true if source needs to be cleared so that the 'secret' is moved into
+     *                    this Secrect object
      */
     public Secret(char[] source, boolean clearSource) {
         init(source, clearSource);
@@ -135,10 +133,8 @@ public class Secret implements Disposable {
         if (secret == null)
             return true;
 
-        if (secret.length <= 0)
-            return true;
+        return secret.length <= 0;
 
-        return false;
     }
 
     public boolean equals(Secret other) {
@@ -146,10 +142,7 @@ public class Secret implements Disposable {
             return false;
 
         if (secret == null) {
-            if (other.secret == null)
-                return true;
-            else
-                return false;
+            return other.secret == null;
         }
 
         if (secret.length != other.secret.length)

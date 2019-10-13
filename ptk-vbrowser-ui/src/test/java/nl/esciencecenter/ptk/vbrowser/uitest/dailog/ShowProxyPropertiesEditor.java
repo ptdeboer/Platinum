@@ -1,10 +1,5 @@
 package nl.esciencecenter.ptk.vbrowser.uitest.dailog;
 
-import java.awt.BorderLayout;
-
-import javax.swing.Icon;
-import javax.swing.JFrame;
-
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
@@ -13,15 +8,17 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class ShowProxyPropertiesEditor {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             show();
         } catch (Exception e) {

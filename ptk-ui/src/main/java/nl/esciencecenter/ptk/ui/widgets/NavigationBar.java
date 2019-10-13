@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,7 +20,13 @@
 
 package nl.esciencecenter.ptk.ui.widgets;
 
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.crypt.Secret;
+import nl.esciencecenter.ptk.util.StringUtil;
+
+import javax.swing.*;
 import java.awt.*;
+import java.awt.dnd.DropTarget;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
@@ -28,14 +34,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-
-import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
-import java.awt.dnd.DropTarget;
-
+@Slf4j
 public class NavigationBar extends JToolBar implements URIDropTargetLister {
 
     public static final int LOCATION_ONLY = 1;
@@ -46,8 +45,9 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         BROWSE_UP, //
         BROWSE_FORWARD, //
         REFRESH, //
-        LOCATION_EDITED, //
-        LOCATION_AUTOCOMPLETED;
+        LOCATION_CHANGED, //
+        LOCATION_AUTOCOMPLETED, //
+        LOCATION_COMBOBOX_EDITED;
 
         public static NavigationAction valueOfOrNull(String str) {
             for (NavigationAction value : values()) {
@@ -63,7 +63,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         //todo: fix spurious action command:
         if (cmd.equals("comboBoxEdited")) {
             System.err.printf("FIXME:got comboBoxEdited cmd!\n");
-            return NavigationAction.LOCATION_EDITED;
+            return NavigationAction.LOCATION_COMBOBOX_EDITED;
         }
         return NavigationAction.valueOf(cmd);
     }
@@ -108,7 +108,9 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         initDnD();
     }
 
-    /** Add listener to text field only */
+    /**
+     * Add listener to text field only
+     */
     public void addTextFieldListener(ActionListener listener) {
         this.locationTextField.setTextActionListener(listener);
 
@@ -141,7 +143,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         // Navigation Buttons
         // ==================
 
-        navigationToolBar.add(Box.createRigidArea(new Dimension(8,0)));
+        navigationToolBar.add(Box.createRigidArea(new Dimension(8, 0)));
 
         try {
             if (this.getShowNavigationButtons()) {
@@ -174,7 +176,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
                 refreshButton.setActionCommand(NavigationAction.REFRESH.toString());
             }
 
-            navigationToolBar.add(Box.createRigidArea(new Dimension(8,0)));
+            navigationToolBar.add(Box.createRigidArea(new Dimension(8, 0)));
 
             // ========
             // Location
@@ -187,8 +189,8 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
                 locationTextField = new ComboBoxIconTextPanel();
                 locationToolBar.add(locationTextField);
                 locationTextField.setText("location:///", false);
-                locationTextField.setComboActionCommands(NavigationAction.LOCATION_EDITED.toString(),
-                        NavigationAction.LOCATION_AUTOCOMPLETED.toString());
+                locationTextField.setComboActionCommands(NavigationAction.LOCATION_CHANGED.toString(),
+                        NavigationAction.LOCATION_AUTOCOMPLETED.toString(),NavigationAction.LOCATION_COMBOBOX_EDITED.toString());
 
 
                 // set Preferred Width for the GTK/Window LAF!
@@ -223,10 +225,8 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
         if (this.barType == NavigationBar.LOCATION_ONLY)
             return false;
 
-        if (this.barType == NavigationBar.LOCATION_AND_NAVIGATION)
-            return true;
+        return this.barType == NavigationBar.LOCATION_AND_NAVIGATION;
 
-        return false;
     }
 
     public void setLocationText(String txt, boolean addToHistory) {
@@ -267,7 +267,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
             dt1.addDropTargetListener(new URIDropHandler(this));
             dt2.addDropTargetListener(new URIDropHandler(this));
         } catch (TooManyListenersException e) {
-            PLogger.getLogger(this.getClass()).logException(PLogger.ERROR, e, "TooManyListenersException:" + e);
+            log.error(e.getMessage(), e);
         }
     }
 

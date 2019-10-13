@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,17 +20,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.internal;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.border.BevelBorder;
-
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
@@ -41,15 +32,19 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Start Webstart application.
  */
 public class JavaWebStarter extends ViewerJPanel implements ActionListener, ViewerPlugin,
         MimeViewer {
-       private JTextPane mainTP;
+    private JTextPane mainTP;
 
     private JButton okB;
 
@@ -67,7 +62,7 @@ public class JavaWebStarter extends ViewerJPanel implements ActionListener, View
 
     @Override
     public String[] getMimeTypes() {
-        return new String[] { "application/x-java-jnlp-file" };
+        return new String[]{"application/x-java-jnlp-file"};
     }
 
     @Override
@@ -145,11 +140,11 @@ public class JavaWebStarter extends ViewerJPanel implements ActionListener, View
                 cmdPath = uriFactory.getPath();
             }
 
-            String cmds[] = new String[2];
+            String[] cmds = new String[2];
             cmds[0] = cmdPath;
             cmds[1] = loc.toString();
 
-            String result[] = LocalExec.execute(cmds);
+            String[] result = LocalExec.execute(cmds);
 
         } catch (Throwable e) {
             notifyException("Failed to start WebStarter for:" + loc, e);
@@ -181,7 +176,7 @@ public class JavaWebStarter extends ViewerJPanel implements ActionListener, View
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
         for (int i = 0; i < mimeTypes.length; i++) {
-            List<String> list = new StringList(new String[] { "start:Start Java" });
+            List<String> list = new StringList("start:Start Java");
             mappings.put(mimeTypes[i], list);
         }
 

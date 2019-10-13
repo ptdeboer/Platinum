@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.exec;
 
 import java.io.IOException;
@@ -22,9 +26,9 @@ public class LocalExec {
      * This method assumes no big output of text. Resulting String array (or array elements) might
      * be null upon error.
      */
-    public static String[] execute(String cmds[]) throws IOException {
+    public static String[] execute(String[] cmds) throws IOException {
 
-        String result[] = new String[3];
+        String[] result = new String[3];
         // PRE: new empty process:
         LocalProcess proc = new LocalProcess();
         // capture stderr, stdout
@@ -51,15 +55,14 @@ public class LocalExec {
 
     /**
      * Execute cmds[0] and returns LocalProcess object.
-     * 
+     * <p>
      * Returns Process object of terminated process or when wait=false the Process object of running
      * process.
-     * 
-     * @param wait
-     *            - wait until process completes. if false the Actual runnign LocalProcess is
-     *            returned.
+     *
+     * @param wait - wait until process completes. if false the Actual runnign LocalProcess is
+     *             returned.
      */
-    public static LocalProcess execute(String cmds[], boolean wait) throws IOException {
+    public static LocalProcess execute(String[] cmds, boolean wait) throws IOException {
         // new empty process:
         LocalProcess proc = new LocalProcess();
         // capture stderr, stdout

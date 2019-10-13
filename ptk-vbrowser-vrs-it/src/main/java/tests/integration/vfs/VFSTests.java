@@ -68,7 +68,7 @@ import tests.integration.vfs.Settings.TestLocation;
 /**
  * This is an abstract test class which must be subclassed by a VFS implementation.
  *
- * @author P.T. de Boer
+ *
  */
 public abstract class VFSTests extends VTestCase {
 

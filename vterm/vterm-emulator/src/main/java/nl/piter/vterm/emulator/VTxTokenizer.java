@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -5,11 +9,13 @@ import nl.piter.vterm.emulator.Tokens.Token;
 import nl.piter.vterm.emulator.Tokens.TokenOption;
 import nl.piter.vterm.emulator.Util.MiniBuffer;
 import nl.piter.vterm.emulator.tokens.IToken;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -43,7 +49,7 @@ public class VTxTokenizer {
     // ===
     // State of Tokenizer
     // ===
-    
+
     private MiniBuffer patternBuffer = new MiniBuffer(MAX_BUF);
 
     /**
@@ -59,9 +65,11 @@ public class VTxTokenizer {
         public int numArgs() {
             return numIntegerArgs;
         }
+
         public int arg1() {
             return integerArgs[0];
         }
+
         public int arg2() {
             return integerArgs[1];
         }
@@ -71,30 +79,30 @@ public class VTxTokenizer {
         }
 
         public void reset() {
-            this.numIntegerArgs=0;
-            for (int i=0;i<integerArgs.length;i++) {
-                this.integerArgs[i]=0;
+            this.numIntegerArgs = 0;
+            for (int i = 0; i < integerArgs.length; i++) {
+                this.integerArgs[i] = 0;
             }
-            this.stringArg=null;
-            this.dummyND=-1;
-            this.dummyNP=-1;
+            this.stringArg = null;
+            this.dummyND = -1;
+            this.dummyNP = -1;
         }
 
         public int[] ints() {
-            int[] ints=new int[this.numIntegerArgs];
-            System.arraycopy(this.integerArgs,0,ints,0,numIntegerArgs);
+            int[] ints = new int[this.numIntegerArgs];
+            System.arraycopy(this.integerArgs, 0, ints, 0, numIntegerArgs);
             return ints;
         }
 
         public int ints(int i) {
-            if (i<this.numIntegerArgs) {
+            if (i < this.numIntegerArgs) {
                 return ints()[i];
             }
             return -1;
         }
     }
 
-    public class State{
+    public class State {
         protected boolean keepPatternBuffer;
         protected boolean scanningSequence;
         protected boolean optIntegersParsed;
@@ -103,21 +111,21 @@ public class VTxTokenizer {
         protected Token matchedToken;
 
         public void reset() {
-            this.keepPatternBuffer=false;
-            this.scanningSequence =false;
-            this.optIntegersParsed=false;
-            this.optGraphModeParsed=false;
-            this.errorChar=0;
-            this.matchedToken=null;
+            this.keepPatternBuffer = false;
+            this.scanningSequence = false;
+            this.optIntegersParsed = false;
+            this.optGraphModeParsed = false;
+            this.errorChar = 0;
+            this.matchedToken = null;
         }
     }
-    
-    private State state=new State();
-    private Arguments arguments=new Arguments();
+
+    private State state = new State();
+    private Arguments arguments = new Arguments();
 
     public VTxTokenizer(InputStream inps) {
         this.inputStream = inps;
-        this.tokenDefs=new VTxTokenDefs();
+        this.tokenDefs = new VTxTokenDefs();
     }
 
     public Arguments args() {
@@ -223,7 +231,7 @@ public class VTxTokenizer {
 
             // log character bugger only at finest logging level !
             if (log.isTraceEnabled()) {
-                log.info("+ appending [{}]'{}': buffer='{}'",String.format("%02x",c),(char)c,formattedBytesString(patternBuffer.getBytes()));
+                log.info("+ appending [{}]'{}': buffer='{}'", String.format("%02x", c), (char) c, formattedBytesString(patternBuffer.getBytes()));
             }
 
             Token c0Token = getC0Token(c);
@@ -283,13 +291,13 @@ public class VTxTokenizer {
             // =================
             // sequences
             // =================
-            boolean fullMatch=false;
-            boolean prefixMatch=false;
-            boolean partialPrefixMatch=false;
+            boolean fullMatch = false;
+            boolean prefixMatch = false;
+            boolean partialPrefixMatch = false;
 
             // (I)
             IToken tokenDef = this.tokenDefs.findMatch(patternBuffer.bytes, patternBuffer.index);
-            fullMatch = (tokenDef!=null);
+            fullMatch = (tokenDef != null);
 
             // (II)
             if (!fullMatch) {
@@ -300,13 +308,13 @@ public class VTxTokenizer {
             Token sequenceToken = null;
 
             // (III)
-            if (tokenDef==null) {
+            if (tokenDef == null) {
                 // nill
                 List<IToken> result = this.tokenDefs.findPartialPrefix(patternBuffer.bytes, patternBuffer.index);
-                if (result.size()>0)  {
-                    this.state.scanningSequence=true;
-                    partialPrefixMatch=true;
-                    tokenDef=result.get(0);
+                if (result.size() > 0) {
+                    this.state.scanningSequence = true;
+                    partialPrefixMatch = true;
+                    tokenDef = result.get(0);
                 }
             }
 
@@ -327,7 +335,7 @@ public class VTxTokenizer {
             log.trace(">>> prefixMatch   :'{}'", prefixMatch);
             log.trace(">>> partialPrefix :'{}'", partialPrefixMatch);
 
-            if (sequenceToken!=null) {
+            if (sequenceToken != null) {
                 log.trace(">>> sequenceToken :'{}':'{}'", sequenceToken, formattedBytesString(new String(tokenDef.chars()).getBytes()));
             } else {
                 log.trace(">>> sequenceToken :NULL");
@@ -383,7 +391,7 @@ public class VTxTokenizer {
             }
 
             // Fall trough;
-            this.state.errorChar=c;
+            this.state.errorChar = c;
         } while (state.scanningSequence);
 
         // === ERROR FALL THROUGH ===
@@ -442,11 +450,14 @@ public class VTxTokenizer {
         }
     }
 
+    private final Logger vtermTokenRecorder= LoggerFactory.getLogger("VTERM-RECORDER");
+
     private Token match(Token token) {
 
-        LoggerFactory.getLogger("VTERM-RECORDER").debug("{},{},[{},'{}'])",patternBuffer.getBytes(),
-                token,args().ints(),
-                (args().stringArg!=null?args().stringArg:""));
+        vtermTokenRecorder.debug("{x},{},[{},'{}'])",
+                patternBuffer.getBytes(),
+                token, args().ints(),
+                (args().stringArg != null ? args().stringArg : ""));
 
         this.state.matchedToken = token;
         if (log.isTraceEnabled()) {
@@ -458,39 +469,42 @@ public class VTxTokenizer {
     private Token parseChar(int c) throws IOException {
         Token token;
 
-        if (isChar(c)) {
-            // check utf-8
-            if (((c & 0x80) > 0) && (ansi_mode == false)) {
-                // posible utf-8 sequence. Check utf-8 prefixes:
+        if (!isChar(c)) {
+            return null;
+        }
 
-                int num = 1; //already have first byte
+        // check utf-8
+        if (((c & 0x80) > 0) && (ansi_mode == false)) {
+            // posible utf-8 sequence. Check utf-8 prefixes:
 
-                // utf-8 can exist of 6 bytes length (32bits encoded)
-                // binary prefix are:
-                //  110xxxxx (c0) for 2 bytes
-                //  1110xxxx (e0) for 3 bytes
-                //  11110xxx (fo) for 4 bytes
-                //  111110xx (f8) for 5 bytes
-                //  1111110x (fc) for 6 bytes
+            int num = 1; //already have first byte
 
-                if ((c & 0xe0) == 0xc0) {
-                    num = 2;
-                } else if ((c & 0xf0) == 0xe0) {
-                    num = 3;
-                } else if ((c & 0xf8) == 0xf0) {
-                    num = 4;
-                } else if ((c & 0xfc) == 0xf8) {
-                    num = 5;
-                } else if ((c & 0xfd) == 0xfc) {
-                    num = 6;
-                }
+            // utf-8 can exist of 6 bytes length (32bits encoded)
+            // binary prefix are:
+            //  110xxxxx (c0) for 2 bytes
+            //  1110xxxx (e0) for 3 bytes
+            //  11110xxx (fo) for 4 bytes
+            //  111110xx (f8) for 5 bytes
+            //  1111110x (fc) for 6 bytes
 
-                byte utfBytes[]=new byte[num];
-                utfBytes[0]=(byte)c;
+            if ((c & 0xe0) == 0xc0) {
+                num = 2;
+            } else if ((c & 0xf0) == 0xe0) {
+                num = 3;
+            } else if ((c & 0xf8) == 0xf0) {
+                num = 4;
+            } else if ((c & 0xfc) == 0xf8) {
+                num = 5;
+            } else if ((c & 0xfd) == 0xfc) {
+                num = 6;
+            }
 
-                // read bytes as-is:
-                for (int i = 1; i < num; i++) {
-                    utfBytes[i] = readUByte(); // put into byte buffer
+            byte[] utfBytes = new byte[num];
+            utfBytes[0] = (byte) c;
+
+            // read bytes as-is:
+            for (int i = 1; i < num; i++) {
+                utfBytes[i] = readUByte(); // put into byte buffer
 
                     /*// escaped utf-8 char MUST have hight bit set.
                     if ((buffer[index]&0x80)==0)
@@ -500,20 +514,17 @@ public class VTxTokenizer {
                      token.setText(text);
                      return token;
                     }*/
-                }
-
-                String utf8 = new String(utfBytes,"UTF8");
-                log.info("Is this UTf8? :'{}'",utf8);
-
             }
 
-            // Char sequence of one
-            token = Token.CHAR;
-            //Debug(2,"CHARS='"+getText("UTF-8")+"'");
-            return token;
+            String utf8 = new String(utfBytes, StandardCharsets.UTF_8);
+            log.info("Is this UTf8? :'{}'", utf8);
+
         }
 
-        return null;
+        // Char sequence of one
+        token = Token.CHAR;
+        //Debug(2,"CHARS='"+getText("UTF-8")+"'");
+        return token;
     }
 
     /**
@@ -529,7 +540,7 @@ public class VTxTokenizer {
 
         if (c < 0)
             throw new IOException("EOF: End of stream");
-        // cast to unsigned byte value:
+        // cast unsigned byte value:
         return (byte) (c & 0x00ff);
     }
 
@@ -587,7 +598,7 @@ public class VTxTokenizer {
      * and return it.
      */
     private int lookahead() throws IOException {
-        int c=this.readChar();
+        int c = this.readChar();
         this.ungetChar(c);
         return c;
     }
@@ -627,7 +638,7 @@ public class VTxTokenizer {
                 break; // end of argument list
             }
         }
-        log.debug("- parseIntegerList():nr of int:{}",numInts);
+        log.debug("- parseIntegerList():nr of int:{}", numInts);
 
         return numInts;
     }
@@ -637,7 +648,7 @@ public class VTxTokenizer {
      */
     private boolean parseGraphModeArguments() throws IOException {
         String intstr = parseInt();
-        if (intstr==null) {
+        if (intstr == null) {
             return false;
         }
         arguments.integerArgs[0] = Integer.valueOf(intstr);
@@ -725,7 +736,6 @@ public class VTxTokenizer {
 
         return str;
     }
-
 
 
 }

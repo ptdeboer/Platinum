@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,58 +20,33 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
-import java.awt.Component;
-import java.awt.Point;
+import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.util.List;
 
-import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 public class DnDUtil {
-    protected static PLogger dndLogger = PLogger.getLogger(DnDUtil.class);
+
+    public static Logger log = LoggerFactory.getLogger(DnDUtil.class);
 
     public static DnDTransferHandler getDefaultTransferHandler() {
         return DnDTransferHandler.getDefault();
     }
 
-    // === logging ===
-
-    public static void debugPrintf(String format, Object... args) {
-        dndLogger.debugPrintf(format, args);
-    }
-
-    public static void debugPrintln(String message) {
-        dndLogger.debugPrintf("%s\n", message);
-    }
-
-    public static void warnPrintf(String format, Object... args) {
-        dndLogger.warnPrintf(format, args);
-    }
-
-    public static void infoPrintf(String format, Object... args) {
-        dndLogger.infoPrintf(format, args);
-    }
-
-    public static void errorPrintf(String format, Object... args) {
-        dndLogger.errorPrintf(format, args);
-    }
-
-    public static void logException(Exception e, String format, Object... args) {
-        dndLogger.logException(PLogger.ERROR, e, format, args);
-    }
-
     /**
      * Convert ambigous integer to action DropAction Enum.
-     * 
+     *
      * @param dndAction
      * @return
      */
@@ -110,12 +85,12 @@ public class DnDUtil {
     /**
      * Paste Data call when for example CTRL-V IS called ! Supplied component is the Swing Component
      * which has the focus when CTRL-V was called !
-     * 
+     *
      * @param dropAction
      */
     public static boolean doPasteData(Component uiComponent, ViewNode viewNode, Transferable data,
-            DropAction effectiveDnDAction) {
-        DnDUtil.debugPrintf("doPasteData:(action:%s) on:%s\n", effectiveDnDAction, viewNode);
+                                      DropAction effectiveDnDAction) {
+        DnDUtil.log.debug("doPasteData:(action:{}) on:{}", effectiveDnDAction, viewNode);
 
         return performAcceptedDrop(uiComponent, null, viewNode, data, null, effectiveDnDAction);
     }
@@ -125,15 +100,15 @@ public class DnDUtil {
      * on ViewNode.
      */
     static public boolean performAcceptedDrop(Component uiComponent, Point point,
-            ViewNode targetViewNode, Transferable data, DropAction userDropAction,
-            DropAction effectiveDropAction) {
-        DnDUtil.debugPrintf("performAcceptedDrop():%s -> %s\n", uiComponent, targetViewNode);
+                                              ViewNode targetViewNode, Transferable data, DropAction userDropAction,
+                                              DropAction effectiveDropAction) {
+        DnDUtil.log.debug("performAcceptedDrop():{} -> {}", uiComponent, targetViewNode);
 
         // Should already be cecked
         if (DnDData.canConvertToVRLs(data) == false) {
             ExtendedList<DataFlavor> flavs = new ExtendedList<DataFlavor>(
                     data.getTransferDataFlavors());
-            DnDUtil.errorPrintf("performAcceptedDrop(): Unsupported Data/Flavor(s):\n%s\n",
+            DnDUtil.log.error("performAcceptedDrop(): Unsupported Data/Flavor(s):\n{}",
                     flavs.toString(" - ", "", "\n"));
             return false;
         }
@@ -141,7 +116,7 @@ public class DnDUtil {
         BrowserInterface browser = DnDUtil.getBrowserInterface(uiComponent);
 
         if (browser == null) {
-            DnDUtil.errorPrintf("performAcceptedDrop(): No BrowserInterface registered for:%s\n",
+            DnDUtil.log.error("performAcceptedDrop(): No BrowserInterface registered for:{}",
                     targetViewNode);
             return false;
         }
@@ -150,15 +125,16 @@ public class DnDUtil {
 
         try {
             List<VRL> vris = DnDData.getVRLsFrom(data);
-            DnDUtil.debugPrintf("performAcceptedDrop(): Actual Drop on ViewNode:%s\n",
+            DnDUtil.log.debug("performAcceptedDrop(): Actual Drop on ViewNode:{}",
                     targetViewNode);
             for (int i = 0; i < vris.size(); i++) {
-                DnDUtil.debugPrintf(" -vri[#%d]=%s\n", i, vris.get(i));
+                DnDUtil.log.debug(" -vri[#{}]={}", i, vris.get(i));
             }
 
             result = browser.doDrop(uiComponent, point, targetViewNode, effectiveDropAction, vris);
         } catch (Exception e) {
-            DnDUtil.logException(e, "performAcceptedDrop(): Couldn't get VRLs from data:%s\n", data);
+            DnDUtil.log.error("performAcceptedDrop(): Couldn't get VRLs from data:{}", data);
+            DnDUtil.log.error(e.getMessage(), e);
         }
 
         return result; // Handled!

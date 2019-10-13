@@ -1,10 +1,10 @@
 package uitests.panels;
 
-import javax.swing.JFrame;
-
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.SubTaskPanel;
+
+import javax.swing.*;
 
 public class TestSubTaskPanel {
 

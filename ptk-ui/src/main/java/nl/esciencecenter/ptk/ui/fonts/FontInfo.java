@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,37 +20,32 @@
 
 package nl.esciencecenter.ptk.ui.fonts;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.RenderingHints;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.swing.JComponent;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
 /**
  * Simple Font Information holder class. FontInfo is used by the FontToolbar. Use createFont() to
  * instantiate a new Font object using the specified Font information.
- * 
- * @author P.T. de Boer
+ *
+ *
  */
+@Slf4j
 public class FontInfo {
-    private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(FontInfo.class);
-    }
 
     // ========================================================================
     // Class Constants:
     // ========================================================================
 
-    /** Custom name */
+    /**
+     * Custom name
+     */
     public static final String FONT_ALIAS = "fontAlias";
 
     /**
@@ -58,20 +53,28 @@ public class FontInfo {
      */
     public static final String FONT_TYPE = "fontType";
 
-    /** Less specific font type or font "family" */
+    /**
+     * Less specific font type or font "family"
+     */
     public static final String FONT_FAMILY = "fontFamily";
 
-    /** Italic,Bold,etc. */
+    /**
+     * Italic,Bold,etc.
+     */
     public static final String FONT_STYLE = "fontStyle";
 
-    /** Size in pixels */
+    /**
+     * Size in pixels
+     */
     public static final String FONT_SIZE = "fontSize";
 
-    /** Java 1.6 and 1.7 Font RenderingHints */
+    /**
+     * Java 1.6 and 1.7 Font RenderingHints
+     */
     public static final String FONT_RENDERING_HINTS = "fontRenderingHints";
 
-    public static final String fontPropertyNames[] = { FONT_ALIAS, FONT_FAMILY, FONT_STYLE,
-            FONT_SIZE, FONT_FAMILY };
+    public static final String[] fontPropertyNames = {FONT_ALIAS, FONT_FAMILY, FONT_STYLE,
+            FONT_SIZE, FONT_FAMILY};
 
     // some default font types:
     public static final String FONT_ICON_LABEL = "iconlabel";
@@ -86,7 +89,9 @@ public class FontInfo {
 
     private static boolean autosave = false;
 
-    /** Font Style database */
+    /**
+     * Font Style database
+     */
     static Hashtable<String, FontInfo> fontStyles = null;
 
     // ========================================================================
@@ -121,7 +126,7 @@ public class FontInfo {
 
     /**
      * Font Style, 0=non, 0x01=bold, 0x02=italic, etc.
-     * 
+     *
      * @see java.awt.Font
      */
     protected Integer fontStyle = 0;
@@ -178,8 +183,7 @@ public class FontInfo {
     }
 
     /**
-     * @param fontSize
-     *            The fontSize to set.
+     * @param size The fontSize to set.
      */
     public void setFontSize(int size) {
         // System.err.println("FontInfo.setFontSize="+size);
@@ -194,8 +198,7 @@ public class FontInfo {
     }
 
     /**
-     * @param fontStyle
-     *            The fontStyle to set.
+     * @param fontStyle The fontStyle to set.
      */
     public void setFontStyle(int fontStyle) {
         this.fontStyle = fontStyle;
@@ -209,8 +212,7 @@ public class FontInfo {
     }
 
     /**
-     * @param Set
-     *            Font Family name. For example "Monospaced" or "Arial".
+     * @param family Font Family name. For example "Monospaced" or "Arial".
      */
     public void setFontFamily(String family) {
         this.fontFamily = family;
@@ -218,7 +220,7 @@ public class FontInfo {
 
     /**
      * Create Font using this Font Information.
-     * 
+     *
      * @return
      */
     public Font createFont() {
@@ -253,7 +255,7 @@ public class FontInfo {
 
     /**
      * Return font properties as Properties Set.
-     * 
+     *
      * @return Properties set with this font information.
      */
     public Properties getFontProperties() {
@@ -348,17 +350,14 @@ public class FontInfo {
     /**
      * Explicit Set Anti Aliasing Rendering Hints to "On" or "Off". If useAA==null the settings will
      * be set to "Default".
-     * 
-     * @param useAA
-     *            - Anti Aliasing Rendering Hint: Use true to turn On, use false to run Off, null to
-     *            set to "Default".
+     *
+     * @param useAA - Anti Aliasing Rendering Hint: Use true to turn On, use false to run Off, null to
+     *              set to "Default".
      */
     public void setAntiAliasing(Boolean useAA) {
         if (this.renderingHints == null) {
-            renderingHints = new HashMap<Key, Object>();
+            renderingHints = new HashMap<>();
         }
-
-        logger.debugPrintf("setAntiAliasing():" + useAA);
 
         if (useAA == null) {
             renderingHints.put(RenderingHints.KEY_ANTIALIASING,
@@ -371,7 +370,6 @@ public class FontInfo {
     }
 
     /**
-     * 
      * @return - true if AntiAliasing Rendering Hint has been set to "on".
      */
     public boolean hasAntiAliasing() {
@@ -396,7 +394,7 @@ public class FontInfo {
     // ==============================================
 
     /**
-     * 
+     *
      */
     public static FontInfo getFontInfo(String alias) {
         // autoinit
@@ -435,11 +433,9 @@ public class FontInfo {
 
     /**
      * Store FontInfo under (new) alias.
-     * 
-     * @param font
-     *            java.awt.Font to store
-     * @param alias
-     *            reference name
+     *
+     * @param font  java.awt.Font to store
+     * @param alias reference name
      * @return
      */
     protected static FontInfo store(Font font, String alias) {

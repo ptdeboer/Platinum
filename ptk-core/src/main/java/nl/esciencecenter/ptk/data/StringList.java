@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,11 +20,11 @@
 
 package nl.esciencecenter.ptk.data;
 
+import nl.esciencecenter.ptk.util.SortUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import nl.esciencecenter.ptk.util.SortUtil;
 
 /**
  * Helper class for StringLists. StringList extends the ArrayList class with extra methods.
@@ -33,7 +33,7 @@ import nl.esciencecenter.ptk.util.SortUtil;
  */
 public class StringList extends ExtendedList<String> implements Cloneable, Serializable {
 
-       /**
+    /**
      * Factory method to merge two arrays. Duplicates are removed.
      */
     public static String[] merge(String[] arr1, String[] arr2) {
@@ -45,7 +45,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     /**
      * Factory method to merge tree arrays. Duplicates are removed.
      */
-    public static String[] merge(String[] arr1, String[] arr2, String arr3[]) {
+    public static String[] merge(String[] arr1, String[] arr2, String[] arr3) {
         StringList list = new StringList(arr1);
         list.merge(arr2);
         list.merge(arr3);
@@ -79,23 +79,23 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
 
     /**
      * Uses String.split(regexp) to create StringList
-     * 
-     * @see #java.lang.String.split();
+     *
      * @param str
      * @return
+     * @see #java.lang.String.split();
      */
     public static StringList createFrom(String str, String regexp) {
         if ((str == null) || (regexp == null))
             return null;
 
-        String strs[] = str.split(regexp);
+        String[] strs = str.split(regexp);
         return new StringList(strs);
     }
 
     /**
      * Merge String array into one StringList. Uses merge().
      */
-    public static StringList createFrom(String list1[], String list2[]) {
+    public static StringList createFrom(String[] list1, String[] list2) {
         StringList list = new StringList(list1);
         list.merge(list2);
         return list;
@@ -104,7 +104,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     /**
      * Merge String arrays into one StringList. Uses merge()
      */
-    public static StringList createFrom(String list1[], String list2[], String list3[]) {
+    public static StringList createFrom(String[] list1, String[] list2, String[] list3) {
         StringList list = new StringList(list1);
         list.merge(list2);
         list.merge(list3);
@@ -126,7 +126,7 @@ public class StringList extends ExtendedList<String> implements Cloneable, Seria
     /**
      * Creates a StringList with an capacity of num. Actual reported size() will be 0! Only useful
      * if the size is known in advance and the list size will not change.
-     * 
+     *
      * @param capacity
      */
     public StringList(int capacity) {

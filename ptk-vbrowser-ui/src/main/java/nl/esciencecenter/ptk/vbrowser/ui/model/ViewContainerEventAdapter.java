@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,24 +20,19 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.model;
 
-import java.awt.Component;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-
-import javax.swing.JPopupMenu;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
  * Generic event handler for ViewComponents. Handles Mouse and Focus events.
  */
+@Slf4j
 public class ViewContainerEventAdapter implements MouseListener, MouseMotionListener, FocusListener {
-    private static final PLogger logger = PLogger.getLogger(ViewContainerEventAdapter.class);
 
     private ViewNodeContainer viewComp;
 
@@ -52,7 +47,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     private boolean notifyActionEvents = true;
 
     public ViewContainerEventAdapter(ViewNodeContainer viewComp,
-            ViewNodeActionListener componentController) {
+                                     ViewNodeActionListener componentController) {
         this.viewComp = viewComp;
         this.nodeActionListener = componentController;
         // this.notifySelectionEvents=handleSelectionEvents;
@@ -69,22 +64,22 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
     @Override
     public void focusGained(FocusEvent event) {
-        logger.debugPrintf("focusGained:%s\n", event);
+        log.debug("focusGained:{}", event);
     }
 
     @Override
     public void focusLost(FocusEvent event) {
-        logger.debugPrintf("focusLost:%s\n", event);
+        log.debug("focusLost:{}", event);
     }
 
     @Override
     public void mouseDragged(MouseEvent event) {
-        // debugPrintf("mouseClicked:%s\n",event);
+        // log.debug("mouseClicked:{}",event);
     }
 
     @Override
     public void mouseMoved(MouseEvent event) {
-        // debugPrintf("mouseClicked:%s\n",event);
+        // log.debug("mouseClicked:{}",event);
     }
 
     @Override
@@ -100,12 +95,12 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
     @Override
     public void mouseExited(MouseEvent event) {
-        // logger.debugPrintf("mouseClicked:%s\n", event);
+        // log.debug("mouseClicked:{}", event);
     }
 
     @Override
     public void mouseReleased(MouseEvent event) {
-        // logger.debugPrintf("mouseClicked:%s\n", event);
+        // log.debug("mouseClicked:{}", event);
     }
 
     public void mousePressed(MouseEvent e) {
@@ -121,7 +116,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     // =================
 
     protected void doMouseClicked(MouseEvent e) {
-        logger.debugPrintf("mouseClicked:%s\n", e);
+        log.debug("mouseClicked:{}", e);
 
         ViewNode node = getViewNode(e);
 
@@ -199,7 +194,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     }
 
     protected void doMousePressed(MouseEvent e) {
-        logger.debugPrintf("mousePressed:%s\n", e);
+        log.debug("mousePressed:{}", e);
 
         ViewNode node = getViewNode(e);
         boolean canvasclick = false;
@@ -222,7 +217,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
             }
         }
 
-        ViewNode refs[] = this.viewComp.getNodeSelection();
+        ViewNode[] refs = this.viewComp.getNodeSelection();
 
         // check whether more then one nodes are selected
         // If two nodes are selected use Canvas Menu for Multiple Selections !
@@ -241,14 +236,14 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     }
 
     private boolean doShowPopupMenu(ViewNodeContainer viewComponent, ViewNode viewNode,
-            boolean canvasMenu, MouseEvent e) {
+                                    boolean canvasMenu, MouseEvent e) {
         // get (optional) ViewNode menu */
         JPopupMenu menu = viewComponent.createNodeActionMenuFor(viewNode, canvasMenu);
         if (menu != null) {
             menu.show((Component) e.getSource(), e.getX(), e.getY());
             return true;
         } else {
-            logger.warnPrintf("No pop-up menu created for (comp/ViewNode):%s/%s\n", viewComponent,
+            log.warn("No pop-up menu created for (comp/ViewNode):{}/{}", viewComponent,
                     viewNode);
             return false;
         }
@@ -268,7 +263,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     }
 
     protected void notifySetSelectionRange(ViewNodeContainer viewC, ViewNode node1, ViewNode node2,
-            boolean value) {
+                                           boolean value) {
         if (this.notifySelectionEvents)
             viewC.setNodeSelectionRange(node1, node2, value);
     }

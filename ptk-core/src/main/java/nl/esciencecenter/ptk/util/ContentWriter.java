@@ -1,10 +1,11 @@
 package nl.esciencecenter.ptk.util;
 
+import nl.esciencecenter.ptk.io.IOUtil;
+import nl.esciencecenter.ptk.io.Writable;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
-
-import nl.esciencecenter.ptk.io.Writable;
 
 /**
  * Content writer util class which can automatically close the OutputStream written to.
@@ -12,12 +13,8 @@ import nl.esciencecenter.ptk.io.Writable;
 public class ContentWriter implements Writable {
 
     private boolean autoClose;
-
     private OutputStream outputStream;
-
     private String charEncoding;
-
-    private IOException closeException;
 
     public ContentWriter(OutputStream outps) {
         this.outputStream = outps;
@@ -49,7 +46,7 @@ public class ContentWriter implements Writable {
             outputStream.flush();
         } finally {
             if (autoClose) {
-                autoClose();
+                IOUtil.autoClose(outputStream);
             }
         }
     }
@@ -60,7 +57,7 @@ public class ContentWriter implements Writable {
             outputStream.flush();
         } finally {
             if (autoClose) {
-                autoClose();
+                IOUtil.autoClose(outputStream);
             }
         }
     }
@@ -71,7 +68,7 @@ public class ContentWriter implements Writable {
             outputStream.flush();
         } finally {
             if (autoClose) {
-                autoClose();
+                IOUtil.autoClose(outputStream);
             }
         }
     }
@@ -82,20 +79,9 @@ public class ContentWriter implements Writable {
             outputStream.flush();
         } finally {
             if (autoClose) {
-                autoClose();
+                IOUtil.autoClose(outputStream);
             }
         }
     }
 
-    public void autoClose() {
-        try {
-            this.outputStream.close();
-        } catch (IOException e) {
-            this.closeException = e;
-        }
-    }
-
-    public Exception getCloseException() {
-        return this.closeException;
-    }
 }

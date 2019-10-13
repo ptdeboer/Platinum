@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,30 +20,17 @@
 
 package nl.esciencecenter.ptk.ui.image;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.ImageObserver;
 import java.io.IOException;
-
-import javax.swing.JComponent;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * ImagePane which handles asynchronous imageUpdates. After an image is loaded the component size is
  * updated to match the new size. This because when updating an image from a remote resource, the
  * size might not be known yet as long as the AWT toolkit is 'decoding; the image bytes.
- * 
  */
 public class ImagePane extends JComponent {
-    private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(ImagePane.class);
-    }
 
     // wait for an image to be updated 
     public static class ImageWaiter implements ImageObserver {
@@ -65,8 +52,7 @@ public class ImagePane extends JComponent {
         }
 
         public synchronized boolean imageUpdate(Image img, int infoFlags, int x, int y, int width,
-                int height) {
-            logger.debugPrintf(">>> ImageWaiter: flags=%s\n", infoFlags);
+                                                int height) {
 
             if ((infoFlags & ImageObserver.ERROR) > 0) {
                 this.error = true;
@@ -87,8 +73,6 @@ public class ImagePane extends JComponent {
             if (height > 0)
                 newHeight = height;
 
-            logger.debugPrintf(">>> ImageWaiter: update %d,%d => %d,%d \n", width, height,
-                    newWidth, newHeight);
 
             if (allBits == false)
                 this.allBits = ((infoFlags & ImageObserver.ALLBITS) > 0);
@@ -110,7 +94,7 @@ public class ImagePane extends JComponent {
 
         /**
          * waits for size to be known
-         * 
+         *
          * @throws IOException
          */
         public void waitForCompletion(boolean waitForAllBits) throws IOException {
@@ -136,10 +120,7 @@ public class ImagePane extends JComponent {
                         // don't wait 
                         wait = false;
                     } else {
-                        if (allBits == true)
-                            wait = false;
-                        else
-                            wait = true;
+                        wait = allBits != true;
                     }
                 }
 
@@ -151,33 +132,38 @@ public class ImagePane extends JComponent {
                             this.wait(1000);
                         }
                     } catch (InterruptedException e) {
-                        logger.logException(PLogger.WARN, e, "waitForCompletion():Interrupted\n");
+                        e.printStackTrace();
                     }
                 }
 
             }
-
-            logger.debugPrintf("<<< ImageWaiter: waitForCompletion():DONE!\n");
-
         }
 
     } // imageWaiters 
 
     // needed by swing 
-       // ===============================================================
+    // ===============================================================
     // Instance :
     // ================================================================
 
-    /** The Image */
+    /**
+     * The Image
+     */
     private Image image = null;
 
-    /** Default Background Color */
+    /**
+     * Default Background Color
+     */
     Color bgcolor = Color.GRAY;
 
-    /** Width of Image, might not be same as this component's width */
+    /**
+     * Width of Image, might not be same as this component's width
+     */
     private int imageWidth = -1;
 
-    /** Height of Image, might not be same as this component's height */
+    /**
+     * Height of Image, might not be same as this component's height
+     */
     private int imageHeight = -1;
 
     public ImagePane(Image source) throws IOException {
@@ -196,13 +182,12 @@ public class ImagePane extends JComponent {
     /**
      * Set new image, if waitForCompletion==true, this method will only return when the whole image
      * loaded and ready.
-     * 
+     *
      * @param bytes
-     * @param waitForCompletion
-     *            Set to true to block and wait for the image to be complete.
+     * @param waitForCompletion Set to true to block and wait for the image to be complete.
      * @throws IOException
      */
-    public void setImage(byte bytes[], boolean waitForCompletion) throws IOException {
+    public void setImage(byte[] bytes, boolean waitForCompletion) throws IOException {
         Toolkit tk = Toolkit.getDefaultToolkit();
         setImage(tk.createImage(bytes), waitForCompletion);
     }
@@ -210,11 +195,9 @@ public class ImagePane extends JComponent {
     /**
      * Set new image, if waitForCompletion==true, this method will only return when the whole image
      * is ready.
-     * 
-     * @param image
-     *            Image to be drawn.
-     * @param waitForCompletion
-     *            Set to true to block and wait for the image to be complete.
+     *
+     * @param newImage          Image to be drawn.
+     * @param waitForCompletion Set to true to block and wait for the image to be complete.
      * @throws IOException
      */
     public void setImage(Image newImage, boolean waitForCompletion) throws IOException {
@@ -225,13 +208,8 @@ public class ImagePane extends JComponent {
             // Specify waitForallBits==true if the complete image needs to be available. 
             // Set to false if only the correct size is needed. 
 
-            logger.debugPrintf("Waiting for image completion...\n");
-
             ImageWaiter waiter = new ImageWaiter(newImage);
-
             waiter.waitForCompletion(false);
-
-            logger.debugPrintf("Done: Waiting for image completion");
         }
 
         // image complete: swap: 
@@ -254,11 +232,6 @@ public class ImagePane extends JComponent {
         // be carefull due to ascynchronous nature of updateImage
         // height events COULD happen during this code:
 
-        logger.debugPrintf("this height=%d\n", imageHeight);
-        logger.debugPrintf("this width=%d\n", imageWidth);
-        logger.debugPrintf("new height=%d\n", tmpHeight);
-        logger.debugPrintf("new width=%d\n", tmpWidth);
-
         //
         // if size is not know yet, imageUpdate will do the trick 
         // 
@@ -274,7 +247,7 @@ public class ImagePane extends JComponent {
         // setSize is callend by parent container to set 
         // actual size of component. This is NOT the image size !  
         // do optional checking here: 
-        logger.debugPrintf("setSize:%d,%d\n", w, h);
+
         // call component setSize
         // AutoResize => Update Image Size ! 
         super.setSize(w, h);
@@ -316,10 +289,7 @@ public class ImagePane extends JComponent {
         this.imageWidth = newWidth;
         this.imageHeight = newHeight;
 
-        logger.debugPrintf("async update size=" + newWidth + "," + newHeight);
-        // setSize(this.width,this.height);
-
-        // methods go background already if not event thread !  
+        // methods go background already if not event thread !
         revalidate();
         repaint(); // request repaint! 
 
@@ -352,7 +322,6 @@ public class ImagePane extends JComponent {
         if ((infoFlags & ImageObserver.HEIGHT) > 0) {
             if (newWidth > 0) {
                 this.imageWidth = newWidth;
-                logger.debugPrintf("ImagePane:NEW height=%d\n", imageHeight);
                 updateSize = true;
             }
         }
@@ -360,8 +329,6 @@ public class ImagePane extends JComponent {
         if ((infoFlags & ImageObserver.WIDTH) > 0) {
             if (newHeight > 0) {
                 this.imageHeight = newHeight;
-
-                logger.debugPrintf("ImagePane:NEW width=%d\n", imageWidth);
                 updateSize = true;
             }
         }
@@ -396,7 +363,6 @@ public class ImagePane extends JComponent {
         {
             int x = this.getLocation().x;
             int y = this.getLocation().y;
-            logger.debugPrintf("paint(): offset x,y=%d,%d\n", x, y);
         }
 
         g.drawImage(targetImage, 0, 0, bgcolor, this);

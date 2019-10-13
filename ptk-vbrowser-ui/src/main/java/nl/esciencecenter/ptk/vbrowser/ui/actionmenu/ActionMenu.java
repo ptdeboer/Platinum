@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,23 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.ui.actionmenu;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
 
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -38,22 +28,29 @@ import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.MenuEntry;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry.PluginEntry;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.awt.Font.BOLD;
+import static java.awt.Font.ITALIC;
+
 public class ActionMenu extends JPopupMenu {
 
     /**
      * @param browserPlatform
      * @param actionListener
-     * @param viewComp
-     *            ViewComponent from which the pop-up click occured.
-     * @param actionSourceNode
-     *            actual ViewNode under click
-     * @param canvasMenu
-     *            whether this is a canvasClick
+     * @param viewComp         ViewComponent from which the pop-up click occured.
+     * @param actionSourceNode actual ViewNode under click
+     * @param canvasMenu       whether this is a canvasClick
      * @return
      */
     public static ActionMenu createDefaultPopUpMenu(BrowserPlatform browserPlatform,
-            ActionMenuListener actionListener, ViewNodeComponent viewComp,
-            ViewNode actionSourceNode, boolean canvasMenu) {
+                                                    ActionMenuListener actionListener, ViewNodeComponent viewComp,
+                                                    ViewNode actionSourceNode, boolean canvasMenu) {
         ViewNodeContainer container = null;
 
         if (viewComp instanceof ViewNodeContainer) {
@@ -243,7 +240,7 @@ public class ActionMenu extends JPopupMenu {
         }
 
         for (String type : types) {
-            String args[] = new String[1];
+            String[] args = new String[1];
             args[0] = type;
             subMenu.add(menu.createMethodItem(eventSource, type, ActionCmdType.CREATE_NEW, args));
         }
@@ -286,7 +283,7 @@ public class ActionMenu extends JPopupMenu {
     private ViewNode viewNode;
 
     public ActionMenu(BrowserPlatform browserPlatform, ViewNodeComponent viewComp,
-            ViewNode viewNode, ActionMenuListener actionListener) {
+                      ViewNode viewNode, ActionMenuListener actionListener) {
         init(browserPlatform, viewComp, viewNode, actionListener);
     }
 
@@ -299,7 +296,7 @@ public class ActionMenu extends JPopupMenu {
     }
 
     protected void init(BrowserPlatform browserPlatform, ViewNodeComponent viewComp,
-            ViewNode viewNode, ActionMenuListener actionListener) {
+                        ViewNode viewNode, ActionMenuListener actionListener) {
         this.popupHandler = new PopupHandler(actionListener);
         this.platform = browserPlatform;
         this.viewComponent = viewComp;
@@ -316,7 +313,7 @@ public class ActionMenu extends JPopupMenu {
     }
 
     protected JMenuItem createItem(Object eventSource, String name, ActionCmdType actionMeth,
-            String argument) {
+                                   String argument) {
         JMenuItem mitem = new JMenuItem();
         mitem.setText(name);
         mitem.setActionCommand(new ActionCmd(eventSource, actionMeth, argument).toString());
@@ -326,9 +323,15 @@ public class ActionMenu extends JPopupMenu {
     }
 
     protected JMenuItem createMethodItem(Object eventSource, String name, ActionCmdType actionMeth,
-            String arguments[]) {
+                                         String[] arguments) {
         JMenuItem mitem = new JMenuItem();
         mitem.setText(name);
+
+        Font f = mitem.getFont();
+        int style = f.getStyle() | ITALIC | BOLD ;
+        Font newF =new Font(f.getName(),style,f.getSize());
+        mitem.setFont(newF);
+
         mitem.setActionCommand(new ActionCmd(eventSource, actionMeth, arguments).toString());
         mitem.addActionListener(this.popupHandler);
 
@@ -339,7 +342,7 @@ public class ActionMenu extends JPopupMenu {
         PluginRegistry viewReg = platform.getViewerRegistry();
 
         String mimeType = actionSourceNode.getMimeType();
-        List<MenuEntry> entries = new ArrayList<MenuEntry>();
+        List<MenuEntry> entries = new ArrayList<>();
         viewReg.addMimeMenuEntries(entries, mimeType);
         viewReg.addToolMenuMappings(entries, new ViewNodeMenuMapper(actionSourceNode));
 
@@ -348,7 +351,7 @@ public class ActionMenu extends JPopupMenu {
         }
 
         for (MenuEntry entry : entries) {
-            String args[] = new String[2];
+            String[] args = new String[2];
             args[0] = entry.getViewerClassName();
             // optional method name to invoke when viewer is started, may be null.
             args[1] = entry.getMethodName();

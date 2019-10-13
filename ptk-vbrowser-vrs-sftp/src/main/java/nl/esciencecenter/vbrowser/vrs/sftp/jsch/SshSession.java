@@ -1,24 +1,14 @@
 package nl.esciencecenter.vbrowser.vrs.sftp.jsch;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import com.jcraft.jsch.*;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelShell;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.UIKeyboardInteractive;
-import com.jcraft.jsch.UserInfo;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * SftpSession manages a JSch Session. This Session can be used to create more channels.
@@ -60,7 +50,7 @@ public class SshSession implements AutoCloseable {
 
         @Override
         public String[] promptKeyboardInteractive(String destination, String name,
-                String instruction, String[] prompt, boolean[] echo) {
+                                                  String instruction, String[] prompt, boolean[] echo) {
             return null;
         }
     }
@@ -205,7 +195,7 @@ public class SshSession implements AutoCloseable {
         FSPath configPath;
 
         try {
-            configPath = FSUtil.getDefault().resolvePath(configDir);
+            configPath = FSUtil.fsutil().resolvePath(configDir);
         } catch (IOException e) {
             logger.error(
                     "addUserIDFiles():Failed to read/acces config directory:{} => IOException:{}",
@@ -213,7 +203,7 @@ public class SshSession implements AutoCloseable {
             return;
         }
 
-        String keys[] = config.privateKeys;
+        String[] keys = config.privateKeys;
         if ((keys == null) || (keys.length <= 0)) {
             logger.debug("addUserIDFiles():No private keys");
             return;
@@ -251,7 +241,7 @@ public class SshSession implements AutoCloseable {
         FSPath configPath;
         try {
             if (configDir != null) {
-                configPath = FSUtil.getDefault().resolvePath(configDir);
+                configPath = FSUtil.fsutil().resolvePath(configDir);
                 FSPath hostsFile = configPath.resolve(knownHostsFile);
                 if (hostsFile.exists()) {
                     jsch.setKnownHosts(hostsFile.getPathname());

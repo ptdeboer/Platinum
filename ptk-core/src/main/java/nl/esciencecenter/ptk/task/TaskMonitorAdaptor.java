@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,16 @@
 
 package nl.esciencecenter.ptk.task;
 
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.StringHolder;
+
 import java.util.Hashtable;
 import java.util.Map;
-
-import nl.esciencecenter.ptk.data.StringHolder;
 
 /**
  * Default Adaptor for ITaskMonitor interface.
  */
+@Slf4j
 public class TaskMonitorAdaptor implements ITaskMonitor {
 
     private static int instanceCounter = 0;
@@ -52,7 +54,7 @@ public class TaskMonitorAdaptor implements ITaskMonitor {
 
     private Throwable exception = null;
 
-    private TaskLogger taskLogger = null;
+    private LogBuffer taskLogger = null;
 
     public TaskMonitorAdaptor() {
         init();
@@ -64,7 +66,7 @@ public class TaskMonitorAdaptor implements ITaskMonitor {
     }
 
     private void init() {
-        this.taskLogger = new TaskLogger("TaskLogger");
+        this.taskLogger = new LogBuffer();
         id = instanceCounter++;
     }
 
@@ -72,7 +74,9 @@ public class TaskMonitorAdaptor implements ITaskMonitor {
         return "" + id;
     }
 
-    /** Optional Parent */
+    /**
+     * Optional Parent
+     */
     public void setParent(ITaskMonitor parent) {
         this.parent = parent;
     }
@@ -188,25 +192,29 @@ public class TaskMonitorAdaptor implements ITaskMonitor {
         // Do not synchronize here: it might deadlock threads.
         {
             // sloppy code!
-            if (format == null)
-                format = "<NULL FORMAT>";
-            taskLogger.logPrintf(format, args);
+            if (format == null) {
+                taskLogger.record("logPrintf: NULL format",true);
+            } else {
+                taskLogger.record(String.format(format, args),false);
+            }
         }
     }
 
-    /**
-     * Return all log events as single String.
-     * 
-     * @return - String holding all the log events as single String.
-     */
-    public String getLogText() {
-        StringHolder holder = new StringHolder();
-        getLogText(false, 0, holder);
-        return holder.value;
-    }
+//    /**
+//     * Add informative text (for end user).
+//     */
+//    public void log(String format, Object... args) {
+//        log.error("FIXME: LOG:"+format,args);
+//    }
 
+    @Override
     public int getLogText(boolean clearLogBuffer, int logEventOffset, StringHolder logTextHolder) {
-        return taskLogger.getLogText(clearLogBuffer, logEventOffset, logTextHolder);
+        String text = this.taskLogger.getText(logEventOffset);
+        if (clearLogBuffer) {
+            this.taskLogger.clear();
+        }
+        logTextHolder.set(text);
+        return taskLogger.size();
     }
 
     @Override

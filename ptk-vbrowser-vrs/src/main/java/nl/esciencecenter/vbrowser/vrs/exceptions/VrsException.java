@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -32,81 +32,22 @@ import java.io.IOException;
  * providing extra information from the underlying implementation. <br>
  */
 public class VrsException extends Exception {
-       // ===============
-    // Factory
-    // ===============
 
-    public static VrsException newChainedException(Throwable exception) {
-        return new VrsException(exception.getMessage(), exception);
-    }
-
-    public static VrsException create(String message, Throwable cause, String exceptionName) {
-        return new VrsException(message, cause, exceptionName);
-    }
-
-    /**
-     * Factory method to create a chained IOException. In java 1.5 there is no constructor to do
-     * that !
-     */
-    public static IOException createIOException(String message, Throwable e) {
-        IOException ex = new IOException(message);
-        ex.initCause(e);
-        return ex;
-    }
-
-    // ===============
-    // Instance
-    // ===============
-
-    /**
-     * Short Human Readable Error Description of this Exception.
-     */
-    protected String name = "Exception";
-
-    /**
-     * Default contructor. For subclasses only.
-     */
     protected VrsException() {
         super();
-    };
-
-    protected void setName(String newName) {
-        this.name = newName;
     }
-
-    // ===
-    // Public Constructors ***
-    // ===
 
     public VrsException(Throwable cause) {
         super(cause);
-    };
+    }
 
-    /**
-     * Most basic implementation of the VlException.
-     */
     public VrsException(String message) {
         super(message);
-        this.name = "Exception";
-    };
+    }
 
-    /**
-     * Public constructor which holds original system exception.
-     */
     public VrsException(String message, Throwable cause) {
         super(message, cause);
-        this.name = "Exception";
-    };
-
-    // ===
-    // Protected Constructors
-    // ===
-
-    /** Named Exception */
-    protected VrsException(String message, Throwable cause, String optName) {
-        super(message, cause);
-        this.name = optName;
-    };
+    }
 
     public String toString() {
         String message_txt = "";
@@ -116,7 +57,7 @@ public class VrsException extends Exception {
 
         do {
             if (index == 0) {
-                message_txt = name + ":" + getMessage();
+                message_txt = this.getClass().getCanonicalName() + ":" + getMessage();
             } else {
                 message_txt += "\n--- Nested Exception Caused By [" + index + "] ---\n";
                 message_txt += current.getClass().getName() + ":" + current.getMessage();
@@ -134,14 +75,6 @@ public class VrsException extends Exception {
 
     public String toStringPlusStacktrace() {
         return this.toString() + "\n ---Stack Trace --- \n" + getChainedStackTraceText(this);
-    }
-
-    /**
-     * Returns human readable name of Vrs Exception. If not set, this the name of the Exception
-     * subclass. Set to to for example "Acces Denied" or "Authentication Error".
-     */
-    public String getName() {
-        return name;
     }
 
     /**

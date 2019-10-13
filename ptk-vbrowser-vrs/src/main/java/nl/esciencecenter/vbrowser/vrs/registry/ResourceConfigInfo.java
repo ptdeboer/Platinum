@@ -63,12 +63,12 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo> {
 
     public static final String ATTR_AUTH_SCHEME = "authScheme";
 
-    public static final String defaultConfigAttributes[] = { RESOURCE_SCHEME, RESOURCE_USERINFO, RESOURCE_HOSTNAME,
-            RESOURCE_PORT, RESOURCE_PATH };
+    public static final String[] defaultConfigAttributes = {RESOURCE_SCHEME, RESOURCE_USERINFO, RESOURCE_HOSTNAME,
+            RESOURCE_PORT, RESOURCE_PATH};
 
-    public static enum AuthScheme {
+    public enum AuthScheme {
         NONE, PASSWORD, USER_CERTFIICATE
-    };
+    }
 
     /**
      * Meta attribute. Contains configuration attributes.
@@ -215,7 +215,7 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo> {
             return null;
         }
         // split "<username>[:<VO>]" parts:
-        String parts[] = userInfo.split(":");
+        String[] parts = userInfo.split(":");
         if (parts == null)
             return null;
         return parts[0];
@@ -223,7 +223,7 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo> {
 
     /**
      * Return user logical group or VO.
-     * 
+     *
      * @return User group, VO or null if not defined.
      */
     public String getUserVO() {
@@ -232,7 +232,7 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo> {
             return null;
         }
         // split "<username>[:<VO>]" parts:
-        String parts[] = userInfo.split(":");
+        String[] parts = userInfo.split(":");
         if (parts.length < 2) {
             return null;
         }
@@ -303,9 +303,9 @@ public class ResourceConfigInfo implements Duplicatable<ResourceConfigInfo> {
     /**
      * Set default attribute and update editable flag. If attribute is already set, the stored value
      * will be kept as-is.
-     * 
+     *
      * @return true if new attribute has been set or flags has been changed, false if previous value
-     *         has been kept.
+     * has been kept.
      */
     public boolean setDefaultAttribute(Attribute attr, boolean editable) {
         Attribute prevAttr = attributes.get(attr.getName());

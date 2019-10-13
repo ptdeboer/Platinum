@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,22 +20,18 @@
 
 package nl.esciencecenter.vbrowser.vrs;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.io.Serializable;
+import java.util.*;
+
 public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSProperties> {
 
-       /**
+    /**
      * Optional Parent for hierarchical properties.
      */
     protected VRSProperties parent = null;
@@ -50,12 +46,10 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     /**
      * Creates new VRSProperties and copies values from sourceProperties; Converts key object to
      * String based key.
-     * 
-     * @param sourceProperties
-     *            source Properties to copy.
-     * @param duplicateProperties
-     *            - if all property values implement the Duplicatable interface, duplicate values as
-     *            well.
+     *
+     * @param sourceProperties    source Properties to copy.
+     * @param duplicateProperties - if all property values implement the Duplicatable interface, duplicate values as
+     *                            well.
      */
     public VRSProperties(String name, Map<? extends Object, Object> sourceProperties, boolean duplicateProperties) {
         //
@@ -160,7 +154,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     /**
      * Copy all properties:
-     * 
+     *
      * @param vrsProps
      */
     public void putAll(VRSProperties vrsProps) {
@@ -169,7 +163,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     /**
      * Returns copy of Key Set as String List.
-     * 
+     *
      * @return String list of key set.
      */
     public List<String> keyList() {

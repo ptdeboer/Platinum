@@ -1,11 +1,5 @@
 package nl.esciencecenter.vbrowser.vrs.registry;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
@@ -14,9 +8,14 @@ import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.XMLDataException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Save/Load ResourceSystemInfo using XMLAttributeSets.
@@ -91,7 +90,7 @@ public class InfoRegistrySaver {
             logger.debug("Persistant system info registry not found:{}", file);
             return null;
         }
-        return parseXML(vrsClient.readContentsAsString(file)); 
+        return parseXML(vrsClient.readContentsAsString(file));
     }
 
     protected List<ResourceConfigInfo> parseXML(String xml) throws XMLDataException {

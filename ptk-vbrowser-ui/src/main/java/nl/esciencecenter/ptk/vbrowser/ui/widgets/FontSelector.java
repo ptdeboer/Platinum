@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -25,14 +25,21 @@ package nl.esciencecenter.ptk.vbrowser.ui.widgets;
 // color. The color selection is provided by a JColorChooser pane. This
 // dialog builds an AttributeSet suitable for use with JTextPane.
 //
+
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class FontSelector extends JDialog implements ActionListener {
-       JColorChooser colorChooser;
+    JColorChooser colorChooser;
 
     JComboBox fontName;
 
@@ -65,7 +72,7 @@ public class FontSelector extends JDialog implements ActionListener {
         Container c = getContentPane();
 
         JPanel fontPanel = new JPanel();
-        fontName = new JComboBox(new String[] { "TimesRoman", "Helvetica", "Courier" });
+        fontName = new JComboBox(new String[]{"TimesRoman", "Helvetica", "Courier"});
         fontName.setSelectedIndex(1);
         fontName.addActionListener(this);
         fontSize = new JTextField("12", 4);

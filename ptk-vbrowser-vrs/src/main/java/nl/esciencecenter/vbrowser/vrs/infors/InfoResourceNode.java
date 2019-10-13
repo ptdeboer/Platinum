@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,23 +20,12 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import nl.esciencecenter.vbrowser.vrs.VEditable;
 import nl.esciencecenter.vbrowser.vrs.VPath;
-import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
+import nl.esciencecenter.vbrowser.vrs.data.*;
 import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -45,17 +34,25 @@ import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_NAME;
+
 /**
  * Common parent for ResourcFolders, ResourceLinks and the RootInfoNode.<br>
  * Implements the Folder management methods and target resolving of ResourceLinks.
  */
+@Slf4j
 public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessable, VInfoResourcePath, VRenamable,
-        VDeletable {
-
-    private static PLogger logger = PLogger.getLogger(InfoResourceNode.class);
+        VDeletable, VEditable {
 
     public static InfoResourceNode createSubPathLinkNode(InfoRSPathNode parent, String subPath, String logicalName,
-            VRL targetLink, String optIconURL, boolean showLinkIcon) throws VRLSyntaxException {
+                                                         VRL targetLink, String optIconURL, boolean showLinkIcon) throws VRLSyntaxException {
         VRL logicalVRL = parent.createSubPathVRL(subPath);
         InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
         node.setTargetVRL(targetLink);
@@ -66,7 +63,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     }
 
     public static InfoResourceNode createLinkNode(InfoRSPathNode parent, String logicalName, VRL targetLink,
-            String optIconURL, boolean showLinkIcon) throws VRLSyntaxException {
+                                                  String optIconURL, boolean showLinkIcon) throws VRLSyntaxException {
         VRL logicalVRL = parent.createNewSubNodeVRL();
         InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
         node.setTargetVRL(targetLink);
@@ -142,7 +139,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         if (str != null)
             return str;
         if (isResourceFolder()) {
-            String iconUrl = "icons/info/vle-world-folder.png";
+            String iconUrl = "icons/infors/vle-world-folder.png";
             attributes.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
             return iconUrl;
         } else {
@@ -167,7 +164,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         try {
             return attributes.getVRLValue(InfoRSConstants.RESOURCE_TARGETVRL);
         } catch (VRLSyntaxException e) {
-            logger.warnPrintf("Invalid VRL:%s\n", e.getMessage());
+            log.warn("Invalid VRL:{}", e.getMessage());
             return null;
         }
     }
@@ -202,12 +199,14 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         return getInfoRS().getVRSClient().openPath(vrl);
     }
 
-    public List<AttributeDescription> getResourceAttributeDescriptions() throws VrsException {
+    public List<AttributeDescription> getResourceAttributeDescriptions()  {
         ArrayList<AttributeDescription> descs = new ArrayList<AttributeDescription>();
+        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_MIMETYPE, AttributeType.STRING, false,
+                "Resource MimeType"));
+        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_NAME, AttributeType.STRING, true,
+                "Resource logical name"));
         descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_TARGETVRL, AttributeType.VRL, true,
                 "Resource Target VRL"));
-        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_MIMETYPE, AttributeType.STRING, true,
-                "Resource MimeType"));
         descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_ICONURL, AttributeType.STRING, true,
                 "Resource Icon URL"));
         descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_SHOWLINKICON, AttributeType.BOOLEAN, true,
@@ -232,6 +231,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
             attr = new Attribute(name, getShowLinkIcon(false));
         } else if (name.equals(InfoRSConstants.RESOURCE_ICONURL)) {
             attr = new Attribute(name, getIconURL(128));
+        } else if (name.equals(InfoRSConstants.RESOURCE_NAME)) {
+            attr = new Attribute(name, this.getName());
         }
 
         return attr;
@@ -241,7 +242,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         // update attributes:
         for (String key : attrs.keySet()) {
             Attribute attr = attrs.get(key);
-            logger.debugPrintf("updating attribute=%s\n", attr);
+            log.debug("updating attribute={}", attr);
             // delegate to AttributeSet:
             this.attributes.update(attr, true);
         }
@@ -292,11 +293,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     public InputStream createInputStream() throws VrsException {
         String xml = new XMLData(this.getVRSContext()).toXML(this);
         ByteArrayInputStream binps;
-        try {
-            binps = new ByteArrayInputStream(xml.getBytes(ResourceLoader.CHARSET_UTF8));
-        } catch (UnsupportedEncodingException e) {
-            throw new VrsException(e.getMessage(), e);
-        }
+        binps = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
         return binps;
     }
 
@@ -305,8 +302,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     // ======================================
 
     public InfoResourceNode addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL,
-            boolean save) throws VrsException {
-        logger.debugPrintf(">>>Adding new resourceLink:%s\n", targetLink);
+                                            boolean save) throws VrsException {
+        log.debug(">>>Adding new resourceLink:{}", targetLink);
 
         InfoRSPathNode parentNode;
 
@@ -388,7 +385,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         if (parent != null) {
             parent.delSubNode(this);
         } else {
-            logger.errorPrintf("Received delete for parentless node:%s\n", this);
+            log.error("Received delete for parentless node:{}", this);
         }
         if (rootNode != null) {
             rootNode.save();
@@ -424,16 +421,39 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     protected void save() {
         //
         if (getVRSContext().hasPersistantConfig() == false) {
-            logger.debugPrintf("Not saving InfoNodes. Non persistant context");
+            log.debug("Not saving InfoNodes. Non persistant context");
             return;
         }
         // delegete to parent
         InfoRootNode rootNode = this.getRootNode();
         if (rootNode == null) {
-            logger.errorPrintf("save(): Cat not save InfoNodes: No RootNode!\n");
+            log.error("save(): Cat not save InfoNodes: No RootNode!");
         } else {
             rootNode.save();
         }
+    }
+
+    @Override
+    public boolean setAttributes(Attribute[] attrs) {
+        for (Attribute attr:attrs) {
+            this.setAttribute(attr,false);
+        }
+        this.save();
+        return true;
+    }
+
+    @Override
+    public boolean setAttribute(Attribute attr) {
+        return this.setAttribute(attr,true);
+    }
+
+    public boolean setAttribute(Attribute attr, boolean save) {
+        log.debug("setAttribute():{}", attr);
+        this.attributes.put(attr);
+        if (save) {
+            this.save();
+        }
+        return true;
     }
 
 }

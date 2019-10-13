@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,22 +20,17 @@
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * A VAttributeSet is implemented as an LinkedHashMap with extra set manipulation methods.
@@ -46,25 +41,16 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * changed, keeping the original VAttribute object in the Set. The VAttribute has to be Editable.<br>
  * This way it is possible to keep references to the stored VAttribute for advanced manipulation
  * methods.
- * 
+ *
  * @see HashMapList
  */
+@Slf4j
 public class AttributeSet extends HashMapList<String, Attribute> implements Serializable, Cloneable//, Duplicatable<AttributeSet>
 {
-    // ========================================================================
-    // Class
-    // ========================================================================
 
-    // = serializable
-       public static final String ATTR_SETNAME = "setName";
-
-    private static PLogger logger = null;
-
-    static {
-        logger = PLogger.getLogger(AttributeSet.class);
-    }
-
-    /** Create VAttributeSet from Properties */
+    /**
+     * Create VAttributeSet from Properties
+     */
     public static AttributeSet createFrom(Properties properties) {
         return new AttributeSet(properties);
     }
@@ -73,7 +59,9 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     // Instance
     // ========================================================================
 
-    /** Optional set Name */
+    /**
+     * Optional set Name
+     */
     protected String setName = "";
 
     // List<?> also matches Vector and ArrayList !
@@ -107,7 +95,9 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
         super(); // empty hastable
     }
 
-    /** Named Attribute Set */
+    /**
+     * Named Attribute Set
+     */
     public AttributeSet(String name) {
         super(); // empty hastable
         this.setName = name;
@@ -116,9 +106,8 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     /**
      * Constructs an VAttributeSet from the Map. Note that VAttributeSet is a map as well, so this
      * contructor can be used as an Copy Constructor.
-     * 
-     * @param map
-     *            source map.
+     *
+     * @param map source map.
      */
     public AttributeSet(Map<? extends Object, ? extends Object> map) {
         init(map);
@@ -127,9 +116,8 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     /**
      * Constructs an VAttributeSet from the Map. Note that VAttributeSet is a map as well, so this
      * contructor can be used as an Copy Constructor.
-     * 
-     * @param map
-     *            source map.
+     *
+     * @param attrs source attributes.
      */
     public AttributeSet(Collection<Attribute> attrs) {
         init(attrs.toArray(new Attribute[0]));
@@ -143,7 +131,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
         // int index=0;
         Set<? extends Object> keys = map.keySet();
         // loop
-        for (Iterator<? extends Object> iterator = keys.iterator(); iterator.hasNext();) {
+        for (Iterator<? extends Object> iterator = keys.iterator(); iterator.hasNext(); ) {
             Object key = iterator.next();
             // Use STRING representation of Key Object !
             String keystr = key.toString();
@@ -165,12 +153,16 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     // Getters/Setters
     // ========================================================================
 
-    /** Sets optional name. null name is allowed */
+    /**
+     * Sets optional name. null name is allowed
+     */
     public void setName(String newName) {
         setName = newName;
     }
 
-    /** Returns optional name. Can be null */
+    /**
+     * Returns optional name. Can be null
+     */
     public String getName() {
         return setName;
     }
@@ -181,13 +173,15 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
      */
     public void put(Attribute attr) {
         if (attr == null) {
-            logger.warnPrintf("Attribute is NULL!\n");
+            log.warn("Attribute is NULL!");
             return;
         }
         this.put(attr.getName(), attr);
     }
 
-    /** Combined put() and setEditable() */
+    /**
+     * Combined put() and setEditable()
+     */
     public void put(Attribute attr, boolean editable) {
         attr.setEditable(editable);
         this.put(attr);
@@ -237,9 +231,11 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
         return false;
     }
 
-    /** Returns array of attribute names of the key set. */
-    public String[] getAttributeNames() {
-        return this.getKeyArray(new String[0]);
+    /**
+     * Returns array of attribute names of the key set.
+     */
+    public Set<String> getAttributeNames() {
+        return this.keySet();
     }
 
     /**
@@ -268,9 +264,8 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
 
     /**
      * Returns String value of Attribute
-     * 
-     * @param defVal
-     *            default value if attribute is not in this set
+     *
+     * @param defVal default value if attribute is not in this set
      */
     public int getIntValue(String name, int defVal) {
         Attribute attr = get(name);
@@ -293,12 +288,6 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
         return attr.getVRL();
     }
 
-    /**
-     * Returns String value of Attribute
-     * 
-     * @param defVal
-     *            default value if attribute is not in this set
-     */
     public int getIntValue(String name) {
         Attribute attr = get(name);
         if (attr == null)
@@ -336,7 +325,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
 
     /**
      * Set Attribute Value. Returns previous value if any. The difference between put and set is
-     * that this method changes the stored Attribute in the hashtable by using
+     * that this method changes the stored Attribute in the AttributeSet by using
      * VAttribute.setValue(). It does NOT put a new VAttribute into the hashtable. <br>
      * This means that already stored VAttribute has to be editable! This way the 'changed' flag is
      * updated from the VAttribute. If the named attribute isn't stored, a new attribute will be
@@ -376,7 +365,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     }
 
     public String toString() {
-        Attribute[] attrs = toArray(new Attribute[] {});
+        Attribute[] attrs = toArray(new Attribute[]{});
         String str = "{VAttributeSet:" + this.setName + ":[";
         if (attrs != null) {
             for (int i = 0; i < attrs.length; i++) {
@@ -388,7 +377,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     }
 
     /**
-     * Creates deep copy
+     * Value object: always creates deep copy
      */
     public AttributeSet clone() {
         return duplicate();
@@ -396,7 +385,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
 
     /**
      * Stored new String Attribute, replacing already stored VAttribute if it already exists.
-     * 
+     *
      * @see #set(String, String) Use set() method to keep already stored VAttributes.
      */
     public void put(String name, String value) {
@@ -417,7 +406,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
 
     /**
      * Stored new Integer Attribute, replacing already stored VAttribute if it already exists.
-     * 
+     *
      * @see #set(String, int) Use set() method to keep already stored VAttributes.
      */
     public void put(String attrName, int val) {
@@ -426,7 +415,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
 
     /**
      * Stored new boolean Attribute, replacing already stored VAttribute if it already exists.
-     * 
+     *
      * @see #set(String, boolean) Use set() method to keep already stored VAttributes.
      */
     public void put(String attrName, boolean val) {
@@ -434,22 +423,22 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     }
 
     /**
-     * Returns changed attributes as array
+     * Returns changed attributes as sparse array
      */
     public synchronized Attribute[] getChangedAttributesArray() {
         //
         int numChanged = 0;
         int index = 0;
-        for (int i = 0; i < this.size(); i++) {
-            if (this.elementAt(i).hasChanged() == true) {
+        for (String key:keySet()) {
+            if (this.get(key).hasChanged() == true) {
                 numChanged++;
             }
         }
         //
-        Attribute attrs[] = new Attribute[numChanged];
-        for (int i = 0; i < this.size(); i++) {
-            if (this.elementAt(i).hasChanged() == true) {
-                attrs[index++] = this.elementAt(i);
+        Attribute[] attrs = new Attribute[numChanged];
+        for (String key:keySet()) {
+            if (this.get(key).hasChanged() == true) {
+                attrs[index++] = this.get(key);
             }
         }
         return attrs;
@@ -465,18 +454,24 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
         attr.setEditable(val);
     }
 
-    public StringList getKeyStringList() {
-        return new StringList(this.getKeyArray(new String[0]));
+    public String[] createKeyArray() {
+        return this.keySet().toArray(new String[0]);
+    }
+
+    public StringList createKeyStringList() {
+        return new StringList(this.createKeyArray());
     }
 
     // explicited typed remove.
     public Attribute remove(String name) {
-        return super.remove((Object) name);
+        return super.remove(name);
     }
 
-    /** Remove attribute if name isn't in the key list */
+    /**
+     * Remove attribute if name isn't in the key list
+     */
     public void removeIfNotIn(StringList keylist) {
-        StringList names = this.getKeyStringList();
+        StringList names = this.createKeyStringList();
         // match current attribute against newlist;
         for (String name : names) {
             if (keylist.contains(name) == false) {
@@ -494,7 +489,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
      */
     public void matchTemplate(AttributeSet templateSet, boolean removeOthers) {
         //
-        StringList names = templateSet.getKeyStringList();
+        StringList names = templateSet.createKeyStringList();
         for (String name : names) {
             if (this.containsKey(name) == false) {
                 this.put(templateSet.get(name));
@@ -541,7 +536,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
 
     /**
      * Copy to VRSProperties object. This will remove type data and enum values.
-     * 
+     *
      * @return VRSProperties object of this AttributeSet.
      */
     public VRSProperties toVRSProperties() {
@@ -558,7 +553,7 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
     }
 
     public List<Attribute> toList() {
-        return new ExtendedList<Attribute>(this.values());
+        return new ExtendedList<>(this.values());
     }
 
     public void update(Attribute attr, boolean checkType) {

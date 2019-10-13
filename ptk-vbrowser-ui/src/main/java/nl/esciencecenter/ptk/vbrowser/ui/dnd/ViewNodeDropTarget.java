@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,32 +20,26 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.util.List;
-
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
+
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.*;
+import java.util.List;
 
 /**
  * ViewNodeDropTarget handler, handles 'drop' on ViewNode Components. Install this
  * DropTargetListener to support drops on the component.
- * 
+ * <p>
  * Swing/AWT Compatible DnD Support.
  */
 public class ViewNodeDropTarget extends DropTarget implements DropTargetListener {
-       public ViewNodeDropTarget(Component comp) {
+    public ViewNodeDropTarget(Component comp) {
         super(comp, DnDConstants.ACTION_LINK, null, true);
         this.setComponent(comp);
         // setDefaultActions(DnDConstants.ACTION_COPY);
@@ -60,28 +54,28 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
     }
 
     public void dragEnter(DropTargetDragEvent dtde) {
-        DnDUtil.debugPrintf("dragEnter:%s\n", dtde);
+        DnDUtil.log.debug("dragEnter:{}", dtde);
         super.dragEnter(dtde);
 
         updateDropAction(dtde);
     }
 
     public void dragOver(DropTargetDragEvent dtde) {
-        DnDUtil.debugPrintf("dragOver:%s\n", dtde);
+        DnDUtil.log.debug("dragOver:{}", dtde);
         super.dragOver(dtde);
 
         updateDropAction(dtde);
     }
 
     public void dropActionChanged(DropTargetDragEvent dtde) {
-        DnDUtil.debugPrintf("dropActionChanged:%s\n", dtde);
+        DnDUtil.log.debug("dropActionChanged:{}", dtde);
         super.dropActionChanged(dtde);
         // accept change ?
         updateDropAction(dtde);
     }
 
     public void dragExit(DropTargetEvent dte) {
-        DnDUtil.debugPrintf("dragExit:%s\n", dte);
+        DnDUtil.log.debug("dragExit:{}", dte);
         super.dragExit(dte);
     }
 
@@ -95,7 +89,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         ViewNode targetNode = this.getViewNode(uiComp, p);
 
         if (targetNode == null) {
-            DnDUtil.errorPrintf("drop(): No Target ViewNode for:%s!\n", dtde);
+            DnDUtil.log.error("drop(): No Target ViewNode for:{}!", dtde);
             dtde.rejectDrop();
         }
 
@@ -114,7 +108,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
             succes = DnDUtil.performAcceptedDrop(uiComp, p, targetNode, transferable,
                     DnDUtil.getDropAction(userDropAction), DnDUtil.getDropAction(effectiveAction));
         } else {
-            DnDUtil.debugPrintf("Effective ActionCmd=NONE for:%s\n", dtde);
+            DnDUtil.log.debug("Effective ActionCmd=NONE for:{}", dtde);
         }
 
         dtde.getDropTargetContext().dropComplete(succes);
@@ -123,9 +117,8 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
     /**
      * Check what the effective DropAction would be for this event and update accept/reject drag.
      * Return effective actions if this would the final drop.
-     * 
-     * @param dtde
-     *            DropTargetDropEvent
+     *
+     * @param dtde DropTargetDropEvent
      * @return Effective DropAction for this drop event.
      */
     protected DropAction updateDropAction(DropTargetDragEvent dtde) {
@@ -135,7 +128,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         // all actions allowed:
         int sourceActions = dtde.getSourceActions();
 
-        DnDUtil.debugPrintf("> updateAllowDrop(): source actions/drop action=%x/%x\n",
+        DnDUtil.log.debug("> updateAllowDrop(): source actions/drop action={}/{}",
                 sourceActions, userDropAction);
 
         // {
@@ -190,7 +183,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
      * effective allowed action.
      */
     protected int effectiveDropAction(Transferable transferable, ViewNode targetNode,
-            int sourceActions, int userDropAction) {
+                                      int sourceActions, int userDropAction) {
         List<String> childTypes = targetNode.getAllowedChildTypes();
 
         int dropActions = matchDataTypeDropActions(transferable, childTypes);
@@ -215,22 +208,17 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
 
     /**
      * Check match between transferable and (allowed) Resource childTypes.
-     * 
-     * @param transferable
-     *            - VRS Path or external object
-     * 
-     * @param childTypes
-     *            - allowed child types of current (ViewNode) drop target.
-     * 
+     *
+     * @param transferable - VRS Path or external object
+     * @param childTypes   - allowed child types of current (ViewNode) drop target.
      * @return matching actions from DnDConstants
-     * 
      * @see DnDConstants
      */
     public int matchDataTypeDropActions(Transferable transferable, List<String> childTypes) {
         DataFlavor[] sourceFlavors = transferable.getTransferDataFlavors();
 
         for (DataFlavor flav : sourceFlavors) {
-            DnDUtil.debugPrintf("matchDropActions() - sourceFlavor:%s\n", flav);
+            DnDUtil.log.debug("matchDropActions() - sourceFlavor:{}", flav);
         }
 
         int matchingActions = DnDConstants.ACTION_NONE;
@@ -238,8 +226,8 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         boolean areVRLs = DnDData.canConvertToVRLs(transferable);
         boolean areVFSPaths = DnDData.canConvertToVFSPaths(transferable);
 
-        DnDUtil.debugPrintf("matchDropActions(): Dropped types are VFSPath =%s\n", areVFSPaths);
-        DnDUtil.debugPrintf("matchDropActions(): Dropped types are VRLs    =%s\n", areVRLs);
+        DnDUtil.log.debug("matchDropActions(): Dropped types are VFSPath ={}", areVFSPaths);
+        DnDUtil.log.debug("matchDropActions(): Dropped types are VRLs    ={}", areVRLs);
 
         // Allow Links to Any VRL type:
         if (childTypes.contains(VRSTypes.VLINK_TYPE) && areVRLs) {

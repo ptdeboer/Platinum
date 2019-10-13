@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,23 +20,18 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.internal;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.ui.widgets.URIDropTargetLister;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.awt.event.*;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+@Slf4j
 public class HexViewController implements AdjustmentListener, KeyListener, ActionListener,
         URIDropTargetLister {
-    private static final PLogger logger = PLogger.getLogger(HexViewController.class);
 
     private HexViewer hexViewer;
 
@@ -45,11 +40,7 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
     }
 
     public void setContents(String txt) {
-        try {
-            hexViewer.setContents(txt.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            hexViewer.setContents(txt.getBytes());
-        }
+        hexViewer.setContents(txt.getBytes(StandardCharsets.UTF_8));
     }
 
     public void handleDrop(URI uri) {
@@ -57,8 +48,8 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
     }
 
     public void adjustmentValueChanged(AdjustmentEvent e) {
-        logger.debugPrintf("adjustmentValueChanged(): %s\n", e);
-        logger.debugPrintf(" - new value=%d\n", +e.getValue());
+        log.debug("adjustmentValueChanged(): {}", e);
+        log.debug(" - new value={}", +e.getValue());
 
         int val = e.getValue();
         this.hexViewer.moveToOffset(val);
@@ -74,7 +65,7 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
         int mods = e.getModifiers();
 
         String kstr = KeyEvent.getKeyText(kcode);
-        // logger.debugPrintf("key pressed (Char,str)='%s' => '%s'\n",kchar,kstr);
+        // log.debug("key pressed (Char,str)='{}' => '{}'",kchar,kstr);
 
         if ((mods & KeyEvent.CTRL_MASK) > 0) {
             if (kstr.compareToIgnoreCase("B") == 0) {
@@ -131,7 +122,7 @@ public class HexViewController implements AdjustmentListener, KeyListener, Actio
     }
 
     void debug(String msg) {
-        logger.debugPrintf("%s\n", msg);
+        log.debug("{}", msg);
     }
 
     public void actionPerformed(ActionEvent e) {

@@ -1,14 +1,5 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.ctc.wstx.util.StringUtil;
-
 import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributePanel;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
@@ -17,15 +8,22 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRSConstants;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Map;
 
 public class ProxyPropertiesEditorController implements ActionListener {
 
-    private final static Logger logger = LoggerFactory
-            .getLogger(ProxyPropertiesEditorController.class);
+    private final static Logger logger = LoggerFactory.getLogger(ProxyPropertiesEditorController.class);
 
     private ProxyPropertiesEditor editorPanel;
 
@@ -77,9 +75,30 @@ public class ProxyPropertiesEditorController implements ActionListener {
             }
             this.configInfo.store();
         } else {
-            logger.debug("No changed configartion");
+            logger.debug("No changed configuration properties");
         }
 
+        if (this.editorPanel.getAttributePanel().hasChangedAttributes()) {
+            logger.debug("Update properties!");
+            AttributePanel panel = this.editorPanel.getAttributePanel();
+            Attribute[] attrs = panel.getChangedAttributes();
+
+            for (Attribute attr : attrs) {
+                logger.debug("Changed property attr:{}", attr);
+            }
+            doUpdateAttributes(attrs);
+        } else {
+            logger.debug("No changed properties");
+        }
+
+    }
+
+    private void doUpdateAttributes(Attribute[] attrs) {
+        try {
+            this.getProxyNode(editorPanel.getViewNode().getVRL()).updateAttributes(attrs);
+        } catch ( ProxyException e) {
+            logger.error(e.getMessage(),e);
+        }
     }
 
     public void update(final ViewNode node) {
@@ -113,18 +132,16 @@ public class ProxyPropertiesEditorController implements ActionListener {
     }
 
     private void updateNode(ProxyNode proxyNode) throws ProxyException {
-
         logger.debug("updateNode():{}", proxyNode);
 
-        ViewNode viewNode = this.editorPanel.getViewNode();
-
-        viewNode = proxyNode.createViewItem(this.editorPanel.getUIModel());
+        ViewNode viewNode = proxyNode.createViewItem(this.editorPanel.getUIModel());
         editorPanel.getIconLabel().setIcon(viewNode.getIcon());
         editorPanel.getIconLabel().setText(viewNode.getName());
 
         updateAttrs(proxyNode);
         updateConfigAttrs(proxyNode);
 
+        // callback:
         editorPanel.requestFramePack();
     }
 
@@ -133,8 +150,22 @@ public class ProxyPropertiesEditorController implements ActionListener {
         List<String> attrNames = proxyNode.getAttributeNames();
         List<Attribute> attrs = proxyNode.getAttributes(attrNames);
         AttributeSet attrSet = new AttributeSet(attrs);
+        Map<String, AttributeDescription> descriptions = proxyNode.getAttributeDescriptions(attrNames.toArray(new String[0]));
+
+        for (String key:descriptions.keySet()) {
+            AttributeDescription desc = descriptions.get(key);
+            if (desc!=null) {
+                Attribute attr = attrSet.get(key);
+                if (attr!=null) {
+                    attr.setEditable(desc.isEditable());
+                }
+            }
+        }
+        //
+        editorPanel.getAttributePanel().setEditable(proxyNode.isEditable());
         editorPanel.getAttributePanel().asyncSetAttributes(attrSet);
     }
+
 
     private void updateConfigAttrs(ProxyNode proxyNode) throws ProxyException {
 
@@ -171,7 +202,6 @@ public class ProxyPropertiesEditorController implements ActionListener {
 
         try {
             updateNode(getProxyNode(new VRL(vrl)));
-
         } catch (ProxyException e) {
             handle("Failed to load:" + vrl, e);
         }

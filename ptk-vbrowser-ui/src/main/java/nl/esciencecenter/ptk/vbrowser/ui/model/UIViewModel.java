@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,8 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.model;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Holds UI attributes.
@@ -33,11 +32,11 @@ public class UIViewModel {
 
     public enum UIDirection {
         HORIZONTAL, VERTICAL
-    };
+    }
 
     public enum UIAlignment {
         LEFT, CENTER, RIGHT, FILL
-    };
+    }
 
     public static UIViewModel createTreeViewModel() {
         UIViewModel model = new UIViewModel();
@@ -81,19 +80,29 @@ public class UIViewModel {
     // ======================================================================== 
 
 
-    /** Icons size. -1 = inherit from parent. */
+    /**
+     * Icons size. -1 = inherit from parent.
+     */
     protected int iconSize = 48;
 
-    /** Direction of icons to layout in list mode. */
+    /**
+     * Direction of icons to layout in list mode.
+     */
     private UIDirection iconLayoutDirection = UIDirection.HORIZONTAL;
 
-    /** Place of label under or next to icon */
+    /**
+     * Place of label under or next to icon
+     */
     private UIDirection iconLabelPlacement = UIDirection.VERTICAL;
 
-    /** Horizontal gap between icons. -1 = inherit from parent. */
+    /**
+     * Horizontal gap between icons. -1 = inherit from parent.
+     */
     protected int iconHGap = 8;
 
-    /** Vertical gap between icons. -1 = inherit form parent. */
+    /**
+     * Vertical gap between icons. -1 = inherit form parent.
+     */
     protected int iconVGap = 8;
 
     private int maximumIconLabelWidth = 180;
@@ -139,12 +148,16 @@ public class UIViewModel {
         return Color.white;
     }
 
-    /** Horizontal space between Icons */
+    /**
+     * Horizontal space between Icons
+     */
     public int getIconHGap() {
         return iconHGap;
     }
 
-    /** Vertical space between Icons */
+    /**
+     * Vertical space between Icons
+     */
     public int getIconVGap() {
         return iconVGap;
     }

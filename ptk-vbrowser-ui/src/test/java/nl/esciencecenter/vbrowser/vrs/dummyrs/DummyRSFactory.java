@@ -10,15 +10,15 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRLUtil;
 
 public class DummyRSFactory implements VResourceSystemFactory {
-    protected String schemes[] = new String[] { "dummy" };
+    protected String[] schemes = new String[]{"dummy"};
 
     public static final String dummyIntPar = "dummy.intpar.value";
     public static final String dummyStringPar = "dummy.stringpar.value";
     public static final String dummyBoolPar = "dummy.boolpar.value";
     public static final String dummyEnumPar = "dummy.enumpar.value";
 
-    public static final String attrNames[] = { dummyIntPar, dummyStringPar, dummyBoolPar,
-            dummyEnumPar };
+    public static final String[] attrNames = {dummyIntPar, dummyStringPar, dummyBoolPar,
+            dummyEnumPar};
 
     @Override
     public String[] getSchemes() {
@@ -32,11 +32,11 @@ public class DummyRSFactory implements VResourceSystemFactory {
 
     @Override
     public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info,
-            VRL vrl) {
+                                                 VRL vrl) {
         info.setDefaultAttribute(new Attribute(dummyIntPar, 1), true);
         info.setDefaultAttribute(new Attribute(dummyStringPar, "stringValue"), true);
         info.setDefaultAttribute(new Attribute(dummyBoolPar, true), true);
-        info.setDefaultAttribute(new Attribute(dummyEnumPar, new String[] { "enum1", "enum2" }, 0),
+        info.setDefaultAttribute(new Attribute(dummyEnumPar, new String[]{"enum1", "enum2"}, 0),
                 true);
 
         for (String name : attrNames) {
@@ -48,7 +48,7 @@ public class DummyRSFactory implements VResourceSystemFactory {
 
     @Override
     public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info,
-            VRL vrl) throws VrsException {
+                                                   VRL vrl) throws VrsException {
         return new DummyRS(context, info, vrl);
     }
 

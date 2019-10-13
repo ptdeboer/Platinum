@@ -20,14 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.*;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
 import ch.randelshofer.quaqua.snow_leopard.Quaqua16SnowLeopardLookAndFeel;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
@@ -35,7 +27,6 @@ import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.laf.LookAndFeelType;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
@@ -50,7 +41,13 @@ import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Browser Platform. Typically one Platform instance per application environment is created.
@@ -96,7 +93,7 @@ public class BrowserPlatform {
     private PluginRegistry viewerRegistry;
     private JFrame rootFrame;
     private IconProvider iconProvider;
-//    private VRSContext vrsContext;
+    //    private VRSContext vrsContext;
     private VRSClient vrsClient;
     private UIProperties guiSettings;
     private ViewerEventDispatcher viewerEventDispatcher;
@@ -125,7 +122,6 @@ public class BrowserPlatform {
 
         // root Frame and Icon Renderer/provider:
         this.rootFrame = new JFrame();
-        this.iconProvider = new IconProvider(rootFrame, new ResourceLoader(vrsClient, null));
 
         // ===================================
         // Init Viewers and ViewerPlugins.
@@ -147,8 +143,8 @@ public class BrowserPlatform {
 
     /**
      * @return persistent configuration directory where to store properties for example
-     *         '$HOME/.mypropertiesrc/'. <br>
-     *         Is null for non persistent platforms.
+     * '$HOME/.mypropertiesrc/'. <br>
+     * Is null for non persistent platforms.
      */
     public VRL getPersistantConfigLocation() {
         return this.getVRSContext().getPersistantConfigLocation();
@@ -183,9 +179,8 @@ public class BrowserPlatform {
 
     /**
      * Create actual browser.
-     * 
-     * @param show
-     *            - show browser frame.
+     *
+     * @param show - show browser frame.
      * @return Master browser controller interface.
      */
     public BrowserInterface createBrowser(boolean show) {
@@ -225,6 +220,14 @@ public class BrowserPlatform {
      * @return Icon Factory for this platform.
      */
     public IconProvider getIconProvider() {
+
+        // lazy loading:
+        synchronized (this) {
+            if (this.iconProvider == null) {
+                this.iconProvider = new IconProvider(rootFrame, new ResourceLoader(vrsClient));
+            }
+        }
+
         return iconProvider;
     }
 
@@ -235,7 +238,7 @@ public class BrowserPlatform {
     /**
      * Cross-platform event notifier. If all platform use URI (VRL) based events, these events can
      * be shared across implementations.
-     * 
+     *
      * @return The global cross-platform VRSEventNotifier.
      */
     public VRSEventNotifier getVRSEventNotifier() {
@@ -273,7 +276,7 @@ public class BrowserPlatform {
 
     public void switchLookAndFeelType(LookAndFeelType lafType) {
         if (!SwingUtilities.isEventDispatchThread()) {
-            log.info("switchLookAndFeelType():{} => invokeLater()!",lafType);
+            log.info("switchLookAndFeelType():{} => invokeLater()!", lafType);
 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -283,7 +286,7 @@ public class BrowserPlatform {
             });
             return;
         } else {
-            log.info("switchLookAndFeelType():{}",lafType);
+            log.info("switchLookAndFeelType():{}", lafType);
         }
 
         try {
@@ -312,7 +315,7 @@ public class BrowserPlatform {
                     UIManager.setLookAndFeel(PlasticXPLookAndFeel.class.getCanonicalName());
                     break;
                 case QUAQUA:
-                     UIManager.setLookAndFeel(Quaqua16SnowLeopardLookAndFeel.class.getCanonicalName());
+                    UIManager.setLookAndFeel(Quaqua16SnowLeopardLookAndFeel.class.getCanonicalName());
                     break;
                 case NIMBUS:
                     UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
@@ -321,12 +324,11 @@ public class BrowserPlatform {
                     UIManager.setLookAndFeel(SeaGlassLookAndFeel.class.getCanonicalName());
                     break;
                 default:
-                    log.warn("Look and feel not recognised:{}",lafType);
+                    log.warn("Look and feel not recognised:{}", lafType);
                     break;
             }
-        }
-        catch (Exception e) {
-            log.error("Failed to switch Look and Feel:"+lafType,e);
+        } catch (Exception e) {
+            log.error("Failed to switch Look and Feel:" + lafType, e);
             e.printStackTrace();
         }
         // load()/save()
@@ -346,10 +348,10 @@ public class BrowserPlatform {
      * Immediately close and dipsose all registered resources;
      */
     public void dispose() {
-        if (vrsClient!=null) { 
+        if (vrsClient != null) {
             vrsClient.dispose();
         }
-        if (getVRSContext()!=null) {
+        if (getVRSContext() != null) {
             getVRSContext().dispose();
         }
         this.viewerEventDispatcher.stop();

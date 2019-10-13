@@ -1,17 +1,16 @@
 package nl.esciencecenter.vbrowser.vrs.sftp;
 
-import java.util.List;
-
+import com.jcraft.jsch.JSch;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpChannel;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpConfig;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpEntry;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
 
-import com.jcraft.jsch.JSch;
+import java.util.List;
 
 public class TestSftpSession {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         try {
             testConnect();

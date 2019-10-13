@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,15 +20,7 @@
 
 package nl.esciencecenter.ptk.web;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import javax.net.ssl.SSLContext;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.SecretHolder;
 import nl.esciencecenter.ptk.data.StringHolder;
@@ -36,31 +28,20 @@ import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
-import nl.esciencecenter.ptk.ssl.CertificateStoreException;
+import nl.esciencecenter.ptk.exceptions.CertificateStoreException;
 import nl.esciencecenter.ptk.ssl.SslConst;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.util.ContentReader;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.web.WebConfig.AuthenticationType;
 import nl.esciencecenter.ptk.web.WebException.Reason;
 import nl.esciencecenter.ptk.web.content.ByteBufferBody;
 import nl.esciencecenter.ptk.web.content.FSNodeBody;
-
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -76,19 +57,22 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicHeader;
 
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 /**
  * Generic Rest and Web Service client.<br>
  * Updated methods to HttpClient 4.2.
- * 
+ *
  * @see WebConfig class which holds most configurable settings for the WebClient class.
  */
+@Slf4j
 public class WebClient {
-
-    private static PLogger logger = PLogger.getLogger(WebClient.class);
-
-    // === Static ===
-
-    // === Factory methods ===
 
     public static WebClient createFor(URI uri) throws WebException {
         return new WebClient(new WebConfig(uri, AuthenticationType.NONE, false));
@@ -135,7 +119,7 @@ public class WebClient {
     }
 
     protected void init(WebConfig config) throws WebException {
-        logger.debugPrintf("init():New WebClient for:%s\n", serverUri);
+        log.debug("init():New WebClient for:{}", serverUri);
 
         if (config == null) {
             throw new NullPointerException("Can not have NULL WebConfig.");
@@ -147,7 +131,7 @@ public class WebClient {
 
         this.config = config;
         this.httpClient = null;
-        this.resourceLoader = new ResourceLoader();
+        this.resourceLoader = ResourceLoader.getDefault();
 
         try {
             this.serverUri = config.getServerURI();
@@ -159,7 +143,7 @@ public class WebClient {
 
     /**
      * Returns Server URI without service path.
-     * 
+     *
      * @return Server URI without service path.
      */
     public java.net.URI getServerURI() {
@@ -168,7 +152,7 @@ public class WebClient {
 
     /**
      * Return Service URI including service path.
-     * 
+     *
      * @return Service URI including service path.
      */
     public URI getServiceURI() {
@@ -189,9 +173,8 @@ public class WebClient {
 
     /**
      * Specify UI interface, set to null if no UI interactions are allowed.
-     * 
-     * @param newUI
-     *            - new UI interface or null to disable UI actions.
+     *
+     * @param newUI - new UI interface or null to disable UI actions.
      */
     public void setUI(UI newUI) {
         this.ui = newUI;
@@ -211,7 +194,7 @@ public class WebClient {
 
     /**
      * The session is authenticated if it has a valid JSessionID.
-     * 
+     *
      * @return - true if this session has an authentication JSessionID.
      */
     public boolean isAuthenticated() {
@@ -244,7 +227,7 @@ public class WebClient {
 
             if (config.isHTTPS()) {
                 if (this.certStore == null) {
-                    logger.warnPrintf("Warning: HTTPS procotol with no CertificateStore\n");
+                    log.warn("Warning: HTTPS protocol with no CertificateStore");
                 } else {
                     initSSL(this.certStore, true);
                 }
@@ -277,9 +260,9 @@ public class WebClient {
             } else {
                 // check service URI.
                 HttpGet httpget = new HttpGet(serviceUri);
-                logger.debugPrintf("connect(): Executing request: %s\n", httpget.getRequestLine());
+                log.debug("connect(): Executing request: {}", httpget.getRequestLine());
                 HttpResponse response = httpClient.execute(httpget);
-                logger.debugPrintf("connect(): ------------ Response ----------\n");
+                log.debug("connect(): --- Response ---");
                 StringHolder textH = new StringHolder();
                 this.lastHttpStatus = handleStringResponse("connect()" + serviceUri, response,
                         textH, null);
@@ -302,8 +285,7 @@ public class WebClient {
 
     protected void initJSession(boolean deletePrevious) throws WebException {
         //
-        logger.debugPrintf("initJSession(). Using JESSION URI init string:%s\n",
-                config.jsessionInitPart);
+        log.debug("initJSession(). Using JESSION URI init string:{}", config.jsessionInitPart);
 
         if (deletePrevious) {
             this.jsessionID = null;
@@ -317,15 +299,13 @@ public class WebClient {
             BasicClientCookie cookie = new BasicClientCookie(WebConst.COOKIE_JSESSIONID, jsessionID);
             cookie.setPath(config.servicePath);
             cookie.setDomain(config.serverHostname);
-            logger.infoPrintf(" - Using JSessionID   = %s\n", jsessionID);
-            logger.debugPrintf(" - Cookie Domain/Path = %s/%s\n", cookie.getDomain(),
-                    cookie.getPath());
-
+            log.debug(" - Using JSessionID: {}", jsessionID);
+            log.debug(" - Cookie Domain/Path = {}/{}", cookie.getDomain(), cookie.getPath());
             this.httpClient.getCookieStore().addCookie(cookie);
 
             return;
         } else {
-            logger.debugPrintf("initJSession():NO JSESSIONID\n");
+            log.debug("initJSession():NO JSESSIONID");
         }
 
         try {
@@ -348,9 +328,8 @@ public class WebClient {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(WebConst.COOKIE_JSESSIONID)) {
                     this.jsessionID = cookie.getValue();
-                    logger.infoPrintf(" - new JSessionID     = %s\n", jsessionID);
-                    logger.debugPrintf(" - Cookie Domain/Path = '%s','%s'\n", cookie.getDomain(),
-                            cookie.getPath());
+                    log.debug(" - Using JSessionID: {}", jsessionID);
+                    log.debug(" - Cookie Domain/Path = {}/{}", cookie.getDomain(), cookie.getPath());
                 }
             }
             checkHttpStatus(result, "initJSession(): Couldn't initialize JSessionID.", null, null);
@@ -392,10 +371,10 @@ public class WebClient {
 
     protected void deleteJSession() throws WebException {
         //
-        logger.debugPrintf("deleteJSession()\n");
+        log.debug("deleteJSession()");
 
         if (this.jsessionID == null) {
-            logger.debugPrintf("deleteJSession(): sessionID already invalidated\n");
+            log.debug("deleteJSession(): sessionID already invalidated");
             return;
         }
 
@@ -470,26 +449,21 @@ public class WebClient {
      * Execute Put or Post method and handle the (optional) String response. Returns actual HTTP
      * Status. Method does not do any (http) response status handling. If the Put method succeeded
      * but the HTTP status != 200 then this value is returned and no Exception is thrown.
-     * 
-     * @param putOrPostmethod
-     *            - HttpPut or HttpPost method to execute
-     * @param responseTextHolder
-     *            - Optional StringHolder for the Response: Put and Post might nor return any
-     *            response.
-     * @param contentTypeHolder
-     *            - Optional StringHolder for the contentType (mimeType).
-     * 
+     *
+     * @param putOrPostmethod    - HttpPut or HttpPost method to execute
+     * @param responseTextHolder - Optional StringHolder for the Response: Put and Post might nor return any
+     *                           response.
+     * @param contentTypeHolder  - Optional StringHolder for the contentType (mimeType).
      * @return actual HTTP Status as returned by server.
-     * @throws WebException
-     *             if a communication error occurred.
+     * @throws WebException if a communication error occurred.
      */
     protected int executeAuthenticatedPut(HttpRequestBase putOrPostmethod,
-            StringHolder responseTextHolder, StringHolder contentTypeHolder) throws WebException {
+                                          StringHolder responseTextHolder, StringHolder contentTypeHolder) throws WebException {
         //
         if (this.httpClient == null) {
             throw new NullPointerException("HTTP Client not properly initialized: httpClient==null");
         }
-        logger.debugPrintf("executePutOrPost():'%s'\n", putOrPostmethod.getRequestLine());
+        log.debug("executeAuthenticatedPut():'{}'", putOrPostmethod.getRequestLine());
 
         boolean isPut = (putOrPostmethod instanceof HttpPut);
         boolean isPost = (putOrPostmethod instanceof HttpPost);
@@ -508,7 +482,7 @@ public class WebClient {
             if (config.getUseBasicAuthentication()) {
                 actualUser = config.getUsername();
                 String passwdStr = new String(config.getPasswordChars());
-                logger.debugPrintf("Using basic authentication, user=%s\n", actualUser);
+                log.debug("Using basic authentication, user={}", actualUser);
 
                 Header authHeader = new BasicHeader("Authorization", "Basic "
                         + (StringUtil.base64Encode((actualUser + ":" + passwdStr).getBytes())));
@@ -556,21 +530,17 @@ public class WebClient {
     /**
      * Execute Get Method and handle the String response. Returns actual HTTP Status. Does not do
      * any HTTP status handling.
-     * 
-     * @param getMethod
-     *            - HttpGet method to execute
-     * @param responseTextHolder
-     *            - Optional StringHolder for the Response
-     * @param contentTypeHolder
-     *            - Optional StringHolder for the contentType.
+     *
+     * @param getMethod          - HttpGet method to execute
+     * @param responseTextHolder - Optional StringHolder for the Response
+     * @param contentTypeHolder  - Optional StringHolder for the contentType.
      * @return - actual HTTP Status as returned by server.
-     * @throws WebException
-     *             if a communication error occurred.
+     * @throws WebException if a communication error occurred.
      */
     protected int executeGet(HttpGet getMethod, StringHolder responseTextHolder,
-            StringHolder contentTypeHolder) throws WebException {
+                             StringHolder contentTypeHolder) throws WebException {
         //
-        logger.debugPrintf("executeGet():'%s'\n", getMethod.getRequestLine());
+        log.debug("executeGet():'{}'", getMethod.getRequestLine());
 
         if (this.httpClient == null) {
             throw new NullPointerException("HTTP Client not properly initialized: httpClient==null");
@@ -580,8 +550,8 @@ public class WebClient {
             HttpResponse response;
             response = httpClient.execute(getMethod);
 
-            logger.debugPrintf("--------------- HttpGet Response -------------------------\n");
-            logger.debugPrintf("%s\n", response.getStatusLine());
+            log.debug("--- HttpGet Response ---\n");
+            log.debug("{}", response.getStatusLine());
 
             int status = handleStringResponse("HttpGet:" + getMethod.getRequestLine(), response,
                     responseTextHolder, contentTypeHolder);
@@ -599,16 +569,16 @@ public class WebClient {
     }
 
     protected int executeDelete(HttpDelete delMethod, StringHolder responseTextHolder,
-            StringHolder contentTypeHolder) throws WebException {
+                                StringHolder contentTypeHolder) throws WebException {
         //
-        logger.debugPrintf("executeDelete():'%s'\n", delMethod.getRequestLine());
+        log.debug("executeDelete():'{}'\n", delMethod.getRequestLine());
 
         try {
             HttpResponse response;
             response = httpClient.execute(delMethod);
 
-            logger.debugPrintf("--------------- HttpDelete Response -------------------------\n");
-            logger.debugPrintf("%s\n", response.getStatusLine());
+            log.debug("--- HttpDelete Response ---");
+            log.debug("{}", response.getStatusLine());
 
             int status = handleStringResponse("HttpDelete:" + delMethod.getRequestLine(), response,
                     responseTextHolder, contentTypeHolder);
@@ -625,7 +595,7 @@ public class WebClient {
     }
 
     protected int handleStringResponse(String queryStr, HttpResponse response,
-            StringHolder responseTextHolder, StringHolder contentTypeHolder) throws WebException {
+                                       StringHolder responseTextHolder, StringHolder contentTypeHolder) throws WebException {
         //
         HttpEntity entity = response.getEntity();
 
@@ -650,35 +620,31 @@ public class WebClient {
             contentTypeValue = contentType.getValue();
         }
 
-        logger.debugPrintf("--------------- Response -------------------------\n");
-        logger.debugPrintf("> Response Status line      = %s\n", response.getStatusLine());
-        logger.debugPrintf("> Response content length   = %d\n", entity.getContentLength());
-        logger.debugPrintf("> Response content type     = %s\n", contentTypeValue);
-        logger.debugPrintf("> Response content encoding = %s\n", contentEncoding);
+        log.debug("--------------- Response -------------------------\n");
+        log.debug("> Response Status line      = {}", response.getStatusLine());
+        log.debug("> Response content length   = {}", entity.getContentLength());
+        log.debug("> Response content type     = {}", contentTypeValue);
+        log.debug("> Response content encoding = {}", contentEncoding);
 
-        for (Header header : new Header[] { contentType, contentEncoding }) {
+        for (Header header : new Header[]{contentType, contentEncoding}) {
             if (header != null) {
-                logger.debugPrintf("  - Header '%s'='%s'\n", header.getName(), header.getValue());
+                log.debug("  - Header '{}'='{}'", header.getName(), header.getValue());
                 HeaderElement[] els = header.getElements();
                 for (HeaderElement el : els) {
-                    logger.debugPrintf("  - - HeaderElement %s=%s\n", el.getName(), el.getValue());
+                    log.debug("  - - HeaderElement {}={}", el.getName(), el.getValue());
                 }
             }
         }
 
         try (InputStream contentInputstream = entity.getContent()) {
-            
-            String text = new ContentReader(contentInputstream,true).readString(); 
 
-            try {
-                contentInputstream.close();
-            } catch (IOException e) {
-                logger.logException(PLogger.DEBUG, e, "IOException when closing InputStream:%s\n");
-            }
+            String text = new ContentReader(contentInputstream, true).readString();
 
-            logger.debugPrintf(">>> ------------ String response -------------\n");
-            logger.debugPrintf("%s\n", text);
-            logger.debugPrintf(">>> ------------ String Response -------------\n");
+            IOUtil.autoClose(contentInputstream);
+
+            log.debug(">>> ------------ String response -------------");
+            log.debug("{}", text);
+            log.debug(">>> ------------ String Response -------------");
 
             if (responseTextHolder != null)
                 responseTextHolder.value = text;
@@ -692,7 +658,7 @@ public class WebClient {
         org.apache.http.Header[] headers = response.getAllHeaders();
 
         for (int i = 0; i < headers.length; i++) {
-            logger.debugPrintf("  - Header: '%s'='%s'\n", headers[i].getName(),
+            log.debug("  - Header: '{}'='{}'", headers[i].getName(),
                     headers[i].getValue());
         }
 
@@ -706,16 +672,12 @@ public class WebClient {
 
     /**
      * Performs a managed Http Get request using the relative query String.
-     * 
-     * @param query
-     *            - Relative URI part to put after the service Uri.
-     * @param resultTextHolder
-     *            - StringHolder for the Get Response.
-     * @param contentTypeHolder
-     *            - Optional StringHolder for the contentType (mimetype).
+     *
+     * @param query             - Relative URI part to put after the service Uri.
+     * @param resultTextHolder  - StringHolder for the Get Response.
+     * @param contentTypeHolder - Optional StringHolder for the contentType (mimetype).
      * @return - Filtered HTTP Status
-     * @throws WebException
-     *             if a common HTTP error occurred.
+     * @throws WebException if a common HTTP error occurred.
      */
     public int doGet(URI uri, StringHolder resultTextHolder, StringHolder contentTypeHolder)
             throws WebException {
@@ -737,19 +699,19 @@ public class WebClient {
         HttpGet getMethod = new HttpGet(uri);
 
         try {
-            logger.debugPrintf("doGetInputStream()[thread:%d]:'%s'\n", Thread.currentThread()
+            log.debug("doGetInputStream()[thread:%d]:'%s'\n", Thread.currentThread()
                     .getId(), getMethod.getRequestLine());
 
             HttpResponse response;
             response = httpClient.execute(getMethod);
 
-            logger.debugPrintf("--------------- HttpGet Response -------------------------\n");
-            logger.debugPrintf(" - statusLine: %s\n", response.getStatusLine());
+            log.debug("--------------- HttpGet Response -------------------------");
+            log.debug(" - statusLine: {}\n", response.getStatusLine());
 
             HttpEntity entity = response.getEntity();
 
             if (entity == null) {
-                logger.debugPrintf("NULL Entity\n");
+                log.debug("NULL Entity\n");
                 getMethod.releaseConnection();
                 int httpStatus = response.getStatusLine().getStatusCode();
                 throw new WebException(WebException.Reason.IOEXCEPTION, httpStatus,
@@ -772,20 +734,16 @@ public class WebClient {
 
     /**
      * Performs a managed Http DELETE request using the relative query String.
-     * 
-     * @param query
-     *            - Relative URI part to put after the service Uri.
-     * @param resultTextHolder
-     *            - StringHolder for the DELETE Response.
-     * @param contentTypeHolder
-     *            - Optional StringHolder for the contentType (mimetype).
+     *
+     * @param query             - Relative URI part to put after the service Uri.
+     * @param resultTextHolder  - StringHolder for the DELETE Response.
+     * @param contentTypeHolder - Optional StringHolder for the contentType (mimetype).
      * @return - Filtered HTTP Status
-     * @throws WebException
-     *             if a common HTTP error occurred.
+     * @throws WebException if a common HTTP error occurred.
      */
     public int
-            doDelete(String query, StringHolder resultTextHolder, StringHolder contentTypeHolder)
-                    throws WebException {
+    doDelete(String query, StringHolder resultTextHolder, StringHolder contentTypeHolder)
+            throws WebException {
         //
         URI uri = null;
         // PRE
@@ -806,16 +764,12 @@ public class WebClient {
 
     /**
      * Performs a managed Http Put request using the relative query String.
-     * 
-     * @param query
-     *            - Relative URI part to put after the service Uri.
-     * @param resultTextHolder
-     *            - StringHolder for the Get Response.
-     * @param contentTypeHolder
-     *            - Optional StringHolder for the contentType.
+     *
+     * @param query             - Relative URI part to put after the service Uri.
+     * @param resultTextHolder  - StringHolder for the Get Response.
+     * @param contentTypeHolder - Optional StringHolder for the contentType.
      * @return - Filtered HTTP Status. Recognized error codes are transformed to WebExceptions.
-     * @throws WebException
-     *             if a common HTTP error occurred.
+     * @throws WebException if a common HTTP error occurred.
      */
     public int doPut(URI uri, StringHolder resultTextH, StringHolder contentTypeH)
             throws WebException {
@@ -828,25 +782,23 @@ public class WebClient {
     }
 
     public int doPutFile(String query, String filePath, StringHolder resultStrH,
-            PutMonitor putMonitor) throws WebException {
+                         PutMonitor putMonitor) throws WebException {
         return doPutFile(resolve(query), filePath, resultStrH, putMonitor);
     }
 
     /**
      * Performs a managed HttpPut with a file as attachment. Recognized HTTP Error codes are
      * transformed to Web Exceptions.
-     * 
-     * @param query
-     *            - relative url to use in HttpPut.
-     * @param file
-     *            - java File to upload. Must exists
+     *
+     * @param query - relative url to use in HttpPut.
+     * @param file  - java File to upload. Must exists
      * @return filtered Http Status. Common error codes are transformed to (Web)Exceptions
      * @throws WebException
      */
     public int doPutFile(URI uri, String filePath, StringHolder resultStrH, PutMonitor putMonitor)
             throws WebException {
         //
-        logger.debugPrintf("doPutFile() file='%s' to:%s\n", filePath, uri);
+        log.debug("doPutFile() file='{}' to:{}\n", filePath, uri);
         MultipartEntity multiPart = new MultipartEntity();
 
         // Java.io.File:
@@ -856,7 +808,7 @@ public class WebClient {
         // FSNode:
         FSPath node;
         try {
-            node = FSUtil.getDefault().newFSPath(filePath);
+            node = FSUtil.fsutil().newFSPath(filePath);
         } catch (IOException e) {
             throw new WebException(Reason.IOEXCEPTION, "Failed to resolve File:" + filePath, e);
         }
@@ -874,34 +826,30 @@ public class WebClient {
                 contentTypeH);
     }
 
-    public int doPutBytes(String query, byte bytes[], String optMimeType, StringHolder resultStrH,
-            PutMonitor optPutMonitor) throws WebException {
+    public int doPutBytes(String query, byte[] bytes, String optMimeType, StringHolder resultStrH,
+                          PutMonitor optPutMonitor) throws WebException {
         return doPutBytes(resolve(query), bytes, optMimeType, resultStrH, optPutMonitor);
     }
 
     /**
      * Performs a managed HttpPut with a byte array as attachment. Recognized HTTP Error codes are
      * transformed to Web Exceptions.
-     * 
-     * @param query
-     *            - relative url to use in HttpPut.
-     * @param bytes
-     *            - byes to be uploaded as attachemnt.
-     * @param mimeType
-     *            - optional mimeType of content, if null "application/octet-stream" is used.
-     * @param file
-     *            - java File to upload. Must exists
+     *
+     * @param query    - relative url to use in HttpPut.
+     * @param bytes    - byes to be uploaded as attachemnt.
+     * @param mimeType - optional mimeType of content, if null "application/octet-stream" is used.
+     * @param file     - java File to upload. Must exists
      * @return filtered Http Status. Common error codes are transformed to (Web)Exceptions
      * @throws WebException
      */
-    public int doPutBytes(URI uri, byte bytes[], String mimeType, StringHolder resultStrH,
-            PutMonitor optPutMonitor) throws WebException {
+    public int doPutBytes(URI uri, byte[] bytes, String mimeType, StringHolder resultStrH,
+                          PutMonitor optPutMonitor) throws WebException {
         //
         if (bytes == null) {
             throw new NullPointerException("Argument by bytes[] is NULL!");
         }
 
-        logger.debugPrintf("doPutBytes() numBytes=%s to:%s\n", bytes.length, uri);
+        log.debug("doPutBytes() numBytes={} to:{}\n", bytes.length, uri);
 
         if (mimeType == null) {
             mimeType = "application/octet-stream";
@@ -925,7 +873,7 @@ public class WebClient {
             throws WebException {
         URI uri = resolve(query);
         HttpPut putMethod = new HttpPut(uri);
-        logger.debugPrintf("doPutOutputStream():'%s'\n", putMethod.getRequestLine());
+        log.debug("doPutOutputStream():'{}'\n", putMethod.getRequestLine());
         throw new WebException("Not Yet Supported.");
     }
 
@@ -976,7 +924,7 @@ public class WebClient {
                     contentTypeH);
             this.lastHttpStatus = status;
 
-            logger.debugPrintf("v() result='%s'\n", resultStrH.value);
+            log.debug("v() result='{}'\n", resultStrH.value);
 
             return status;
         } catch (IOException e) {
@@ -993,12 +941,10 @@ public class WebClient {
 
     /**
      * Resolve relative URI against this Service URI of the client.
-     * 
-     * @param querystr
-     *            - relative URI part.
+     *
+     * @param querystr - relative URI part.
      * @return absolute resolved URI
-     * @throws URISyntaxException
-     *             if querystr contains illegal characters.
+     * @throws URISyntaxException if querystr contains illegal characters.
      */
     public URI resolve(String querystr) throws WebException {
         //
@@ -1018,11 +964,11 @@ public class WebClient {
                 uriStr = uriStr + "/" + config.servicePath + "/" + querystr;
             }
 
-            logger.debugPrintf("resolve(): '%s'\n", querystr);
+            log.debug("resolve(): '{}'\n", querystr);
 
             URI uri = new URI(uriStr);
 
-            logger.debugPrintf("resolve(): ... => '%s'\n", uri);
+            log.debug("resolve(): ... => '{}'", uri);
 
             return uri;
         } catch (URISyntaxException e) {
@@ -1054,16 +1000,14 @@ public class WebClient {
 
     /**
      * Check common HTTP Status Error and throw appropriate Exception.
-     * 
-     * @param httpStatus
-     *            - actual HTTP Status code
+     *
+     * @param httpStatus        - actual HTTP Status code
      * @param message
      * @param contentTypeHolder
-     * @throws WebException
-     *             Matching WebException
+     * @throws WebException Matching WebException
      */
     private int checkHttpStatus(int httpStatus, String message, StringHolder responseH,
-            StringHolder contentTypeH) throws WebException {
+                                StringHolder contentTypeH) throws WebException {
         String response = null;
         String responseType = null;
 
@@ -1129,7 +1073,7 @@ public class WebClient {
 
     /**
      * An WebClient is a statefull client. Current HTTP status can returned by calling this method.
-     * 
+     *
      * @return
      */
     public int getLastHttpStatus() {
@@ -1157,10 +1101,6 @@ public class WebClient {
     public String toString() {
         return "WebClient:[uri:" + this.getServiceURI() + ", isAuthenticated:"
                 + this.isAuthenticated() + "]";
-    }
-
-    protected PLogger getLogger() {
-        return logger;
     }
 
 }

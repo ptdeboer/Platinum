@@ -3,7 +3,7 @@
  * Copyright 2012-2013 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -21,29 +21,19 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.attribute;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.ui.fonts.FontUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 
-public class AttributeEditorForm extends JDialog {
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
 
-       private static final PLogger logger = PLogger.getLogger(AttributeEditorForm.class);
+@Slf4j
+public class AttributeEditorForm extends JDialog {
 
     // ---
     // package protected 
@@ -65,7 +55,7 @@ public class AttributeEditorForm extends JDialog {
     // --- 
     protected Attribute[] originalAttributes;
 
-    private void initGUI(Attribute attrs[]) {
+    private void initGUI(Attribute[] attrs) {
         try {
             this.setTitle(this.titleName);
 
@@ -134,7 +124,7 @@ public class AttributeEditorForm extends JDialog {
         setSize(size);
     }
 
-    private void init(String titleName, Attribute attrs[]) {
+    private void init(String titleName, Attribute[] attrs) {
         this.titleName = titleName;
 
         attrs = AttributeUtil.duplicateArray(attrs); // use duplicate to edit;
@@ -157,7 +147,7 @@ public class AttributeEditorForm extends JDialog {
 
     }
 
-    public AttributeEditorForm(String titleName, Attribute attrs[]) {
+    public AttributeEditorForm(String titleName, Attribute[] attrs) {
         super();
         init(titleName, attrs);
     }
@@ -201,7 +191,7 @@ public class AttributeEditorForm extends JDialog {
      * Static method to interactively ask user for attribute settings.
      */
     public static Attribute[] editAttributes(final String titleName, final Attribute[] attrs,
-            final boolean returnChangedAttributesOnly) {
+                                             final boolean returnChangedAttributesOnly) {
         final AttributeEditorForm dialog = new AttributeEditorForm();
 
         Runnable formTask = new Runnable() {
@@ -232,7 +222,7 @@ public class AttributeEditorForm extends JDialog {
                 try {
                     formTask.wait();
                 } catch (InterruptedException e) {
-                    logger.logException(PLogger.ERROR, e, "--- Interupted ---\n");
+                    log.error(e.getMessage(), e);
                 }
             }
         }

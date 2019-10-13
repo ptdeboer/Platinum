@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,34 +20,33 @@
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.StringList;
+import nl.esciencecenter.ptk.object.Duplicatable;
+import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.util.StringUtil;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.ValueParseException;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.object.Duplicatable;
-import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ValueParseException;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 /**
  * This class provides a high level interface to Resource Attributes. It is a
  * <code>{name, value}</code> pair with dynamic typing. The Attribute itself does not do any type
  * checking, so casting is possible. For example getStringValue() after setValue(int) will return
  * the string representation of the integer. <br>
- * 
+ *
  * @see AttributeType
  */
+@Slf4j
 public class Attribute implements Cloneable, Serializable, Duplicatable<Attribute> {
 
-       private static final PLogger logger = PLogger.getLogger(Attribute.class);
-
-    protected static String[] booleanEnumValues = { "false", "true" };
+    protected static String[] booleanEnumValues = {"false", "true"};
 
     // ========================================================================
     // Class Methods
@@ -55,11 +54,9 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     /**
      * Parse String to Object.
-     * 
-     * @param toType
-     *            - explicit type the String value must parsed to.
-     * @param strValue
-     *            - the string value to parse.
+     *
+     * @param toType   - explicit type the String value must parsed to.
+     * @param strValue - the string value to parse.
      * @throws VRLSyntaxException
      */
     public static Object parseString(AttributeType toType, String strValue) throws ValueParseException,
@@ -130,7 +127,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     /**
      * List of enum values, index enumValue determines which enum value is set
      */
-    private String enumValues[] = null;
+    private String[] enumValues = null;
 
     /**
      * Index into enumValues[] so that: enumAvalues[enumIndex]==value
@@ -138,7 +135,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     private int enumIndex = -1;
 
     /**
-     * Changed flag, used to detect changed attribute values. 
+     * Changed flag, used to detect changed attribute values.
      */
     private boolean changed = false;
 
@@ -153,8 +150,10 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         this.name = name;
     }
 
-    /** Constructor to create a enum list of string */
-    public Attribute(String name, String enumValues[], int enumVal) {
+    /**
+     * Constructor to create a enum list of string
+     */
+    public Attribute(String name, String[] enumValues, int enumVal) {
         init(name, enumValues, enumVal);
     }
 
@@ -272,7 +271,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
                 throw new Error("Null objects must resolve to either ANY, String or Enum (type=" + type + ")");
             } else {
                 if (type == AttributeType.ENUM) {
-                    logger.errorPrintf("Warning: NULL Enum value\n");
+                    log.error("Warning: NULL Enum value");
                 }
                 return;
             }
@@ -300,7 +299,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     /**
      * Initialize as Enum Type
      */
-    protected void init(String name, final String enumValues[], int enumIndex) {
+    protected void init(String name, final String[] enumValues, int enumIndex) {
         this.name = name;
         this.enumValues = enumValues;
         this.enumIndex = enumIndex;
@@ -308,7 +307,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         if ((enumValues != null) && (enumIndex >= 0) && (enumIndex < enumValues.length)) {
             this._value = enumValues[enumIndex];
         } else {
-            logger.errorPrintf("Error enumIndex out of bound:%d\n", enumIndex);
+            log.error("Error enumIndex out of bound:{}", enumIndex);
             _value = "";
         }
     }
@@ -335,7 +334,9 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         this.changed = false; // new Attribute: reset 'changed' flag.
     }
 
-    /** See {@link #duplicate()} */
+    /**
+     * See {@link #duplicate()}
+     */
     public Attribute clone() {
         return new Attribute(this);
     }
@@ -343,7 +344,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     /**
      * Return duplicate of this object. This method returns the same class instead of the
      * object.clone() method All values are copied.
-     * 
+     *
      * @return full non-shallow copy of this Object
      */
     public Attribute duplicate() {
@@ -432,7 +433,9 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         return 0;
     }
 
-    /** Searches enum values if it contain the specified option. */
+    /**
+     * Searches enum values if it contain the specified option.
+     */
     public boolean hasEnumValue(String val) {
         if (enumValues == null) {
             return false;
@@ -470,12 +473,16 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         _setValue(AttributeType.VRL, vrl);
     }
 
-    /** Reset changed flag. */
+    /**
+     * Reset changed flag.
+     */
     public void setNotChanged() {
         this.changed = false;
     }
 
-    /** Whether the value has changed since the last setNotChanged() */
+    /**
+     * Whether the value has changed since the last setNotChanged()
+     */
     public boolean hasChanged() {
         return changed;
     }
@@ -483,7 +490,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     /**
      * Return true if this Attribute is supposed to be editable. The set() methods still work, this
      * is just a flag used for Attribute Editor panels.
-     * 
+     *
      * @return whether this Attribute is supposed to be editable.
      */
     public boolean isEditable() {
@@ -493,9 +500,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     /**
      * Set whether this Attribute is supposed to be editable. The set() method do not check this and
      * no exception is thrown if the Attribute is set anyway.
-     * 
-     * @param value
-     *            - set whether this Attribute is supposed to be editable.
+     *
+     * @param value - set whether this Attribute is supposed to be editable.
      */
     public void setEditable(boolean value) {
         this.editable = value;
@@ -509,7 +515,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
         //
         switch (getType()) {
             case BOOLEAN:
-                return ((Boolean)value)?1:0;
+                return ((Boolean) value) ? 1 : 0;
             case INT:
                 return ((Integer) value).intValue();
             case LONG:
@@ -530,7 +536,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
         switch (getType()) {
             case BOOLEAN:
-                return ((Boolean)value)?1L:0L;
+                return ((Boolean) value) ? 1L : 0L;
             case INT:
                 return ((Integer) value).longValue();
             case LONG:
@@ -551,7 +557,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
         switch (getType()) {
             case BOOLEAN:
-                return ((Boolean)value)?1f:0f;
+                return ((Boolean) value) ? 1f : 0f;
             case INT:
                 return ((Integer) value).floatValue();
             case LONG:
@@ -572,7 +578,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
         switch (getType()) {
             case BOOLEAN:
-                return ((Boolean)value)?1d:0d;
+                return ((Boolean) value) ? 1d : 0d;
             case INT:
                 return ((Integer) value).doubleValue();
             case LONG:
@@ -593,7 +599,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
         switch (getType()) {
             case BOOLEAN:
-                return ((Boolean)value);
+                return ((Boolean) value);
             case INT:
                 return (((Integer) value) != 0);
             case LONG:
@@ -609,7 +615,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     /**
      * Return as VRL.
-     * 
+     *
      * @throws VRLSyntaxException
      */
     public VRL getVRL() throws VRLSyntaxException {
@@ -622,7 +628,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
             return (VRL) value;
 
         if (value instanceof java.net.URI)
-            return new VRL((URI)value); 
+            return new VRL((URI) value);
 
         if (value instanceof String)
             return new VRL((String) value);
@@ -643,10 +649,10 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
             return (VRL) value;
 
         try {
-            
+
             if (value instanceof java.net.URI)
-                return new VRL((URI)value); 
-            
+                return new VRL((URI) value);
+
             if (value instanceof String)
                 return new VRL((String) value);
 
@@ -780,9 +786,8 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
 
     /**
      * Old style section names are embedded between '[]' like '[config]'.
-     * 
-     * @param name
-     *            - the attribute name to be checked.
+     *
+     * @param name - the attribute name to be checked.
      * @return - true for attribute names which are embedded between brackets.
      */
     public static boolean isSectionName(String name) {
@@ -799,7 +804,7 @@ public class Attribute implements Cloneable, Serializable, Duplicatable<Attribut
     @Override
     public Attribute duplicate(boolean shallow) {
         if (shallow) {
-            logger.warnPrintf("Asked for a shallow copy when this isn't supported\n");
+            log.warn("Asked for a shallow copy when this isn't supported");
         }
         return new Attribute(this);
     }

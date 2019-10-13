@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -25,20 +25,19 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
 /**
  * Virtual Paths which can renamed to actual VPaths implement this interface.
- * 
+ *
  * @see VRenamable
  */
 public interface VPathRenamable extends VRenamable {
     // explicit inheritance from VRenamable 
-    public VPath renameTo(String newNameOrPath) throws VrsException;
+    VPath renameTo(String newNameOrPath) throws VrsException;
 
     /**
      * Rename this (virtual) path to another (virtual path.
-     * 
-     * @param other
-     *            - Other VPath to rename this path to.
+     *
+     * @param other - Other VPath to rename this path to.
      * @return other path if rename was succesfull.
      */
-    public VPath renameTo(VPath other) throws VrsException;
+    VPath renameTo(VPath other) throws VrsException;
 
 }

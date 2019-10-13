@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.registry;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.vbrowser.vrs.VCloseable;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
@@ -38,13 +31,18 @@ import nl.esciencecenter.vbrowser.vrs.localfs.LocalFSFileSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.webrs.WebRSFactory;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Static Registry for VResourceSystemFactories. <br>
  * Currently there is only a singleton Registry. ResourceSystems are linked to a VRSContext.
  */
+@Slf4j
 public class Registry {
-
-    private final static PLogger logger = PLogger.getLogger(Registry.class);
 
     private static Registry instance;
 
@@ -91,9 +89,9 @@ public class Registry {
     }
 
     private void initFactories() {
-        this.registryFactoryNoException(LocalFSFileSystemFactory.class, PLogger.ERROR);
-        this.registryFactoryNoException(WebRSFactory.class, PLogger.ERROR);
-        this.registryFactoryNoException(InfoRSFactory.class, PLogger.ERROR);
+        this.registryFactoryNoException(LocalFSFileSystemFactory.class);
+        this.registryFactoryNoException(WebRSFactory.class);
+        this.registryFactoryNoException(InfoRSFactory.class);
     }
 
     public VResourceSystemFactory getVResourceSystemFactoryFor(VRSContext vrsContext, String scheme) {
@@ -135,11 +133,12 @@ public class Registry {
         return vrsContext.getResourceSystemInfoFor(vrl, true);
     }
 
-    public void registryFactoryNoException(Class<? extends VResourceSystemFactory> vrsClass, Level loggerLevel) {
+    public void registryFactoryNoException(Class<? extends VResourceSystemFactory> vrsClass) {
         try {
             registerFactory(vrsClass);
         } catch (Throwable t) {
-            logger.logException(loggerLevel, t, "Exception when registering VRS Factory Class:%s", vrsClass);
+            log.error("Exception when registering VRS Factory Class:{}", vrsClass);
+            log.error(t.getMessage(), t);
         }
     }
 
@@ -162,7 +161,7 @@ public class Registry {
             for (String scheme : vrsInstance.getSchemes()) {
                 ArrayList<SchemeInfo> list = registeredSchemes.get(scheme);
                 if (list == null) {
-                    logger.debugPrintf("Registering scheme:%s =>%s\n", scheme, vrsClass.getCanonicalName());
+                    log.debug("Registering scheme:{} =>{}", scheme, vrsClass.getCanonicalName());
                     list = new ArrayList<SchemeInfo>();
                     registeredSchemes.put(scheme, list);
                 }
@@ -206,18 +205,20 @@ public class Registry {
     public void cleanupFor(VRSContext vrsContext) {
         //
         String ctxId = "" + vrsContext.getID();
-        logger.debug("cleanupFor:{}", ctxId);
+        log.debug("cleanupFor:{}", ctxId);
         Map<String, VResourceSystem> list = instances.getResourceSystemsFor(vrsContext);
-        // 
-        for (String key : list.keySet().toArray(new String[0])) {
-            VResourceSystem resourceSys = list.get(key);
-            logger.debug("cleanupFor:{}: - VResourceSystem instance:{}:{}", ctxId, resourceSys.getServerVRL(),
-                    resourceSys);
-            if (resourceSys instanceof VCloseable) {
-                try {
-                    ((VCloseable) resourceSys).close();
-                } catch (IOException e) {
-                    logger.error("IOException when closing:{}:{}", resourceSys, e);
+        //
+        if ((list!=null) && (!list.isEmpty())) {
+            for (String key : list.keySet().toArray(new String[0])) {
+                VResourceSystem resourceSys = list.get(key);
+                log.debug("cleanupFor:{}: - VResourceSystem instance:{}:{}", ctxId, resourceSys.getServerVRL(),
+                        resourceSys);
+                if (resourceSys instanceof VCloseable) {
+                    try {
+                        ((VCloseable) resourceSys).close();
+                    } catch (IOException e) {
+                        log.error("IOException when closing:{}:{}", resourceSys, e);
+                    }
                 }
             }
         }

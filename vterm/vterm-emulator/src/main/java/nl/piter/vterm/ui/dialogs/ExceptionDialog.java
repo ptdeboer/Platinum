@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.ui.dialogs;
 
 import lombok.extern.slf4j.Slf4j;

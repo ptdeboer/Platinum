@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,12 +20,9 @@
 
 package nl.esciencecenter.ptk.ui.fonts;
 
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Map;
-
-import javax.swing.JComponent;
 
 public class FontUtil {
     /**
@@ -46,7 +43,7 @@ public class FontUtil {
 
     /**
      * Check's FontInfo alias database, if not Font.getFont(name) is returned;
-     * 
+     *
      * @param name
      * @return either java's default font or font from font database.
      */
@@ -59,8 +56,12 @@ public class FontUtil {
         return Font.getFont(name);
     }
 
-    // breadcrump to update renderinghints:
+    // breadcrump to update renderingHints:
     public static boolean updateRenderingHints(JComponent comp, Map<?, ?> renderingHints) {
+        if (renderingHints==null) {
+            // clear hints ?
+            return false;
+        }
         Graphics graphics = comp.getGraphics();
 
         if (graphics instanceof Graphics2D) {

@@ -15,7 +15,7 @@ public class MenuMapping {
     }
 
     public boolean matches(String resourceType, String resourceScheme, String resourceStatus,
-            String mimeType) {
+                           String mimeType) {
 
         //System.err.printf("Matching this:%s <=> {%s,%s,%s,%s}\n",this,resourceType,resourceScheme,resourceStatus,mimeType);
 
@@ -28,10 +28,8 @@ public class MenuMapping {
         if (match(resourceStatusRE, resourceStatus) == false)
             return false;
 
-        if (match(mimeTypeRE, mimeType) == false)
-            return false;
+        return match(mimeTypeRE, mimeType) != false;
 
-        return true;
     }
 
     protected boolean match(String expression, String value) {

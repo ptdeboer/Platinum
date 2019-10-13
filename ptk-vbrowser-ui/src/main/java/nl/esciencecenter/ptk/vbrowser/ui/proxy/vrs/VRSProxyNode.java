@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,20 +20,18 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 
-import java.nio.file.LinkOption;
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.presentation.IPresentable;
 import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
+import nl.esciencecenter.vbrowser.vrs.VEditable;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResource;
 import nl.esciencecenter.vbrowser.vrs.infors.VResourceConfigurable;
@@ -44,12 +42,16 @@ import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.nio.file.LinkOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * VRS ProxyNode: binds VPath and ProxyNode.
  */
+@Slf4j
 public class VRSProxyNode extends ProxyNode {
-
-    private static final PLogger logger = PLogger.getLogger(VRSProxyNode.class);
 
     private VPath vnode;
 
@@ -60,7 +62,7 @@ public class VRSProxyNode extends ProxyNode {
     }
 
     protected VRSProxyFactory factory() {
-        return (VRSProxyFactory) this.getProxyFactory();
+        return this.getProxyFactory();
     }
 
     @Override
@@ -103,8 +105,8 @@ public class VRSProxyNode extends ProxyNode {
 
     @Override
     protected List<? extends ProxyNode>
-            doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException {
-        logger.debugPrintf("doGetChilds:%s\n", this);
+    doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException {
+        log.debug("doGetChilds:{}", this);
 
         try {
             VPath targetPath = vnode;
@@ -245,12 +247,35 @@ public class VRSProxyNode extends ProxyNode {
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(String names[]) throws ProxyException {
+    protected Map<String, AttributeDescription> doGetAttributeDescriptions(String[] names) throws ProxyException {
+        try {
+            return vnode.getAttributeDescriptions(names);
+        } catch (VrsException e) {
+            throw new ProxyException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    protected List<Attribute> doGetAttributes(String[] names) throws ProxyException {
         try {
             return vnode.getAttributes(names);
         } catch (Exception e) {
             throw new ProxyException("Couldn't get attributes\n" + e.getMessage(), e);
         }
+    }
+
+    @Override
+    protected void doUpdateAttributes(Attribute[] attrs) throws ProxyException {
+        if (this.vnode instanceof VEditable) {
+            try {
+                ((VEditable)this.vnode).setAttributes(attrs);
+            } catch (VrsException e) {
+                throw new ProxyException("Couldn't set attributes:" + e.getMessage(), e);
+            }
+        } else {
+            throw new ProxyException("Resource (attributes) arn't editable:"+this.vnode);
+        }
+
     }
 
     @Override
@@ -270,6 +295,11 @@ public class VRSProxyNode extends ProxyNode {
     }
 
     @Override
+    protected boolean doGetIsEditable() {
+        return  (this.vnode instanceof  VEditable);
+    }
+
+    @Override
     protected boolean doIsResourceLink() {
         if (this.vnode instanceof VInfoResource) {
             return ((VInfoResource) vnode).isResourceLink();
@@ -277,16 +307,13 @@ public class VRSProxyNode extends ProxyNode {
 
         // Race Condition: During prefetch phase this might ocure !  
         if (vnode.getVRL() == null) {
-            logger.errorPrintf("FIXME:getVRL() of vnode is null:%s\n", vnode);
+            log.error("FIXME:getVRL() of vnode is null:{}", vnode);
             return false;
         }
 
         // All .vlink AND .rsfx .rslx files are ResourceLinks ! 
-        if (vnode.getVRL().isVLink() == true) {
-            return true;
-        }
+        return vnode.getVRL().isVLink() == true;
 
-        return false;
     }
 
     @Override

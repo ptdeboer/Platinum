@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.api;
 
 import lombok.Data;
@@ -18,7 +22,7 @@ public class TermChannelOptions implements ChannelOptions {
     // common //
     private int defaultRows;
     private int defaultColumns;
-    private String termType= TERM_XTERM;
+    private String termType = TERM_XTERM;
 
     public TermChannelOptions() {
         this.defaultRows = 24;
@@ -51,7 +55,7 @@ public class TermChannelOptions implements ChannelOptions {
     }
 
     @Override
-    public Map<String,?> options() {
+    public Map<String, ?> options() {
         return options;
     }
 
@@ -73,14 +77,14 @@ public class TermChannelOptions implements ChannelOptions {
     }
 
     public void setOption(String name, boolean value) {
-        this.options.put(name,Boolean.toString(value));
+        this.options.put(name, Boolean.toString(value));
     }
 
     public void setOption(String name, String value) {
-        this.options.put(name,value);
+        this.options.put(name, value);
     }
 
     public void setOption(String name, int value) {
-        this.options.put(name,Integer.toString(value));
+        this.options.put(name, Integer.toString(value));
     }
 }

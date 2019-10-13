@@ -1,37 +1,36 @@
 package nl.esciencecenter.vbrowser.vrs.data.xml;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.exceptions.XMLDataException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Test_XMLAttributeSetList {
     private static final Logger logger = LoggerFactory.getLogger(Test_XMLAttributeSetList.class);
 
-    public static final Object testSet1[][][] = {//
-        { { "stringField", "stringValue" },//
-            { "integerField", new Integer(1) },//
-            { "doubleField", new Double(1) },//
-            { "booleanField", new Boolean(true) } },//
+    public static final Object[][][] testSet1 = {//
+            {{"stringField", "stringValue"},//
+                    {"integerField", new Integer(1)},//
+                    {"doubleField", new Double(1)},//
+                    {"booleanField", new Boolean(true)}},//
     };
 
-    public static final Object nill[][][] = { { { "objectField", new Object() } } };//
+    public static final Object[][][] nill = {{{"objectField", new Object()}}};//
 
     // ======= 
     // Helpers 
     // =======
 
-    protected List<AttributeSet> createAttributeSetList(Object objects[][][]) {
+    protected List<AttributeSet> createAttributeSetList(Object[][][] objects) {
         int numSets = objects.length;
 
         ArrayList<AttributeSet> setList = new ArrayList<AttributeSet>();
@@ -74,7 +73,7 @@ public class Test_XMLAttributeSetList {
     }
 
     protected void compare(List<AttributeSet> setList, List<AttributeSet> otherSetList,//
-            boolean compareStringValuesOnly) {
+                           boolean compareStringValuesOnly) {
 
         Assert.assertEquals("Sizes of lists must match", setList.size(), otherSetList.size());
 
@@ -98,7 +97,7 @@ public class Test_XMLAttributeSetList {
         testXMLAttributeSetSingle("field3", "3.3");
         testXMLAttributeSetSingle("field4", "http://host.domain:8443/helloWorld");
         testXMLAttributeSetSingle("field5", "http://host.domain:8443/helloWorld?query#fragment");
-        String enums[] = new String[] { "enum1", "enum2", "enum3", "enum4", "enum2" };
+        String[] enums = new String[]{"enum1", "enum2", "enum3", "enum4", "enum2"};
         testXMLAttributeSetSingle("field5", AttributeUtil.createEnumerate("enumField", enums, "enum2"));
     }
 

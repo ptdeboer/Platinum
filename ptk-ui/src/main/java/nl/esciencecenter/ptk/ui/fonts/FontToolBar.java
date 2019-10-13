@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,59 +20,36 @@
 
 package nl.esciencecenter.ptk.ui.fonts;
 
-import java.awt.FlowLayout;
-import java.awt.GraphicsEnvironment;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.net.URL;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-
 /**
  * FontToolBar widget. Show a selections of system installed fonts.
  */
 public class FontToolBar extends JToolBar implements ActionListener {
-    // ========================================================================
-    // ========================================================================
-       // ========================================================================
-    // ========================================================================
 
     // text viewer attributes:
-    private String fontSizes[] = { "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "36", "48" };
-
+    private String[] fontSizes = {"6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "36", "48"};
     private String[] fontFamilyNames;
-
     private int fontSizeEnumIndex = 9;
-
     private FontInfo fontInfo = new FontInfo();
 
-    // ---
-
-    private JComboBox fontFamilyCB;
-
+    // ui components
+    private JComboBox<FontItem> fontFamilyCB;
     private JComboBox fontSizeCB = null;
-
     private JLabel fontLabel;
-
     private FontToolbarListener listener;
-
     private JToggleButton antiAliasingButton;
-
     private JToggleButton boldButton;
-
     private JToggleButton italicButton;
 
-    // private JToggleButton monospacedButton;
+    // controllers/listeners
+    private FontComboBoxRenderer fontCBRenderer;
 
-    // ===
-    // Constructor/Initializers
-    // ===
     public FontToolBar() {
         initGUI();
     }
@@ -87,9 +64,10 @@ public class FontToolBar extends JToolBar implements ActionListener {
     }
 
     private void initFonts() {
-        String systemFonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        fontFamilyNames = new String[2 + systemFonts.length];
+        GraphicsEnvironment graphEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] systemFonts = graphEnv.getAvailableFontFamilyNames();
 
+        fontFamilyNames = new String[2 + systemFonts.length];
         fontFamilyNames[0] = "default";
         fontFamilyNames[1] = "Monospaced";
 
@@ -107,7 +85,6 @@ public class FontToolBar extends JToolBar implements ActionListener {
         initFonts();
 
         setLayout(new FlowLayout());
-        this.setPreferredSize(new java.awt.Dimension(503, 42));
         {
             fontLabel = new JLabel("Font:");
             add(fontLabel);
@@ -115,12 +92,12 @@ public class FontToolBar extends JToolBar implements ActionListener {
         {
             fontFamilyCB = new JComboBox();
             // FontComboBoxRenderer uses the fontname as render font
-            fontFamilyCB.setRenderer(new FontComboBoxRenderer(this));
-            add(fontFamilyCB);
-
+            this.fontCBRenderer = new FontComboBoxRenderer(this);
+            fontFamilyCB.setRenderer(fontCBRenderer);
             for (String val : fontFamilyNames) {
-                fontFamilyCB.addItem(val);
+                fontFamilyCB.addItem(new FontItem(val));
             }
+            add(fontFamilyCB);
 
             fontFamilyCB.setSelectedIndex(0);
             fontFamilyCB.addActionListener(this);
@@ -139,7 +116,6 @@ public class FontToolBar extends JToolBar implements ActionListener {
             fontSizeCB.addActionListener(this);
             fontSizeCB.setToolTipText("Select font size");
             fontSizeCB.setFocusable(false);
-            fontSizeCB.setPreferredSize(new java.awt.Dimension(46, 22));
 
         }
         {
@@ -150,7 +126,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
             antiAliasingButton.setActionCommand("antiAliasing");
             antiAliasingButton.setToolTipText("Toggle anti-aliasing");
             antiAliasingButton.addActionListener(this);
-            // since java 1.6 not needed: rendering hints are done automatically 
+            // since java 1.6 not needed: rendering hints are done automatically
             antiAliasingButton.setEnabled(true);
         }
         {
@@ -222,12 +198,11 @@ public class FontToolBar extends JToolBar implements ActionListener {
     }
 
     public void updateFont() {
-        fontInfo.setFontFamily((String) fontFamilyCB.getSelectedItem());
-
+        String fontName = ((FontItem)fontFamilyCB.getSelectedItem()).getFontName();
+        fontInfo.setFontFamily(fontName);
         fontInfo.setFontSize(new Integer((String) fontSizeCB.getSelectedItem()));
-
         fontInfo.setAntiAliasing(this.antiAliasingButton.isSelected());
-
+//        this.fontCBRenderer.enablePrerender(fontName);
         fireUpdateEvent();
     }
 

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,44 +20,31 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
-import java.util.ArrayList;
-import java.util.Vector;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.object.Disposable;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDropTarget;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.ptk.vbrowser.ui.model.*;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable {
-       private static PLogger logger;
+import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import java.awt.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.util.ArrayList;
+import java.util.Vector;
 
-    static {
-        logger = PLogger.getLogger(IconsPanel.class);
-    }
+@Slf4j
+public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable {
 
     /**
      * private UIModel for this icon panel.
@@ -112,8 +99,8 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
         DragSource dragSource = DragSource.getDefaultDragSource();
         dragListener = new ViewNodeContainerDragListener(); // is (this) needed
-                                                            // ?;
-        // this.dsListener = MyDragSourceListener.getDefault();
+        // ?;
+        // this.dsListener = MyDragSourceListener.fsutil();
         // component, action, listener
         dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE,
                 dragListener);
@@ -189,7 +176,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     @Override
     public void intervalAdded(ListDataEvent e) {
-        logger.debugPrintf("intervalAdded():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+        log.debug("intervalAdded():[{},{}]", e.getIndex0(), e.getIndex1());
         int start = e.getIndex0();
         int end = e.getIndex1();
 
@@ -198,7 +185,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     @Override
     public void contentsChanged(ListDataEvent e) {
-        logger.debugPrintf("contentsChanged():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+        log.debug("contentsChanged():[{},{}]", e.getIndex0(), e.getIndex1());
         updateAll();
     }
 
@@ -208,7 +195,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     @Override
     public void intervalRemoved(ListDataEvent e) {
-        logger.errorPrintf("intervalRemoved():[%d,%d]\n", e.getIndex0(), e.getIndex1());
+        log.error("intervalRemoved():[{},{}]", e.getIndex0(), e.getIndex1());
 
         int start = e.getIndex0();
         int end = e.getIndex1(); // inclusive
@@ -232,7 +219,8 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
                 @Override
                 public void run() {
                     uiUpdate(clear, start, _end);
-                };
+                }
+
             };
 
             UIGlobal.swingInvokeLater(updater);
@@ -270,7 +258,8 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
                 @Override
                 public void run() {
                     repaint();
-                };
+                }
+
             };
 
             UIGlobal.swingInvokeLater(updater);
@@ -326,7 +315,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
                 items.add(item.getViewNode());
         }
 
-        ViewNode nodes[] = new ViewNode[items.size()];
+        ViewNode[] nodes = new ViewNode[items.size()];
         nodes = items.toArray(nodes);
 
         return nodes;
@@ -334,7 +323,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     @Override
     public void setNodeSelection(ViewNode node, boolean isSelected) {
-        logger.debugPrintf("updateSelection %s=%s\n", node, isSelected);
+        log.debug("updateSelection {}={}", node, isSelected);
         if (node == null)
             return; // canvas click;
 
@@ -368,7 +357,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
             if (comp instanceof IconItem)
                 itemList.add((IconItem) comp);
 
-        IconItem items[] = new IconItem[itemList.size()];
+        IconItem[] items = new IconItem[itemList.size()];
         for (int i = 0; i < itemList.size(); i++)
             items[i] = itemList.get(i);
 
@@ -377,7 +366,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     @Override
     public void setNodeSelectionRange(ViewNode node1, ViewNode node2, boolean selected) {
-        logger.debugPrintf("setSelectionRange:[%s,%s]=%s\n", node1, node2, selected);
+        log.debug("setSelectionRange:[{},{}]={}", node1, node2, selected);
 
         boolean mark = false;
 

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,16 +20,15 @@
 
 package nl.esciencecenter.ptk.task;
 
-import java.util.Vector;
+import lombok.extern.slf4j.Slf4j;
 
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import java.util.Vector;
 
 /**
  * ActionTask Watcher/Manager for ActionTasks.
  */
+@Slf4j
 public class TaskWatcher implements ITaskSource {
-
-    private static PLogger logger = PLogger.getLogger(TaskWatcher.class);
 
     private static TaskWatcher instance = null;
 
@@ -62,7 +61,7 @@ public class TaskWatcher implements ITaskSource {
 
     @Override
     public void registerTask(ActionTask actionTask) {
-        logger.debugPrintf("(+)RegisterTask:%s\n", actionTask);
+        log.debug("(+)registerTask:{}", actionTask);
         synchronized (activeTasks) {
             this.activeTasks.add(actionTask);
         }
@@ -70,7 +69,7 @@ public class TaskWatcher implements ITaskSource {
 
     @Override
     public void unregisterTask(ActionTask actionTask) {
-        logger.debugPrintf("(-)RegisterTask:%s\n", actionTask);
+        log.debug("[-]unregisterTask:{}", actionTask);
 
         synchronized (activeTasks) {
             this.activeTasks.remove(actionTask);
@@ -83,13 +82,13 @@ public class TaskWatcher implements ITaskSource {
 
     @Override
     public void notifyTaskStarted(ActionTask actionTask) {
-        logger.debugPrintf("(>)notifyTaskStarted:%s\n", actionTask);
+        log.debug("[>]notifyTaskStarted:{}", actionTask);
         this.setHasActiveTasks(true);
     }
 
     @Override
     public void notifyTaskTerminated(ActionTask actionTask) {
-        logger.debugPrintf("(*)notifyTaskTerminated:%s\n", actionTask);
+        log.debug("[*]notifyTaskTerminated:{}", actionTask);
         deschedule(actionTask);
         this.setHasActiveTasks(checkHasActiveTasks());
     }
@@ -98,7 +97,7 @@ public class TaskWatcher implements ITaskSource {
         synchronized (activeTasks) {
             boolean removed = this.activeTasks.remove(actionTask);
             if (removed == false) {
-                ; // already in terminatedTasks ?
+                // already in terminatedTasks ?
             }
         }
 
@@ -114,8 +113,7 @@ public class TaskWatcher implements ITaskSource {
             }
         }
 
-        logger.debugPrintf("deschedule(): Number active/terminated tasks: %d/%d\n", activeTasks.size(),
-                terminatedTasks.size());
+        log.debug("deschedule(): Number active/terminated tasks: {}/{}", activeTasks.size(), terminatedTasks.size());
     }
 
     public boolean checkHasActiveTasks() {
@@ -151,7 +149,7 @@ public class TaskWatcher implements ITaskSource {
 
     /**
      * This method checks whether the current execution Thread belongs to a Registered Action Task.
-     * 
+     *
      * @return - actual ActionTask linked to the current execution thread.
      */
     public ActionTask getCurrentThreadActionTask() {
@@ -162,16 +160,15 @@ public class TaskWatcher implements ITaskSource {
      * Find ActionTask with specified thread id. Since all ActionTasks are currently started in
      * their own thread, this method will find the actionTask currently executed in the specified
      * thread.
-     * 
-     * @param thread
-     *            Thread which started an ActionTask
+     *
+     * @param thread Thread which started an ActionTask
      * @return ActionTaks or null which is started within to the specified Thread.
      */
     public ActionTask findActionTaskForThread(Thread thread) {
         if (thread == null)
             return null;
 
-        ActionTask tasks[] = getActiveTaskArray();
+        ActionTask[] tasks = getActiveTaskArray();
 
         for (ActionTask task : tasks) {
             if ((task != null) && (task.hasThread(thread)))
@@ -186,7 +183,7 @@ public class TaskWatcher implements ITaskSource {
      */
     protected final ActionTask[] getActiveTaskArray() {
         synchronized (activeTasks) {
-            ActionTask tasks[] = new ActionTask[activeTasks.size()];
+            ActionTask[] tasks = new ActionTask[activeTasks.size()];
             tasks = activeTasks.toArray(tasks);
             return tasks;
         }
@@ -196,17 +193,17 @@ public class TaskWatcher implements ITaskSource {
     public void notifyTaskException(ActionTask task, Throwable ex) {
         // Optional handling of an exception throw by an ActionTask.
         // Ignore here. Subclasses might do something here.
-
-        logger.logException(PLogger.ERROR, ex, "TaskException for ActionTask:%s\n", task);
+        log.error("Task Exception for task:{}", task);
+        log.error("Exception:" + ex.getMessage(), ex);
     }
 
     /**
      * Check whether there are active tasks running for the TaskSource
      */
     public boolean hasActiveTasks(ITaskSource source) {
-        logger.debugPrintf("hasActiveTasks() for:%s\n", source.getTaskSourceName());
+        log.debug("[?]hasActiveTasks() for:{}", source.getTaskSourceName());
 
-        ActionTask tasks[] = getActiveTaskArray();
+        ActionTask[] tasks = getActiveTaskArray();
 
         if ((tasks == null) || (tasks.length <= 0))
             return false;
@@ -214,7 +211,7 @@ public class TaskWatcher implements ITaskSource {
         boolean active = false;
 
         for (ActionTask task : tasks) {
-            logger.debugPrintf("Checking action task:%s\n", task);
+            log.debug("Checking action task:{}", task);
             if ((task.getTaskSource() != null) && (task.getTaskSource() == source)) {
                 if (task.isAlive())
                     active = true;
@@ -225,12 +222,12 @@ public class TaskWatcher implements ITaskSource {
     }
 
     public void setHasActiveTasks(boolean active) {
-        logger.debugPrintf("(?)setHasActiveTasks:%s\n", active);
+        log.debug("[>]setHasActiveTasks:{}", active);
         // todo update TaksListeners.
     }
 
     public void stopAllTasks() {
-        ActionTask tasks[] = getActiveTaskArray();
+        ActionTask[] tasks = getActiveTaskArray();
 
         // send stop signal first:
         for (ActionTask task : tasks) {
@@ -240,7 +237,7 @@ public class TaskWatcher implements ITaskSource {
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
-            logger.logException(PLogger.ERROR, e, "***Error: Exception:" + e);
+            log.error("Interrupted:" + e.getMessage(), e);
         }
 
         // now send interrupt:

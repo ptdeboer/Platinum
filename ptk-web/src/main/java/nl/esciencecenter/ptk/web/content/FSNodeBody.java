@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,21 +20,22 @@
 
 package nl.esciencecenter.ptk.web.content;
 
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.io.FSPath;
+import nl.esciencecenter.ptk.web.PutMonitor;
+import org.apache.http.entity.mime.MIME;
+import org.apache.http.entity.mime.content.AbstractContentBody;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import nl.esciencecenter.ptk.io.FSPath;
-import nl.esciencecenter.ptk.web.PutMonitor;
-
-import org.apache.http.entity.mime.MIME;
-import org.apache.http.entity.mime.content.AbstractContentBody;
 
 /**
  * File Body which uses FSNodes. <br>
  * Based on Apache FileBody. Example how to upload custom Object types. Since FSNode can be
  * sub-classed, any file type can be uploaded using this Content Body Type.
  */
+@Slf4j
 public class FSNodeBody extends AbstractContentBody {
 
     private final FSPath fsNode;
@@ -94,7 +95,7 @@ public class FSNodeBody extends AbstractContentBody {
                 }
 
                 totalWritten += numRead;
-                logPrintf("Total written=%d\n", totalWritten);
+                debug("Total written={}", totalWritten);
 
                 if (putMonitor != null) {
                     putMonitor.bytesWritten(totalWritten);
@@ -108,11 +109,12 @@ public class FSNodeBody extends AbstractContentBody {
                 putMonitor.putDone();
             }
 
-            logPrintf("Done: Total written=%d\n", totalWritten);
+            debug("Done: Total written={}", totalWritten);
         } finally {
             in.close();
         }
     }
+
 
     public String getTransferEncoding() {
         return MIME.ENC_BINARY;
@@ -138,8 +140,8 @@ public class FSNodeBody extends AbstractContentBody {
         return totalWritten;
     }
 
-    protected void logPrintf(String format, Object... args) {
-        // Delegate to monitor: 
+    private void debug(String format, Object ...args) {
+        log.debug(format,args);
     }
 
 }

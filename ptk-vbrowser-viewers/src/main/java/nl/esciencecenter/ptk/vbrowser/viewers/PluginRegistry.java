@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,9 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.Pair;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.internal.JavaWebStarter;
@@ -37,12 +32,16 @@ import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMappingMatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.viewers.x509viewer.X509Viewer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Viewer and Tool Plugin Registry for the VBrowser.
  */
+@Slf4j
 public class PluginRegistry {
-
-    private static PLogger logger = PLogger.getLogger(PluginRegistry.class);
 
     public class PluginEntry {
         protected Class<? extends ViewerPlugin> pluginClass;
@@ -145,7 +144,7 @@ public class PluginRegistry {
             }
 
         } catch (InstantiationException | IllegalAccessException e) {
-            logger.logException(PLogger.ERROR, e, "Failed to register viewer class:%s\n", viewerClass);
+            log.error("Failed to register viewer class:" + viewerClass, e);
         }
     }
 
@@ -153,7 +152,7 @@ public class PluginRegistry {
         toolPlugins.add(entry);
 
         if (toolPlugin.addToToolMenu()) {
-            String menuPath[] = toolPlugin.getToolMenuPath();
+            String[] menuPath = toolPlugin.getToolMenuPath();
             updateToolMenu(menuPath, toolPlugin.getToolName(), toolPlugin, entry);
         }
 
@@ -169,7 +168,7 @@ public class PluginRegistry {
 
     protected void registerMimeTypes(String[] mimeTypes, PluginEntry entry) {
         if (mimeTypes == null) {
-            logger.warnPrintf("No mime types for Viewer:<%s:>%s\n", entry.pluginClass, entry.pluginName);
+            log.warn("No mime types for Viewer:<{}:>{}", entry.pluginClass, entry.pluginName);
             return;
         }
         for (String type : mimeTypes) {
@@ -190,7 +189,7 @@ public class PluginRegistry {
             return;
         }
 
-        String mimeTypes[] = map.keySet().toArray(new String[0]);
+        String[] mimeTypes = map.keySet().toArray(new String[0]);
 
         for (String type : mimeTypes) {
             // Combine menu methods per MimeType:
@@ -207,7 +206,7 @@ public class PluginRegistry {
 
             for (String methodDef : map.get(type)) {
                 // Split: "<methodName>:<Menu Name>"
-                String strs[] = methodDef.split(":");
+                String[] strs = methodDef.split(":");
 
                 String method = strs[0];
                 String menuName = method;
@@ -244,7 +243,7 @@ public class PluginRegistry {
 
     private MenuEntry createMenuEntry(String methodDef, PluginEntry viewerEntry) {
         // Split: "<methodName>:<Menu Name>"
-        String strs[] = methodDef.split(":");
+        String[] strs = methodDef.split(":");
 
         String method = strs[0];
         String menuName = method;
@@ -272,7 +271,7 @@ public class PluginRegistry {
         try {
             viewerPlugin = viewerClass.newInstance();
         } catch (Exception e) {
-            logger.logException(PLogger.ERROR, e, "Could not instanciate:%s\n", viewerClass);
+            log.error("Could not instanciate:" + viewerClass, e);
         }
 
         return viewerPlugin;
@@ -293,8 +292,8 @@ public class PluginRegistry {
 
     /**
      * Addes menu entries for the specified mimeType to the MenuEntry List
-     * 
-     * @param entries - List to add entries to
+     *
+     * @param entries  - List to add entries to
      * @param mimeType
      */
     public int addMimeMenuEntries(List<MenuEntry> entries, String mimeType) {

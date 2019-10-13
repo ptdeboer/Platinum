@@ -1,20 +1,18 @@
 package nl.esciencecenter.vbrowser.vrs.data.xml;
 
-import java.util.Set;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
+@Slf4j
 public class Test_XMLAttributeSet {
-    private static final Logger logger = LoggerFactory.getLogger(Test_XMLAttributeSet.class);
 
     @Test
     public void testXMLAttributeSet() throws Exception {
@@ -25,8 +23,8 @@ public class Test_XMLAttributeSet {
         testXMLAttributeSet("field5", "http://host.domain:8443/helloWorld?query#fragment");
         testXMLAttributeSet(
                 "field5",
-                AttributeUtil.createEnumerate("enumField", new String[] { "enum1", "enum2",
-                        "enum3", "enum4", "enum2" }, "enum2"));
+                AttributeUtil.createEnumerate("enumField", new String[]{"enum1", "enum2",
+                        "enum3", "enum4", "enum2"}, "enum2"));
 
         testXMLAttributeSet("intField", new Integer(3));
         testXMLAttributeSet("floatField", new Float(3.14));
@@ -56,7 +54,7 @@ public class Test_XMLAttributeSet {
         XMLData data = new XMLData(new VRSContext());
         String xml = data.toXML(attrs);
 
-        outPrintf("---xml---\n%s\n", XMLData.prettyFormat(xml, 3));
+        log.debug("---xml---\n{}", XMLData.prettyFormat(xml, 3));
 
         AttributeSet newSet = data.parseAttributeSet(xml);
         compare(attrs, newSet, true);
@@ -71,7 +69,7 @@ public class Test_XMLAttributeSet {
         XMLData data = new XMLData(new VRSContext());
         String xml = data.toXML(attrs);
 
-        outPrintf("---xml---\n%s\n", XMLData.prettyFormat(xml, 3));
+        log.debug("---xml---\n{}", XMLData.prettyFormat(xml, 3));
 
         AttributeSet parsed = data.parseAttributeSet(xml);
 
@@ -79,7 +77,7 @@ public class Test_XMLAttributeSet {
     }
 
     protected static void compare(AttributeSet original, AttributeSet others,
-            boolean compareStringValuesOnly) {
+                                  boolean compareStringValuesOnly) {
         Set<String> orgKeys = original.keySet();
         Set<String> otherKeys = others.keySet();
 
@@ -108,8 +106,8 @@ public class Test_XMLAttributeSet {
         // Check order of fields: 
         Assert.assertEquals("Number of fields don't match", orgKeys.size(), otherKeys.size());
 
-        String arr1[] = orgKeys.toArray(new String[0]);
-        String arr2[] = otherKeys.toArray(new String[0]);
+        String[] arr1 = orgKeys.toArray(new String[0]);
+        String[] arr2 = otherKeys.toArray(new String[0]);
         for (int i = 0; i < arr1.length; i++) {
             Assert.assertEquals("Field numbers #" + i + " don't match", arr1[i], arr2[i]);
         }
@@ -134,8 +132,5 @@ public class Test_XMLAttributeSet {
                 "https://host.domain:8443/helloWorld?Query#Fragment"));
     }
 
-    public static void outPrintf(String format, Object... args) {
-        System.out.printf(format, args);
-    }
 
 }

@@ -1,17 +1,17 @@
 <assembly>
-	<id>icons</id>
-	<formats>
-		<format>jar</format>
-	</formats>
-	 <includeBaseDirectory>false</includeBaseDirectory>
-	<fileSets>
-		<fileSet>
-			<directory>src/resources/images/icons</directory>
-			<outputDirectory>icons</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-			<fileMode>0644</fileMode>
-		</fileSet>
-	</fileSets>
+    <id>icons</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources/icons</directory>
+            <outputDirectory>icons</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+    </fileSets>
 </assembly>

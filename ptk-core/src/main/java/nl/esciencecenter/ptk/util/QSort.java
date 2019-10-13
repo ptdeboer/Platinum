@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -35,24 +35,24 @@ public class QSort<Type> {
 
     /**
      * Create a QSort object. One way to use this would with dynamic class creation:
-     * 
+     *
      * <PRE>
-     * 
-     * QSort sorter = new QSort(new Comparer() 
+     * <p>
+     * QSort sorter = new QSort(new Comparer()
      * {
-     *     public int compare(Object a,Object b)
-     *     { 
-     *         if (a.key == b.key) 
-     *             return 0; 
-     *         else  if (a.key &lt; b.key) 
-     *             return -1 
-     *         else
-     *             return 1; 
-     *     } 
-     * }); 
-     * 
+     * public int compare(Object a,Object b)
+     * {
+     * if (a.key == b.key)
+     * return 0;
+     * else  if (a.key &lt; b.key)
+     * return -1
+     * else
+     * return 1;
+     * }
+     * });
+     * <p>
      * sorter.sort(array);
-     * 
+     *
      * </PRE>
      */
     public QSort(Comparer<Type> comparer) {
@@ -63,7 +63,6 @@ public class QSort<Type> {
      * Sorts the array, according to the Comparer. The returned vector (I[]) provides mapping
      * information about the new order. The sorted list Y[] equals to the original list X[] as
      * follows: Y[I[i]] = X[i] Or: I[index-in-Y]=index-in-X
-     * 
      **/
     public int[] sort(Type[] list) {
         return quicksort(newIndex(list.length), list, 0, list.length - 1);
@@ -79,26 +78,26 @@ public class QSort<Type> {
     /**
      * Sorts a subsequence of the array, according to the Comparer.
      */
-    public int[] sort(int mapping[], Type[] list, int start, int end) {
+    public int[] sort(int[] mapping, Type[] list, int start, int end) {
         return quicksort(mapping, list, start, end - 1);
     }
 
     /**
      * Sorts a subsequence of the array, according to the Comparer.
      */
-    public int[] sort(int mapping[], List<Type> list, int start, int end) {
+    public int[] sort(int[] mapping, List<Type> list, int start, int end) {
         return quicksort(mapping, list, start, end - 1);
     }
 
     private int[] newIndex(int len) {
-        int index[] = new int[len];
+        int[] index = new int[len];
 
         for (int i = 0; i < len; i++)
             index[i] = i;
         return index;
     }
 
-    private int[] quicksort(int mapping[], Type[] list, int p, int r) {
+    private int[] quicksort(int[] mapping, Type[] list, int p, int r) {
         //
         if (p < r) {
             int q = partition(mapping, list, p, r);
@@ -112,7 +111,7 @@ public class QSort<Type> {
         return mapping;
     }
 
-    private int[] quicksort(int mapping[], List<Type> list, int p, int r) {
+    private int[] quicksort(int[] mapping, List<Type> list, int p, int r) {
         //
         if (p < r) {
             int q = partition(mapping, list, p, r);
@@ -126,7 +125,7 @@ public class QSort<Type> {
         return mapping;
     }
 
-    private int partition(int mapping[], Type[] list, int p, int r) {
+    private int partition(int[] mapping, Type[] list, int p, int r) {
         //
         Type pivot = list[p];
         int lo = p;
@@ -153,7 +152,7 @@ public class QSort<Type> {
         }
     }
 
-    private int partition(int mapping[], List<Type> list, int p, int r) {
+    private int partition(int[] mapping, List<Type> list, int p, int r) {
         //
         Type pivot = list.get(p);
         int lo = p;
@@ -171,7 +170,7 @@ public class QSort<Type> {
 
                 Type loVal = list.get(lo);
                 Type hiVal = list.get(hi);
-                // strange: type <? extends Object> doesn't accept Object
+                // note: type <? extends Object> doesn't accept Object
                 list.set(lo, hiVal);
                 list.set(hi, loVal);
 

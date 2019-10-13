@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,18 +20,19 @@
 
 package nl.esciencecenter.ptk.ui;
 
-import java.io.Console;
-
-import javax.swing.JOptionPane;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.data.SecretHolder;
 import nl.esciencecenter.ptk.util.StringUtil;
+
+import javax.swing.*;
+import java.io.Console;
 
 /**
  * Command Line UI redirects UI request to command line. Uses System.console and System.err for
  * stdin, stdout and stderr respectively.
  */
+@Slf4j
 public class ConsoleUI implements UI {
 
     private Console console;
@@ -39,8 +40,7 @@ public class ConsoleUI implements UI {
     public ConsoleUI() {
         console = System.console();
         if (console == null) {
-            System.err.printf("FATAL: No Console Object!\n");
-            throw new Error("No Console Object!");
+            log.warn("Warning: No System.console()");
         }
     }
 
@@ -51,12 +51,20 @@ public class ConsoleUI implements UI {
 
     @Override
     public void showMessage(String title, String message, boolean modal) {
-        console.printf("[%s]\n%s\n", title, message);
+        if (console == null) {
+            log.warn("NO CONSOLE:showMessage:[{}]:{}", title, message);
+        } else {
+            console.printf("[%s]\n%s\n", title, message);
+        }
     }
 
     @Override
     public boolean askYesNo(String title, String message, boolean defaultValue) {
-        console.printf("[%s]\n%s\n Y)es/N)o?", title, message);
+        if (console == null) {
+            log.warn("NO CONSOLE:askYesNo:[{}]:{}", title, message);
+        } else {
+            console.printf("[%s]\n%s\n Y)es/N)o?", title, message);
+        }
         String str = getInput("");
 
         if (str == null) {
@@ -67,7 +75,11 @@ public class ConsoleUI implements UI {
 
     @Override
     public boolean askOkCancel(String title, String message, boolean defaultValue) {
-        console.printf("[%s]\n%s\n O)k/C)ancel?", title, message);
+        if (console == null) {
+            log.warn("NO CONSOLE:askOkCancel:[{}]:{}", title, message);
+        } else {
+            console.printf("[%s]\n%s\n O)k/C)ancel?", title, message);
+        }
         String str = getInput("");
 
         if (str == null) {
@@ -77,8 +89,13 @@ public class ConsoleUI implements UI {
     }
 
     @Override
+
     public int askYesNoCancel(String title, String message) {
-        console.printf("[%s]\n%s\n Y)es/N)o/C)ancel?", title, message);
+        if (console == null) {
+            log.warn("NO CONSOLE:askYesNoCancel:[{}]:{}", title, message);
+        } else {
+            console.printf("[%s]\n%s\n Y)es/N)o/C)ancel?", title, message);
+        }
         String str = getInput("");
 
         if (str == null) {
@@ -101,9 +118,13 @@ public class ConsoleUI implements UI {
 
     @Override
     public boolean askAuthentication(String message, SecretHolder secretHolder) {
-        console.printf("[Authentication Needed]\n%s\n", message);
+        if (console == null) {
+            log.warn("NO CONSOLE:askAuthentication:[{}]:{}", message);
+        } else {
+            console.printf("[Authentication Needed]\n%s\n", message);
+        }
 
-        char chars[] = this.getPrivateInput("?");
+        char[] chars = this.getPrivateInput("?");
         if (chars == null || chars[0] == 0) {
             return false;
         }
@@ -112,20 +133,31 @@ public class ConsoleUI implements UI {
     }
 
     public String getInput(String prompt) {
+        if (console == null) {
+            log.warn("NO CONSOLE:getInput:{}", prompt);
+            return null;
+        }
         console.printf("%s", prompt);
         return console.readLine();
     }
 
     public char[] getPrivateInput(String prompt) {
+        if (console == null) {
+            log.warn("NO CONSOLE:getPrivateInput:{}", prompt);
+            return null;
+        }
         console.printf("%s", prompt);
         return console.readPassword();
     }
 
     @Override
     public String askInput(String title, String message, String defaultValue) {
+        if (console == null) {
+            log.warn("NO CONSOLE:askInput:[{}}:{}", title,message);
+            return null;
+        }
         console.printf("[%s]\n%s\n '%s'?", title, message, defaultValue);
-        String value = getInput("");
-        return value;
+        return getInput("");
     }
 
 }

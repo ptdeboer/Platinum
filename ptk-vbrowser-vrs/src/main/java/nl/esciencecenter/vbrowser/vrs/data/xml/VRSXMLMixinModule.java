@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class VRSXMLMixinModule extends SimpleModule {
 
-       public VRSXMLMixinModule() {
+    public VRSXMLMixinModule() {
         super("VRSXMLMixinModule", new Version(0, 0, 1, "1", "vrs.data.xml", "nl.esciencecenter.ptk.vbrowser"));
     }
 

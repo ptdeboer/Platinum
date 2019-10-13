@@ -2,12 +2,12 @@ package nl.esciencecenter.vbrowser.vrs.credentials;
 
 public interface Credential {
 
-    public String getCredentialType();
+    String getCredentialType();
 
-    public String getUserPrincipal();
+    String getUserPrincipal();
 
-    public String getGroupPrincipal();
+    String getGroupPrincipal();
 
-    public boolean isValid();
+    boolean isValid();
 
 }

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,12 +20,12 @@
 
 package nl.esciencecenter.ptk.web;
 
+import nl.esciencecenter.ptk.object.Disposable;
+import org.apache.http.client.methods.HttpPut;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-
-import nl.esciencecenter.ptk.object.Disposable;
-import org.apache.http.client.methods.HttpPut;
 
 /**
  * Managed ResponseOutputStream. Under construction.
@@ -54,7 +54,7 @@ public class ResponseOutputStream extends OutputStream implements WebStream, Dis
     }
 
     @Override
-    public void write(byte bytes[], int offset, int numBytes) throws IOException {
+    public void write(byte[] bytes, int offset, int numBytes) throws IOException {
         sourceStream.write(bytes, offset, numBytes);
     }
 
@@ -66,9 +66,9 @@ public class ResponseOutputStream extends OutputStream implements WebStream, Dis
     /**
      * Close the underlying InputStream. If the InputStream was already closed or an IOException
      * occure this method will return false. If the close was successful the method return true
-     * 
+     *
      * @returns - true if the close was successful, false if the stream was already close or an
-     *          Exception occured.
+     * Exception occured.
      */
     public boolean autoClose() {
         //
@@ -78,7 +78,7 @@ public class ResponseOutputStream extends OutputStream implements WebStream, Dis
         //
         try {
             close();
-            //webClient.getLogger().debugPrintf("autoClose(): successful for:"+this);
+            //webClient.getLogger().log.debug("autoClose(): successful for:"+this);
             return true;
         } catch (IOException e) {
             return false;

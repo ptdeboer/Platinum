@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,20 +20,20 @@
 
 package nl.esciencecenter.vbrowser.vrs.mimetypes;
 
-import java.io.File;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.activation.MimetypesFileTypeMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import javax.activation.MimetypesFileTypeMap;
-
 //import net.sf.jmimemagic.Magic;
 //import net.sf.jmimemagic.MagicMatch;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * MimeType util class.
  */
+@Slf4j
 public class MimeTypes {
     // default mime types.
     public static final String MIME_TEXT_PLAIN = "text/plain";
@@ -45,12 +45,6 @@ public class MimeTypes {
      * Singleton instance.
      */
     private static MimeTypes instance;
-
-    private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(MimeTypes.class);
-    }
 
     public static MimeTypes getDefault() {
         if (instance == null) {
@@ -88,11 +82,11 @@ public class MimeTypes {
                 InputStream inps = result.openStream();
                 typemap = new MimetypesFileTypeMap(inps);
             } else {
-                logger.warn("Couldn't locate ANY mime.types file on classpath");
+                log.warn("Couldn't locate ANY mime.types file on classpath");
                 typemap = new MimetypesFileTypeMap();
             }
         } catch (IOException e) {
-            logger.logException(PLogger.WARN, e, "Couldn't initialize default mimetypes\n", e);
+            log.warn("Couldn't initialize default mimetypes:" + e.getMessage(), e);
             // empty one !
             this.typemap = new MimetypesFileTypeMap();
         }
@@ -102,10 +96,10 @@ public class MimeTypes {
      * Add extra mime type definitions.
      */
     public void addMimeTypes(String mimeTypes) {
-        String lines[] = mimeTypes.split("\n");
+        String[] lines = mimeTypes.split("\n");
         if (lines != null)
             for (String line : lines) {
-                logger.debugPrintf("Adding user mime.type:" + line);
+                log.debug("Adding user mime.type:" + line);
                 typemap.addMimeTypes(line);
             }
     }

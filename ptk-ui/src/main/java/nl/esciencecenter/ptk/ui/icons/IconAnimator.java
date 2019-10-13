@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,17 +20,14 @@
 
 package nl.esciencecenter.ptk.ui.icons;
 
-import java.awt.Component;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JComponent;
-
 /**
  * Icon Animator calling the icons 'repaint' method
- *
  */
 public class IconAnimator implements Runnable {
     public class IconInfo {
@@ -48,17 +45,18 @@ public class IconAnimator implements Runnable {
             return icon;
         }
 
-        /** JComponent who contains the icon */
+        /**
+         * JComponent who contains the icon
+         */
         public Component getComponent() {
             return comp;
         }
 
-        /** Whether icon needs to be updated */
+        /**
+         * Whether icon needs to be updated
+         */
         public boolean needsUpdate(long currentTimeMillis) {
-            if (currentTimeMillis >= newUpdateTime)
-                return true;
-            else
-                return false;
+            return currentTimeMillis >= newUpdateTime;
         }
     }
 
@@ -152,7 +150,7 @@ public class IconAnimator implements Runnable {
     /**
      * Update All icons which need to be updated. Returns minimum wait time for the next updated.
      * This is the minimum all of icon wait times.
-     * 
+     *
      * @return
      */
     protected int updateAll() {
@@ -179,9 +177,8 @@ public class IconAnimator implements Runnable {
     /**
      * Updated the icon state. Doesn't check whether the icon needs to be updated. Return the wait
      * time needed for the next update.
-     * 
-     * @param state
-     *            IconInfo state information.
+     *
+     * @param state IconInfo state information.
      */
     protected int update(IconInfo state) {
         AnimatedIcon icon = state.getIcon();

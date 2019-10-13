@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,31 +20,31 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.x509viewer;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.Map;
-
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.ssl.CertUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
+import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.awt.*;
+import java.io.IOException;
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Map;
+
 public class X509Viewer extends ViewerJPanel implements CertPanelListener {
-       public static final String ADD_METHOD = "addCert";
+    public static final String ADD_METHOD = "addCert";
 
     public static final String VIEW_METHOD = "viewCert";
 
-    private static String mimeTypes[] = { "application/x-x509-ca-cert",
+    private static String[] mimeTypes = {"application/x-x509-ca-cert",
             // .crt and .pem can be both user AND CA
             "application/x-pem-file", "application/x-x509-pem-file", "application/x-x509-crt-file",
-    // "application/x-x509-user-cert" = user cert! (not CA)
+            // "application/x-x509-user-cert" = user cert! (not CA)
     };
 
     // ========================================================================
@@ -204,7 +204,7 @@ public class X509Viewer extends ViewerJPanel implements CertPanelListener {
     }
 
     private X509Certificate instCert(VRL certUri) throws Exception {
-        String txt = getResourceHandler().readText(certUri, textEncoding);
+        String txt = getResourceHandler().readText(certUri, ResourceLoader.CHARSET_UTF8);
 
         // Use hardcoded String to find start of certificate.
         // Current Pem reader is just as simplistic.
@@ -251,8 +251,8 @@ public class X509Viewer extends ViewerJPanel implements CertPanelListener {
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
         for (int i = 0; i < mimeTypes.length; i++) {
-            List<String> list = new StringList(new String[] { VIEW_METHOD + ":View Certificate",
-                    ADD_METHOD + ":Add Certificate" });
+            List<String> list = new StringList(VIEW_METHOD + ":View Certificate",
+                    ADD_METHOD + ":Add Certificate");
             mappings.put(mimeTypes[i], list);
         }
 

@@ -1,7 +1,20 @@
 package nl.esciencecenter.ptk.vbrowser.ui.tool.vtermstarter;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.Pair;
+import nl.esciencecenter.ptk.util.vterm.StartVTerm;
+import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
+import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
+import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.sftp.SSHShellChannelFactory;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import nl.piter.vterm.emulator.VTermChannelProvider;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URISyntaxException;
@@ -9,39 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-
-import nl.esciencecenter.ptk.data.Pair;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.util.vterm.StartVTerm;
-import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
-import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
-import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
-import nl.esciencecenter.vbrowser.vrs.VRSContext;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.sftp.SSHShellChannelFactory;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
-import nl.piter.vterm.api.ShellChannel;
-import nl.piter.vterm.emulator.VTermChannelProvider;
-
 /**
  * VTerm factory implemented as EmbeddedViewer.
  */
+@Slf4j
 public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPlugin {
-    private static final PLogger logger = PLogger.getLogger(VTermStarter.class);
 
-       private JPanel panel;
-
+    private JPanel panel;
     private JButton okButton;
-
     private JTextField textF;
-
     private JPanel butPanel;
 
     @Override
@@ -51,7 +40,7 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
 
     @Override
     public String[] getMimeTypes() {
-        return new String[] { "application/ssh-location" };
+        return new String[]{"application/ssh-location"};
     }
 
     @Override
@@ -76,7 +65,7 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
             panel.setLayout(new BorderLayout());
             {
                 textF = new JTextField();
-                textF.setText("\nA VLTerm will be started.\n");
+                textF.setText("\nA VTerm will be started.\n");
                 panel.add(textF, BorderLayout.CENTER);
             }
             {
@@ -116,12 +105,12 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
 
     public void startVTerm(VRL vrl, String optMethod)
             throws VrsException {
-        logger.debug("method = '{}' => startVTerm for:'{}'", optMethod, vrl);
+        log.debug("method = '{}' => startVTerm for:'{}'", optMethod, vrl);
 
         try {
-            java.net.URI uri=null;
-            if (vrl!=null) {
-                uri=vrl.toURI();
+            java.net.URI uri = null;
+            if (vrl != null) {
+                uri = vrl.toURI();
             }
             // Share Context !
             VRSContext context = this.getResourceHandler().getVRSClient().getVRSContext();
@@ -161,7 +150,7 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
 
     @Override
     public String[] getToolMenuPath() {
-        return new String[] { "terminal" };
+        return new String[]{"terminal"};
     }
 
     @Override
@@ -184,8 +173,8 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
         ArrayList<String> methods = new ArrayList<String>();
         methods.add("open:Open VTerm");
         MenuMapping menuMap = new MenuMapping(null, "sftp", null, null);
-        List<Pair<MenuMapping, List<String>>> mappings = new ArrayList<Pair<MenuMapping, List<String>>>();
-        mappings.add(new Pair<MenuMapping, List<String>>(menuMap, methods));
+        List<Pair<MenuMapping, List<String>>> mappings = new ArrayList<>();
+        mappings.add(new Pair<>(menuMap, methods));
         return mappings;
     }
 

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,10 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
-import nl.esciencecenter.ptk.events.IEvent;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserFrame;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
@@ -32,14 +28,15 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerContext;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerFrame;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEvent;
-import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventSource;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventType;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 /**
  * Manages all the embedded viewers inside and outside the VBrowser.
@@ -107,20 +104,16 @@ public class ViewerManager implements ViewerListener {
 
     /**
      * Factory method to instanciate a viewer, do not start or register the instance.
-     * 
-     * @param resourceType
-     *            - optional resource type.
-     * @param mimeType
-     *            - optional mimeType
-     * @param resourceStatus
-     *            -option resource Statys
-     * @param optViewerClass
-     *            - optional preferred ViewerClass
+     *
+     * @param resourceType   - optional resource type.
+     * @param mimeType       - optional mimeType
+     * @param resourceStatus -option resource Statys
+     * @param optViewerClass - optional preferred ViewerClass
      * @return instanciated ViewerPlugin
      * @throws ProxyException
      */
     public ViewerPlugin createViewerFor(String resourceType, String mimeType, String resourceStatus,
-            String optViewerClass) throws ProxyException {
+                                        String optViewerClass) throws ProxyException {
         PluginRegistry registry = getViewerRegistry();
 
         Class<?> clazz = null;
@@ -197,12 +190,12 @@ public class ViewerManager implements ViewerListener {
     }
 
     public void startEmbeddedViewer(BrowserFrame frame, ViewerPlugin viewer, VRL vrl, String optMenuMethod,
-            boolean start) {
+                                    boolean start) {
         startViewer(frame, false, viewer, vrl, optMenuMethod, start);
     }
 
     public void startViewer(BrowserFrame browserFrame, boolean standaloneWindow, ViewerPlugin viewer, VRL vrl,
-            String optMenuMethod, boolean start) {
+                            String optMenuMethod, boolean start) {
 
         ViewerContext context = createViewerContext(optMenuMethod, vrl, standaloneWindow);
 

@@ -22,16 +22,16 @@ public class ViewerContext {
 
     public ViewerContext(PluginRegistry viewerRegistry) {
         this.pluginRegistry = viewerRegistry;
-        ; // default: nill context.
+        // default: nill context.
     }
 
     public ViewerContext(PluginRegistry viewerRegistry, UI proxyUI, String startMethod, VRL vrl,
-            boolean standAlone) {
+                         boolean standAlone) {
         this.startMethod = startMethod;
         this.startVRL = vrl;
         this.startedAsStandalone = standAlone;
         this.pluginRegistry = viewerRegistry;
-        this.ui=proxyUI;
+        this.ui = proxyUI;
     }
 
     public void setViewerEventDispatcher(ViewerEventDispatcher dispatcher) {
@@ -40,7 +40,7 @@ public class ViewerContext {
 
     /**
      * @return the method this viewer was originally started with. Might be null if none was
-     *         specified.
+     * specified.
      */
     public String getStartMethod() {
         return startMethod;
@@ -55,7 +55,7 @@ public class ViewerContext {
 
     /**
      * @return false if this viewer is embedded inside the VBrowser or true if started in a stand
-     *         alone (viewer)Frame.
+     * alone (viewer)Frame.
      */
     public boolean getStartedAsStandalone() {
         return this.startedAsStandalone;

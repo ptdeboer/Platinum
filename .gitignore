@@ -1,16 +1,25 @@
+# ant/intellij
 dist/
 build/
 packs/
 target/
 .idea/
-**/target
-**/build
-**/dist
 .project
 .settings
 .classpath
+
+# build directories
+**/target
+**/build
+**/dist
+
+# temp 
 *.swp
+*.swo
 *~
 *.log
 *.iml
 *.versionsBackup
+
+# misc.
+**/log

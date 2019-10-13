@@ -1,19 +1,17 @@
 package nl.esciencecenter.ptk.util;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.LinkOption;
-
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
 import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import settings.Settings;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.LinkOption;
 
 /**
  * Test FSUtil with URLResolver to ensure consistency between created FSNodes and resolved URLs.<br>
@@ -146,26 +144,6 @@ public class IntegrationTest_FSUtil_URLResolver {
         //
         // III) test URLResolver with specified URL base path:
         //
-
-        URL urls[] = new URL[] { baseUri.toURL() };
-        URLResolver resolver = new URLResolver(null, urls);
-        URL resolvedUrl = resolver.resolveUrlPath(relativePath);
-
-        // URLs only works when file actually exists: 
-        Assert.assertNotNull("URLResolver couldn't resolve URL. Has the file been created ? [base,relativePath]=["
-                + baseUri + "," + relativePath + "]", resolvedUrl);
-
-        //
-        // Check decoded URL paths here only as URI and URL may have different authentication parts.
-        //
-        Assert.assertEquals("Resulted URL from URLResolver doesn't match expected", expectedUri.toURL().getPath(),
-                resolvedUrl.getPath());
-        Assert.assertEquals("File URL from FSNode doesn't match resolved URL", normalizedFSNodeURI.toURL().getPath(),
-                resolvedUrl.getPath());
-
-        String decodedPath = resolvedUrl.getPath();
-        outPrintf("resolveURL[baseUrl,relativePath]=['%s','%s']=>%s (Decoded path='%s')\n", baseUri, relativePath,
-                resolvedUrl, decodedPath);
 
         // -------------
         // POST: cleanup

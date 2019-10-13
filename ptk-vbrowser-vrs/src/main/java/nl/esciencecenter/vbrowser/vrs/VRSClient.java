@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,20 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.vbrowser.vrs;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.ListHolder;
@@ -42,15 +35,17 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceTypeMismatchException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
-import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
-import nl.esciencecenter.vbrowser.vrs.io.VOutputStreamCreator;
-import nl.esciencecenter.vbrowser.vrs.io.VRandomReadable;
-import nl.esciencecenter.vbrowser.vrs.io.VRandomWritable;
-import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
-import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
+import nl.esciencecenter.vbrowser.vrs.io.*;
 import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Client to Virtual Resource System.
@@ -108,12 +103,10 @@ public class VRSClient implements Disposable, ResourceProvider {
 
     /**
      * Resolve relative path against current working path and return VRL.
-     * 
-     * @param path
-     *            relative path
+     *
+     * @param path relative path
      * @return resolved absolute VRL
-     * @throws VRLSyntaxException
-     *             if path string contains invalid characters
+     * @throws VRLSyntaxException if path string contains invalid characters
      */
     public VRL resolvePath(String path) throws VRLSyntaxException {
         return currentPathVRL.resolvePath(path);
@@ -121,9 +114,8 @@ public class VRSClient implements Disposable, ResourceProvider {
 
     /**
      * Set current location to which relative paths and URIs are resolved to.
-     * 
-     * @param vrl
-     *            current "working directory" or URI to resolve relative paths against.
+     *
+     * @param vrl current "working directory" or URI to resolve relative paths against.
      */
     public void setCurrentPath(VRL vrl) {
         if (vrl == null) {
@@ -151,7 +143,7 @@ public class VRSClient implements Disposable, ResourceProvider {
 
     /**
      * VRS copy and move manager.
-     * 
+     *
      * @return VRSCopyManager
      */
     public VRSCopyManager getVRSTransferManager() {
@@ -160,7 +152,7 @@ public class VRSClient implements Disposable, ResourceProvider {
 
     /**
      * Return the Root Node of the Info Resource System. Virtual location to start browsing.
-     * 
+     *
      * @return InfoRootNode which is the logical root of the Virtual Resource System.
      * @throws VrsException
      */
@@ -295,7 +287,7 @@ public class VRSClient implements Disposable, ResourceProvider {
     }
 
     public VFSPath copyMoveDirToDir(VFSPath sourceDir, VFSPath destinationPARENTDir, String optSubdirectoryName,
-            boolean isMove) throws VrsException {
+                                    boolean isMove) throws VrsException {
         // resolve optional new SubDirectory name
         if (optSubdirectoryName == null) {
             optSubdirectoryName = sourceDir.getVRL().getBasename();
@@ -310,11 +302,11 @@ public class VRSClient implements Disposable, ResourceProvider {
     public void dispose() {
         this.currentPathVRL = null;
         this.homeVRL = null;
-        if (this.transferManager!=null) {
+        if (this.transferManager != null) {
             this.transferManager.dispose();
             this.transferManager = null;
         }
-        if (this.vrsContext!=null) {
+        if (this.vrsContext != null) {
             this.vrsContext.dispose();
             this.vrsContext = null;
         }
@@ -355,12 +347,12 @@ public class VRSClient implements Disposable, ResourceProvider {
             throw new VrsException("Failed to read Byte contents from:" + file);
         }
     }
-    
-    /** 
-     * Create URI/URL base Resource loader using this VRSClient 
-     */ 
+
+    /**
+     * Create URI/URL base Resource loader using this VRSClient
+     */
     public ResourceLoader createResourceLoader() {
-        return new ResourceLoader(this, null);
+        return new ResourceLoader(this);
     }
 
     // ====================================

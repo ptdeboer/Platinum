@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,16 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.vbrowser.vrs;
-
-import java.nio.file.LinkOption;
-import java.util.List;
 
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VDeletable;
@@ -30,76 +27,77 @@ import nl.esciencecenter.vbrowser.vrs.io.VPathRenamable;
 import nl.esciencecenter.vbrowser.vrs.io.VRenamable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.nio.file.LinkOption;
+import java.util.List;
+
 /**
- * Virtual File System Path exends VPath and add FileSystem methods. 
+ * Virtual File System Path exends VPath and add FileSystem methods.
  */
 public interface VFSPath extends VPath, VRenamable, VPathRenamable, VFSDeletable, VDeletable {
 
     // downcast to VFileSystem. 
-    public VFileSystem getFileSystem() throws VrsException;
+    VFileSystem getFileSystem() throws VrsException;
 
     @Override
-    public VRL resolveVRL(String path) throws VrsException;
+    VRL resolveVRL(String path) throws VrsException;
 
     // Downcast VPath to VFSPath: 
     @Override
-    public VFSPath resolve(String path) throws VrsException;
+    VFSPath resolve(String path) throws VrsException;
 
     // Downcast VPath to VFSPath:
     @Override
-    public VFSPath getParent() throws VrsException;
+    VFSPath getParent() throws VrsException;
 
     /**
      * @return true if current path is root of this file system, for example "/" or "C:/".
      */
-    public abstract boolean isRoot() throws VrsException;
+    boolean isRoot() throws VrsException;
 
-    public abstract boolean isDir(LinkOption... linkOptions) throws VrsException;
+    boolean isDir(LinkOption... linkOptions) throws VrsException;
 
-    public abstract boolean isFile(LinkOption... linkOptions) throws VrsException;
+    boolean isFile(LinkOption... linkOptions) throws VrsException;
 
-    public abstract boolean exists(LinkOption... linkOptions) throws VrsException;
+    boolean exists(LinkOption... linkOptions) throws VrsException;
 
     /**
      * Return length of file. For directories this is unspecified. Some file system implementation
      * return the size of the directories entry.
      */
-    public abstract long fileLength(LinkOption... linkOptions) throws VrsException;
+    long fileLength(LinkOption... linkOptions) throws VrsException;
 
     // Downcast to VFSPath List. 
-    public abstract List<? extends VFSPath> list() throws VrsException;
+    List<? extends VFSPath> list() throws VrsException;
 
     /**
      * Create last part of this path as directory.
-     * 
-     * @param ignoreExisting
-     *            - set to true if implementation should ignore an already existing directory.
+     *
+     * @param ignoreExisting - set to true if implementation should ignore an already existing directory.
      * @return true
      * @throws VrsException
      */
-    public abstract boolean mkdir(boolean ignoreExisting) throws VrsException;
+    boolean mkdir(boolean ignoreExisting) throws VrsException;
 
     /**
      * Create complete path as directory.
-     * 
-     * @param ignoreExisting
-     *            - set to true if implementation should ignore already existing directories.
+     *
+     * @param ignoreExisting - set to true if implementation should ignore already existing directories.
      * @return true
      * @throws VrsException
      */
-    public abstract boolean mkdirs(boolean ignoreExisting) throws VrsException;
+    boolean mkdirs(boolean ignoreExisting) throws VrsException;
 
     /**
      * Create path as zero length file.
-     * 
-     * @return true if create is supported and was succesfull. 
+     *
+     * @return true if create is supported and was succesfull.
      */
-    public abstract boolean createFile(boolean ignoreExisting) throws VrsException;
+    boolean createFile(boolean ignoreExisting) throws VrsException;
 
     // explicit inheritance and downcast return type from VRenamable 
-    public VFSPath renameTo(String newNameOrPath) throws VrsException;
+    VFSPath renameTo(String newNameOrPath) throws VrsException;
 
     // downcast return type from VPathRenamble 
-    public VFSPath renameTo(VPath other) throws VrsException;
+    VFSPath renameTo(VPath other) throws VrsException;
 
 }

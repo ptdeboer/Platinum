@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.ui.panel;
 
 import lombok.extern.slf4j.Slf4j;
@@ -5,17 +9,19 @@ import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.api.TermChannelOptions;
 import nl.piter.vterm.api.TermConst;
 import nl.piter.vterm.emulator.Emulator;
-import nl.piter.vterm.emulator.VTxXEmulator;
 import nl.piter.vterm.emulator.VTermChannelProvider;
+import nl.piter.vterm.emulator.VTxXEmulator;
+import nl.piter.vterm.sys.SysEnv;
 import nl.piter.vterm.ui.charpane.ColorMap;
 import nl.piter.vterm.ui.dialogs.ExceptionDialog;
 import nl.piter.vterm.ui.dialogs.InputDialog;
 import nl.piter.vterm.util.StringUtil;
-import nl.piter.vterm.sys.SysEnv;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,8 +33,8 @@ import java.util.Properties;
 @Slf4j
 public class VTermJFrame extends JFrame implements Runnable {
 
-    public static final String ACTION_XFORWARDING_ENABLE="ACTION-XForwarding-enable";
-    public static final String ACTION_XFORWARDING_CONFIG="ACTION-XForwarding-config";
+    public static final String ACTION_XFORWARDING_ENABLE = "ACTION-XForwarding-enable";
+    public static final String ACTION_XFORWARDING_CONFIG = "ACTION-XForwarding-config";
 
     // ========================================================================
 
@@ -38,11 +44,11 @@ public class VTermJFrame extends JFrame implements Runnable {
     protected static final String SESSION_BASH = "BASH";
     protected static final String SESSION_TELNET = "TELNET";
     private static final String SESSION_SHELLCHANNEL = "SHELLCHANNEL";
-    private static final String aboutText =
-            "<html><center>VTerm VT100+ Emulator<br>" //
-            + "(beta version)<br>" //
-            + "(C) VL-e consortium<br>" //
-            + "Author Piter T. de Boer<br>" //
+    private static final String aboutText = ""
+            + "<html><center>VTerm VT100+/xterm Emulator<br>"
+            + "(beta version)<br>"
+            + "(C) VL-e consortium/Piter.NL<br>"
+            + "Author Piter T. de Boer<br>"
             + "Render Engine (C) Piter.NL</center></html>";
     private static int verbose = 0; // 0=silent, 1 = error and fixmes,2=warn,3=info,4=debug,5=very debug,6=trace
 
@@ -297,7 +303,7 @@ public class VTermJFrame extends JFrame implements Runnable {
                 channelCompressionCB = new JCheckBoxMenuItem("Compression...");
                 channelCompressionCB.addActionListener(termController);
                 channelCompressionCB.setActionCommand("Compression");
-                channelCompressionCB.setState(sshOptions.getBooleanOption(TermConst.SSH_CHANNEL_COMPRESSION,false));
+                channelCompressionCB.setState(sshOptions.getBooleanOption(TermConst.SSH_CHANNEL_COMPRESSION, false));
 
                 sshmenu.add(channelCompressionCB);
 
@@ -308,7 +314,7 @@ public class VTermJFrame extends JFrame implements Runnable {
                     sshXForwardingCB = new JCheckBoxMenuItem("enable X Forwarding");
                     sshXForwardingCB.addActionListener(termController);
                     sshXForwardingCB.setActionCommand(ACTION_XFORWARDING_ENABLE);
-                    sshXForwardingCB.setState(sshOptions.getBooleanOption(TermConst.SSH_XFORWARDING_ENABLED,false));
+                    sshXForwardingCB.setState(sshOptions.getBooleanOption(TermConst.SSH_XFORWARDING_ENABLED, false));
                     sshXForwardingCB.setEnabled(true);
                     xForwardingMenu.add(sshXForwardingCB);
 
@@ -462,9 +468,9 @@ public class VTermJFrame extends JFrame implements Runnable {
 
     @Override
     public void dispose() {
+        terminateSession();
         super.dispose();
 
-        terminateSession();
         if (terminalPanel != null)
             this.terminalPanel.dispose();
 
@@ -531,8 +537,8 @@ public class VTermJFrame extends JFrame implements Runnable {
             TermChannelOptions sshOptions = this.getChannelOptions(SESSION_SSH, true);
 
 
-            String xForwardingHost= sshOptions.getOption(TermConst.SSH_XFORWARDING_HOST);
-            int xForwardingPort = sshOptions.getIntOption(TermConst.SSH_XFORWARDING_PORT,-1);
+            String xForwardingHost = sshOptions.getOption(TermConst.SSH_XFORWARDING_HOST);
+            int xForwardingPort = sshOptions.getIntOption(TermConst.SSH_XFORWARDING_PORT, -1);
 
             String display = JOptionPane
                     .showInputDialog(
@@ -542,11 +548,11 @@ public class VTermJFrame extends JFrame implements Runnable {
                                     : (xForwardingHost + ":" + xForwardingPort));
 
             if (display == null) {
-                sshOptions.setOption(TermConst.SSH_XFORWARDING_ENABLED,false);
+                sshOptions.setOption(TermConst.SSH_XFORWARDING_ENABLED, false);
             }
 
             xForwardingHost = display.substring(0, display.indexOf(':'));
-            xForwardingPort =  Integer.parseInt(display.substring(display.indexOf(':') + 1));
+            xForwardingPort = Integer.parseInt(display.substring(display.indexOf(':') + 1));
 
             // if port= ":0" - ":99" use:6000-6099 else use given port (>=1024)
 
@@ -554,9 +560,9 @@ public class VTermJFrame extends JFrame implements Runnable {
                 xForwardingPort += 6000;
             }
 
-            sshOptions.setOption(TermConst.SSH_XFORWARDING_HOST,xForwardingHost);
-            sshOptions.setOption(TermConst.SSH_XFORWARDING_PORT,xForwardingPort);
-            sshOptions.setOption(TermConst.SSH_XFORWARDING_ENABLED,xForwardingHost!=null);
+            sshOptions.setOption(TermConst.SSH_XFORWARDING_HOST, xForwardingHost);
+            sshOptions.setOption(TermConst.SSH_XFORWARDING_PORT, xForwardingPort);
+            sshOptions.setOption(TermConst.SSH_XFORWARDING_ENABLED, xForwardingHost != null);
             setChannelOptions(SESSION_SSH, sshOptions);
 
         } else if (action.startsWith("fontsize")) {
@@ -806,8 +812,8 @@ public class VTermJFrame extends JFrame implements Runnable {
                 VTxXEmulator emulator = new VTxXEmulator(this.terminalPanel.getCharacterTerminal(),
                         shellChannel.getStdout(), shellChannel.getStdin());
 
-                 emulator.setErrorInput(errs);
-                 emulator.addListener(this.termController);
+                emulator.setErrorInput(errs);
+                emulator.addListener(this.termController);
                 // emulator.setErrorInput(errs);
 
                 this.terminalPanel.setEmulator(emulator);
@@ -938,7 +944,7 @@ public class VTermJFrame extends JFrame implements Runnable {
     }
 
     protected Emulator getEmulator() {
-        if (this.terminalPanel==null) {
+        if (this.terminalPanel == null) {
             return null;
         }
         return terminalPanel.getEmulator();
@@ -977,7 +983,7 @@ public class VTermJFrame extends JFrame implements Runnable {
      * @param nr_rows
      */
     public void sendTermSize(int nr_columns, int nr_rows) {
-        log.debug("sendTermSize(:[{},{}]",nr_columns,nr_rows);
+        log.debug("sendTermSize(:[{},{}]", nr_columns, nr_rows);
         boolean channelSupported = false;
         boolean emulatorSupported = false;
 
@@ -990,9 +996,8 @@ public class VTermJFrame extends JFrame implements Runnable {
 
         if (channelSupported) {
             // update size and reset region:
-            this.getEmulator().updateRegion(nr_columns,nr_rows,0,nr_rows);
-        }
-        else {
+            this.getEmulator().updateRegion(nr_columns, nr_rows, 0, nr_rows);
+        } else {
             // Try control sequences, this is terminal implementation specific!
             if (this.getEmulator() != null) {
                 try {
@@ -1004,7 +1009,7 @@ public class VTermJFrame extends JFrame implements Runnable {
         }
 
         if (!channelSupported && !emulatorSupported) {
-            log.warn("Nor channel nor emulator were able to set new size/region to:[{},{}]!",nr_columns,nr_rows);
+            log.warn("Nor channel nor emulator were able to set new size/region to:[{},{}]!", nr_columns, nr_rows);
         }
     }
 

@@ -1,8 +1,8 @@
 package uitests.panels;
 
-import java.io.IOException;
-
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
+
+import java.io.IOException;
 
 public class ShowExceptionDailog {
     public static void main(String[] args) {

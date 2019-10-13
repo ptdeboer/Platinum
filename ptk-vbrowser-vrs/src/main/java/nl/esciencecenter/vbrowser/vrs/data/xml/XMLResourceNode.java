@@ -1,20 +1,20 @@
 package nl.esciencecenter.vbrowser.vrs.data.xml;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * XML proxy class for the ResourceNode family.<br>
  * This class represent the persistent part of a ResourceNode and functions as Factory class to
  * create the actual ResourcNode sub-class.
  */
-@JsonPropertyOrder({ "resourceType", "infoAttributes", "subNodes" })
+@JsonPropertyOrder({"resourceType", "infoAttributes", "subNodes"})
 public class XMLResourceNode {
 
     @JacksonXmlProperty(localName = "infoAttributes")

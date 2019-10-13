@@ -1,41 +1,37 @@
 /*
  * Copyrighted 2012-2013 Netherlands eScience Center.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").  
- * You may not use this file except in compliance with the License. 
- * For details, see the LICENCE.txt file location in the root directory of this 
- * distribution or obtain the Apache License at the following location: 
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * For details, see the LICENCE.txt file location in the root directory of this
+ * distribution or obtain the Apache License at the following location:
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
+ *
+ * For the full license, see: LICENCE.txt (located in the root folder of this distribution).
  * ---
  */
 // source: 
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
-import java.util.Date;
-import java.util.Random;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Date;
+import java.util.Random;
 
 /*
- * 
+ *
  */
 public class Test_Attribute {
     public static class TestValues {
@@ -52,7 +48,7 @@ public class Test_Attribute {
 
         String strval = "A String Value";
 
-        String enumstrs[] = { "aap", "noot", "mies" };
+        String[] enumstrs = {"aap", "noot", "mies"};
 
         String datestr = "1970-01-13 01:23:45.678";
 
@@ -64,7 +60,7 @@ public class Test_Attribute {
         }
 
         TestValues(boolean _boolval, int _intval, long _longval, float _floatval,
-                double _doubleval, String _strval, String[] _enumvals, VRL _vrl, Date _dateval) {
+                   double _doubleval, String _strval, String[] _enumvals, VRL _vrl, Date _dateval) {
             this.boolval = _boolval;
             this.intval = _intval;
             this.longval = _longval;
@@ -97,7 +93,7 @@ public class Test_Attribute {
     }
 
     public static StringList createRandomStringList(int listSize, int stringSize) {
-        String array[] = new String[listSize];
+        String[] array = new String[listSize];
         for (int i = 0; i < listSize; i++)
             array[i] = createRandomString(stringSize);
 
@@ -105,12 +101,12 @@ public class Test_Attribute {
     }
 
     public static VRL newVRL(String scheme, String userInfo, String hostname, int port,
-            String path, String query, String fragment) {
+                             String path, String query, String fragment) {
         return new VRL(scheme, userInfo, hostname, port, path, query, fragment);
     }
 
     public static void
-            assertEquals(String message, String value1, String value2, boolean ignoreCase) {
+    assertEquals(String message, String value1, String value2, boolean ignoreCase) {
         Assert.assertTrue(message, StringUtil.compare(value1, value2, ignoreCase) == 0);
     }
 
@@ -153,12 +149,12 @@ public class Test_Attribute {
                 break;
             case STRING:
                 Assert.assertTrue("getStringValue() must match native type!",
-                        (attr.getStringValue() == ((String) objValue)));
+                        (attr.getStringValue() == objValue));
                 break;
             case VRL:
                 try {
                     Assert.assertTrue("getVRLValue() must match native type!",
-                            ((VRL) objValue).equals(attr.getVRL()));
+                            objValue.equals(attr.getVRL()));
                 } catch (Exception e) {
                     Assert.fail("Exception:" + e);
                 }
@@ -281,15 +277,15 @@ public class Test_Attribute {
     }
 
     public void doTestStringValueConstructor(AttributeType type, String name, String strValue,
-            Object objectValue) {
+                                             Object objectValue) {
         // basic constructor tests
         Attribute attr = AttributeUtil.createFrom(name, objectValue); // Create
-                                                                      // From
-                                                                      // Object.
-                                                                      // Must
-                                                                      // match
-                                                                      // actual
-                                                                      // type!
+        // From
+        // Object.
+        // Must
+        // match
+        // actual
+        // type!
 
         // check type,name and String value
         Assert.assertEquals("Type must be:" + type, type, attr.getType());
@@ -314,10 +310,10 @@ public class Test_Attribute {
     }
 
     public static TestValues createTestValues1() {
-        TestValues tValues = new TestValues(true, (int) 1, (long) 1024 * 1024 * 1024,
-                (float) 1.13f, (double) Math.PI, "String Value", new String[] { "aap", "noot",
-                        "mies" }, newVRL("scheme:", "user", "localhost", 13, "/tmp/stuff/",
-                        "query", "fragment"),
+        TestValues tValues = new TestValues(true, 1, (long) 1024 * 1024 * 1024,
+                1.13f, Math.PI, "String Value", new String[]{"aap", "noot",
+                "mies"}, newVRL("scheme:", "user", "localhost", 13, "/tmp/stuff/",
+                "query", "fragment"),
                 Presentation.createDateFromNormalizedDateTimeString("1970-01-13 01:23:45.678"));
 
         return tValues;
@@ -325,8 +321,8 @@ public class Test_Attribute {
 
     public static TestValues createTestValuesNill() {
         // empty: neutral (legal) or 'nill'
-        TestValues tValues = new TestValues(false, (int) 0, (long) 0, (float) 0, (double) 0, "",
-                new String[] { "" }, newVRL("ref:", null, null, 0, null, null, null),
+        TestValues tValues = new TestValues(false, 0, (long) 0, (float) 0, (double) 0, "",
+                new String[]{""}, newVRL("ref:", null, null, 0, null, null, null),
                 Presentation.createDateFromNormalizedDateTimeString("0001-01-01 00:00:00.000"));
 
         return tValues;
@@ -334,8 +330,8 @@ public class Test_Attribute {
 
     public static TestValues createTestValuesMinimum() {
         // minimum/null (allowed)
-        TestValues tValues = new TestValues(false, (int) Integer.MIN_VALUE, (long) Long.MIN_VALUE,
-                (float) Float.MIN_VALUE, (double) Double.MIN_VALUE, "", new String[] { null },
+        TestValues tValues = new TestValues(false, Integer.MIN_VALUE, Long.MIN_VALUE,
+                Float.MIN_VALUE, Double.MIN_VALUE, "", new String[]{null},
                 newVRL("", "", "", 0, "", "", ""), Presentation.createDate(1));
 
         return tValues;
@@ -345,10 +341,10 @@ public class Test_Attribute {
         // max (allowed)
         TestValues tValues = new TestValues(
                 true,
-                (int) Integer.MAX_VALUE,
-                (long) Long.MAX_VALUE,
-                (float) Float.MAX_VALUE,
-                (double) Double.MAX_VALUE,
+                Integer.MAX_VALUE,
+                Long.MAX_VALUE,
+                Float.MAX_VALUE,
+                Double.MAX_VALUE,
                 createRandomString(1024),
                 createRandomStringList(1024, 1024).toArray(),
                 newVRL("scheme:",
@@ -428,7 +424,7 @@ public class Test_Attribute {
     @Test
     public void testNullConstructors() {
         // NULL value with NULL type default to ANY with actual value==null; 
-        Attribute attr = new Attribute((String) null, (String) null);
+        Attribute attr = new Attribute(null, (String) null);
         Assert.assertEquals("NULL attribute should return NULL", null, attr.getStringValue());
         Assert.assertEquals("NULL value should default to ANY Type", AttributeType.ANY,
                 attr.getType());
@@ -532,7 +528,7 @@ public class Test_Attribute {
 
     @Test
     public void testAttributeStringCompare() {
-        String strs[] = new String[] { "a", "b", "aap", "noot", null };
+        String[] strs = new String[]{"a", "b", "aap", "noot", null};
 
         for (int i = 0; i < strs.length; i++) {
             for (int j = 0; j < strs.length; j++) {
@@ -543,7 +539,7 @@ public class Test_Attribute {
 
     @Test
     public void testAttributeIntAndLongCompareWithIntegers() {
-        Integer ints[] = new Integer[] { Integer.MAX_VALUE, +1, 0, -1, Integer.MIN_VALUE };
+        Integer[] ints = new Integer[]{Integer.MAX_VALUE, +1, 0, -1, Integer.MIN_VALUE};
 
         for (int i = 0; i < ints.length; i++) {
             for (int j = 0; j < ints.length; j++) {

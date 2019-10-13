@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,20 +20,14 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ITaskSource;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSourceUpdater;
-import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
+import nl.esciencecenter.ptk.vbrowser.ui.model.*;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
@@ -45,12 +39,10 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventType;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUpdater {
-    private static PLogger logger = PLogger.getLogger(ResourceTableUpdater.class);
+import java.util.List;
 
-    // ========================================================================
-    // Instance
-    // ========================================================================
+@Slf4j
+public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUpdater {
 
     private ProxyDataSource dataSource;
     private ResourceTableModel tableModel;
@@ -62,9 +54,9 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
      * Create ProxyNode data Updater from ProxyNode
      */
     public ResourceTableUpdater(ViewNodeContainer tableContainer, ProxyNode pnode,
-            ResourceTableModel resourceTableModel) {
+                                ResourceTableModel resourceTableModel) {
         this.tableContainer = tableContainer;
-        if (pnode==null) {
+        if (pnode == null) {
             init(null, resourceTableModel);
         } else {
             init(new ProxyNodeDataSourceProvider(pnode), resourceTableModel);
@@ -75,7 +67,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
      * Create Table from default ProxyDataSource.
      */
     public ResourceTableUpdater(ViewNodeContainer tableContainer, ProxyDataSource dataSource,
-            ResourceTableModel resourceTableModel) {
+                                ResourceTableModel resourceTableModel) {
         this.tableContainer = tableContainer;
         init(dataSource, resourceTableModel);
     }
@@ -106,6 +98,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
 
     /**
      * Set datasource, if null clears the table.
+     *
      * @param nodeDataSource
      */
     protected void setDataSource(ProxyDataSource nodeDataSource) {
@@ -119,16 +112,16 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
             this.rootNode = null;
         } else {
             // feature ?
-            logger.warn("Warning: ProxyNodeDataSource is NULL!");
+            log.warn("Warning: ProxyNodeDataSource is NULL!");
             tableModel.clearData();
         }
     }
 
     public void createTable(boolean headers, boolean data) throws ProxyException {
-        logger.debug("createTable()");
+        log.debug("createTable()");
 
-        if (dataSource==null) {
-            logger.warn("No DataSource!");
+        if (dataSource == null) {
+            log.warn("No DataSource!");
             return;
         }
 
@@ -152,19 +145,19 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
             pres = dataSource.getPresentation();
 
             if (pres != null) {
-                logger.debugPrintf("Using Presentation from DataSource:%s\n", dataSource);
+                log.debug("Using Presentation from DataSource:{}", dataSource);
             } else {
                 ViewNode rootNode = getRootViewNode();
 
-                logger.debugPrintf("Using default Presentation for:%s\n", rootNode);
+                log.debug("Using default Presentation for:{}", rootNode);
                 // Check default Presentation form Scheme+Type;
                 pres = Presentation.getMasterPresentationFor(rootNode.getVRL().getScheme(),
                         rootNode.getResourceType(), true);
             }
 
         } catch (ProxyException e) {
-            logger.logException(PLogger.ERROR, e, "Failed to get Presenation from dataSource:%s\n",
-                    dataSource);
+            log.error("Failed to get Presenation from dataSource:{}", dataSource);
+            log.error(e.getMessage(), e);
             handle("Couldn't get presentation\n", e);
         }
 
@@ -185,17 +178,17 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
 
         // set default attributes
         if (pres == null) {
-            logger.debugPrintf("No Presentation(!) for ViewNode:%s\n", rootNode);
+            log.debug("No Presentation(!) for ViewNode:{}", rootNode);
         } else {
             names = pres.getPreferredContentAttributeNames();
             // update icon attribute name:
             iconAttributeName = pres.getIconAttributeName();
-            logger.debugPrintf("Using headers from Presentation.getChildAttributeNames():%s\n",
+            log.debug("Using headers from Presentation.getChildAttributeNames():{}",
                     new StringList(names));
         }
 
         if (names == null) {
-            logger.warnPrintf("No Headers for:%s\n", this);
+            log.warn("No Headers for:{}", this);
             return;
         }
 
@@ -216,7 +209,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
 
     protected ViewNode getRootViewNode() {
         if (rootNode == null) {
-            logger.errorPrintf("*** Null RootNode!\n");
+            log.error("*** Null RootNode!");
         }
         return rootNode;
     }
@@ -250,12 +243,12 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
     }
 
     protected void handle(String message, Throwable t) {
-        logger.logException(PLogger.ERROR, t, "Exception:%s\n", t);
+        log.error(message, t);
         BrowserInterface masterB = getMasterBrowser();
         if (masterB != null) {
             masterB.handleException(message, t);
         } else {
-            logger.errorPrintf("Error: %s\n", message);
+            log.error("Error: {}", message);
             t.printStackTrace();
         }
     }
@@ -275,15 +268,15 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
     }
 
     protected void updateRow(String rowKey) {
-        String hdrs[] = tableModel.getHeaders();
-        doUpdateAttributes(new String[] { rowKey }, hdrs);
+        String[] hdrs = tableModel.getHeaders();
+        doUpdateAttributes(new String[]{rowKey}, hdrs);
     }
 
     protected void updateAttribute(String attrName) {
-        doUpdateAttributes(tableModel.getRowKeys(), new String[] { attrName });
+        doUpdateAttributes(tableModel.getRowKeys(), new String[]{attrName});
     }
 
-    protected void updateNodeAttributes(ViewNode viewNode, String attrNames[])
+    protected void updateNodeAttributes(ViewNode viewNode, String[] attrNames)
             throws ProxyException {
         List<Attribute> attrs = dataSource.getAttributes(viewNode.getVRL(), attrNames);
 
@@ -309,23 +302,23 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
     @Override
     public void notifyEvent(VRSEvent e) {
         // handle event and update table:
-        logger.debugPrintf("notifyVRSEvent():%s\n", e);
+        log.debug("notifyVRSEvent():{}", e);
 
         VRL parentVRL = e.getParent();
 
         // Check parent if given.
         if ((parentVRL != null) && (parentVRL.equals(this.getRootVRI()) == false)) {
-            logger.debugPrintf("VRSEvent not for me, other parent=%s\n", e);
+            log.debug("VRSEvent not for me, other parent={}", e);
             return; // not for me.
         }
 
-        VRL vrls[] = e.getResources();
+        VRL[] vrls = e.getResources();
         VRSEventType eventType = e.getType();
 
         switch (eventType) {
             case RESOURCES_CREATED: {
                 if (parentVRL == null) {
-                    logger.errorPrintf("FIXME: Cannot added resource if parent is not given!\n");
+                    log.error("FIXME: Cannot added resource if parent is not given!");
                     return;
                 }
                 addRows(vrls, null, false);
@@ -341,12 +334,12 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
                 break;
             }
             case RESOURCES_RENAMED: {
-                VRL newVrls[] = e.getOtherResources();
+                VRL[] newVrls = e.getOtherResources();
                 renameRows(vrls, newVrls);
                 break;
             }
             default: {
-                logger.errorPrintf("EventType not supported:%s\n", e);
+                log.error("EventType not supported:{}", e);
                 break;
             }
         }
@@ -363,15 +356,15 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
             VRL vrl = oldVrls[i];
 
             if (oldVrls[i].equals(newVrls[i])) {
-                logger.debugPrintf("Refreshing row:%s\n", oldVrls[i]);
+                log.debug("Refreshing row:{}", oldVrls[i]);
                 // update cell values.
-                refreshRows(new VRL[] { oldVrls[i] });
+                refreshRows(new VRL[]{oldVrls[i]});
             } else {
-                logger.debugPrintf("Replacing row:%s=>%s\n", oldVrls[i], newVrls[i]);
+                log.debug("Replacing row:{}=>{}", oldVrls[i], newVrls[i]);
                 if (tableModel.hasRow(tableModel.createRowKey(vrl))) {
                     replaceRow(oldVrls[i], newVrls[i]);
                 } else {
-                    logger.warnPrintf("Resource not in table (row not found):%s\n", vrl);
+                    log.warn("Resource not in table (row not found):{}", vrl);
                 }
             }
         }
@@ -383,7 +376,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
             return;
         }
 
-        VRL rowVRLs[] = new VRL[vrls.length];
+        VRL[] rowVRLs = new VRL[vrls.length];
         int rowCount = 0;
 
         // filter out VRLs:
@@ -402,7 +395,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
         }
     }
 
-    public void update(VRL vrl[], String optAttrNames[]) {
+    public void update(VRL[] vrl, String[] optAttrNames) {
         addRows(vrl, optAttrNames, true);
     }
 
@@ -419,14 +412,14 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
 
         // allowed at init time!
         if (dataSource == null) {
-            logger.warnPrintf("Init: NULL dataSource!\n");
+            log.warn("Init: NULL dataSource!");
             return;
         }
 
         BrowserTask task = new BrowserTask(this.getTaskSource(), "Test get ProxyNode data") {
             public void doTask() {
                 try {
-                    ViewNode nodes[];
+                    ViewNode[] nodes;
 
                     try {
                         nodes = getChilds();
@@ -437,7 +430,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
 
                     // no data:
                     if (nodes == null) {
-                        logger.debugPrintf("No Nodes for:" + this);
+                        log.debug("No Nodes for:" + this);
                         return;
                     }
 
@@ -456,7 +449,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
                             return;
                         }
                         try {
-                            String hdrs[] = tableModel.getHeaders();
+                            String[] hdrs = tableModel.getHeaders();
                             updateNodeAttributes(node, hdrs);
                             allAttributes.add(dataSource.getAttributeNames(node.getVRL()), true);
                         } catch (ProxyException e) {
@@ -478,14 +471,14 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
         task.startTask();
     }
 
-    private void doUpdateAttributes(final String rowKeys[], String attrNames[]) {
+    private void doUpdateAttributes(final String[] rowKeys, String[] attrNames) {
         final ResourceTableModel model = tableModel;
         // update current shown attributes: 
         if (attrNames == null) {
             attrNames = model.getHeaders();
         }
 
-        final String finalAttrs[] = attrNames;
+        final String[] finalAttrs = attrNames;
 
         BrowserTask task = new BrowserTask(this.getTaskSource(), "updateAttributes() #rowKeys="
                 + rowKeys.length + ",#attrNames="
@@ -513,7 +506,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
         task.startTask();
     }
 
-    private void addRows(final VRL[] vrls, final String optAttrNames[], final boolean mergeRows) {
+    private void addRows(final VRL[] vrls, final String[] optAttrNames, final boolean mergeRows) {
         if (dataSource == null) {
             return;
         }
@@ -563,17 +556,17 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
                     String oldKey = tableModel.createRowKey(oldVrl);
                     String newKey = tableModel.createRowKey(newVrl);
 
-                    ViewNode[] newNodes = dataSource.createViewNodes(uiModel, new VRL[] { newVrl });
+                    ViewNode[] newNodes = dataSource.createViewNodes(uiModel, new VRL[]{newVrl});
 
                     Integer index = tableModel.getRowIndex(oldKey);
 
                     if (index == null) {
-                        logger.errorPrintf("replaceRow(): couldn't find original row:" + oldVrl);
+                        log.error("replaceRow(): couldn't find original row:" + oldVrl);
                         return;
                     }
 
                     tableModel.replaceRow(index, newNodes[0], new AttributeSet());
-                    doUpdateAttributes(new String[] { newKey }, tableModel.getHeaders());
+                    doUpdateAttributes(new String[]{newKey}, tableModel.getHeaders());
 
                     // update row data.
                 } catch (ProxyException e) {

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,19 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
-
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.util.Vector;
 
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
@@ -34,6 +28,12 @@ import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDData.VRLEntryList;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.util.Vector;
 
 /**
  * List of Resource VRLs including some type information.
@@ -76,7 +76,7 @@ public class VRLEntryListTransferable implements Transferable {
             if (isAllVFSPaths()) {
                 return vris;
             } else {
-                DnDUtil.errorPrintf("Requested for VFSPaths but not all VRLs are VFS Paths!\n");
+                DnDUtil.log.error("Requested for VFSPaths but not all VRLs are VFS Paths!");
             }
             return vris; // filter ?
         }
@@ -130,14 +130,14 @@ public class VRLEntryListTransferable implements Transferable {
                     File file = new File(vri.getPath());
                     fileList.add(file);
                 } else {
-                    DnDUtil.errorPrintf("Cannot export remote file as local file flavor:%s\n", vri);
-                    ;// cannot export remote file as local files !
+                    DnDUtil.log.error("Cannot export remote file as local file flavor:{}", vri);
+                    // cannot export remote file as local files !
                 }
             }
             return fileList;
         }
 
-        DnDUtil.errorPrintf("VRLEntryList:DataFlavor not supported:%s\n", flavor);
+        DnDUtil.log.error("VRLEntryList:DataFlavor not supported:{}", flavor);
         throw new UnsupportedFlavorException(flavor);
     }
 
@@ -169,7 +169,7 @@ public class VRLEntryListTransferable implements Transferable {
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        DnDUtil.debugPrintf("VRLEntryList:isDataFlavorSupported:%s\n", flavor);
+        DnDUtil.log.debug("VRLEntryList:isDataFlavorSupported:{}", flavor);
 
         for (DataFlavor flav : getTransferDataFlavors()) {
             if (flav.equals(flavor)) {

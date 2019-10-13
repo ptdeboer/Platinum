@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -27,24 +27,25 @@ package nl.esciencecenter.ptk.object;
  * the Duplicate method returns a full (deep) Copy. This is different then clone(). This is useful
  * for 'value' objects where each created copy must be a full (stand alone) copy.
  */
-public interface Duplicatable<Type> {
+public interface Duplicatable<T> {
+
     /**
      * Return whether shallow copies are supported. If shallow copies are supported, the
      * duplicate(true) method will always return a shallow copy. By default duplicate() should
      * return a full (non-shallow) copy.
      */
-    public boolean shallowSupported();
+    boolean shallowSupported();
 
     /**
      * Return copy (clone) of object.
      */
-    public Type duplicate();
+    T duplicate();
 
     /**
      * Returns copy of object. Specify whether shallow copy is allowed. If shallow==true, the
      * duplicate method might still return a non shallow copy or throw an exception if
      * shallowSupported()==false.
      */
-    public Type duplicate(boolean shallow);
+    T duplicate(boolean shallow);
 
 }

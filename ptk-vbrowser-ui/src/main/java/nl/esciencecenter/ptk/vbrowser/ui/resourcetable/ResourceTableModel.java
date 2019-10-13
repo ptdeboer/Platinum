@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,56 +20,57 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.swing.event.ListDataListener;
-import javax.swing.table.AbstractTableModel;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.QSort;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import javax.swing.event.ListDataListener;
+import javax.swing.table.AbstractTableModel;
+import java.util.*;
 
 /**
  * Generic Resource Table Model containing ViewNodes and Attributes only.
  * <p>
  * An ViewNode can both be the "row" object or an Attribute Object. Current row "key" is the VRL.
  */
+@Slf4j
 public class ResourceTableModel extends AbstractTableModel implements
         Iterable<ResourceTableModel.RowData> {
-       private static PLogger logger = PLogger.getLogger(ResourceTableModel.class);
 
     /**
      * Resource Row Data
      */
     public class RowData {
-        /** RowKey, typically this is the VRL */
+
+        /**
+         * RowKey, typically this is the VRL
+         */
         private String rowKey;
-
-        private AttributeSet rowAttributes = new AttributeSet();
-
+        private AttributeSet rowAttributes;
+        // cached attribute names index for fast searching.
+        private String _rowAttributeNames[];
         private ViewNode viewNode;
 
         public RowData(ViewNode viewNode, String rowKey, AttributeSet attrs) {
-            this.rowKey = rowKey;
             this.viewNode = viewNode;
-            if (attrs != null) {
-                this.rowAttributes = attrs.duplicate(); // empty set!
-            }
+            init(rowKey, attrs);
+        }
+
+        private void init(String newRowKey, AttributeSet newAttrs) {
+            this.rowKey=newRowKey;
+            this.rowAttributes=newAttrs;
+            this._rowAttributeNames=newAttrs.createKeyArray();
         }
 
         public String getKey() {
             return rowKey;
         }
 
-        public int getNrAttributes() {
+        public int size() {
             return rowAttributes.size();
         }
 
@@ -77,27 +78,20 @@ public class ResourceTableModel extends AbstractTableModel implements
             return rowAttributes.get(name);
         }
 
-        public Attribute getAttribute(int nr) {
-            String key = rowAttributes.getKey(nr);
-            if (key == null)
-                return null;
-            return rowAttributes.get(key);
-        }
-
-        public void updateData(AttributeSet data, boolean merge) {
-            if (merge == false) {
-                this.rowAttributes = data.duplicate();
-                return;
-            }
-
-            // dump:
-            this.rowAttributes.putAll(data);
-            uiFireRowChanged(this);
-        }
-
         public void setValue(String attrName, String value) {
             this.rowAttributes.set(attrName, value);
             uiFireCellChanged(this, attrName);
+        }
+
+        public boolean setValue(int colNr, Object value) {
+            String attrName = getAttributeName(colNr);
+
+            if (attrName==null) {
+                log.error("Column attribute name not found for nr:{}", colNr);
+                return false;
+            }
+            getAttribute(attrName).setObjectValue(value);
+            return true;
         }
 
         public void setObjectValue(String attrName, Object obj) {
@@ -106,12 +100,12 @@ public class ResourceTableModel extends AbstractTableModel implements
         }
 
         public void setValues(List<Attribute> attrs) {
-            if (attrs == null)
-                return;
-
-            for (Attribute attr : attrs)
-                this.rowAttributes.put(attr);
-
+            AttributeSet newData = new AttributeSet();
+            if (attrs != null) {
+                for (Attribute attr : attrs)
+                    newData.put(attr);
+            }
+            init(rowKey,newData);
             uiFireRowChanged(this);
         }
 
@@ -127,18 +121,31 @@ public class ResourceTableModel extends AbstractTableModel implements
         }
 
         public String[] getAttributeNames() {
-            return this.rowAttributes.getAttributeNames();
+            return this._rowAttributeNames;
         }
 
-        /** Get Optional ViewNode */
+        public String getAttributeName(int colNr) {
+            if ((colNr<0) || (colNr>=this._rowAttributeNames.length)) {
+                log.error("Column index out of bound:{} <> {}",colNr,_rowAttributeNames.length);
+                return null;
+            }
+            return this._rowAttributeNames[colNr];
+        }
+
+        /**
+         * Get Optional ViewNode
+         */
         public ViewNode getViewNode() {
             return this.viewNode;
         }
 
-        /** Set Optional ViewNode */
+        /**
+         * Set Optional ViewNode
+         */
         public void setViewNode(ViewNode node) {
             this.viewNode = node;
         }
+
     }
 
     // ========================================================================
@@ -174,7 +181,7 @@ public class ResourceTableModel extends AbstractTableModel implements
     public ResourceTableModel(boolean addNillRow) {
         super();
         // Empty but not null model to check initialization.
-        String names[] = new String[0];
+        String[] names = new String[0];
         headers = new HeaderModel(names);
 
         // nill attribute set
@@ -224,7 +231,7 @@ public class ResourceTableModel extends AbstractTableModel implements
     }
 
     public int[] doSortColumn(String name, boolean reverse) {
-        PLogger.getLogger(ResourceTableModel.class).debugPrintf("sortBy:%s , reverse=%s\n", name,
+        log.debug("sortBy:{} , reverse={}", name,
                 reverse);
 
         int colnr = getHeaderIndex(name);
@@ -232,12 +239,12 @@ public class ResourceTableModel extends AbstractTableModel implements
         if (colnr < 0)
             return null;
 
-        PLogger.getLogger(ResourceTableModel.class).debugPrintf("sortBy column number=%d\n", colnr);
+        log.debug("sortBy column number={}", colnr);
 
         TableRowComparer comparer = new TableRowComparer(name, reverse);
         QSort<RowData> sorter = new QSort<RowData>(comparer);
 
-        int mapping[];
+        int[] mapping;
 
         synchronized (rows) {
             // in memory sort !
@@ -294,7 +301,7 @@ public class ResourceTableModel extends AbstractTableModel implements
         this.fireTableStructureChanged();
     }
 
-    public void setHeaders(String newHeaders[]) {
+    public void setHeaders(String[] newHeaders) {
         this.headers.setValues(newHeaders);
         this.fireTableStructureChanged();
     }
@@ -310,7 +317,7 @@ public class ResourceTableModel extends AbstractTableModel implements
     /**
      * Removes header and fires TableStructureChanged event. Actual column data is kept in the model
      * to avoid null pointer bugs.
-     * 
+     * <p>
      * Method fires TableStructureChanged event which update the actual table. Only after the
      * TableStructureChanged event has been handled.
      */
@@ -347,7 +354,7 @@ public class ResourceTableModel extends AbstractTableModel implements
 
     /**
      * All attribute names available from DataModel. Each attribute name can be used as column.
-     * 
+     *
      * @return all available attribute names as List.
      */
     public String[] getAllAttributeNames() {
@@ -390,7 +397,7 @@ public class ResourceTableModel extends AbstractTableModel implements
     }
 
     public String[] createRowKeys(VRL[] vrls) {
-        String keys[] = new String[vrls.length];
+        String[] keys = new String[vrls.length];
         for (int i = 0; i < vrls.length; i++) {
             keys[i] = createRowKey(vrls[i]);
         }
@@ -404,7 +411,7 @@ public class ResourceTableModel extends AbstractTableModel implements
     public RowData[] getRows() {
         synchronized (this.rows) {
             int len = this.rows.size();
-            RowData rows[] = new RowData[len];
+            RowData[] rows = new RowData[len];
             rows = this.rows.toArray(rows);
             return rows;
         }
@@ -437,9 +444,8 @@ public class ResourceTableModel extends AbstractTableModel implements
 
     /**
      * Create new empty row with specified key and empty AttributeSet().
-     * 
-     * @param key
-     *            - rowKey
+     *
+     * @param rowKey - rowKey
      * @return index of new row.
      */
     public int createRow(String rowKey) {
@@ -470,7 +476,7 @@ public class ResourceTableModel extends AbstractTableModel implements
             }
         }
 
-        logger.debugPrintf("addRow(): %s new row at index %d\n", (rowExists ? "replaced"
+        log.debug("addRow(): {} new row at index {}", (rowExists ? "replaced"
                 : "created"), index);
 
         if (fireEvent) {
@@ -503,7 +509,7 @@ public class ResourceTableModel extends AbstractTableModel implements
     /**
      * Deletes Row. Performance note: Since a delete triggers an update for the used Key->Index
      * mapping. This method takes O(N) time.
-     * 
+     *
      * @param index
      * @return
      */
@@ -514,11 +520,11 @@ public class ResourceTableModel extends AbstractTableModel implements
     /**
      * Deletes Row. Performance note: Since a delete triggers an update for the used Key->Index
      * mapping. This method takes O(N) time. (Where N= nr of rows in table)
-     * 
-     * @param index
+     *
+     * @param indices
      * @return
      */
-    public boolean delRows(int indices[]) {
+    public boolean delRows(int[] indices) {
         // multi delete to avoid O(N*N) rekeying of key mapping !
         boolean result = this._delRows(indices, false);
 
@@ -545,11 +551,9 @@ public class ResourceTableModel extends AbstractTableModel implements
     /**
      * Delete row from internal data structure. Performance note: here the internal key mapping is
      * regenerated. This take O(N) time.
-     * 
-     * @param rowIndex
-     *            -
-     * @param fireEvent
-     *            - whether to fire an event.
+     *
+     * @param rowIndex  -
+     * @param fireEvent - whether to fire an event.
      * @return
      */
     private RowData _delRow(int rowIndex, boolean fireEvent) {
@@ -583,11 +587,11 @@ public class ResourceTableModel extends AbstractTableModel implements
     /**
      * Multi delete rows from internal data structure. Performance note: here the internal key
      * mapping is regenerated. This take O(N) time.
-     * 
-     * @param index
+     *
+     * @param indices
      * @return
      */
-    private boolean _delRows(int indices[], boolean fireEvent) {
+    private boolean _delRows(int[] indices, boolean fireEvent) {
         boolean allDeleted = true;
         synchronized (rows)// sync for both rows and rowKeyIndex!
         {
@@ -650,7 +654,7 @@ public class ResourceTableModel extends AbstractTableModel implements
      */
     public String[] getRowKeys() {
         synchronized (this.rows) {
-            String keys[] = new String[this.rows.size()];
+            String[] keys = new String[this.rows.size()];
             for (int i = 0; i < this.rows.size(); i++) {
                 keys[i] = rows.elementAt(i).getKey();
             }
@@ -685,7 +689,7 @@ public class ResourceTableModel extends AbstractTableModel implements
      * Convert row numbers to row keys.
      */
     public String[] getRowKeys(int[] rowNrs) {
-        String keys[] = new String[rowNrs.length];
+        String[] keys = new String[rowNrs.length];
         for (int i = 0; i < rowNrs.length; i++) {
             keys[i] = this.getRowKey(rowNrs[i]);
         }
@@ -742,7 +746,7 @@ public class ResourceTableModel extends AbstractTableModel implements
             RowData rowObj = rows.get(rowIndex);
 
             if (rowObj == null) {
-                logger.warnPrintf("getValueAt: Index Out of bounds:[%d,%d]\n", rowIndex,
+                log.warn("getValueAt: Index Out of bounds:[{},{}]", rowIndex,
                         columnIndex);
                 return null;
             }
@@ -751,6 +755,7 @@ public class ResourceTableModel extends AbstractTableModel implements
 
             Attribute attr = rowObj.getAttribute(header);
 
+            // If row is called 'icon' return actual IconImage object.
             if (attr == null) {
                 if (header.equals(this.iconHeaderName)) {
                     ViewNode viewNode = rowObj.getViewNode();
@@ -854,18 +859,18 @@ public class ResourceTableModel extends AbstractTableModel implements
         RowData row = getRow(rowNr);
 
         if (row == null) {
-            logger.warnPrintf("setValueAt(): Index out of bound:[%d,%d]=%s\n", rowNr, colNr, value);
+            log.warn("setValueAt()[{},{}]: Row not found:{}",rowNr,colNr,rowNr);
             return;
         }
 
-        // Let Attribute figure object out!
-        row.getAttribute(colNr).setObjectValue(value);
+        row.setValue(colNr,value);
 
         // optimization note: table will collect multiple events
         // and do the drawing at once.
 
         this.fireTableCellUpdated(rowNr, colNr);
     }
+
 
     public Attribute getAttribute(String rowKey, String attrName) {
         synchronized (rows) {
@@ -887,50 +892,12 @@ public class ResourceTableModel extends AbstractTableModel implements
         }
     }
 
-    public Attribute getAttribute(int row, int col) {
-        synchronized (rows) {
-            RowData rowdata = this.rows.get(row);
-            if (rowdata == null) {
-                return null;
-            }
-            return rowdata.getAttribute(col);
-        }
-    }
-
     public boolean isCellEditable(int row, int col) {
         Object obj = this.getValueAt(row, col);
         if (obj instanceof Attribute) {
             return ((Attribute) obj).isEditable();
         }
         return false;
-    }
-
-    /**
-     * Return copy of Data as Attribute matrix. Returns: Attribute[row][col].
-     */
-    public Attribute[][] getAttributeData() {
-        synchronized (rows) {
-            int nrRows = this.rows.size();
-            if (nrRows <= 0) {
-                return null;
-            }
-
-            // assume symmetrical:
-            int nrCols = rows.get(0).getNrAttributes();
-            if (nrCols <= 0) {
-                return null;
-            }
-
-            Attribute attrs[][] = new Attribute[nrRows][];
-            for (int row = 0; row < nrRows; row++) {
-                attrs[row] = new Attribute[nrCols];
-                for (int col = 0; col < nrCols; col++) {
-                    attrs[row][col] = this.getAttribute(row, col).duplicate();
-                }
-            }
-
-            return attrs;
-        }
     }
 
     // ==========================================================================
@@ -947,14 +914,10 @@ public class ResourceTableModel extends AbstractTableModel implements
         int colnr = getHeaderModel().indexOf(name);
 
         if ((rownr < 0) || (colnr < 0)) {
-            logger.warnPrintf("Error, couldn't find {row,attr}=%s,%s\n", row.getKey(), name);
+            log.warn("Error, couldn't find {row,attr}={},{}", row.getKey(), name);
             return;
         }
         this.fireTableCellUpdated(rownr, colnr);
     }
-
-    // ==========================================================================
-    // Misc.
-    // ==========================================================================
 
 }

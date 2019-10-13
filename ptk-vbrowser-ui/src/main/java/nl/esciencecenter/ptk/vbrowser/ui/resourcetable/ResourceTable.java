@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,26 +20,10 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
-import java.awt.Point;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Enumeration;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
@@ -53,13 +37,21 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.presentation.VRSPresentation;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+
 /**
  * Generic Resource Table.
- * 
- * @author Piter T. de Boer
+ *
+ *
  */
+@Slf4j
 public class ResourceTable extends JTable implements UIDisposable, ViewNodeContainer {
-       private static final PLogger logger = PLogger.getLogger(ResourceTable.class);
 
     // default presentation
 
@@ -84,8 +76,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public ResourceTable() {
         // defaults
         super(new ResourceTableModel(false));
-
-        logger.setLevelToDebug();
 
         init();
     }
@@ -137,14 +127,14 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
      */
     public void initColumns() {
         // Use Header from DataModel
-        String headers[] = getModel().getHeaders();
+        String[] headers = getModel().getHeaders();
 
-        logger.debugPrintf("initColumns(): getHeaders() = %s\n", headers.toString());
+        log.debug("initColumns(): getHeaders() = {}", headers.toString());
 
         if ((headers == null) || (headers.length <= 0)) {
             // Use all attribute names.
             headers = getModel().getAllAttributeNames();
-            logger.debugPrintf("initColumns(): getAllHeaders() = %s\n",
+            log.debug("initColumns(): getAllHeaders() = {}",
                     new StringList(headers).toString());
         }
 
@@ -178,7 +168,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
                 if (attr.isEditable() == true) {
                     switch (attr.getType()) {
-                    // both boolean and enum use same select box
+                        // both boolean and enum use same select box
                         case ENUM:
                         case BOOLEAN: {
                             // debug("setting celleditor to EnumCellEditor of columnr:"+i);
@@ -238,7 +228,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     protected void updatePresentation() {
         Presentation pres = getPresentation();
         if (pres == null) {
-            logger.warnPrintf("*** updatePresentation(): NO Presentation!\n");
+            log.warn("*** updatePresentation(): NO Presentation!");
             return;
         }
 
@@ -377,7 +367,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         // int index = 0;
 
         while (enumeration.hasMoreElements()) {
-            aColumn = (TableColumn) enumeration.nextElement();
+            aColumn = enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
             if (StringUtil.equals(headerName, aColumn.getHeaderValue().toString())) {
                 return true;
@@ -395,7 +385,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         Enumeration<TableColumn> enumeration = getColumnModel().getColumns();
 
         while (enumeration.hasMoreElements()) {
-            TableColumn col = (TableColumn) enumeration.nextElement();
+            TableColumn col = enumeration.nextElement();
             // Compare them this way in case the column's identifier is null.
             if (StringUtil.equals(headerName, col.getHeaderValue().toString())) {
                 return col;
@@ -433,7 +423,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     /**
      * Update Data Source.
-     * 
+     *
      * @throws ProxyException
      */
     public void setDataSource(ProxyDataSource dataSource, boolean update) {
@@ -458,14 +448,14 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     /**
      * Update Data Source from ProxyNode:
-     * 
+     *
      * @throws ProxyException
      */
     public void setDataSource(ProxyNode proxyNode, boolean update) {
         ResourceTableModel model = new ResourceTableModel(false);
         this.setModel(model);
 
-        if (proxyNode!=null) {
+        if (proxyNode != null) {
             // copy current presentation from source.
             Presentation presentation = proxyNode.getPresentation();
             if (presentation != null) {
@@ -542,7 +532,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu) {
         // allowed during testing
         if (this.controller.getBrowserInterface() == null) {
-            logger.warnPrintf("getActionMenuFor() no browser registered.");
+            log.warn("getActionMenuFor() no browser registered.");
             return null;
         }
         // node menu
@@ -551,22 +541,22 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     @Override
     public void clearNodeSelection() {
-        logger.errorPrintf("FIXME:clearNodeSelection()\n");
+        log.error("FIXME:clearNodeSelection()");
     }
 
     @Override
     public ViewNode[] getNodeSelection() {
-        logger.debugPrintf("getNodeSelection()\n");
+        log.debug("getNodeSelection()");
 
         int[] rowNrs = getSelectedRows();
         if ((rowNrs == null) || (rowNrs.length <= 0)) {
-            logger.debugPrintf("getNodeSelection()=NULL\n");
+            log.debug("getNodeSelection()=NULL");
             return null; // nothing selected
         }
 
         ResourceTableModel model = getModel();
 
-        String keys[] = model.getRowKeys(rowNrs);
+        String[] keys = model.getRowKeys(rowNrs);
 
         ArrayList<ViewNode> nodes = new ArrayList<ViewNode>();
 
@@ -574,23 +564,23 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             nodes.add(model.getViewNode(key));
         }
 
-        logger.debugPrintf("getNodeSelection()=#%d\n", nodes.size());
+        log.debug("getNodeSelection()=#{}", nodes.size());
         return nodes.toArray(new ViewNode[0]);
     }
 
     @Override
     public void setNodeSelection(ViewNode node, boolean isSelected) {
-        logger.debugPrintf("getNodeSelection() %s:%s\n", isSelected, node);
+        log.debug("getNodeSelection() {}:{}", isSelected, node);
 
         int[] rowNrs = getSelectedRows();
         if ((rowNrs == null) || (rowNrs.length <= 0)) {
-            logger.errorPrintf("getNodeSelection()=NULL\n");
+            log.error("getNodeSelection()=NULL");
             if (isSelected) {
-                logger.errorPrintf(
+                log.error(
                         "***FIXME: node should be selected, but selected rows is EMPTY for node:%s\n",
                         node);
             } else {
-                logger.debugPrintf("No selection, node is already unselected:%s\n", node);
+                log.debug("No selection, node is already unselected:{}", node);
             }
             return;
         }
@@ -601,7 +591,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         for (int i = 0; i < rowNrs.length; i++) {
             if (rowNrs[i] == rowIndex) {
                 if (isSelected) {
-                    logger.debugPrintf("Selected node is in selection range (row#=%d):%s\n",
+                    log.debug("Selected node is in selection range (row#={}):{}",
                             rowNrs[i], node);
                     return;
                 }
@@ -609,9 +599,9 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         }
 
         if (isSelected == false) {
-            logger.debugPrintf("setNodeSelection():OK node is not in selected rows:%s\n", node);
+            log.debug("setNodeSelection():OK node is not in selected rows:{}", node);
         } else {
-            logger.errorPrintf(
+            log.error(
                     "***FIXME:setNodeSelection(): Row should already be selected but isn't:%s\n",
                     node);
         }
@@ -622,13 +612,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     @Override
     public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode, boolean isSelected) {
-        logger.errorPrintf("FIXME:setNodeSelectionRange(): check range: [%s,%s]\n", firstNode,
+        log.error("FIXME:setNodeSelectionRange(): check range: [{},{}]", firstNode,
                 lastNode);
     }
 
     @Override
     public boolean requestNodeFocus(ViewNode node, boolean value) {
-        logger.errorPrintf("FIXME:requestNodeFocus():focus=%s, for:%s\n", value, node);
+        log.error("FIXME:requestNodeFocus():focus={}, for:{}", value, node);
         return false;
     }
 
@@ -673,13 +663,13 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
     public void columnMarginChanged(String name, int w) {
         // buggy, during resizes invalid values are submitted. 
-        //logger.errorPrintf("FIXME: columnMarginChanged():%s=%d\n", name, w);
+        //log.error("FIXME: columnMarginChanged():{}={}", name, w);
         this.getPresentation().setAttributePreferredWidth(name, w);
         storePresentation();
     }
 
     public void updateAutoResizeMode(int mode) {
-        logger.debugPrintf("updateAutoResizeMode():%d\n", mode);
+        log.debug("updateAutoResizeMode():{}", mode);
         super.setAutoResizeMode(mode);
         this.getPresentation().setColumnsAutoResizeMode(mode);
         storePresentation();
@@ -692,6 +682,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
         // still buggy:
         VRSPresentation.storePresentation(vrl, resourceType, getPresentation());
-        //logger.errorPrintf("--- presentation ---\n%s\n", getPresentation());
+        //log.error("--- presentation ---\n{}", getPresentation());
     }
 }

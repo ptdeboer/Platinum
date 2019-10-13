@@ -3,7 +3,7 @@
  * Copyright 2012-2013 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -21,30 +21,11 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.attribute;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Vector;
-
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.ui.fonts.FontUtil;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrEnumField;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrIntField;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.fields.AttrParameterField;
@@ -55,17 +36,18 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Vector;
 
 /**
  * Attribute Panel.
  */
+@Slf4j
 public class AttributePanel extends JPanel {
 
-    private static final Logger logger = LoggerFactory.getLogger(AttributePanel.class);
-
-       private static final int default_row_gap = 4;
+    private static final int default_row_gap = 4;
     private static final int default_column_gap = 8;
     private static final int default_border_width = 5;
     private static final int default_border_height = 5;
@@ -107,8 +89,8 @@ public class AttributePanel extends JPanel {
      */
     public AttributePanel() {
         // super();
-        Attribute attrs[] = new Attribute[4];
-        String options[] = { "Option1", "Option2" };
+        Attribute[] attrs = new Attribute[4];
+        String[] options = {"Option1", "Option2"};
 
         attrs[0] = new Attribute("textAttribute", "text");
         attrs[1] = new Attribute("booleanAttribute", true);
@@ -131,12 +113,12 @@ public class AttributePanel extends JPanel {
         setAttributes(set, editable);
     }
 
-    public AttributePanel(Attribute attrs[]) {
+    public AttributePanel(Attribute[] attrs) {
         super();
         init(new AttributeSet(attrs), isEditable);
     }
 
-    public AttributePanel(Attribute attrs[], boolean isEditable) {
+    public AttributePanel(Attribute[] attrs, boolean isEditable) {
         super();
         init(new AttributeSet(attrs), isEditable);
     }
@@ -157,15 +139,13 @@ public class AttributePanel extends JPanel {
 
     /**
      * Creates labels & fields.
-     * 
-     * @param attributeSet
-     *            Attributes to edit.
-     * @param editable
-     *            whether to view (false) or edit (true) these attributes.
+     *
+     * @param newSet Attributes to edit.
+     * @param editable     whether to view (false) or edit (true) these attributes.
      */
     public void setAttributes(AttributeSet newSet, boolean editable) {
 
-        logger.debug(">>> New Attributes:{}", newSet);
+        log.debug(">>> New Attributes:{}", newSet);
 
         // init
         this.isEditable = editable;
@@ -189,16 +169,18 @@ public class AttributePanel extends JPanel {
         int xpos = default_border_width;
         int ypos = default_border_height;
 
-        int ypositions[] = new int[len];
+        int[] ypositions = new int[len];
         int maxx = 0;
         int maxy = 0;
 
         jLabels = new JLabel[len];
 
+        String[] keys = newSet.createKeyArray();
+
         // filter out null Attributes and create duplicates !
-        for (int i = 0; i < len; i++) {
-            if (newSet.elementAt(i) != null) {
-                Attribute attr = newSet.elementAt(i);
+        for (String key:keys) {
+            Attribute attr;
+            if ((attr=newSet.get(key)) != null) {
                 attributes.put(attr.duplicate(false));
             }
         }
@@ -208,9 +190,8 @@ public class AttributePanel extends JPanel {
         setFormRows(attributes.size());
 
         // Field Names
-        for (int i = 0; i < len; i++) {
-            Attribute attr = attributes.elementAt(i);
-            // debug("Adding attribute:"+attr);
+        for (int i=0;i<keys.length;i++) {
+            Attribute attr = attributes.get(keys[i]);
 
             String name = attr.getName();
             String type = attr.getType().toString();
@@ -263,7 +244,7 @@ public class AttributePanel extends JPanel {
         jFields = new JComponent[len];
 
         for (int i = 0; i < len; i++) {
-            Attribute attr = attributes.elementAt(i);
+            Attribute attr = attributes.get(keys[i]);
             String value = attr.getStringValue();
             String name = attr.getName();
             AttributeType type = attr.getType();
@@ -280,10 +261,10 @@ public class AttributePanel extends JPanel {
 
             if ((attr.isEditable()) && (this.isEditable)
                     && ((type == AttributeType.ENUM) || (type == AttributeType.BOOLEAN))) {
-                String vals[] = attr.getEnumValues();
+                String[] vals = attr.getEnumValues();
 
                 if (vals == null) {
-                    logger.error("Error no enumvalues for attribute:{}", attr.getName());
+                    log.error("Error no enumvalues for attribute:{}", attr.getName());
                     vals = new String[1];
                     vals[0] = "<NULL>";
                 }
@@ -319,9 +300,7 @@ public class AttributePanel extends JPanel {
                 }
 
                 jField = textField;
-            }
-
-            else if ((attr.isEditable()) && (this.isEditable)
+            } else if ((attr.isEditable()) && (this.isEditable)
                     && ((type == AttributeType.INT) || (type == AttributeType.LONG))) {
                 JTextField textField = new AttrIntField(value, attr.getIntValue());
                 textField.addActionListener(attributeListener);
@@ -478,7 +457,7 @@ public class AttributePanel extends JPanel {
         // 4 columns: 2 border and 2 'middle'
 
         FormLayout formLayout = new FormLayout(
-        // "10px,right:pref:none, 5px, fill:pref:grow,10px",
+                // "10px,right:pref:none, 5px, fill:pref:grow,10px",
                 "10px,right:pref:none, 5px, fill:min(800px;p):grow,10px", defStr);
 
         this.setLayout(formLayout);
@@ -567,12 +546,14 @@ public class AttributePanel extends JPanel {
         return false;
     }
 
-    /** Update Attribute in AttributeSet */
+    /**
+     * Update Attribute in AttributeSet
+     */
     public void setAttribute(String name, String value) {
-        // UIGlobal.debugPrintf(this,"setAttribute %s=%s\n",name,value);
+        // UIGlobal.log.debug(this,"setAttribute {}={}",name,value);
 
         if (name == null) {
-            // Global.warnPrintf(this,"setAttribute: NULL name!\n");
+            // Global.log.warn(this,"setAttribute: NULL name!");
             return;
         }
 
@@ -591,7 +572,7 @@ public class AttributePanel extends JPanel {
                 notifyAttributeChangeEvent(name);
             }
         } else {
-            logger.debug("Attribute not found:{}", name);
+            log.debug("Attribute not found:{}", name);
         }
 
     }
@@ -614,7 +595,7 @@ public class AttributePanel extends JPanel {
         if (attributes == null)
             return null;
 
-        return attributes.toArray(new Attribute[] {});
+        return attributes.toArray(new Attribute[]{});
     }
 
     public Attribute getAttribute(String name) {
@@ -624,10 +605,12 @@ public class AttributePanel extends JPanel {
         return attributes.get(name);
     }
 
-    /** Modal show editor Panel */
+    /**
+     * Modal show editor Panel
+     */
     public static Attribute[] showEditor(AttributeSet attrs) {
         JDialog dialog = new JDialog();
-        Attribute newAttrs[] = null;
+        Attribute[] newAttrs = null;
 
         AttributePanel panel = new AttributePanel(attrs);
 
@@ -642,15 +625,15 @@ public class AttributePanel extends JPanel {
     /**
      * Method to call when attributes are updated outside the main GUI event thread. Uses
      * SwingUtilities.invokeLater() to update the specified attributes.
-     * 
-     * @param attrs
+     *
+     * @param attrSet attributes
      */
-    public void asyncSetAttributes(final AttributeSet set) {
+    public void asyncSetAttributes(final AttributeSet attrSet) {
         final AttributePanel apanel = this;
 
         Runnable runT = new Runnable() {
             public void run() {
-                apanel.setAttributes(set);
+                apanel.setAttributes(attrSet);
             }
         };
 
@@ -662,7 +645,7 @@ public class AttributePanel extends JPanel {
         return this.attributes.getChangedAttributesArray();
     }
 
-    public static void showEditor(Attribute attrs[]) {
+    public static void showEditor(Attribute[] attrs) {
         showEditor(new AttributeSet(attrs));
     }
 

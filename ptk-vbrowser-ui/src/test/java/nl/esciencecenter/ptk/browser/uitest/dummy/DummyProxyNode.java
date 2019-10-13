@@ -1,38 +1,38 @@
 /*
  * Copyrighted 2012-2013 Netherlands eScience Center.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").  
- * You may not use this file except in compliance with the License. 
- * For details, see the LICENCE.txt file location in the root directory of this 
- * distribution or obtain the Apache License at the following location: 
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * For details, see the LICENCE.txt file location in the root directory of this
+ * distribution or obtain the Apache License at the following location:
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
+ *
+ * For the full license, see: LICENCE.txt (located in the root folder of this distribution).
  * ---
  */
 // source: 
 
 package nl.esciencecenter.ptk.browser.uitest.dummy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
-import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DummyProxyNode extends ProxyNode {
     static private Presentation dummyPresentation;
@@ -40,13 +40,13 @@ public class DummyProxyNode extends ProxyNode {
     static private StringList attrNames = null;
 
     static {
-        attrNames = new StringList(new String[] { "attr1", "attr2", "attr3", "attr4" });
+        attrNames = new StringList("attr1", "attr2", "attr3", "attr4");
 
         dummyPresentation = Presentation.createDefault();
 
         for (int i = 0; i < attrNames.size(); i++) {
-            dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[] { 42,
-                    42 + i * 42, 42 + 4 * 42 });
+            dummyPresentation.setAttributePreferredWidths(attrNames.get(i), new int[]{42,
+                    42 + i * 42, 42 + 4 * 42});
         }
 
         dummyPresentation.setPreferredContentAttributeNames(attrNames);
@@ -83,11 +83,6 @@ public class DummyProxyNode extends ProxyNode {
 
     private void init() {
         logicalName = "DummyProxy:" + this.getID();
-    }
-
-    @Override
-    public boolean isBusy() {
-        return false;
     }
 
     @Override
@@ -169,12 +164,12 @@ public class DummyProxyNode extends ProxyNode {
     }
 
     @Override
-    protected List<String> doGetAttributeNames() throws ProxyException {
+    protected List<String> doGetAttributeNames() {
         return attrNames.clone();
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(String[] names) throws ProxyException {
+    protected List<Attribute> doGetAttributes(String[] names) {
         if (names == null) {
             return null;
         }
@@ -190,8 +185,23 @@ public class DummyProxyNode extends ProxyNode {
     }
 
     @Override
+    protected void doUpdateAttributes(Attribute[] attrs) {
+
+    }
+
+    @Override
+    protected Map<String, AttributeDescription> doGetAttributeDescriptions(String[] names) {
+        return null;
+    }
+
+    @Override
     protected Presentation doGetPresentation() {
         return dummyPresentation;
+    }
+
+    @Override
+    protected boolean doGetIsEditable() {
+        return false;
     }
 
     @Override

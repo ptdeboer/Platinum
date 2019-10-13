@@ -3,7 +3,7 @@
  * Copyright 2012-2013 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -21,10 +21,10 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.attribute.fields;
 
-import javax.swing.JTextField;
-
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
+
+import javax.swing.*;
 
 /**
  * An Attribute Parameter Field is an managed Field for a (VRS) Attribute.
@@ -32,15 +32,17 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 public class AttrParameterField extends JTextField implements IAttributeField {
 
     public enum AttrFieldType {
-        INT, STRING, STRINGENUM, VRL, BOOLEAN, CHECKBOX;
+        INT, STRING, STRINGENUM, VRL, BOOLEAN, CHECKBOX
     }
 
-       public AttrParameterField() {
+    public AttrParameterField() {
         // names indicates abtract class, should be subclassed. 
         super("<AttrParameterField>");
     }
 
-    /** Default is String Parameter */
+    /**
+     * Default is String Parameter
+     */
     public AttrParameterField(String value) {
         super(value);
     }

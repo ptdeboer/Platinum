@@ -1,13 +1,13 @@
 package nl.esciencecenter.vbrowser.vrs.node;
 
-import java.nio.file.LinkOption;
-import java.util.List;
-
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.nio.file.LinkOption;
+import java.util.List;
 
 /**
  * Adaptor for the abstract VFSPathNode class. Currently used for testing.

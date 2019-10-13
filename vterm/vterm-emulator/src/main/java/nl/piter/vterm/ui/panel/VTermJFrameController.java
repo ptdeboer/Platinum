@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.ui.panel;
 
 import nl.piter.vterm.api.EmulatorListener;

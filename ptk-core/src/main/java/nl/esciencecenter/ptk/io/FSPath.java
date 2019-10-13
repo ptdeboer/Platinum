@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,17 +20,17 @@
 
 package nl.esciencecenter.ptk.io;
 
+import nl.esciencecenter.ptk.exceptions.FileURISyntaxException;
+import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.net.URIUtil;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -39,10 +39,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import nl.esciencecenter.ptk.io.exceptions.FileURISyntaxException;
-import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.net.URIUtil;
 
 /**
  * Wrapper around nio.file.Path interface.
@@ -59,7 +55,9 @@ public class FSPath {
     // Instance
     // =========
 
-    /** The nio file path */
+    /**
+     * The nio file path
+     */
     protected Path _path;
 
     protected FSInterface fsHandler = null;
@@ -96,7 +94,7 @@ public class FSPath {
     // ==========================
 
     public FSPath create() throws IOException {
-        byte bytes[] = new byte[0];
+        byte[] bytes = new byte[0];
 
         // Default way to create a file is by writing zero bytes:
         try (OutputStream outps = this.fsHandler.createOutputStream(this, false)) {
@@ -230,9 +228,8 @@ public class FSPath {
 
     /**
      * Returns absolute and normalized URI style path endign with a "/"
-     * 
-     * @param dirPath
-     *            if this path is a directory, end with a "/"
+     *
+     * @param dirPath if this path is a directory, end with a "/"
      * @return absolute and normalized URI style path as directory path ending with "/"
      */
     public String getPathname(boolean dirPath) {
@@ -309,16 +306,13 @@ public class FSPath {
             return true;
         }
 
-        if (isFileSystemRoot()) {
-            return true;
-        }
+        return isFileSystemRoot();
 
-        return false;
     }
 
     /**
      * Is a unix style soft- or symbolic link.
-     * 
+     *
      * @throws IOException
      */
     public boolean isSymbolicLink() {
@@ -422,17 +416,9 @@ public class FSPath {
         return attrs.owner().getName();
     }
 
-    // =======================
-    // Misc.
-    // =======================
 
     public boolean sync() {
-        // notting cached.
         return true;
-    }
-
-    public java.io.File toJavaFile() {
-        return _path.toFile();
     }
 
     public String toString() {

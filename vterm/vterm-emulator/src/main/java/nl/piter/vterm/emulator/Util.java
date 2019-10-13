@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator;
 
 import java.io.IOException;
@@ -48,7 +52,8 @@ public class Util {
          * eat current byte, if buffer is empty. Do nothing
          */
         public void eat() throws IOException {
-            /*(void)*/pop();
+            /*(void)*/
+            pop();
         }
 
         public String toString(String encoding) throws UnsupportedEncodingException {

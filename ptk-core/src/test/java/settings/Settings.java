@@ -1,16 +1,15 @@
 package settings;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
 import org.junit.Assert;
 
+import java.io.IOException;
+import java.util.Properties;
+
 public class Settings {
+
     private static Settings instance = null;
 
     public final String TEST_AES256BITS_ENCRYPTION_PROP = "platinum.test.encryption.AES256bits";
@@ -24,9 +23,6 @@ public class Settings {
         return instance;
     }
 
-    public static PLogger getLogger(Class<?> clazz) {
-        return PLogger.getLogger(clazz);
-    }
 
     // ===
     // Instance 
@@ -35,7 +31,7 @@ public class Settings {
     protected Properties properties = new Properties();
 
     public boolean testAES256Encryption() {
-        return getBoolValue(TEST_AES256BITS_ENCRYPTION_PROP, false);
+        return getBoolValue(TEST_AES256BITS_ENCRYPTION_PROP, true);
     }
 
     public boolean getBoolValue(String name, boolean defaultValue) {
@@ -94,7 +90,7 @@ public class Settings {
     }
 
     public FSUtil getFSUtil() {
-        return FSUtil.getDefault();
+        return FSUtil.fsutil();
 
     }
 

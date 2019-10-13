@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,10 +20,10 @@
 
 package nl.esciencecenter.ptk.events;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.ListIterator;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
 
 /**
  * Generic Event Dispatcher.
@@ -31,21 +31,12 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
  * Maintains an event queue of
  * <code>EventT<code> events and dispatches them to registered listeners.
  * Listeners can register themself to many EventSource instances.
- * 
- * @param <EventTypeT>
- *            Event Type.
- * @param <EventT>
- *            Event implementation.
- * @param <EventListenerT>
- *            Event listener which receives events with type EventT.
+ *
+ * @param <EventTypeT> Event Type.
+ * @param <EventT>     Event implementation.
  */
-public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, EventListener extends IEventListener<EventT>> {
-
-    private static PLogger logger = PLogger.getLogger(EventDispatcher.class);
-
-    // ========================================================================
-    //
-    // ========================================================================
+@Slf4j
+public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, EventListenerT extends IEventListener<EventT>> {
 
     protected int eventIdleWaitTime = 60 * 1000;
 
@@ -91,17 +82,14 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
                 }
 
                 if (hasEvents()) {
-                    logger.debugPrintf("hasEvents(): Nr of events=%d\n", events.size());
                     handleEvent();
                 } else {
                     try {
                         synchronized (waitMutex) {
                             waitMutex.wait(eventIdleWaitTime);
                         }
-
-                        logger.debugPrintf("Wakeup No events\n");
                     } catch (InterruptedException e) {
-                        logger.debugPrintf("<Interrupted>\n");
+                        log.error("Interrupted", e);
                     }
                 }
             }
@@ -129,23 +117,20 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
                 return false;
             }
 
-            if (thread.isAlive()) {
-                return true;
-            }
+            return thread.isAlive();
 
-            return false;
         }
     }
 
     public class EventListenerEntry {
 
-        protected EventListener listener;
+        protected EventListenerT listener;
 
         protected Object eventSource;
 
         protected boolean receiveAll;
 
-        public EventListenerEntry(EventListener listener, Object eventSource) {
+        public EventListenerEntry(EventListenerT listener, Object eventSource) {
             this.listener = listener;
             this.eventSource = eventSource;
             this.receiveAll = false;
@@ -162,8 +147,9 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
 
     private Dispatcher dispatcher = null;
 
-    /** 
+    /**
      * Create an EventDispatcher for type <code>EventT</code>
+     *
      * @param autoStart
      */
     public EventDispatcher(boolean autoStart) {
@@ -173,22 +159,22 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
     private void init(boolean autoStart) {
         this.dispatcher = new Dispatcher();
         if (autoStart) {
-            start(); 
+            start();
         }
-    }
-    
-    /**
-     * Start the Event Dispatcher. 
-     */
-    public void start() { 
-        if (dispatcher.isRunning()==false) {
-            dispatcher.start();
-        }
-        logger.debug("start(): dispatcher already running");
     }
 
-    /** 
+    /**
+     * Start the Event Dispatcher.
+     */
+    public void start() {
+        if (dispatcher.isRunning() == false) {
+            dispatcher.start();
+        }
+    }
+
+    /**
      * Schedule Event
+     *
      * @param newEvent
      */
     public void fireEvent(EventT newEvent) {
@@ -212,7 +198,7 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
         dispatcher.wakeUp();
     }
 
-    public void addListener(EventListener listener, Object eventSource) {
+    public void addListener(EventListenerT listener, Object eventSource) {
         synchronized (listeners) {
             this.listeners.add(new EventListenerEntry(listener, eventSource));
         }
@@ -220,9 +206,8 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
 
     /**
      * Remove all the listener which are registered for the specified EventSource
-     * 
-     * @param source
-     *            the EventSourceT object to unregister all the Listeners for.
+     *
+     * @param source the EventSourceT object to unregister all the Listeners for.
      */
     public void removeListenersFor(Object source) {
         synchronized (listeners) {
@@ -243,7 +228,7 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
         }
     }
 
-    public void removeListener(EventListener listener) {
+    public void removeListener(EventListenerT listener) {
         synchronized (listeners) {
             ListIterator<EventListenerEntry> iterator = listeners.listIterator();
             EventListenerEntry theEntry = null;
@@ -286,12 +271,10 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
         EventT event = this.popEvent();
 
         if (event == null) {
-            logger.debugPrintf("No Event\n");
             return;
         }
 
         if (listeners.size() <= 0) {
-            logger.debugPrintf("No Event Listeners registered for event:%s\n", event);
             return;
         }
         // Use iterator
@@ -323,22 +306,19 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
      * When a single listener is registered to many EventSourceT instances, filter out the actual
      * event which matches the wanted EventSource. The
      * <code>equals()<code> method of the EventSourceT is used to match EventSourceT object types.
-     * 
-     * @param listener
-     *            - registered listener.
-     * @param eventSource
-     *            - the EventSourceT Object the listener listenes for.
-     * @param event
-     *            - the actual event to match.
+     *
+     * @param listener    - registered listener.
+     * @param eventSource - the EventSourceT Object the listener listenes for.
+     * @param event       - the actual event to match.
      * @return true if the EvenSourceT object matches the eventSource from the event.
      */
-    protected boolean matchEventSource(EventListener listener, Object eventSource, EventT event) {
+    protected boolean matchEventSource(EventListenerT listener, Object eventSource, EventT event) {
         if (eventSource == null) {
             return true;
         }
         Object actualSource = event.getEventSource();
-        if (actualSource==null)
-            return false; 
+        if (actualSource == null)
+            return false;
         return (actualSource.equals(eventSource));
     }
 

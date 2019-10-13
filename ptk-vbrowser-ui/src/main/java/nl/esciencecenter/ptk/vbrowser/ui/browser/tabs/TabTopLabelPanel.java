@@ -57,6 +57,7 @@ public class TabTopLabelPanel extends JPanel {
     private TabButton delButton;
     private TabContentPanel tabPane;
     private JLabel tabLabel;
+
     public TabTopLabelPanel(final TabContentPanel pane,
                             final BrowserJTabbedPaneController.TabButtonHandler buttonHandler) {
 

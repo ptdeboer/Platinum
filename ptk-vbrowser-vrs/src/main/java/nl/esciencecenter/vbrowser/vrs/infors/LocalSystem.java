@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,19 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.vbrowser.vrs.infors;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.FSPath;
@@ -37,6 +31,12 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Fixed LocalSystem node.
  */
@@ -48,12 +48,12 @@ public class LocalSystem extends InfoRSPathNode {
 
     public LocalSystem(InfoRootNode infoRootNode) throws VrsException {
         super(infoRootNode, InfoRSConstants.LOCALSYSTEM, InfoRS.createPathVRL(InfoRSConstants.LOCALSYSTEM));
-        fsUtil = FSUtil.getDefault();
+        fsUtil = FSUtil.fsutil();
         initChilds();
     }
 
     public String getIconURL(int size) {
-        return "icons/info/system-128.png";
+        return "icons/infors/system-128.png";
     }
 
     protected void initChilds() throws VrsException {
@@ -81,7 +81,7 @@ public class LocalSystem extends InfoRSPathNode {
         VRL vrl = new VRL(uri);
         String name = vrl.getPath();
         String subPath = "Home";
-        homeNode = createSubPathLinkNode(subPath, vrl, name, "icons/info/home_folder-48.png");
+        homeNode = createSubPathLinkNode(subPath, vrl, name, "icons/infors/home_folder-48.png");
         this.addSubNode(homeNode);
         return homeNode;
     }
@@ -99,7 +99,7 @@ public class LocalSystem extends InfoRSPathNode {
 
             String subPath = "Root " + index++;
 
-            this.addSubNode(createSubPathLinkNode(subPath, vrl, name, "icons/info/hdd_mount-128.png"));
+            this.addSubNode(createSubPathLinkNode(subPath, vrl, name, "icons/infors/hdd_mount-128.png"));
         }
     }
 

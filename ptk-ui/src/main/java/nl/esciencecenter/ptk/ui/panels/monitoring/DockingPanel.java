@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,19 +20,16 @@
 
 package nl.esciencecenter.ptk.ui.panels.monitoring;
 
-import java.awt.Component;
-import java.util.Vector;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.util.Vector;
 
 /**
  * Docks panels in vertical Boxed JPanel container. Can be used for multiple chained (sub)Tasks.
  */
 public class DockingPanel extends JPanel {
-       public DockingPanel() {
+    public DockingPanel() {
         super();
         initGUI();
     }
@@ -53,7 +50,7 @@ public class DockingPanel extends JPanel {
             if (comp instanceof JPanel)
                 panels.add((JPanel) comp);
 
-        JPanel arr[] = new JPanel[panels.size()];
+        JPanel[] arr = new JPanel[panels.size()];
         arr = panels.toArray(arr);
         return arr;
     }

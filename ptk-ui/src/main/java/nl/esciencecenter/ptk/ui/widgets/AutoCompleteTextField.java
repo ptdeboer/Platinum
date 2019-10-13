@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,31 +20,28 @@
 
 package nl.esciencecenter.ptk.ui.widgets;
 
+import nl.esciencecenter.ptk.data.StringList;
+import nl.esciencecenter.ptk.io.FSUtil;
+import nl.esciencecenter.ptk.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.util.StringUtil;
-
 public class AutoCompleteTextField extends JComboBox<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoCompleteTextField.class);
 
-       public final static String COMBOBOX_CHANGED = "COMBOBOX_CHANGED";
+    public final static String COMBOBOX_CHANGED = "COMBOBOX_CHANGED";
+
+    public final static String COMBOBOX_EDITED = "COMBOBOX_EDITED";
 
     public final static String COMBOBOX_AUTOCOMPLETED = "COMBOBOX_AUTOCOMPLETED";
 
@@ -53,7 +50,7 @@ public class AutoCompleteTextField extends JComboBox<String> {
     private StringList history = new StringList();
 
     public class CBDocument extends PlainDocument {
-               public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
+        public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
             if (str == null)
                 return;
 
@@ -74,8 +71,8 @@ public class AutoCompleteTextField extends JComboBox<String> {
     private void init() {
         StringList list = new StringList();
         list.addUnique("file:/");
-        list.addUnique(FSUtil.getDefault().getWorkingDirURI().toString());
-        list.addUnique(FSUtil.getDefault().getUserHomeURI().toString());
+        list.addUnique(FSUtil.fsutil().getWorkingDirURI().toString());
+        list.addUnique(FSUtil.fsutil().getUserHomeURI().toString());
         list.sort(true);
         this.setHistory(list);
 
@@ -127,7 +124,7 @@ public class AutoCompleteTextField extends JComboBox<String> {
         //        }
 
         for (int index = 0; index < aModel.getSize(); index++) {
-            current = aModel.getElementAt(index).toString();
+            current = aModel.getElementAt(index);
 
             if (current.toLowerCase().startsWith(text.toLowerCase())) {
                 tf.setText(current);

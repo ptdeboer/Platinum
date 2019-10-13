@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,15 +20,14 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * ResourceTreeNode holds the childs in the ResourceTree. All updates and node manipulations should
@@ -95,7 +94,7 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
                 throw new Error("*** Parent points to itself:" + current);
         }
 
-        ResourceTreeNode _arr[] = new ResourceTreeNode[paths.size()];
+        ResourceTreeNode[] _arr = new ResourceTreeNode[paths.size()];
         int len = paths.size();
 
         // inverse path
@@ -199,7 +198,9 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
         this.isPopulated = val;
     }
 
-    /** Atomic add childe node. Returns index of new childs */
+    /**
+     * Atomic add childe node. Returns index of new childs
+     */
     protected int addNode(ResourceTreeNode rtnode) {
         synchronized (this.childs) {
             int index = this.childs.size();

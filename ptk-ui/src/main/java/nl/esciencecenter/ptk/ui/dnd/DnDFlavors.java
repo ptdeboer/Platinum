@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,13 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.ui.dnd;
+
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.net.URIUtil;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -30,12 +34,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.esciencecenter.ptk.data.ExtendedList;
-import nl.esciencecenter.ptk.net.URIUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
+@Slf4j
 public class DnDFlavors {
-    private static PLogger logger = PLogger.getLogger(DnDFlavors.class);
 
     // ===================================
     // URI/URL Flavors
@@ -63,7 +63,7 @@ public class DnDFlavors {
 
     /**
      * Default "text/plain" mime-type DataFlavor.
-     * 
+     *
      * <pre>
      *     mimeType            = "text/plain"
      *     representationClass = java.lang.String
@@ -74,7 +74,7 @@ public class DnDFlavors {
 
     /**
      * Actual serialized java.lang.String object.
-     * 
+     *
      * <pre>
      *     mimeType           = "application/x-java-serialized-object"
      *     representationClass = java.lang.String
@@ -84,7 +84,7 @@ public class DnDFlavors {
 
     /**
      * Rich Text Format (RTF).
-     * 
+     *
      * <pre>
      *     mimetype            = 'text/rtf'
      *     representationClass = java.nio.ByteBuffer
@@ -115,18 +115,18 @@ public class DnDFlavors {
     /**
      * Flavors in order of preference which might be converted to URI(s).
      */
-    public static DataFlavor uriDataFlavors[] = { DnDFlavors.javaURLFlavor,
+    public static DataFlavor[] uriDataFlavors = {DnDFlavors.javaURLFlavor,
             DnDFlavors.javaFileListFlavor, DnDFlavors.javaURIListAsTextFlavor,
-            DnDFlavors.plainTextFlavor, DnDFlavors.javaStringFlavor };
+            DnDFlavors.plainTextFlavor, DnDFlavors.javaStringFlavor};
 
     public static List<URI> getURIList(Transferable transferable)
             throws UnsupportedFlavorException, IOException {
         for (DataFlavor flav : uriDataFlavors) {
             if (transferable.isDataFlavorSupported(flav)) {
                 List<URI> uris = getURIList(transferable, flav);
-                if (logger.hasDebugLevel()) {
-                    logger.debugPrintf("getURIList():\n%s\n",
-                            new ExtendedList<URI>(uris).toString(" - ", "", "\n"));
+                if (log.isDebugEnabled()) {
+                    log.debug("getURIList():\n{}",
+                            new ExtendedList<>(uris).toString(" - ", "", "\n"));
                 }
                 return uris;
             }
@@ -202,7 +202,7 @@ public class DnDFlavors {
 
         for (DataFlavor flav : uriDataFlavors) {
             if (flavor.equals(flav)) {
-                logger.debugPrintf("Can convert to URI:%s\n", flav);
+                log.debug("Can convert to URI:{}", flav);
                 return true;
             }
         }

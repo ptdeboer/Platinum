@@ -1,17 +1,22 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator;
 
 import nl.piter.vterm.emulator.tokens.CharToken;
 import nl.piter.vterm.emulator.tokens.IToken;
 import nl.piter.vterm.exceptions.VTxInvalidConfigurationException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nl.piter.vterm.emulator.Tokens.*;
+import static nl.piter.vterm.emulator.Tokens.Token;
 import static nl.piter.vterm.emulator.Tokens.Token.*;
-import static nl.piter.vterm.emulator.Tokens.TokenOption.*;
+import static nl.piter.vterm.emulator.Tokens.TokenOption;
+import static nl.piter.vterm.emulator.Tokens.TokenOption.OPTION_GRAPHMODE;
+import static nl.piter.vterm.emulator.Tokens.TokenOption.OPTION_INTEGERS;
 
 public class VTxTokenDefs {
 
@@ -83,12 +88,14 @@ public class VTxTokenDefs {
      * This list is searched linear so that the first match is used.<br>
      * The lines always end with a token, which is a TERMINATOR, or a PREFIX token.<br>
      * The following token definitions are supported<br>
-     *     {TERMINATOR_CHAR, CHAR_TOKEN}
-     *     {UTF8_STRING, SEQUENCE_TOKEN}
-     *     {UTF8_STRING, <OPTION>, PREFIX_TOKEN(false) }
-     *     {UTF8_STRING, <OPTION>, SEQUENCE_TOKEN(true!)}  -> graphmode only
-     *     {UTF8_STRING, <OPTION>, TERMINATOR_CHAR, SEQUENCE_TOKEN}
-     *     {UTF8_STRING, <OPTION>, TERMINATOR_UTF8_STRING, SEQEUNCE_TOKEN}
+     * <pre>
+     *  {TERMINATOR_CHAR, CHAR_TOKEN}
+     *  {UTF8_STRING, SEQUENCE_TOKEN}
+     *  {UTF8_STRING, <OPTION>, PREFIX_TOKEN(false) }
+     *  {UTF8_STRING, <OPTION>, SEQUENCE_TOKEN(true!)}  -> graphmode only
+     *  {UTF8_STRING, <OPTION>, TERMINATOR_CHAR, SEQUENCE_TOKEN}
+     *  {UTF8_STRING, <OPTION>, TERMINATOR_UTF8_STRING, SEQEUNCE_TOKEN}
+     * </pre>
      */
     private static Object[][] tokenDefs = {
             // ==================================================
@@ -259,44 +266,42 @@ public class VTxTokenDefs {
 
     // 'compile' he says.
     private void compile() {
-        for (int i=0;i<tokenDefs.length;i++) {
+        for (int i = 0; i < tokenDefs.length; i++) {
             addPattern(tokenDefs[i]);
         }
     }
 
     private void addPattern(Object[] def) {
 
-        Token token=null;
+        Token token = null;
         TokenOption option = null;
-        Character terminatorChar=null;
-        if ((def==null) || (def.length==0)) {
+        Character terminatorChar = null;
+        if ((def == null) || (def.length == 0)) {
             return;
         }
 
         String chars;
-        Object tokenObj=def[def.length-1];
+        Object tokenObj = def[def.length - 1];
         String tokenDescription = tokenObj.toString();
 
         if (tokenObj instanceof Tokens.Token) {
-            token=(Token)tokenObj;
+            token = (Token) tokenObj;
         }
 
-        if (def.length==2) {
-            chars=def[0].toString();
-        }
-        else if (def.length==3) {
-            chars=def[0].toString();
-            option=(TokenOption)def[1];
-        }
-        else if (def.length==4) {
-            chars=def[0].toString();
-            option=(TokenOption)def[1];
-            terminatorChar=def[2].toString().charAt(0);
+        if (def.length == 2) {
+            chars = def[0].toString();
+        } else if (def.length == 3) {
+            chars = def[0].toString();
+            option = (TokenOption) def[1];
+        } else if (def.length == 4) {
+            chars = def[0].toString();
+            option = (TokenOption) def[1];
+            terminatorChar = def[2].toString().charAt(0);
         } else {
-            throw new VTxInvalidConfigurationException("Couldn't parse pattern:"+def+" length must be within [2,4]:"+def.length);
+            throw new VTxInvalidConfigurationException("Couldn't parse pattern:" + def + " length must be within [2,4]:" + def.length);
         }
 
-        tokenPatterns.add(CharToken.createFrom(chars.toCharArray(),option,terminatorChar, token,tokenDescription));
+        tokenPatterns.add(CharToken.createFrom(chars.toCharArray(), option, terminatorChar, token, tokenDescription));
     }
 
     /**
@@ -309,7 +314,7 @@ public class VTxTokenDefs {
                 .filter(pat -> matches(pat.full(), pattern, index))
                 .collect(Collectors.toList());
 
-        if (result.size()==0) {
+        if (result.size() == 0) {
             return null;
         }
         return result.get(0);
@@ -325,7 +330,7 @@ public class VTxTokenDefs {
                 .filter(pat -> matches(pat.prefix(), pattern, index))
                 .collect(Collectors.toList());
 
-        if (result.size()==0) {
+        if (result.size() == 0) {
             return null;
         }
         return result.get(0);
@@ -340,7 +345,7 @@ public class VTxTokenDefs {
                 .collect(Collectors.toList());
     }
 
-    public boolean matchPartial(char[] sequence,byte pattern[], int index) {
+    public boolean matchPartial(char[] sequence, byte[] pattern, int index) {
 
         // sequence already to long?
         if (index > sequence.length)
@@ -356,7 +361,7 @@ public class VTxTokenDefs {
     }
 
     public boolean matches(char[] sequence, byte[] pattern, int index) {
-        if (sequence==null)
+        if (sequence == null)
             return false;
 
         // check: current size is to long to be a prefix
@@ -376,7 +381,7 @@ public class VTxTokenDefs {
 
         for (int i = 0; i < tokenDefs.length; i++) {
             Object[] tokdef = tokenDefs[i];
-            if (tokdef.length==0) {
+            if (tokdef.length == 0) {
                 continue;
             } else {
                 // Single Char Token

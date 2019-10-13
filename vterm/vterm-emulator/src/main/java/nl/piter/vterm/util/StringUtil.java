@@ -1,9 +1,13 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.util;
 
 public class StringUtil {
 
     public static boolean isEmpty(String str) {
-        return ((str==null) || (str.equals("")));
+        return ((str == null) || (str.equals("")));
     }
 
     public static <b> String toHexStr(byte[] bytes) {

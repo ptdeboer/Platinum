@@ -15,11 +15,11 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 /**
  * Test configuration settings.
  *
- * @author P.T. de Boer
+ *
  */
 public class Settings {
 
-    public static enum TestLocation {
+    public enum TestLocation {
         VFS_LOCALFS_LOCATION, //
         VFS_LOCAL_TEMPDIR_LOCATION, //
         VFS_SFTP_LOCALHOST

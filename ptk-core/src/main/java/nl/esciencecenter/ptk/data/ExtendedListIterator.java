@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -36,7 +36,7 @@ public interface ExtendedListIterator<Type> extends ListIterator<Type> {
      * This method does NOT throw NoSuchElementException. If there are not enough elements left or
      * the end has been reached, this method will return null or an empty list or the actual number
      * of elements left.
-     * 
+     *
      * @see ListIterator#next()
      */
     List<Type> next(int numElements);
@@ -47,14 +47,12 @@ public interface ExtendedListIterator<Type> extends ListIterator<Type> {
      * return the amount that is left.<br>
      * This method does NOT throw NoSuchElementException. If there are no elements to return, this
      * method will return null or an empty list.
-     * 
-     * @param numElements
-     *            - number previous elements to return in reversed order, unless
-     *            keepOriginalOrder==true.
-     * @param keepOriginalOrder
-     *            - this method perform <code>numElements</code> times a previous() and return the
-     *            sublist. This means the order, by default will be reversed. Set keepOrifinalOrder
-     *            the number of elements in the sub list are the same as in the original List.
+     *
+     * @param numElements       - number previous elements to return in reversed order, unless
+     *                          keepOriginalOrder==true.
+     * @param keepOriginalOrder - this method perform <code>numElements</code> times a previous() and return the
+     *                          sublist. This means the order, by default will be reversed. Set keepOrifinalOrder
+     *                          the number of elements in the sub list are the same as in the original List.
      */
     List<Type> previous(int numElements, boolean keepOriginalOrder);
 

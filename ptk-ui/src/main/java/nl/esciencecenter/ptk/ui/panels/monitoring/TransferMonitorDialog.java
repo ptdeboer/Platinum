@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,41 +20,25 @@
 
 package nl.esciencecenter.ptk.ui.panels.monitoring;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.StringHolder;
+import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.task.*;
+import nl.esciencecenter.ptk.util.StringUtil;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.border.BevelBorder;
-
-import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.task.ActionTask;
-import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.task.ITaskSource;
-import nl.esciencecenter.ptk.task.MonitorStats;
-import nl.esciencecenter.ptk.task.TaskWatcher;
-import nl.esciencecenter.ptk.task.TransferMonitor;
-import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
 /**
  * Transfer Monitor dialog for (VFS)Transfers.
  */
+@Slf4j
 public class TransferMonitorDialog extends javax.swing.JDialog implements ActionListener {
-       private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(TransferMonitorDialog.class);
-    }
 
     // === --- === //
 
@@ -122,7 +106,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
             public void doTask() {
                 while (vfsTransferInfo.isDone() == false) {
                     if (suspended == true) {
-                        logger.debugPrintf("Dialog Suspended for: %s\n", vfsTransferInfo.toString());
+                        log.debug("Dialog Suspended for: {}", vfsTransferInfo.toString());
                         return;
                     }
 
@@ -146,18 +130,17 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
                         }
                     } catch (Throwable t) {
                         // bugs in update():
-                        logger.logException(PLogger.FATAL, t, "Exception during update:%s\n", t);
+                        log.error(t.getMessage(), t);
                     }
 
                     try {
                         Thread.sleep(100);// 10fps
                     } catch (InterruptedException e) {
-                        logger.logException(PLogger.ERROR, e, "Sleep Interrupted!");
+                        log.error(e.getMessage(), e);
                     }
                 }// while()
 
-                logger.debugPrintf("Post updateLoop for (done) transfer:%s\n",
-                        vfsTransferInfo.toString());
+                log.debug("Post updateLoop for (done) transfer:{}", vfsTransferInfo);
 
                 // task done: final update to show statistics when job is done!
                 update(true);
@@ -166,7 +149,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
 
             @Override
             public void stopTask() {
-                logger.debugPrintf("stopTask() called for:%s\n", vfsTransferInfo.toString());
+                log.debug("stopTask() called for:{}", vfsTransferInfo.toString());
                 // stop THIS task, not the actual Transfer Task !
                 // (must use start() again to the dialog update!
                 suspended = true;
@@ -176,10 +159,12 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
     }
 
     protected void handle(String action, Throwable e) {
-        logger.logException(PLogger.ERROR, e, "%s\n", action, e);
+        log.error("Exception for action:" + action + ":" + e.getMessage(), e);
     }
 
-    /** Restart the update task */
+    /**
+     * Restart the update task
+     */
     public synchronized void start() {
         String title = "Transfering:" + vfsTransferInfo.getSource() + " to "
                 + vfsTransferInfo.getDestination().getHost();// +":"+vfsTransferInfo.getStatus();
@@ -191,12 +176,12 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
     }
 
     protected void update(boolean finalUpdate) {
-        logger.debugPrintf(">>> Before Update\n");
+        log.debug(">>> Before Update");
 
         this.transferPanel.update(finalUpdate);
 
-        logger.debugPrintf("Update total  :'%s'\n", transferPanel.getTotalTimeText());
-        logger.debugPrintf("Update subTask:'%s'\n", transferPanel.getSubTimeText());
+        log.debug("Update total  :'{}'\n", transferPanel.getTotalTimeText());
+        log.debug("Update subTask:'{}'\n", transferPanel.getSubTimeText());
 
         updateLog(finalUpdate);
 
@@ -352,7 +337,7 @@ public class TransferMonitorDialog extends javax.swing.JDialog implements Action
     }
 
     public static TransferMonitorDialog showTransferDialog(ITaskSource taskSource,
-            TransferMonitor transfer, long delay) {
+                                                           TransferMonitor transfer, long delay) {
         return showTransferDialog(transfer, delay);
     }
 

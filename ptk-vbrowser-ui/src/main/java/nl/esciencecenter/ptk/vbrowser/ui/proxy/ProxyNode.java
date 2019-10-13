@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,36 +20,33 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeNames;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * ProxyNode is abstract interface to Resource Nodes. It represents a "Proxy" of the actual viewed
  * Node.
  */
+@Slf4j
 public abstract class ProxyNode {
 
     private static int idCounter = 0;
-
-    private static PLogger logger;
-    {
-        logger = PLogger.getLogger(ProxyNode.class);
-    }
 
     // ========================================================================
     // helpers
@@ -80,7 +77,7 @@ public abstract class ProxyNode {
         if (nodes == null)
             return null;
 
-        VRL vrls[] = new VRL[nodes.size()];
+        VRL[] vrls = new VRL[nodes.size()];
 
         for (int i = 0; i < nodes.size(); i++) {
             vrls[i] = nodes.get(i).getVRL();
@@ -101,7 +98,7 @@ public abstract class ProxyNode {
 
     // Get subrange of array nodes [offset:offset+range] .
     public static List<? extends ProxyNode> subrange(List<? extends ProxyNode> nodes, int offset,
-            int range) {
+                                                     int range) {
         // no change:
         if ((offset <= 0) && (range < 0))
             return nodes;
@@ -143,6 +140,8 @@ public abstract class ProxyNode {
         return idCounter++;
     }
 
+
+
     // ========================================================================
     // Cache !
     // ========================================================================
@@ -178,7 +177,7 @@ public abstract class ProxyNode {
         protected VRL is_resource_link_vrl;
 
         protected Cache() {
-            logger.debugPrintf("New Cache() for:Proxynode:'%s'\n", ProxyNode.this.getVRL());
+            log.debug("New Cache() for:Proxynode:'{}'", ProxyNode.this.getVRL());
         }
 
         protected ProxyNode resolved_node;
@@ -244,7 +243,7 @@ public abstract class ProxyNode {
 
     /**
      * Uncached method. Check wheter resource really exists.
-     * 
+     *
      * @return
      * @throws ProxyException
      */
@@ -322,7 +321,7 @@ public abstract class ProxyNode {
     public String getName() // no throw: name should already be fetched
     {
         if (this.cache.name == null) {
-            logger.warnPrintf("getName(): name NOT prefetched:%s\n", this);
+            log.warn("getName(): name NOT prefetched:{}", this);
             try {
                 this.cache.name = doGetName();
             } catch (ProxyException e) {
@@ -341,7 +340,7 @@ public abstract class ProxyNode {
 
     public String getMimeType() throws ProxyException {
         if (this.cache.mime_type == null) {
-            logger.warnPrintf("getMimeType(): mime_type NOT prefetched:%s\n", this);
+            log.warn("getMimeType(): mime_type NOT prefetched:{}", this);
             this.cache.mime_type = doGetMimeType();
         }
 
@@ -350,11 +349,9 @@ public abstract class ProxyNode {
 
     /**
      * Get Icon uses for specified satus and optional a prerender icon matching the specified size
-     * 
-     * @param status
-     *            Optional status attribute
-     * @param size
-     *            Desired size
+     *
+     * @param status Optional status attribute
+     * @param size   Desired size
      * @return
      * @throws ProxyException
      */
@@ -364,9 +361,7 @@ public abstract class ProxyNode {
 
     public boolean hasChildren() throws ProxyException {
         List<? extends ProxyNode> childs = this.getChilds();
-        if ((childs == null) || (childs.size() <= 0))
-            return false;
-        return true;
+        return (childs != null) && (childs.size() > 0);
     }
 
     public ViewNode createViewItem(UIViewModel model) throws ProxyException {
@@ -454,20 +449,15 @@ public abstract class ProxyNode {
         return null;
     }
 
-    /** @deprecated to be investigated */
-    public boolean isBusy() {
-        return false;
-    }
-
     /**
      * Returns (cached) ResourceType value. Should not throw exception since attribute must be known
      * at creation time.
-     * 
+     *
      * @return
      */
     public String getResourceType() {
         if ((this.cache == null) || (this.cache.resource_type == null)) {
-            logger.warnPrintf("resource_type NOT prefetched!\n");
+            log.warn("resource_type NOT prefetched!");
 
             try {
                 this.cache.resource_type = doGetResourceType();
@@ -481,12 +471,12 @@ public abstract class ProxyNode {
     /**
      * Returns (cached) isComposite value. Should not throw exception since attribute must be known
      * at creation time.
-     * 
+     *
      * @return
      */
     public boolean isComposite() {
         if (this.cache.is_composite == null) {
-            logger.warnPrintf("***>>>> isComposite() NOT prefetched!\n");
+            log.warn("***>>>> isComposite() NOT prefetched!");
             try {
                 this.cache.is_composite = doGetIsComposite();
             } catch (Exception e) {
@@ -497,6 +487,11 @@ public abstract class ProxyNode {
 
         return this.cache.is_composite;
     }
+
+    public boolean isEditable() {
+        return this.doGetIsEditable();
+    }
+
 
     public List<String> getChildTypes() {
         if (this.cache.child_types == null) {
@@ -528,6 +523,18 @@ public abstract class ProxyNode {
         return getAttributes(attrNames.toArray(new String[0]));
     }
 
+    public void updateAttributes(Attribute[] attrs) throws ProxyException {
+        this.doUpdateAttributes(attrs);
+    };
+
+    public Map<String, AttributeDescription> getAttributeDescriptions(String[] attrNames) throws ProxyException {
+        if (attrNames == null)
+            return null;
+
+        // todo List<String> vs String array[]
+        return doGetAttributeDescriptions(attrNames);
+    }
+
     public List<Attribute> getAttributes(String[] names) throws ProxyException {
         List<Attribute> attrs = doGetAttributes(names);
 
@@ -546,16 +553,16 @@ public abstract class ProxyNode {
             return doGetPresentation();
         } catch (ProxyException e) {
             // Default Presentation!
-            logger.errorPrintf("FIXME: Could not get presentation. Need default Presentation!");
+            log.error("FIXME: Could not get presentation. Need default Presentation!");
             e.printStackTrace();
             return null;
         }
     }
 
     protected List<String> getDefaultProxyAttributesNames() {
-        return new StringList(new String[] { AttributeNames.ATTR_ICON, AttributeNames.ATTR_NAME,
+        return new StringList(AttributeNames.ATTR_ICON, AttributeNames.ATTR_NAME,
                 AttributeNames.ATTR_RESOURCE_TYPE, AttributeNames.ATTR_URI,
-                AttributeNames.ATTR_MIMETYPE });
+                AttributeNames.ATTR_MIMETYPE);
     }
 
     protected List<Attribute> getDefaultProxyAttributes(String[] names) throws ProxyException {
@@ -645,7 +652,7 @@ public abstract class ProxyNode {
     }
 
     public void dispose() {
-        logger.errorPrintf("DISPOSE:%s\n", this);
+        log.error("DISPOSE:{}", this);
     }
 
     // ========================================================================
@@ -679,14 +686,20 @@ public abstract class ProxyNode {
 
     abstract protected boolean doGetIsComposite() throws ProxyException;
 
-    /** Uncached doGetChilds, using optional range */
+    /**
+     * Uncached doGetChilds, using optional range
+     */
     protected abstract List<? extends ProxyNode> doGetChilds(int offset, int range,
-            LongHolder numChildsLeft) throws ProxyException;
+                                                             LongHolder numChildsLeft) throws ProxyException;
 
-    /** Uncached doGetParent() */
+    /**
+     * Uncached doGetParent()
+     */
     abstract protected ProxyNode doGetParent() throws ProxyException;
 
-    /** Resource Type this node can create/contain. */
+    /**
+     * Resource Type this node can create/contain.
+     */
     abstract protected List<String> doGetChildTypes() throws ProxyException;
 
     // ===========
@@ -695,9 +708,15 @@ public abstract class ProxyNode {
 
     abstract protected List<String> doGetAttributeNames() throws ProxyException;
 
-    abstract protected List<Attribute> doGetAttributes(String names[]) throws ProxyException;
+    abstract protected List<Attribute> doGetAttributes(String[] names) throws ProxyException;
+
+    abstract protected void doUpdateAttributes(Attribute[] attrs) throws ProxyException;
+
+    abstract protected Map<String,AttributeDescription> doGetAttributeDescriptions(String[] names) throws ProxyException;
 
     abstract protected Presentation doGetPresentation() throws ProxyException;
+
+    abstract protected boolean doGetIsEditable();
 
     // ===================
     // VLink//ResourceLink

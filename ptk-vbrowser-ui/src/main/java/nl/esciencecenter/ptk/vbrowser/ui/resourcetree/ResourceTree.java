@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,9 +20,17 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
+import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
+import nl.esciencecenter.ptk.vbrowser.ui.model.*;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
 import java.awt.dnd.Autoscroll;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
@@ -30,37 +38,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeSelectionModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
-import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
-import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewContainerEventAdapter;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeDataSource;
-
 /**
  * Actual Swing JTree 'View' Component.
  */
+@Slf4j
 public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll {
-    private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(PLogger.class);
-    }
-
-    // ========================================================================
-    //
-    // ========================================================================
 
     public class FocusFollower extends MouseMotionAdapter {
         private ResourceTreeNode prevNode;
@@ -107,7 +89,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     public void populate(ResourceTreeNode node) {
-        logger.debugPrintf("ResourceTree:populate():%s\n", node.getVRI());
+        log.debug("ResourceTree:populate():{}", node.getVRI());
 
         this.dataUpdater.updateChilds(node);
     }
@@ -179,7 +161,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         // drag
         this.dragSource = DragSource.getDefaultDragSource();
         this.dgListener = new ViewNodeContainerDragListener();
-        // this.dsListener = MyDragSourceListener.getDefault();
+        // this.dsListener = MyDragSourceListener.fsutil();
         // component, action, listener
         this.dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE,
                 this.dgListener);
@@ -209,7 +191,9 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return this;
     }
 
-    /** Used for Mouse Events : */
+    /**
+     * Used for Mouse Events :
+     */
     public ViewNode getNodeUnderPoint(Point p) {
         ResourceTreeNode rtnode = this.getRTNodeUnderPoint(p);
         if (rtnode != null)
@@ -218,7 +202,9 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return null;
     }
 
-    /** Used for Mouse Events : */
+    /**
+     * Used for Mouse Events :
+     */
     public ResourceTreeNode getRTNodeUnderPoint(Point p) {
         if (p == null)
             return null;
@@ -239,7 +225,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         Object o = path.getLastPathComponent();
 
         if (o == null) {
-            logger.debugPrintf("No Node found at tree path:" + path);
+            log.debug("No Node found at tree path:" + path);
         } else if (o instanceof ResourceTreeNode) {
             // instanceof returns false when o==null, so here o exists.
             return (ResourceTreeNode) o;
@@ -257,7 +243,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     public ResourceTreeNode[] getRTSelection() {
-        TreePath paths[] = getSelectionPaths();
+        TreePath[] paths = getSelectionPaths();
 
         if (paths == null)
             return null; // no selection
@@ -270,7 +256,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
                 nodes.add(node);
         }
 
-        ResourceTreeNode _nodes[] = new ResourceTreeNode[nodes.size()];
+        ResourceTreeNode[] _nodes = new ResourceTreeNode[nodes.size()];
 
         return nodes.toArray(_nodes);
     }
@@ -308,7 +294,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         if (rtnodes == null)
             return null;
 
-        ViewNode nodes[] = new ViewNode[rtnodes.length];
+        ViewNode[] nodes = new ViewNode[rtnodes.length];
         for (int i = 0; i < rtnodes.length; i++)
             nodes[i] = rtnodes[i].getViewItem();
 
@@ -318,19 +304,19 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     @Override
     public void setNodeSelection(ViewNode node, boolean isSelected) {
         // selection already done by selection model
-        logger.debugPrintf("updateSelection %s=%s\n", node, isSelected);
+        log.debug("updateSelection {}={}", node, isSelected);
     }
 
     @Override
     public void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode, boolean selected) {
         // selection already done by selection model
-        logger.debugPrintf("selection range=[%s,%s]=%s\n", firstNode, lastNode, selected);
+        log.debug("selection range=[{},{}]={}", firstNode, lastNode, selected);
     }
 
     public JPopupMenu createNodeActionMenuFor(ViewNode node, boolean canvasMenu) {
         // allowed during testing
         if (this.controller.getBrowserInterface() == null) {
-            logger.warnPrintf("getActionMenuFor() no browser registered.");
+            log.warn("getActionMenuFor() no browser registered.");
             return null;
         }
         // node menu
@@ -352,7 +338,7 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 
     public void toggleFocus(ResourceTreeNode rtnode, boolean value) {
         if (rtnode == null) {
-            ; // unset focus
+            // unset focus
         } else {
             rtnode.setHasFocus(value);
             this.getModel().uiFireNodeChanged(rtnode);

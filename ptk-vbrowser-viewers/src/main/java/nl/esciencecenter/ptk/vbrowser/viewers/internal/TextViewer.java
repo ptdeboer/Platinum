@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,34 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.internal;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.border.BevelBorder;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.task.ActionTask;
@@ -62,16 +35,28 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Vector;
+
 /**
  * Embedded textviewer for the VBrowser.
  */
+@Slf4j
 public class TextViewer extends ViewerJPanel implements ActionListener, FontToolbarListener {
-       // --
+    // --
     private static final String viewerSettingsFile = "textviewer.props";
 
     private static final String CONFIG_LINE_WRAP = "textviewer.linewrap";
 
-    private static final String configPropertyNames[] = { CONFIG_LINE_WRAP };
+    private static final String[] configPropertyNames = {CONFIG_LINE_WRAP};
 
     public static final String ACTION_VIEW = "View";
 
@@ -80,12 +65,12 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
     /**
      * The mimetypes i can view
      */
-    private static String mimeTypes[] = { MimeTypes.MIME_TEXT_PLAIN, MimeTypes.MIME_TEXT_HTML, "text/x-c",
+    private static String[] mimeTypes = {MimeTypes.MIME_TEXT_PLAIN, MimeTypes.MIME_TEXT_HTML, "text/x-c",
             "text/x-cpp", "text/x-java", "application/x-sh", "application/x-csh", "application/x-shellscript",
             // MimeTypes.MIME_BINARY, -> Now handled by MimeType mapping!
             "application/vlet-type-definition",
             // nfo files: uses CP437 Encoding (US Extended ASCII)!
-            "text/x-nfo" };
+            "text/x-nfo"};
 
     // ===
     // Instance
@@ -102,6 +87,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
     // =======================================================================
     // =======================================================================
     boolean editable = false;
+    protected String textEncoding = "UTF-8";
 
     //
     // GUI Components
@@ -152,8 +138,18 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
     private ActionTask loadTask;
 
     public TextViewer() {
-        ; // initialization is done in initViewer() !
+        // initialization is done in initViewer() !
     }
+
+
+    public String getTextEncoding() {
+        return this.textEncoding;
+    }
+
+    public void setTextEncoding(String charSet) {
+        this.textEncoding = charSet;
+    }
+
 
     public void initGui() {
         // TextViewer is a JPanel:
@@ -230,7 +226,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
 
                         // [Settings]=>[Encoding]=>{Encodings}
 
-                        String encs[] = ResourceLoader.getDefaultCharEncodings();
+                        String[] encs = ResourceLoader.getDefaultCharEncodings();
                         encodingButtons = new Vector<JRadioButton>();
                         ButtonGroup bGroup = new ButtonGroup();
                         for (String encoding : encs) {
@@ -380,8 +376,8 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
      * @param location
      * @throws VrsException
      */
-    public void doStartViewer(VRL vrl, String optionalMethod) {
-        doUpdate(vrl);
+    public void doStartViewer(VRL location, String optionalMethod) {
+        doUpdate(location);
     }
 
     protected void doUpdate(final VRL location) {
@@ -415,7 +411,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
     }
 
     protected void _load(VRL uri) {
-        debugPrintf("TextViewer Loading:%s\n", uri);
+        log.debug("TextViewer Loading:{}", uri);
 
         // reset stop flag:
         this.muststop = false;
@@ -569,7 +565,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
             for (JRadioButton rbut : this.encodingButtons)
                 rbut.setEnabled(val);
         } else if (actionCmd.startsWith("encoding:")) {
-            String strs[] = actionCmd.split(":");
+            String[] strs = actionCmd.split(":");
             setEncoding(strs[1]);
             // only show warning during GUI actions
             showWarnEncoding();
@@ -648,7 +644,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
 
     /**
      * Write String as new contents
-     * 
+     *
      * @param encoding
      */
     protected void _save(final String txt, String encoding) {
@@ -722,7 +718,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
             }
             updateSettings();
         } catch (Exception e) {
-            warnPrintf("Exception when loading settings: %s\n", e);
+            log.warn("Exception when loading settings: {}", e);
         }
     }
 
@@ -733,7 +729,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
             if (value != null)
                 this.wrapMenuItem.setState(Boolean.parseBoolean(value));
         } catch (Exception e) {
-            errorPrintf("Property Exception '%s':%s\n", CONFIG_LINE_WRAP, e);
+            log.error("Property Exception '{}':{}", CONFIG_LINE_WRAP, e);
         }
     }
 
@@ -743,7 +739,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
         for (int i = 0; i < mimeTypes.length; i++) {
-            List<String> list = new StringList(new String[] { ACTION_VIEW + ":View Text", ACTION_EDIT + ":Edit Text" });
+            List<String> list = new StringList(ACTION_VIEW + ":View Text", ACTION_EDIT + ":Edit Text");
             mappings.put(mimeTypes[i], list);
         }
 

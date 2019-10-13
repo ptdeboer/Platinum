@@ -28,7 +28,9 @@ public abstract class ActionTask implements Runnable {
 
     // === privates ===
 
-    /** Optional owner of this Task */
+    /**
+     * Optional owner of this Task
+     */
     private ITaskSource taskSource;
 
     private String taskName;
@@ -36,7 +38,7 @@ public abstract class ActionTask implements Runnable {
     /**
      * Number of thread associated with this task.
      */
-    private Thread threads[];
+    private Thread[] threads;
 
     private Object threadMutex = new Object();
 
@@ -46,7 +48,7 @@ public abstract class ActionTask implements Runnable {
 
     // === protected ===
 
-    protected Throwable exceptions[];
+    protected Throwable[] exceptions;
 
     public ActionTask(ITaskSource taskWatcher, String taskName) {
         init(taskWatcher, taskName, new TaskMonitorAdaptor(taskName, 1));
@@ -130,9 +132,8 @@ public abstract class ActionTask implements Runnable {
 
     /**
      * Returns thread of parallel task.
-     * 
-     * @param index
-     *            number of task.
+     *
+     * @param index number of task.
      * @return actual thread.
      */
     final public Thread getThread(int index) {
@@ -185,13 +186,13 @@ public abstract class ActionTask implements Runnable {
 
     /**
      * Tries to join with all active threads.
-     * 
+     *
      * @return true of all active thread could be joint. False if one of the threads wasn't active
-     *         or the join failed.
+     * or the join failed.
      */
     final public boolean join() throws InterruptedException {
         // join all threads:
-        Thread _threadz[];
+        Thread[] _threadz;
         // Join is time expensive, can copy out thread array. 
         synchronized (threadMutex) {
             if ((threads == null) || (threads.length <= 0)) {
@@ -258,7 +259,7 @@ public abstract class ActionTask implements Runnable {
      * thread already finished.
      */
     final public void joinAll(long timeOutMillis) throws InterruptedException {
-        Thread _threadz[];
+        Thread[] _threadz;
 
         // Join is time expensive, can copy out thread array. 
         synchronized (threadMutex) {
@@ -279,12 +280,12 @@ public abstract class ActionTask implements Runnable {
     /**
      * Invoke interrupt() to all threads. The default behavior for a thread is that if the
      * interrupted() state is set, the thread should stop executing and perform a graceful shutdown.
-     * 
+     *
      * @see {@link Thread#isInterrupted()}
      * @see {@link Thread#interrupt()}
      */
     final public void interruptAll() {
-        Thread _threadz[];
+        Thread[] _threadz;
 
         synchronized (threadMutex) {
             if ((threads == null) || (threads.length <= 0)) {
@@ -342,7 +343,6 @@ public abstract class ActionTask implements Runnable {
             // unhandled exception by doTask() !
             taskError = t;
         } finally {
-            ;
         }
         // === POST ===
         if (taskError != null) {
@@ -405,7 +405,6 @@ public abstract class ActionTask implements Runnable {
                 // II) Call stop task for asynchronous callback.
                 this.stopTask();
             } catch (Throwable t) {
-                ;
             }
 
             // III) Send interrupt() to all running threads to wake them up.
@@ -421,7 +420,7 @@ public abstract class ActionTask implements Runnable {
      * To check whether this task needs to stop, use isCancelled() since an isInterrupted() flag
      * might be erased after an actual interrupt() call. Also an task may continue after an
      * interrupt(), but must stop after isCancelled().
-     * 
+     *
      * @return true if the one of the current active thread is in interrupted state.
      */
     final public boolean isInterrupted() {

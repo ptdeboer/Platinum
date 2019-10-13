@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,33 +20,27 @@
 
 package nl.esciencecenter.vbrowser.vrs.localfs;
 
+import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.vbrowser.vrs.VCloseable;
+import nl.esciencecenter.vbrowser.vrs.VPath;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
+import nl.esciencecenter.vbrowser.vrs.exceptions.*;
+import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
+import nl.esciencecenter.vbrowser.vrs.node.VFileSystemNode;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystemException;
 
-import nl.esciencecenter.ptk.io.FSUtil;
-import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.vbrowser.vrs.VCloseable;
-import nl.esciencecenter.vbrowser.vrs.VPath;
-import nl.esciencecenter.vbrowser.vrs.VRSContext;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotEmptyException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
-import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
-import nl.esciencecenter.vbrowser.vrs.node.VFileSystemNode;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import static nl.esciencecenter.ptk.io.FSUtil.fsutil;
 
 public class LocalFileSystem extends VFileSystemNode implements VStreamCreator, VCloseable {
 
-    protected FSUtil fsUtil;
 
     public LocalFileSystem(VRSContext context) throws VrsException {
         super(context, new VRL("file:/"));
-        fsUtil = new FSUtil();
     }
 
     @Override
@@ -59,14 +53,10 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator, 
             // optionall resolve tilde:
             VRL homeVLR = this.getVRSContext().getHomeVRL();
             path = URIFactory.resolveTilde(homeVLR.getPath(), path);
-            return new LocalFSPathNode(this, fsUtil.resolvePath(path));
+            return new LocalFSPathNode(this, fsutil().resolvePath(path));
         } catch (IOException e) {
             throw convertException(null, "Failed to resolve path:" + path, e);
         }
-    }
-
-    protected FSUtil getFSUtil() {
-        return this.fsUtil;
     }
 
     @Override
@@ -108,7 +98,6 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator, 
 
     @Override
     public boolean close() {
-        fsUtil = null;
         return true;
     }
 

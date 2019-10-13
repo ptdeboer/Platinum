@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,12 @@
 
 package nl.esciencecenter.vbrowser.vrs.webrs;
 
-import java.net.URISyntaxException;
-
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.exceptions.CertificateStoreException;
 import nl.esciencecenter.ptk.ssl.CertUI;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
 import nl.esciencecenter.ptk.ssl.CertificateStore.CaCertOptions;
-import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.UI;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.web.WebClient;
 import nl.esciencecenter.ptk.web.WebConfig.AuthenticationType;
 import nl.esciencecenter.ptk.web.WebException;
@@ -41,14 +39,15 @@ import nl.esciencecenter.vbrowser.vrs.node.VResourceSystemNode;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.net.URISyntaxException;
+
 /**
  * Adaptor for (web) URLs.
  */
+@Slf4j
 public class WebResourceSystem extends VResourceSystemNode {
 
     public static final String DEFAULT_HTTPRS_SERVERID = "webrs";
-
-    private final static PLogger logger = PLogger.getLogger(WebResourceSystem.class);
 
     // ========================================================================
     //
@@ -161,8 +160,8 @@ public class WebResourceSystem extends VResourceSystemNode {
         UI ui = this.getVRSContext().getUI();
 
         if ((ui == null) || ui.isEnabled() == false) {
-            PLogger.getLogger(WebResourceSystem.class).warnPrintf(
-                    "Non interactive invironment. Cannot add certificate for:%s\n", vrl);
+            log.warn(
+                    "Non interactive environment. Cannot add certificate for:{}", vrl);
             return false;
         }
 
@@ -172,7 +171,7 @@ public class WebResourceSystem extends VResourceSystemNode {
         options.interactive = true;
 
         if (caCerts == null) {
-            logger.warnPrintf("Invalid Certicifate or not recognized cert for:%s\n", vrl);
+            log.warn("Invalid Certificate or not recognized cert for:{}", vrl);
             return false;
         } else {
             boolean succeeded = CertUI.interactiveImportCertificate(caCerts, vrl.getHostname(), vrl.getPort(), options);

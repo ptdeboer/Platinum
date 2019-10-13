@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,13 +20,13 @@
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
+import nl.esciencecenter.ptk.data.HashSetList;
+import nl.esciencecenter.ptk.data.StringList;
+
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
-import nl.esciencecenter.ptk.data.HashSetList;
-import nl.esciencecenter.ptk.data.StringList;
 
 /**
  * The AttributeDescription class holds meta-data about an Attribute.
@@ -53,30 +53,21 @@ public class AttributeDescription {
 
     protected String descriptionText = null;
 
-    protected Object allowedValues[];
+    protected Object[] allowedValues;
 
     protected AttributeDescription(String name) {
         this.name = name;
-        this.allowedTypes = new HashSetList<AttributeType>();
+        this.allowedTypes = new HashSetList<>();
         this.allowedTypes.add(AttributeType.ANY);
         this.isEditable = false;
     }
 
     public AttributeDescription(String name, AttributeType type, boolean editable, String description) {
         this.name = name;
-        this.allowedTypes = new HashSetList<AttributeType>();
+        this.allowedTypes = new HashSetList<>();
         this.allowedTypes.add(type);
-        this.isEditable = false;
+        this.isEditable = editable;
         this.descriptionText = description;
-    }
-
-    public AttributeDescription(String name, AttributeType[] types, boolean editable) {
-        this.name = name;
-        this.allowedTypes = new HashSetList<AttributeType>();
-        for (AttributeType type : types) {
-            this.allowedTypes.add(type);
-        }
-        this.isEditable = false;
     }
 
     public String getName() {

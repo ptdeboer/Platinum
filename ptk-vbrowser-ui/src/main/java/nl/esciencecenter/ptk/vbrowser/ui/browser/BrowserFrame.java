@@ -82,7 +82,7 @@ public class BrowserFrame extends JFrame {
             this.add(uiMainPanel);
             this.uiMainPanel.setLayout(new BorderLayout());
             {
-                this.topMenuBar =new BrowserMenuBarCreator(this.browserController, menuActionListener).create();
+                this.topMenuBar = new BrowserMenuBarCreator(this.browserController, menuActionListener).create();
                 setJMenuBar(topMenuBar);
             }
             {
@@ -112,7 +112,7 @@ public class BrowserFrame extends JFrame {
                             viewToolBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons_small.png"));
-                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString()+":16");
+                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString() + ":16");
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -121,7 +121,7 @@ public class BrowserFrame extends JFrame {
                             viewToolBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons.png"));
-                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString()+":48");
+                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString() + ":48");
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -130,7 +130,7 @@ public class BrowserFrame extends JFrame {
                             viewToolBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons_big.png"));
-                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString()+":96");
+                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString() + ":96");
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -184,7 +184,7 @@ public class BrowserFrame extends JFrame {
                 // ====
                 {
                     this.uiRightTabPane = new JTabbedPane();
-                    this.tabManager=new BrowserJTabbedPaneController(uiRightTabPane,this.menuActionListener);
+                    this.tabManager = new BrowserJTabbedPaneController(uiRightTabPane, this.menuActionListener);
                     this.uiMainSplitPane.add(this.uiRightTabPane, JSplitPane.RIGHT);
                     // ... iconsPanel
                     {

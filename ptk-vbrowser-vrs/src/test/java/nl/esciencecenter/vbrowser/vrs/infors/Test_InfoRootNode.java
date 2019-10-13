@@ -1,7 +1,6 @@
 package nl.esciencecenter.vbrowser.vrs.infors;
 
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
-
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -46,14 +46,8 @@ public class TestWebConfig {
         Assert.assertEquals("Scheme must match protocol.", scheme, conf.getProtocol());
         Assert.assertEquals("Hostnames must match.", host, conf.getHostname());
         Assert.assertEquals("Port numbers must match.", port, conf.getPort());
-
-        outPrintf("Service URI=%s\n", conf.getServiceURI());
         Assert.assertEquals("Service URIs must match", uri, conf.getServiceURI());
 
-    }
-
-    protected void outPrintf(String format, Object... args) {
-        System.out.printf(format, args);
     }
 
 }

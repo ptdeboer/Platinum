@@ -1,11 +1,5 @@
 package nl.esciencecenter.ptk.vbrowser.uitest.resourcetable;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JTable;
-
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
@@ -19,6 +13,10 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AltDummyDataSource implements ProxyDataSource {
 
@@ -64,8 +62,8 @@ public class AltDummyDataSource implements ProxyDataSource {
 
     @Override
     public ViewNode[] getChilds(UIViewModel uiModel, VRL locator, int offset, int range,
-            LongHolder numChildsLeft) throws ProxyException {
-        ViewNode nodes[] = new ViewNode[2];
+                                LongHolder numChildsLeft) throws ProxyException {
+        ViewNode[] nodes = new ViewNode[2];
         nodes[0] = createViewNode("dummy1");
         nodes[1] = createViewNode("dummy2");
 
@@ -74,7 +72,7 @@ public class AltDummyDataSource implements ProxyDataSource {
 
     @Override
     public ViewNode[] createViewNodes(UIViewModel uiModel, VRL[] locations) throws ProxyException {
-        ViewNode nodes[] = new ViewNode[locations.length];
+        ViewNode[] nodes = new ViewNode[locations.length];
         for (int i = 0; i < locations.length; i++) {
             nodes[i] = createViewNode(locations[i].getBasename());
         }

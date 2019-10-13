@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator;
 
 import nl.piter.vterm.api.ChannelOptions;

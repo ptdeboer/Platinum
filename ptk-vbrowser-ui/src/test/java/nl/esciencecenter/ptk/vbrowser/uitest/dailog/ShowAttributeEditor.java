@@ -1,7 +1,6 @@
 package nl.esciencecenter.ptk.vbrowser.uitest.dailog;
 
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeEditorForm;
-import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeViewer;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -17,7 +16,7 @@ public class ShowAttributeEditor {
 
             attrs.put(new Attribute("longValue", (long) 10));
             attrs.put(new Attribute("StringValue", "String Value"));
-            attrs.put(new Attribute("enum", new String[] { "aap", "noot", "mies" }, 1));
+            attrs.put(new Attribute("enum", new String[]{"aap", "noot", "mies"}, 1));
 
             attrs.put(new Attribute("VRLValue", new VRL("http://www.cnn.com/hello")));
 

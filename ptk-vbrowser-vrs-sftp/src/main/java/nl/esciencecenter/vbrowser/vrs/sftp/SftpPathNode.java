@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,10 @@
 
 package nl.esciencecenter.vbrowser.vrs.sftp;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.LinkOption;
-import java.util.List;
-
+import com.jcraft.jsch.SftpATTRS;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.io.RandomReadable;
 import nl.esciencecenter.ptk.io.RandomWritable;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VRandomAccessable;
@@ -35,15 +31,19 @@ import nl.esciencecenter.vbrowser.vrs.io.VStreamAccessable;
 import nl.esciencecenter.vbrowser.vrs.node.VFSPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-import com.jcraft.jsch.SftpATTRS;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.LinkOption;
+import java.util.List;
 
+@Slf4j
 public class SftpPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable {
-
-    private static final PLogger logger = PLogger.getLogger(SftpPathNode.class);
 
     private SftpFileSystem sftpfs;
 
-    /** Absolute path on remote filesystem */
+    /**
+     * Absolute path on remote filesystem
+     */
     private String path;
 
     private SftpATTRS attrs;
@@ -60,10 +60,7 @@ public class SftpPathNode extends VFSPathNode implements VStreamAccessable, VRan
 
     @Override
     public boolean isRoot() {
-        if ("/".compareTo(path) == 0) {
-            return true;
-        }
-        return false;
+        return "/".compareTo(path) == 0;
     }
 
     public SftpATTRS getSftpAttrs() throws VrsException {
@@ -93,7 +90,6 @@ public class SftpPathNode extends VFSPathNode implements VStreamAccessable, VRan
 
     @Override
     public List<? extends VFSPath> list() throws VrsException {
-        logger.debugPrintf("list():%s\n", this);
         return sftpfs.listNodes(path);
     }
 

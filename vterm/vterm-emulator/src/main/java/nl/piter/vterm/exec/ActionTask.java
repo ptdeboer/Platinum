@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.exec;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +18,8 @@ public abstract class ActionTask implements Runnable {
     private Throwable exception;
 
     public ActionTask(Object owner, String name) {
-        this.owner=owner;
-        this.name=name;
+        this.owner = owner;
+        this.name = name;
     }
 
     public Thread thread() {
@@ -31,12 +35,12 @@ public abstract class ActionTask implements Runnable {
     }
 
     public boolean isInterupted() {
-        if (this.thread==null) return false;
+        if (this.thread == null) return false;
         return this.thread.isInterrupted();
     }
 
     public boolean isAlive() {
-        if (this.thread==null) return false;
+        if (this.thread == null) return false;
         return this.thread.isAlive();
     }
 
@@ -49,10 +53,9 @@ public abstract class ActionTask implements Runnable {
         } catch (Throwable t) {
             // unhandled exception by doTask() !
             exception = t;
-            log.debug("run():Exception:{}",t.getMessage());
-            log.debug("run():Exception>>>",t);
+            log.debug("run():Exception:{}", t.getMessage());
+            log.debug("run():Exception>>>", t);
         } finally {
-            ;
         }
     }
 

@@ -20,8 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
-import java.util.List;
-
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
@@ -31,6 +29,8 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.util.List;
 
 /**
  * DataSource which produces ViewItems from ProxyItems. Is DataSource Adaptor. Bridging class
@@ -56,7 +56,7 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource {
     }
 
     public ProxyNode[] getChildProxyItems(VRL locator, int offset, int range,
-            LongHolder numChildsLeft) throws ProxyException {
+                                          LongHolder numChildsLeft) throws ProxyException {
         ProxyNode[] childs;
 
         // check toplevel:
@@ -77,7 +77,7 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource {
         if (childs == null)
             return null;
         int len = childs.length;
-        ViewNode items[] = new ViewNode[len];
+        ViewNode[] items = new ViewNode[len];
         for (int i = 0; i < len; i++) {
             items[i] = childs[i].createViewItem(uIModel);
         }
@@ -100,7 +100,7 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource {
 
     @Override
     public ViewNode[] getChilds(UIViewModel uiModel, VRL locator, int offset, int range,
-            LongHolder numChildsLeft) throws ProxyException {
+                                LongHolder numChildsLeft) throws ProxyException {
         return createViewItems(uiModel, getChildProxyItems(locator, offset, range, numChildsLeft));
     }
 
@@ -108,7 +108,7 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource {
     public ViewNode[] createViewNodes(UIViewModel uiModel, VRL[] locations) throws ProxyException {
         //
         int len = locations.length;
-        ViewNode nodes[] = new ViewNode[len];
+        ViewNode[] nodes = new ViewNode[len];
         for (int i = 0; i < len; i++) {
             ProxyNode node = proxyFactory.openLocation(locations[i]);
             nodes[i] = node.createViewItem(uiModel);
@@ -123,7 +123,7 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource {
     }
 
     @Override
-    public List<Attribute> getAttributes(VRL locator, String attrNames[]) throws ProxyException {
+    public List<Attribute> getAttributes(VRL locator, String[] attrNames) throws ProxyException {
         ProxyNode node = proxyFactory.openLocation(locator);
         return node.getAttributes(attrNames);
     }

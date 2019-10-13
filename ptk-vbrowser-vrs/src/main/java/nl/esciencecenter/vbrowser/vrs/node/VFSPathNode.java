@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,37 +20,11 @@
 
 package nl.esciencecenter.vbrowser.vrs.node;
 
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_CREATION_TIME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_DIRNAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_FILE_SIZE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_HOSTNAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISDIR;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISFILE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISHIDDEN;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ISSYMBOLIC_LINK;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_LASTACCESS_TIME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_MIMETYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_MODIFICATION_TIME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_NAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PATH;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PERMISSIONSTRING;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PORT;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_EXISTS;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_TYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_SCHEME;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.LinkOption;
-import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.VPath;
@@ -63,13 +37,22 @@ import nl.esciencecenter.vbrowser.vrs.io.VFSFileAttributes;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.LinkOption;
+import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
+
 /**
  * Default implementation for VFSPaths.
  */
+@Slf4j
 public abstract class VFSPathNode extends VPathNode implements VFSPath {
-    private static final PLogger logger = PLogger.getLogger(VFSPathNode.class);
 
-    public static final String[] vfsAttributeNames = { ATTR_RESOURCE_TYPE,//
+    public static final String[] vfsAttributeNames = {ATTR_RESOURCE_TYPE,//
             ATTR_NAME, ATTR_SCHEME,//
             ATTR_HOSTNAME, ATTR_PORT, ATTR_MIMETYPE,//
             // ATTR_ISREADABLE,
@@ -82,7 +65,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
             ATTR_MODIFICATION_TIME,//
             ATTR_ISSYMBOLIC_LINK,//
             ATTR_PERMISSIONSTRING
-    // implementation specific permissions string
+            // implementation specific permissions string
     };
 
     protected VFSPathNode(VFileSystem fileSystem, VRL vrl) {
@@ -288,12 +271,12 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
             VFSPath prev = path;
             path = path.getParent();
             if (path == null) {
-                logger.errorPrintf("FIXME: Current path is not root, but getParent() return null!\n");
+                log.error("FIXME: Current path is not root, but getParent() return null!");
                 break;
             }
 
             if (paths.contains(path) || prev.getVRL().equals(path.getVRL())) {
-                PLogger.getLogger(this.getClass()).errorPrintf(
+                log.error(
                         "*** Path Cycle detected, parent path:" + path + " already in path list from:" + this);
                 break;
             }
@@ -376,7 +359,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
     protected void createEmptyFile(VStreamWritable streamWritable) throws VrsException {
         try {
             OutputStream outps = streamWritable.createOutputStream(false);
-            byte bytes[] = new byte[0];
+            byte[] bytes = new byte[0];
             outps.write(bytes);
             outps.flush();
             outps.close();
@@ -398,7 +381,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
 
     /**
      * @return returns FileAttributes for this VFSPath. FileAttributes extend
-     *         java.nio.file.attribute.BasicFileAttributes.
+     * java.nio.file.attribute.BasicFileAttributes.
      * @see java.nio.file.attribute.BasicFileAttributes;
      */
     public abstract VFSFileAttributes getFileAttributes(LinkOption... linkOptions) throws VrsException;
@@ -418,7 +401,7 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
 
     /**
      * Create this (virtual) path as an actual file on this FileSystem.
-     * 
+     *
      * @return true.
      * @throws VrsException
      */
@@ -426,9 +409,8 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
 
     /**
      * Create this (virtual) path as an actual directory on this FileSystem.
-     * 
-     * @param ignoreExisting
-     *            - if directory already exists, return without exception.
+     *
+     * @param ignoreExisting - if directory already exists, return without exception.
      * @return true.
      * @throws VrsException
      */
@@ -436,16 +418,15 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
 
     /**
      * Delete this resource.
-     * 
+     *
      * @return true
      */
     public abstract boolean delete(LinkOption... linkOptions) throws VrsException;
 
     /**
      * Path must be an same FileSystem.
-     * 
-     * @param newPath
-     *            - target path
+     *
+     * @param newPath - target path
      * @return equivalent path but object might not be the exact same object as was passed through.
      * @throws VrsException
      */

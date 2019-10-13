@@ -1,13 +1,13 @@
 package nl.esciencecenter.ptk.vbrowser.ui.properties;
 
-import java.awt.Color;
+import nl.esciencecenter.vbrowser.vrs.VRSProperties;
+
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Map;
 
-import nl.esciencecenter.vbrowser.vrs.VRSProperties;
-
 public class UIProperties extends VRSProperties {
-       // default values:
+    // default values:
 
     private static Color default_label_selected_bg_color = Color.darkGray;
 
@@ -87,11 +87,8 @@ public class UIProperties extends VRSProperties {
         if (e.isPopupTrigger())
             return true;
 
-        if (e.getButton() == getMousePopupButton()) {
-            return true;
-        }
-        
-        return false;
+        return e.getButton() == getMousePopupButton();
+
     }
 
     public int getMousePopupButton() {
@@ -119,7 +116,7 @@ public class UIProperties extends VRSProperties {
     /**
      * Wrapper to detection 'ActionCmd Events' since the PLAF way to detect event doesn't always work.
      * Typically this is a single mouse click or a double mouse click.
-     * 
+     *
      * @param e
      * @return
      */
@@ -144,11 +141,8 @@ public class UIProperties extends VRSProperties {
             return true;
         }
 
-        if ((getSingleClickAction() == false) && (e.getClickCount() == 2)) {
-            return true;
-        }
+        return (getSingleClickAction() == false) && (e.getClickCount() == 2);
 
-        return false;
     }
 
     public boolean isSelection(MouseEvent e) {
@@ -157,9 +151,7 @@ public class UIProperties extends VRSProperties {
                 return true;
             }
 
-            if ((getSingleClickAction()) && (e.getClickCount() == 1)) {
-                return true;
-            }
+            return (getSingleClickAction()) && (e.getClickCount() == 1);
         }
 
         return false;

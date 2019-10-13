@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,30 +20,21 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.util.List;
+import java.util.Vector;
+
 /**
  * Generic ResourceTreeModel containing only ViewNodes and Attributes.
  */
+@Slf4j
 public class ResourceTreeModel extends DefaultTreeModel {
-       private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(ResourceTreeModel.class);
-    }
-
-    // ========================================================================
-    // Constructor/initializers
-    // ========================================================================
 
     public ResourceTreeModel() {
         super(null, false);
@@ -101,7 +92,7 @@ public class ResourceTreeModel extends DefaultTreeModel {
 
     @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
-        logger.debugPrintf(">>> FIXME: valueForPathChanged:%s", newValue);
+        log.debug(">>> FIXME: valueForPathChanged:{}", newValue);
     }
 
     public int getIndexOfChild(ResourceTreeNode parent, ResourceTreeNode child) {
@@ -148,16 +139,16 @@ public class ResourceTreeModel extends DefaultTreeModel {
      * Set childs or append new ones. If a tree node with similar VRL already exist, the new
      * ViewNode will be updated (merge).
      */
-    protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode childs[],
-            boolean mergeAppend) {
-        logger.debugPrintf("+++ updateChilds(append=%s) for:%s,numChilds=#%s\n",
+    protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode[] childs,
+                                             boolean mergeAppend) {
+        log.debug("+++ updateChilds(append={}) for:{},numChilds=#{}",
                 (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRI(),
                 ((childs != null) ? "" + childs.length : "?"));
 
         // possible background thread:
 
         ResourceTreeNode[] childNodes = null;
-        int childIndices[] = null;
+        int[] childIndices = null;
 
         boolean changed = false;
 
@@ -179,7 +170,7 @@ public class ResourceTreeModel extends DefaultTreeModel {
         childIndices = new int[len];
         // Process the directories
         for (int i = 0; (childs != null) && (i < childs.length); i++) {
-            logger.debugPrintf("adding child:(ViewItem)%s\n", childs[i].getVRL());
+            log.debug("adding child:(ViewItem){}", childs[i].getVRL());
 
             ViewNode iconItem = childs[i];
             if (iconItem != null) {
@@ -208,7 +199,7 @@ public class ResourceTreeModel extends DefaultTreeModel {
 
                     changed = true;
                 } catch (Exception e) {
-                    logger.logException(PLogger.ERROR, e, "Exception in updatNode:%s\n", e);
+                    log.error(e.getMessage(), e);
                 }
             }
         }
@@ -274,8 +265,8 @@ public class ResourceTreeModel extends DefaultTreeModel {
 
     // Fire node changed event: updates node itself, not the structure.
     protected void uiFireNodeRemoved(final ResourceTreeNode parent, int childIndex,
-            final ResourceTreeNode child) {
-        ResourceTreeNode childs[] = new ResourceTreeNode[1];
+                                     final ResourceTreeNode child) {
+        ResourceTreeNode[] childs = new ResourceTreeNode[1];
         int[] removedChildren = new int[1];
         removedChildren[0] = childIndex;
         childs[0] = child;
@@ -283,8 +274,8 @@ public class ResourceTreeModel extends DefaultTreeModel {
         uiFireNodesRemoved(parent, removedChildren, childs);
     }
 
-    protected void uiFireNodesRemoved(final ResourceTreeNode parent, final int childIndices[],
-            final ResourceTreeNode childs[]) {
+    protected void uiFireNodesRemoved(final ResourceTreeNode parent, final int[] childIndices,
+                                      final ResourceTreeNode[] childs) {
         // Check UI Thread:
         if (UIGlobal.isGuiThread() == false) {
             Runnable createTask = new Runnable() {
@@ -306,9 +297,9 @@ public class ResourceTreeModel extends DefaultTreeModel {
         uiFireNodesInserted(parent, removedChildren);
     }
 
-    protected void uiFireNodesInserted(final ResourceTreeNode parent, final int childIndices[]) // ,final
-                                                                                                // ResourceTreeNode
-                                                                                                // childs[])
+    protected void uiFireNodesInserted(final ResourceTreeNode parent, final int[] childIndices) // ,final
+    // ResourceTreeNode
+    // childs[])
     {
         // Check UI Thread:
         if (UIGlobal.isGuiThread() == false) {
@@ -340,7 +331,7 @@ public class ResourceTreeModel extends DefaultTreeModel {
     }
 
     protected List<ResourceTreeNode> findNodes(List<ResourceTreeNode> nodes, ResourceTreeNode node,
-            VRL locator) {
+                                               VRL locator) {
         // check parent:
         if (node.getVRI().equals(locator))
             nodes.add(node);

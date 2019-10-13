@@ -20,11 +20,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 
-import java.util.Hashtable;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringHolder;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -32,17 +29,14 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 /**
  * ProxyNodeFactory
  */
+@Slf4j
 public abstract class ProxyFactory {
-
-    private static PLogger logger=null;
-    
-    static
-    {
-        logger = PLogger.getLogger(ProxyFactory.class);
-    }
 
     /**
      * Proxy Cache element stores actual ProxyNode and cache satus. The element is also used a mutex
@@ -169,7 +163,7 @@ public abstract class ProxyFactory {
     }
 
     protected void initProxyEventCacheUpdater() {
-        platform.getVRSEventNotifier().addListener(new ProxyNodeCacheUpdater(this),null);
+        platform.getVRSEventNotifier().addListener(new ProxyNodeCacheUpdater(this), null);
     }
 
     // ========================================================================
@@ -203,10 +197,10 @@ public abstract class ProxyFactory {
                 // create new element
                 if (cacheEl == null) {
                     cacheEl = this.proxyCache.createEntry(locator);
-                    logger.debugPrintf("+++ Cache: new element for:%s\n", locator);
+                    log.debug("+++ Cache: new element for:{}", locator);
                 }
 
-                logger.debugPrintf("--- Cache: cached element for:%s\n", locator);
+                log.debug("--- Cache: cached element for:{}", locator);
             }
 
             ProxyNode node;
@@ -219,20 +213,20 @@ public abstract class ProxyFactory {
                     // ====================
 
                     node = cacheEl.getNode();
-                    logger.debugPrintf("<<< Cache: Cache Hit: cached proxy node for:%s\n", locator);
+                    log.debug("<<< Cache: Cache Hit: cached proxy node for:{}", locator);
                     return node;
                 } else {
                     // ====================
                     // Actual openLocation
                     // ====================
-                    logger.debugPrintf(">>> Cache: START OpenLocation for:%s\n", locator);
+                    log.debug(">>> Cache: START OpenLocation for:{}", locator);
 
                     {
                         node = doOpenLocation(locator);
                         cacheEl.setNode(node);
                     }
 
-                    logger.debugPrintf(">>> Cache: FINISHED OpenLocation for:%s\n", locator);
+                    log.debug(">>> Cache: FINISHED OpenLocation for:{}", locator);
                 }
             }
 
@@ -264,7 +258,7 @@ public abstract class ProxyFactory {
     }
 
     protected void handleException(String message, Exception e) {
-        logger.logException(PLogger.ERROR, e, " %s\n", message);
+        log.error(message, e);
     }
 
     protected boolean cacheExists(VRL vrl) {
@@ -294,7 +288,7 @@ public abstract class ProxyFactory {
         this.proxyCache.remove(proxyNode);
 
         if (cacheNode.equals(proxyNode)) {
-            logger.errorPrintf("cacheRemove(): Warning: given ProxyNode does not match cached node: %s != %s\n",
+            log.error("cacheRemove(): Warning: given ProxyNode does not match cached node: {} != {}",
                     proxyNode, cacheNode);
             this.proxyCache.remove(cacheNode);
         }

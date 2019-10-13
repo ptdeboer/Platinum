@@ -1,15 +1,14 @@
 package nl.esciencecenter.vbrowser.vrs.sftp;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.SftpException;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpChannel;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpConfig;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.SftpException;
-
 public class TestSftpExists {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         try {
             testConnect();

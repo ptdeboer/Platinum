@@ -20,9 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.sftp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.jcraft.jsch.JSch;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
@@ -30,8 +28,8 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpConfig;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
-import com.jcraft.jsch.JSch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SftpFileSystemFactory implements VResourceSystemFactory {
 
@@ -50,7 +48,7 @@ public class SftpFileSystemFactory implements VResourceSystemFactory {
      */
     @Override
     public String[] getSchemes() {
-        return new String[] { "sftp", "ssh-ftp","ssh" };
+        return new String[]{"sftp", "ssh-ftp", "ssh"};
     }
 
     @Override
@@ -61,13 +59,13 @@ public class SftpFileSystemFactory implements VResourceSystemFactory {
 
     @Override
     public VResourceSystem createResourceSystemFor(VRSContext context, ResourceConfigInfo info,
-            VRL vrl) throws VrsException {
+                                                   VRL vrl) throws VrsException {
         return new SftpFileSystem(jsch, context, info, vrl);
     }
 
     @Override
     public ResourceConfigInfo updateResourceInfo(VRSContext context, ResourceConfigInfo info,
-            VRL vrl) {
+                                                 VRL vrl) {
         logger.debug("updateResourceInfo:{}", info);
         // comma seperated list: 
         info.setDefaultAttribute(ResourceConfigInfo.ATTR_USER_KEY_FILES, "id_rsa,id_dsa", true);

@@ -9,21 +9,21 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public interface VInfoResource {
 
-    public boolean isResourceLink();
+    boolean isResourceLink();
 
-    public boolean isResourceFolder();
+    boolean isResourceFolder();
 
-    public VRL getTargetVRL();
+    VRL getTargetVRL();
 
     /**
      * Create new InfoRS node of specified resourceType from persistent Attributes.
      */
-    public VInfoResourcePath createSubNode(String resourceType, AttributeSet infoAttributes) throws VrsException;
+    VInfoResourcePath createSubNode(String resourceType, AttributeSet infoAttributes) throws VrsException;
 
-    public VInfoResourcePath createFolder(String name) throws VrsException;
+    VInfoResourcePath createFolder(String name) throws VrsException;
 
-    public VInfoResourcePath createResourceLink(VRL targetVRL, String logicalName) throws VrsException;
+    VInfoResourcePath createResourceLink(VRL targetVRL, String logicalName) throws VrsException;
 
-    public AttributeSet getInfoAttributes() throws VrsException;
+    AttributeSet getInfoAttributes() throws VrsException;
 
 }

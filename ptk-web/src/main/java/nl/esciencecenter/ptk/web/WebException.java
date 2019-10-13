@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public class WebException extends IOException {
 
-       public static enum Reason {
+    public enum Reason {
 
         HTTP_ERROR("HTTP Error."), //
         HTTP_CLIENTEXCEPTION("HTTP Client Exception."), //
@@ -51,7 +51,7 @@ public class WebException extends IOException {
 
         private String text = null;
 
-        private Reason(String text) {
+        Reason(String text) {
             this.text = text;
         }
 
@@ -97,20 +97,15 @@ public class WebException extends IOException {
      * Create WebException from (HTML) error response. Typically the call itself succeeded (no
      * exception was raised), but the web server responded with a HTTP error code and a (HTML) error
      * text.
-     * 
-     * @param reason
-     *            - Enum type of recognized reason.
-     * @param httpCode
-     *            - HTTP Status code (404,500,314,etc).
-     * @param message
-     *            - Human readable exception message.
-     * @param responseType
-     *            - mime type of response, for example "text/html".
-     * @param htmlResponse
-     *            - Formatted response from web server, typically HTML text.
+     *
+     * @param reason       - Enum type of recognized reason.
+     * @param httpCode     - HTTP Status code (404,500,314,etc).
+     * @param message      - Human readable exception message.
+     * @param responseType - mime type of response, for example "text/html".
+     * @param htmlResponse - Formatted response from web server, typically HTML text.
      */
     public WebException(Reason reason, int httpCode, String message, String responseType,
-            String htmlResponse) {
+                        String htmlResponse) {
         super(message);
         this.reason = reason;
         this.httpStatus = httpCode;
@@ -134,7 +129,7 @@ public class WebException extends IOException {
      * Return Server response if any was given. <br>
      * Check {@link #getResponseMimeType()} what mime-type the error response has. This might be
      * HTML if the Remote Server responded with a (HTML) formatted error text.
-     * 
+     *
      * @return - (html) formatted server response text.
      */
     public String getServerResponse() {
@@ -145,7 +140,7 @@ public class WebException extends IOException {
      * If the Remote Server responded with a formatted error text, this method will return the
      * actual mime type of the response, for example "text/html" if the server responded with an
      * HTML error text.
-     * 
+     *
      * @return - mime-type of server response. Typically "text/html" for HTML formatted errors.
      */
     public String getResponseMimeType() {

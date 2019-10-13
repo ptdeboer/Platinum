@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -21,6 +21,8 @@
 package nl.esciencecenter.ptk.bootstrap;
 
 // Only default java imports here:
+
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,24 +36,20 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import javax.swing.JOptionPane;
-
 /**
  * Universal Bootstrapper class for both Windows, Linux and Mac Os. <br>
  * This class must be able work as a stand-alone class!<br>
  * Cannot reference external classes if not in the same bootstrapper jar !
- * 
- * @author Piter T. de Boer
  */
 public class Bootstrapper {
 
     public static class BooleanHolder {
         public boolean value = false;
-    };
+    }
 
     public static final String JAVA_LIBRARY_PATH_PROP = "java.library.path";
 
-    private static final Class<?>[] MAIN_PARAMS_TYPE = { String[].class };
+    private static final Class<?>[] MAIN_PARAMS_TYPE = {String[].class};
 
     /**
      * Static BootStrapper configuration
@@ -66,18 +64,18 @@ public class Bootstrapper {
 
         public String binSubDir = "bin";
 
-        public String javaVersion = "1.7";
+        public String javaVersion = "1.8";
 
         /**
          * Default library sub-directories explicitly added to bootstrapper classpath.<br>
          * These directories are added as classpath <em>directories</em>.
          */
-        public String libSubDirs[] = { "icons", "win32", "win64", "mac", "linux" };
+        public String[] libSubDirs = {"icons", "win32", "win64", "mac", "linux"};
 
         /**
          * Library subdirectories explicitly ignored when scanning the lib/ directory for jar files.
          */
-        public String libIgnoreDirs[] = { "plugins" };
+        public String[] libIgnoreDirs = {"plugins"};
     }
 
     protected static boolean debug = false;
@@ -86,18 +84,14 @@ public class Bootstrapper {
     // Instance
     // ========================================================================
 
-    protected BootOptions bootOptions = new BootOptions();
 
     public String APPRC_PROP_FILE = "";
-
     public String APP_INSTALL_PROP = "";
-
     public String APP_SYSCONFDIR_PROP = "";
-
     public String APP_INSTALL_LIBDIR_PROP = "";
-
     public String APP_INSTALL_ENV = "";
 
+    protected BootOptions bootOptions;
     protected ArrayList<URL> classpathUrls = new ArrayList<URL>();
 
     /**
@@ -127,7 +121,8 @@ public class Bootstrapper {
 
     /**
      * Set this before booting to ensure correct base URL environemnt in the case of Applet of
-     * Webstart setup. More secure runtime environments might restrict access only to resources
+     * Webstart setup.<p>
+     * More secure runtime environments might restrict access only to resources
      * which are a subdirectory of this base URL.
      */
     public void setBaseURL(URL baseurl) {
@@ -139,14 +134,14 @@ public class Bootstrapper {
      * - Check java 1.6 version.<br>
      * - Add all .jar files from ./lib and ${globus.install}/lib.<br>
      * - Sets skeleton CLASSPATH adding:
-     * 
+     *
      * <pre>
-     *  ./    ; APP_INSTALL     ${APP_PREFIX.install} 
-     *  ./etc ; APP_SYSCONFDIR  ${APP_PREFIX.install.sysconfdir} 
-     *  ./lib ;                 ${APP_PREFIX.install.libdir} 
+     *  ./    ; APP_INSTALL     ${APP_PREFIX.install}
+     *  ./etc ; APP_SYSCONFDIR  ${APP_PREFIX.install.sysconfdir}
+     *  ./lib ;                 ${APP_PREFIX.install.libdir}
      *  ./lib/linux ;           ${APP_PREFIX.install.libdir}/linux
      *  ./lib/win32 ;           ${APP_PREFIX.install.libdir}/win32
-     *  ./lib/win64 ;           ${APP_PREFIX.install.libdir}/win32
+     *  ./lib/win64 ;           ${APP_PREFIX.install.libdir}/win64
      * </pre>
      * <p>
      * Bootstrap configuration:<br>
@@ -175,12 +170,12 @@ public class Bootstrapper {
                     versionStr);
 
             JOptionPane.showMessageDialog(null, "Wrong java version. Need " + bootOptions.javaVersion + " or higher.\n"
-                    + "If java " + bootOptions.javaVersion + " is installed "
-                    + "set your JAVA_HOME to the right location.\n" + "This version  =" + versionStr + "\n"
-                    + "Java location =" + javaHome + "\n" + "The Program will try to continue ...", "Error",
+                            + "If java " + bootOptions.javaVersion + " is installed "
+                            + "set your JAVA_HOME to the right location.\n" + "This version  =" + versionStr + "\n"
+                            + "Java location =" + javaHome + "\n" + "The Program will try to continue ...", "Error",
                     JOptionPane.ERROR_MESSAGE);
 
-            // Continue anyway. 
+            // Continue anyway.
         }
 
         // java property: -DAPP_PREFIX.install=
@@ -201,7 +196,7 @@ public class Bootstrapper {
             // Important: URI/URL uses forward slashes, native path must use "/" !
             // ***
 
-            // getProtectionDomain???
+            // getProtectionDomain??? (web startup)
             URL url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
             debugPrintf(" - source location URL   = %s\n", url);
 
@@ -214,7 +209,6 @@ public class Bootstrapper {
 
             // dirname of path:
             for (i = len - 1; ((i > 0) && (urlstr.charAt(i) != '/')); i--) {
-                ;
             }
             // nop;
 
@@ -238,7 +232,7 @@ public class Bootstrapper {
         } else {
             // create URL
             baseUrl = new File(installDir).toURI().toURL(); // unify File
-                                                            // location
+            // location
         }
 
         // get decoded & unified path using URI class:
@@ -305,21 +299,22 @@ public class Bootstrapper {
         // -------------------------------------------------------------------
         /*
          * Current 'skeleton' classpath/
-         * 
+         *
          * All other classpath directories should start from this skeleton (For
          * example the ./viewers, ./applets, ./icons, directories)
-         * 
+         *
          * For example to load a viewer specify "viewers/myviewer.jar". When
          * started from windows, the ./lib/win32/viewers directory should match
          * also as with ./lib/viewers (for pure java viewers) as with
          * ./lib/win32/viewers) for windows only viewers !.
-         * 
-         * CLASSPATH=$APP_INSTALL:$APP_INSTALL/etc:...
+         *
+         * CLASSPATH=${APP_INSTALL}:${APP_INSTALL}/etc:...
          */
         // ---------------------------------------------------------------------
 
         // ClassPath directories (defaults):
         // ./
+        // ./bin/
         // ./etc/
         // ./lib/
         // ./lib/icons/
@@ -334,23 +329,27 @@ public class Bootstrapper {
             // ---
             // Important: Use OS depended path separator here!
             // ---
-            String paths[] = cpstr.split(File.pathSeparator);
+            String[] paths = cpstr.split(File.pathSeparator);
             if ((paths != null) && (paths.length > 0))
                 for (int i = 0; i < paths.length; i++)
                     classpathUrls.add(new URL("file:///" + paths[i]));
         }
 
+        // Add classpath search directories:
         addDirToClasspath(installDir + "/"); // APP_INSTALL
-        // add directory structure (without jars!)
+        addDirToClasspath(installDir + "/" + bootOptions.binSubDir); // APP_INSTALL/bin
         addDirToClasspath(sysconfDir + "/"); // APP_INSTALL/etc
         addDirToClasspath(libDir + "/"); // APP_INSTALL/lib
 
-        for (String subDir : bootOptions.libSubDirs)
+        for (String subDir : bootOptions.libSubDirs) {
             addDirToClasspath(libDir + "/" + subDir);
+        }
 
-        // recursive read jars from:
-        addJarsToLibUrls(libDir, true, 0);
+        // Recursive read all jars from:
+        addJarsToLibUrls(libDir, false, 0);
+
         //addJarToLibUrls(javaHome + "/lib/ext/jfxrt.jar", false);
+
         // Add java.libary.path
         setJavaLibraryPath(appProps);
 
@@ -371,7 +370,7 @@ public class Bootstrapper {
             path = rel_path;
         } else if (rel_path.startsWith(bootOptions.libSubDir)) {
             // Replace "./lib" with "${${APP_PREFIX}.install.libdir} !
-            path = parent + "/" + rel_path.substring(4, rel_path.length());
+            path = parent + "/" + rel_path.substring(4);
         } else {
             // relative path (without "lib" prefix), but starting from LIBDIR !
             path = parent + "/" + rel_path;
@@ -409,11 +408,13 @@ public class Bootstrapper {
     }
 
     /**
-     * Check for ${APP_PROP}rc.prop in SYSCONFDIR. - ${APP_INSTALL}/etc/${APP_PREFIX}rc.prop -
-     * ${APP_SYSCONFDIR}/etc/${APP_PREFIX}rc.prop - /etc/${APP_PREFIX}rc.prop
-     * 
+     * Check for ${APP_PROP}rc.prop in SYSCONFDIR.:
+     * <pre>
+     * - ${APP_INSTALL}/etc/${APP_PREFIX}rc.prop
+     * - ${APP_SYSCONFDIR}/etc/${APP_PREFIX}rc.prop
+     * - /etc/${APP_PREFIX}rc.prop
+     * </pre>
      * @returns property set if loaded or EMPTY property set when failed !
-     * 
      */
     public Properties getAppProperties(String sysconfdir) {
         Properties props = new Properties();
@@ -426,21 +427,18 @@ public class Bootstrapper {
             File rcfile = new File(apprcprop);
             FileInputStream inpfs;
 
-            if (rcfile.exists() == true) {
+            if (rcfile.exists()) {
                 inpfs = new FileInputStream(rcfile);
                 props.load(inpfs);
             } else {
                 // last resort: Check /etc/vletrc.prop under unix style path
                 // :/etc/
                 rcfile = new File("/etc/" + APPRC_PROP_FILE);
-                if (rcfile.exists() == true) {
+                if (rcfile.exists()) {
                     inpfs = new FileInputStream(rcfile);
                     props.load(inpfs);
                 }
             }
-        } catch (FileNotFoundException e) {
-            errorPrintf("***Exception:%s", e);
-            e.printStackTrace();
         } catch (IOException e) {
             errorPrintf("***Exception:%s", e);
             e.printStackTrace();
@@ -455,20 +453,20 @@ public class Bootstrapper {
 
         // do some sanity checks:
         if (isDir) {
-            if ((javaFile.exists() == false) || (javaFile.isDirectory() == false)) {
+            if (!javaFile.exists() || !javaFile.isDirectory() || !javaFile.canRead()) {
                 if (mustExist) {
                     JOptionPane.showMessageDialog(null, "Cannot find directory:'" + javaFile + "' "
-                            + "Installation might be corrupt or misconfigured. Trying to continue...", "Error",
+                                    + "Installation might be corrupt or misconfigured. Trying to continue...", "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
                 // continue!
                 errorPrintf("***Error: Can't resolve Directory:%s\n", javaFile);
             }
         } else {
-            if ((javaFile.exists() == false) && (javaFile.isFile() == false)) {
+            if (!javaFile.exists() || !javaFile.isFile() || !javaFile.canRead()) {
                 if (mustExist) {
                     JOptionPane.showMessageDialog(null, "Cannot find file:'" + javaFile + "' "
-                            + "Installation might be corrupt or misconfigured. Trying to continue...", "Error",
+                                    + "Installation might be corrupt or misconfigured. Trying to continue...", "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
                 // continue!
@@ -477,7 +475,7 @@ public class Bootstrapper {
         }
 
         try {
-            // resolve File. 
+            // resolve File.
             return javaFile.getCanonicalFile();
         } catch (IOException e) {
             if (mustExist) {
@@ -536,7 +534,7 @@ public class Bootstrapper {
 
         File dir = getPath(libDir, true, true);
 
-        if ((dir == null) || (dir.exists() == false) || (dir.isDirectory() == false)) {
+        if ((dir == null) || (dir.exists() == false) || (dir.isDirectory() == false) || (dir.canRead() == false)) {
             // ignore faulty configurations.
             errorPrintf(" > [%2d] ***Error: lib directory does not exists or is unreadable:%s\n", dirLevel, dir);
             return false;
@@ -558,12 +556,12 @@ public class Bootstrapper {
                     this.classpathUrls.add(url);
                     debugPrintf(" > [%2d] - Adding jarurl:%s\n", dirLevel, url);
 
-                } else if ((files[i].isDirectory() == true) && (recurse = true)) {
+                } else if ((files[i].isDirectory() == true) && recurse) {
                     addJarsToLibUrls(files[i].getPath(), recurse, dirLevel + 1);
                 }
             }
         } catch (IOException e) {
-            throw new Exception("BootrapException: Error during startup processing, directory=" + libDir, e);
+            throw new Exception("BootstrapException: Error during startup processing, directory=" + libDir, e);
         }
 
         return true;
@@ -591,7 +589,7 @@ public class Bootstrapper {
 
             Method mainMethod = mainClass.getMethod("main", MAIN_PARAMS_TYPE);
 
-            mainMethod.invoke(null, new Object[] { launchArgs });
+            mainMethod.invoke(null, new Object[]{launchArgs});
         } catch (ClassNotFoundException e) {
             throw new Exception("ClassNotFoundException:" + "Class '" + launchClass + "'.\n" + e, e);
         } catch (NoSuchMethodException e) {
@@ -604,7 +602,7 @@ public class Bootstrapper {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         if ((args == null) || (args.length < 1)) {
             printUsage();
@@ -615,7 +613,7 @@ public class Bootstrapper {
 
         // First argument MUST be starting class:
         String startclass = args[0];
-        String newargs[] = new String[args.length - 1];
+        String[] newargs = new String[args.length - 1];
 
         // when run with -Ddebug=<whatever>, show debug:
         debug = (System.getProperty("debug") != null);

@@ -1,19 +1,10 @@
 package nl.esciencecenter.vbrowser.vrs.data.xml;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
@@ -26,15 +17,21 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.XMLDataException;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoResourceNode;
 import nl.esciencecenter.vbrowser.vrs.infors.VInfoResourcePath;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
-import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * XML Data Utility to parse and create VRS Data Types from and to XML.
@@ -59,8 +56,8 @@ public class XMLData {
 
     public XMLData(VRSContext context) {
         //
-        VRSJacksonXmlAnnotarionIntrospector introspector = new VRSJacksonXmlAnnotarionIntrospector();
-        AnnotationIntrospector intr = new AnnotationIntrospectorPair(new VRSJacksonXmlAnnotarionIntrospector(),
+        VRSJacksonXmlAnnotationIntrospector introspector = new VRSJacksonXmlAnnotationIntrospector();
+        AnnotationIntrospector intr = new AnnotationIntrospectorPair(new VRSJacksonXmlAnnotationIntrospector(),
                 new JacksonXmlAnnotationIntrospector());
 
         xmlMapper = new XmlMapper();
@@ -177,7 +174,7 @@ public class XMLData {
     }
 
     protected XMLResourceNode addSubNodesTo(XMLResourceNode xmlNode, VInfoResourcePath infoNode, boolean recursive)
-            throws VrsException, XMLDataException {
+            throws VrsException {
         //
         InfoResourceNode folderNode = null;
         if (infoNode instanceof InfoResourceNode) {
@@ -205,7 +202,7 @@ public class XMLData {
             xml = xmlMapper.writeValueAsString(xmlNode);
             return xml;
         } catch (JsonProcessingException e) {
-            throw new VrsIOException(e);
+            throw new VrsIOException(e.getMessage(),e);
         }
     }
 

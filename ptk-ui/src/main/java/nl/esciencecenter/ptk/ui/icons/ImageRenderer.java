@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,27 +20,19 @@
 
 package nl.esciencecenter.ptk.ui.icons;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import lombok.extern.slf4j.Slf4j;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
 /**
  * Simple (Icon) Image Renderer class. Performs scaling, merging and greying out of (icon) images.
- * 
- * @author P.T. de Boer
+ *
+ *
  */
+@Slf4j
 public class ImageRenderer {
-    private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(ImageRenderer.class);
-    }
 
     public static class ARGBPixel {
         public int a;
@@ -115,26 +107,25 @@ public class ImageRenderer {
 
     /**
      * Scale image, add optional link icon and perform optional 'greyout'
-     * 
+     *
      * @param focus
      */
     public Image renderIconImage(Image orgImage, boolean isLink, Dimension preferredSize,
-            boolean greyOut, boolean focus) {
+                                 boolean greyOut, boolean focus) {
         // === PRE === //
 
         if (orgImage == null)
             throw new NullPointerException("Cannot render NULL image");
 
-        if ((isLink == true) && (this.miniLinkImage == null))
-            throw new NullPointerException(
-                    "Can't render link icon if LinkImage hasn't been set!. Use setLInkImage()");
+        if ((isLink == true) && (this.miniLinkImage == null)) {
+            log.error("Can't render link icon if LinkImage hasn't been set!. Use setLInkImage()");
+        }
 
         // ImageSynchronizer imageSyncer=new ImageSynchronizer();
 
         // extra check :
         if ((orgImage.getHeight(null) <= 0) || (orgImage.getWidth(null) <= 0)) {
-            logger.errorPrintf("*** Error: Illegal Image. Image not  (yet) loaded or broken:%s\n",
-                    orgImage);
+            log.error("*** Error: Illegal Image. Image not  (yet) loaded or broken:{}", orgImage);
             return null;
         }
 
@@ -166,13 +157,13 @@ public class ImageRenderer {
         //
         if ((preferredSize != null) && (prefWidth > 0) && (prefHeight > 0)) {
 
-            logger.debugPrintf("Rescaling image to:%s\n", preferredSize);
+            log.debug("Rescaling image to:{}", preferredSize);
 
             if (orgWidth > prefWidth) {
                 downScale = true;
             } else if (orgWidth < prefWidth) {
                 upScale = true;
-                logger.warnPrintf("*** Warning, upscaling icon width:%d to %d\n", orgWidth,
+                log.warn("*** Warning, upscaling icon width:{} to {}", orgWidth,
                         prefWidth);
             }
 
@@ -180,7 +171,7 @@ public class ImageRenderer {
                 downScale = true;
             } else if (orgHeight < prefHeight) {
                 upScale = true;
-                logger.warnPrintf("*** Warning, upscaling icon height:%d to %d\n", orgHeight,
+                log.warn("*** Warning, upscaling icon height:{} to {}", orgHeight,
                         prefHeight);
             }
 
@@ -267,11 +258,10 @@ public class ImageRenderer {
         // II) Optional LinkImage (shortcut arrow):
         //
 
-        if (isLink) {
+        Image linkImage = getLinkImage();
+
+        if ((isLink) && (linkImage!=null)) {
             // create merged icon image + shortcut image:
-            Image linkImage = getLinkImage();
-            if (linkImage == null)
-                throw new NullPointerException("Cannot find linkImage");
             sync(linkImage);
 
             int linkh = linkImage.getHeight(null);
@@ -442,13 +432,13 @@ public class ImageRenderer {
     }
 
     private void paintPixel(BufferedImage image, int x, int y, int a, int r, int g, int b) {
-        image.setRGB(x, y, ((int) a) * 256 * 256 * 256 + ((int) r) * 65536 + ((int) g) * 256
-                + ((int) b));
+        image.setRGB(x, y, a * 256 * 256 * 256 + r * 65536 + g * 256
+                + b);
     }
 
     private void paintPixel(BufferedImage image, int x, int y, ARGBPixel pixel) {
-        image.setRGB(x, y, ((int) pixel.a) * 256 * 256 * 256 + ((int) pixel.r) * 65536
-                + ((int) pixel.g) * 256 + ((int) pixel.b));
+        image.setRGB(x, y, pixel.a * 256 * 256 * 256 + pixel.r * 65536
+                + pixel.g * 256 + pixel.b);
     }
 
     public Image getLinkImage() {
@@ -471,11 +461,11 @@ public class ImageRenderer {
      * Create simple bitmap image from XPM like String definition.
      */
     public Image createImage(String imageStr, Map<String, Color> colorMap, Color defaultColor,
-            char alphaChar) {
+                             char alphaChar) {
         if ((imageStr == null) || (imageStr.equals("")))
             return null;
 
-        String lines[] = imageStr.split("\n");
+        String[] lines = imageStr.split("\n");
         int height = lines.length;
 
         if (height <= 0) {

@@ -4,10 +4,10 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public interface VReplicatable {
 
-    public VRL[] getReplicas();
+    VRL[] getReplicas();
 
-    public boolean registerReplicas(VRL[] replicaVRLs);
+    boolean registerReplicas(VRL[] replicaVRLs);
 
-    public boolean unregisterReplicas(VRL[] replicaVRLs);
+    boolean unregisterReplicas(VRL[] replicaVRLs);
 
 }

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,22 +20,18 @@
 
 package nl.esciencecenter.ptk.data;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import nl.esciencecenter.ptk.util.Comparer;
 import nl.esciencecenter.ptk.util.SortUtil;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Helper class for Managed Lists like StringList. Implementation type is ArrayList.
  */
 public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializable {
 
-       // ========================================================================
+    // ========================================================================
     //
     // ========================================================================
 
@@ -60,7 +56,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
 
     /**
      * Construct list around one value.
-     * 
+     *
      * @param value
      */
     public ExtendedList(T value) {
@@ -69,9 +65,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
 
     /**
      * Creates a StringList with an capacity of num. Actual reported size() will be 0.
-     * 
-     * @param capacity
-     *            - initial capacity of List
+     *
+     * @param capacity - initial capacity of List
      */
     public ExtendedList(int capacity) {
         super(capacity);
@@ -133,7 +128,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
      * <strong>Polymorphism note</strong>: This method overrides remove(Object o) *only* for the
      * type "T", remove(Object o) is still possible because of Generics.
      */
-    public void remove(T els[]) {
+    public void remove(T[] els) {
         if (els == null)
             return;
 
@@ -198,7 +193,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
      * Add Elements if NOT already in this list. Returns number of elements really added.
      * <p>
      * This is an O(N*N) merge. For each element a linear search is used by calling contains().
-     * 
+     *
      * @return number of unique elements added
      */
     public int merge(T[] els) {
@@ -220,11 +215,36 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     }
 
     /**
-     * Sort List according to newOrder array. Moves elements not found in the <code>newOrder</code>
+     * Add Elements if NOT already in this list. Returns number of elements really added.
+     * <p>
+     * This is an O(N*N) merge. For each element a linear search is used by calling contains().
+     *
+     * @return number of unique elements added
+     */
+    public int merge(Collection<T> els) {
+        if (els == null)
+            return 0; // nothing to merge
+
+        int numAdded = 0;
+
+        for (T el : els) {
+            if (el != null) {
+                if (this.contains(el) == false) {
+                    this.add(el);
+                    numAdded++;
+                }
+            }
+        }
+
+        return numAdded;
+    }
+
+    /**
+     * Rearrange list according to newOrder array. Moves elements not found in the <code>newOrder</code>
      * array up to after the elements in specified newOrder array.<br>
      * No elements are removed if they are not found in the <code>newOrder<code>.
      */
-    public void orden(T[] newOrder) {
+    public void rearrange(T[] newOrder) {
 
         int p = 0;
         int dir = 0;
@@ -276,9 +296,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
 
     /**
      * Inplace sort. Sorts the elements in this list.
-     * 
-     * @param comparer
-     *            Value comparer for type T
+     *
+     * @param comparer Value comparer for type T
      * @return index of sorted entries see QSort.sort()
      */
     public int[] sort(Comparer<T> comparer) {
@@ -316,10 +335,8 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     /**
      * Create duplicate by converting the elements to an explicit typed array first. Use this method
      * if the array contains mixed super- and sub- classes of type <T>.
-     * 
-     * @param nilArray
-     *            - empty array (T[0]) to specify the type of the backing array to be used.
-     * 
+     *
+     * @param nilArray - empty array (T[0]) to specify the type of the backing array to be used.
      * @return non shallow copy of this ElementList.
      */
     public ExtendedList<T> duplicate(T[] nilArray) {
@@ -401,7 +418,7 @@ public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializ
     /**
      * Adds all values of this list to a linkedHashSet. The LinkedHashSet keeps the order of this
      * list. Duplicate values are removed as the returned type is a Set
-     * 
+     *
      * @returns LinkedHashSet containing the String List keeping the values in the same order.
      */
     public Set<T> toSet() {

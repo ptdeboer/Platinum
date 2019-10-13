@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator.tokens;
 
 import lombok.ToString;
@@ -19,7 +23,7 @@ public class CharToken implements IToken {
                                     Tokens.Token token,
                                     String tokenDescription) {
         // factory
-        return new CharToken(chars,option,terminatorCharm,token, tokenDescription);
+        return new CharToken(chars, option, terminatorCharm, token, tokenDescription);
     }
 
     // --- //
@@ -30,22 +34,22 @@ public class CharToken implements IToken {
     protected final String tokenDescription;
     protected final Character terminatorChar;
     // cached:
-    private   final char[] _fullSequence;
+    private final char[] _fullSequence;
     protected String _str;
 
-    public CharToken(char[] chars, Tokens.TokenOption tokenOption,  Character terminatorChar, Tokens.Token token, String tokenDescription) {
+    public CharToken(char[] chars, Tokens.TokenOption tokenOption, Character terminatorChar, Tokens.Token token, String tokenDescription) {
         this.chars = chars;
         this.token = token;
-        this.option=tokenOption;
+        this.option = tokenOption;
         this.tokenDescription = tokenDescription;
         this.terminatorChar = terminatorChar;
         //
-        if (terminatorChar==null) {
-            this._fullSequence=chars;
+        if (terminatorChar == null) {
+            this._fullSequence = chars;
         } else {
             this._fullSequence = (new String(chars) + terminatorChar).toCharArray();
         }
-        this._str=new String(chars());
+        this._str = new String(chars());
     }
 
     public char[] chars() {
@@ -68,7 +72,7 @@ public class CharToken implements IToken {
         return this.token;
     }
 
-    public String description () {
+    public String description() {
         return this.tokenDescription;
     }
 

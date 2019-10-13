@@ -42,6 +42,7 @@ public class TabContentPanel extends JPanel {
     private JScrollPane scrollPane;
     private JComponent content;
     private JPanel tabNavBar;
+
     public TabContentPanel(boolean withScrollPane) {
         super();
         initGui(withScrollPane);

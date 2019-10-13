@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,34 +20,27 @@
 
 package nl.esciencecenter.ptk.ui.panels.monitoring;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.border.BevelBorder;
-import javax.swing.text.DefaultCaret;
-
 import nl.esciencecenter.ptk.data.StringHolder;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.util.StringUtil;
 
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.text.DefaultCaret;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
 public class TaskMonitorDialog extends javax.swing.JDialog implements ActionListener,
         WindowListener {
-       // === Static ===
+    // === Static ===
 
     public static TaskMonitorDialog showTaskMonitorDialog(JFrame frame, ActionTask task,
-            int delayMillis) {
+                                                          int delayMillis) {
         // for very short transfers do not show the dialog: 
         TaskMonitorDialog dialog = new TaskMonitorDialog(frame, task);
         dialog.setLocationRelativeTo(frame);
@@ -261,7 +254,7 @@ public class TaskMonitorDialog extends javax.swing.JDialog implements ActionList
 
         updateLog(isFinalUpdate);
 
-        JPanel panels[] = this.dockingPanel.getPanels();
+        JPanel[] panels = this.dockingPanel.getPanels();
         for (JPanel panel : panels) {
             if (panel instanceof TransferMonitorPanel) {
                 ((TransferMonitorPanel) panel).update(false);

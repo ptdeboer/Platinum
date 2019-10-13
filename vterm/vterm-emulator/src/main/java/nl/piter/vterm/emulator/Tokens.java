@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator;
 
 public class Tokens {
@@ -56,7 +60,7 @@ public class Tokens {
         DEC_PRIVATE_SEQ_PREFIX(false), // DEC private \E[? escape ?
         DEC_SECONDARY_PREFIX(false), // alternate Device Request !
         // Xterm graph mode
-//        XGRAPHMODE_PREFIX(false),
+        // XGRAPHMODE_PREFIX(false),
         XGRAPHMODE(true),
 
         // SEND/RESPONSE
@@ -71,7 +75,7 @@ public class Tokens {
         // screen manupilation:
         SET_REGION,
         SET_CURSOR,
-    //    SET_CURSORX,
+        // SET_CURSORX,
         SET_FONT_STYLE,
         SET_MODE,
         RESET_MODE,

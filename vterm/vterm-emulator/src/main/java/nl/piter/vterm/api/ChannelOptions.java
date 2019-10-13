@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.api;
 
 import java.util.Map;
@@ -17,6 +21,6 @@ public interface ChannelOptions {
 
     int getIntOption(String name, int defaultValue);
 
-    Map<String,?> options();
+    Map<String, ?> options();
 
 }

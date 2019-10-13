@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,14 @@
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
-import java.util.Date;
-import java.util.List;
-
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.object.Duplicatable;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Attribute parsing and factory methods.
@@ -36,7 +36,7 @@ public class AttributeUtil {
 
     public static Attribute createFromAssignment(String stat) {
 
-        String strs[] = stat.split("[ ]*=[ ]*");
+        String[] strs = stat.split("[ ]*=[ ]*");
 
         if ((strs == null) || (strs.length < 2))
             return null;
@@ -51,7 +51,7 @@ public class AttributeUtil {
     }
 
     public static Attribute parseFromString(AttributeType attrType, String attrName, String valueStr,
-            String optEnumValues[]) throws Exception {
+                                            String[] optEnumValues) throws Exception {
         if (attrType == AttributeType.ENUM) {
             return createEnumerate(attrName, optEnumValues, valueStr);
         } else {
@@ -79,9 +79,9 @@ public class AttributeUtil {
      * Static factory method for String Attribute.
      * <p>
      * Use {@link Attribute#getStringListValue()} to retrieve the list.
-     * 
-     * @see Attribute#getStringListValue()
+     *
      * @param editable
+     * @see Attribute#getStringListValue()
      */
     public static Attribute createStringListAttribute(String name, List<String> values, boolean editable) {
         StringList list = new StringList(values);
@@ -91,7 +91,7 @@ public class AttributeUtil {
 
     /**
      * Static factory method for String Attribute
-     * 
+     *
      * @param editable
      */
     public static Attribute createStringAttribute(String name, String value, boolean editable) {
@@ -122,7 +122,7 @@ public class AttributeUtil {
         return new Attribute(type, name, value);
     }
 
-    public static Attribute createEnumerate(String name, String values[], String value) {
+    public static Attribute createEnumerate(String name, String[] values, String value) {
         return new Attribute(name, values, value);
     }
 
@@ -158,7 +158,7 @@ public class AttributeUtil {
         if (attrs == null)
             return null;
 
-        Attribute newAttrs[] = new Attribute[attrs.length];
+        Attribute[] newAttrs = new Attribute[attrs.length];
 
         for (int i = 0; i < attrs.length; i++) {
             if (attrs[i] != null)
@@ -185,9 +185,8 @@ public class AttributeUtil {
 
     /**
      * If object is a know object type, create a non-shallow duplicate (clone).
-     * 
-     * @param value
-     *            - primitive object to be copiedl
+     *
+     * @param value - primitive object to be copiedl
      * @return copied object or NULL if object couldn't be copied !
      */
     public static Object duplicateObject(Object value) {
@@ -223,19 +222,19 @@ public class AttributeUtil {
             }
             case ENUM: // enums are stored as String
             {
-                return new String((String) object);
+                return object;
             }
             case DATETIME: {
                 if (object instanceof Date) {
                     return ((Date) object).clone();
                 } else if (object instanceof String) {
-                    return new String((String) object);
+                    return object;
                 } else {
                     throw new Error("Invalid DATETIME Type:" + object.getClass());
                 }
             }
             case STRING: {
-                return new String((String) object);
+                return object;
             }
             case VRL: {
                 return ((VRL) object).duplicate();

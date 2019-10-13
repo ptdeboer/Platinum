@@ -1,28 +1,24 @@
 /*
  * Copyrighted 2012-2013 Netherlands eScience Center.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").  
- * You may not use this file except in compliance with the License. 
- * For details, see the LICENCE.txt file location in the root directory of this 
- * distribution or obtain the Apache License at the following location: 
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * For details, see the LICENCE.txt file location in the root directory of this
+ * distribution or obtain the Apache License at the following location:
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
+ *
+ * For the full license, see: LICENCE.txt (located in the root folder of this distribution).
  * ---
  */
 // source: 
 
 package nl.esciencecenter.ptk.browser.uitest.fsnode;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSPath;
@@ -32,11 +28,15 @@ import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSource;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Combined Attribute+Presentation example for FSNode
  */
 public class FSNodeAttributes implements AttributeSource, IPresentable {
-    public static enum FileAttribute {
+    public enum FileAttribute {
         ICON, NAME, RESOURCE_TYPE, PATH, BASENAME, DIRNAME, EXTENSION, LENGTH, MIMETYPE,
         MODIFICATION_TIME, MODIFICATION_TIME_STRING, ACCESS_TIME, CREATION_TIME, PERMISSIONS,
         PERMISSIONS_STRING;
@@ -44,11 +44,11 @@ public class FSNodeAttributes implements AttributeSource, IPresentable {
 
         private String name;
 
-        private FileAttribute() {
+        FileAttribute() {
             String enumStr = this.toString();
             // use enum as Name
             this.name = enumStr.substring(0, 1).toUpperCase()
-                    + enumStr.substring(1, enumStr.length()).toLowerCase();
+                    + enumStr.substring(1).toLowerCase();
         }
 
         public String getName() {
@@ -56,8 +56,8 @@ public class FSNodeAttributes implements AttributeSource, IPresentable {
         }
 
         // === static=== 
-        private static FileAttribute defaultFileAttributes[] = new FileAttribute[] { ICON, NAME,
-                LENGTH, MIMETYPE, MODIFICATION_TIME_STRING, PERMISSIONS_STRING };
+        private static FileAttribute[] defaultFileAttributes = new FileAttribute[]{ICON, NAME,
+                LENGTH, MIMETYPE, MODIFICATION_TIME_STRING, PERMISSIONS_STRING};
 
         public static List<String> getStringValues() {
             FileAttribute[] values = defaultFileAttributes;
@@ -144,7 +144,7 @@ public class FSNodeAttributes implements AttributeSource, IPresentable {
     }
 
     @Override
-    public List<Attribute> getAttributes(String names[]) {
+    public List<Attribute> getAttributes(String[] names) {
         if (names == null)
             return null;
 

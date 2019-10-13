@@ -24,6 +24,8 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
+import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
+import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
@@ -36,6 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * For a full VRS initialized version: see StartVRSBrowser.
  */
 public class StartVBrowser {
+
 
     public static void main(String[] args) {
         try {
@@ -114,7 +117,7 @@ public class StartVBrowser {
             InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
             rootNode.loadPersistantConfig();
 
-            if (defaultLinks!=null) {
+            if (defaultLinks != null) {
                 for (String[] link : defaultLinks) {
                     // Add default links, will be ignored if already exists.
                     rootNode.addResourceLink("My Links", link[0], new VRL(link[1]), null, false);
@@ -133,7 +136,7 @@ public class StartVBrowser {
     }
 
     public void initVRSPlugins(VRSContext context, Class<? extends VResourceSystemFactory>[] vrsClasses) {
-        if (vrsClasses==null) {
+        if (vrsClasses == null) {
             return;
         }
         for (int i = 0; i < vrsClasses.length; i++) {
@@ -146,7 +149,7 @@ public class StartVBrowser {
     }
 
     public void initVRSViewers(BrowserPlatform platform, Class<? extends ViewerPlugin>[] viewers) {
-        if (viewers==null) {
+        if (viewers == null) {
             return;
         }
 
@@ -158,5 +161,4 @@ public class StartVBrowser {
             }
         }
     }
-
 }

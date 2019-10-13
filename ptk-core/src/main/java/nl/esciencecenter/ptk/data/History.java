@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -55,9 +55,8 @@ public class History<T> {
     /**
      * Add element to history. If the element equals current element the element is not added. Also
      * if the index is not pointin to the last element, the history is truncated.
-     * 
-     * @param el
-     *            - element to be added to the history.
+     *
+     * @param el - element to be added to the history.
      */
     public void add(T el) {
         // insert at current index.
@@ -85,7 +84,9 @@ public class History<T> {
         return (currentIndex == size() - 1);
     }
 
-    /** Go back in history and return current element but keep current stack order. */
+    /**
+     * Go back in history and return current element but keep current stack order.
+     */
     public T back() {
         synchronized (elements) {
             // int len=elements.size();

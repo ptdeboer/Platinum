@@ -1,11 +1,10 @@
 package nl.esciencecenter.vbrowser.vrs.event;
 
+import nl.esciencecenter.ptk.events.EventDispatcher;
 import org.slf4j.LoggerFactory;
 
-import nl.esciencecenter.ptk.events.EventDispatcher;
-
 public class VRSEventDispatcher extends
-        EventDispatcher<VRSEventType,VRSEvent, VRSEventListener> {
+        EventDispatcher<VRSEventType, VRSEvent, VRSEventListener> {
 
     public VRSEventDispatcher(boolean autoStart) {
         super(autoStart);

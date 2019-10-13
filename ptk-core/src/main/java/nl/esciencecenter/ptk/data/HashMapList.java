@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,30 +20,19 @@
 
 package nl.esciencecenter.ptk.data;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import nl.esciencecenter.ptk.object.Duplicatable;
 
+import java.io.Serializable;
+import java.util.*;
+
 /**
- * Extended LinkedHashMap. Added more support for array and lists and set opererators.
- * 
- * @param <TK>
- *            - The Key Type
- * @param <TV>
- *            - The Value Type
+ * Extended LinkedHashMap. Added more support for array, list and set operators.
+ *
+ * @param <TK> - The Key Type
+ * @param <TV> - The Value Type
  */
 public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serializable,
         Duplicatable<HashMapList<TK, TV>> {
-
-       // =======================================================================
-    //
-    // =======================================================================
 
     public TV put(TK key, TV value) {
         TV prev = super.put(key, value);
@@ -69,51 +58,20 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
     /**
      * Put selection from Map map into this Hashtable
      */
-    public void putAll(Map<? extends TK, ? extends TV> map, TK keys[]) {
+    public void putAll(Map<? extends TK, ? extends TV> map, TK[] keys) {
         for (TK key : keys) {
             put(key, map.get(key));
         }
     }
 
-    public TV elementAt(int i) {
-        // todo: optimization for large sets:
-        return this.get(this.getKey(i));
-    }
-
-    public TK getKey(int nr) {
-        // todo: faster search
-        Set<TK> set = this.keySet();
-
-        int index = 0;
-        if (size() <= 0)
-            return null;
-
-        for (TK key : set) {
-            if (index == nr)
-                return key;
-            index++;
-        }
-
-        return null;
-    }
-
-    // ================
-    // Arrays and Lists
-    // ================
-
     public Iterator<TK> getKeyIterator() {
         return this.keySet().iterator();
     }
 
-    public TK[] getKeyArray(TK[] arr) {
-        return this.keySet().toArray(arr);
-    }
-
     /**
      * Returns values as Array.
-     * 
-     * @param array
-     *            - example array need for actual type.
+     *
+     * @param array - example array need for actual type.
      * @return
      */
     public TV[] toArray(TV[] array) {
@@ -130,7 +88,6 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
         return duplicate(false);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public HashMapList<TK, TV> duplicate(boolean shallow) {
         if (shallow) {
@@ -169,9 +126,8 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
 
     /**
      * Create subSet of this set using the specifed keys.
-     * 
-     * @param keys
-     *            - key list of sub set elements.
+     *
+     * @param keys - key list of sub set elements.
      * @return subset - new sub set.
      */
     public HashMapList<TK, TV> subSet(List<TK> keys) {
@@ -181,11 +137,9 @@ public class HashMapList<TK, TV> extends LinkedHashMap<TK, TV> implements Serial
 
     /**
      * Add sub set specified by key List to the destination Set.
-     * 
-     * @param keys
-     *            - key list of sub set.
-     * @param destSet
-     *            - destination set
+     *
+     * @param keys    - key list of sub set.
+     * @param destSet - destination set
      * @return actual destination set <code>destSet</code> (for flow programming).
      */
     public HashMapList<TK, TV> subSet(List<TK> keys, HashMapList<TK, TV> destSet) {

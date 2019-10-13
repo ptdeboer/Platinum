@@ -2,7 +2,7 @@
 ###
 # (C) 2005-2011 Virtual Laboratory for e-Science (VL-e)
 # (C) 2012-2014 Netherlands eScience Center
-# (C) 2015-2019 Piter.NL
+# (C) 2015-2020 Piter.NL
 #
 # file  : vbrowser.sh: 
 # info  : VBrowser startup script. 
@@ -91,7 +91,7 @@ echo "CLASSPATH            ="$CLASSPATH
 echo "VBROWSER_CLASS       ="$VBROWSER_CLASS
 echo "Command line options ="$OPTS
 
-# bootstrap class sets up real enviromment: 
+# bootstrap class sets up real environment, classpath is optional:
 echo "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" "$VBROWSER_CLASS" $OPTS
 "$JAVA" -cp "$CLASSPATH" -Dvbrowser.install.sysconfdir="$VBROWSER_SYSCONFDIR" "$VBROWSER_CLASS" $OPTS
 

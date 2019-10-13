@@ -3,7 +3,7 @@
  * Copyright 2012-2013 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -21,18 +21,17 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.attribute;
 
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.vbrowser.vrs.data.Attribute;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import javax.swing.JFrame;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-
+@Slf4j
 public class AttributeEditorController implements ActionListener, WindowListener {
-    private final static PLogger logger = PLogger.getLogger(AttributeEditorController.class);
 
     protected JFrame standAloneFrame = null;
 
@@ -51,14 +50,14 @@ public class AttributeEditorController implements ActionListener, WindowListener
 
     public void update() {
         // get attribute from attribute panel and update attribute object
-        Attribute attrs[] = attrEditorDialog.infoPanel.getAttributes();
+        Attribute[] attrs = attrEditorDialog.infoPanel.getAttributes();
 
         if (attrs == null) {
-            logger.debugPrintf("AttributeEditorController: null Attributes\n");
+            log.debug("AttributeEditorController: null Attributes");
             return;
         }
         for (int i = 0; i < attrs.length; i++) {
-            logger.debugPrintf("Attr[%d]=%s\n", i, attrs[i]);
+            log.debug("Attr[{}]={}", i, attrs[i]);
         }
     }
 

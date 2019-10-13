@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.sys;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +20,10 @@ public class SysEnv {
 
     private SysEnv() {
         log.info("<INIT>");
-        log.debug(" - user.name={}",getUserName());
-        log.debug(" - user.home={}",getUserHome());
-        log.debug(" - user.os={}",getOsName());
-        this.sysFS=new SysFS();
+        log.debug(" - user.name={}", getUserName());
+        log.debug(" - user.home={}", getUserHome());
+        log.debug(" - user.os={}", getOsName());
+        this.sysFS = new SysFS();
     }
 
     public static SysEnv sysEnv() {
@@ -73,7 +77,7 @@ public class SysEnv {
     }
 
     public void saveProperties(URI propFileUri, Properties properties, String propertiesHeader) throws IOException {
-        log.debug("saveProperties():'{}' => {}",propertiesHeader,propFileUri);
+        log.debug("saveProperties():'{}' => {}", propertiesHeader, propFileUri);
         //
         try (OutputStream outps = sysFS.newOutputStream(propFileUri)) {
             properties.store(outps, propertiesHeader);

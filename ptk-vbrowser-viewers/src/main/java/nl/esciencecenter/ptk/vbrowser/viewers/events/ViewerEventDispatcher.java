@@ -1,11 +1,10 @@
 package nl.esciencecenter.ptk.vbrowser.viewers.events;
 
+import nl.esciencecenter.ptk.events.EventDispatcher;
 import org.slf4j.LoggerFactory;
 
-import nl.esciencecenter.ptk.events.EventDispatcher;
-
 public class ViewerEventDispatcher extends
-        EventDispatcher<ViewerEventType,ViewerEvent, ViewerListener> {
+        EventDispatcher<ViewerEventType, ViewerEvent, ViewerListener> {
 
     public ViewerEventDispatcher(boolean autoStart) {
         super(autoStart);

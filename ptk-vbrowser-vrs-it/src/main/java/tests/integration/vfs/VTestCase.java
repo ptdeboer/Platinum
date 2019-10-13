@@ -80,7 +80,7 @@ public abstract class VTestCase {
 
     protected ResourceLoader getVRSResourceLoader() {
         if (this.resourceLoader == null) {
-            this.resourceLoader = new ResourceLoader(getVFS(),null);
+            this.resourceLoader = new ResourceLoader(getVFS());
         }
 
         return this.resourceLoader;

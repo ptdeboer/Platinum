@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,17 +20,15 @@
 
 package nl.esciencecenter.vbrowser.vrs;
 
-import java.util.Properties;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.crypt.Secret;
+import nl.esciencecenter.ptk.exceptions.CertificateStoreException;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.ssl.CertificateStore;
-import nl.esciencecenter.ptk.ssl.CertificateStoreException;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.util.ResourceLoader;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.credentials.Credential;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
@@ -39,19 +37,19 @@ import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceSystemInfoRegistry;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.util.Properties;
+
 /**
  * Main Context of the Virtual Resource System. Hold Registry, ResourceSystemInfoRegistry and
  * instantiated ResourceSystems.
  */
+@Slf4j
 public class VRSContext {
-
-    private static final PLogger logger = PLogger.getLogger(VRSContext.class);
 
     private static long instanceCounter = 0;
 
-    // ---
-    // Instance 
-    // --- 
+    // === Instance === //
+
     private long id = instanceCounter++;
 
     protected Registry registry;
@@ -83,7 +81,7 @@ public class VRSContext {
     }
 
     private void init(VRSProperties privateProperties) {
-        logger.debugPrintf("***New VRSContext(), id=" + id + "***");
+        log.debug("***New VRSContext(), id=" + id + "***");
         // default Static Registry ! 
         this.registry = Registry.getInstance();
         this.vrsProperties = privateProperties;
@@ -106,7 +104,7 @@ public class VRSContext {
         try {
             VRL caCertsLoc = null;
             VRL loc = this.getPersistantConfigLocation();
-            if (loc!=null) {
+            if (loc != null) {
                 caCertsLoc = loc.appendPath("cacerts");
 
                 CertificateStore certificateStore = CertificateStore.loadCertificateStore(caCertsLoc.getPath(),
@@ -173,7 +171,7 @@ public class VRSContext {
      * For head-less environments, getUI() will return a dummy Object. For non graphical
      * environments this method will return a dummy ui. When registered in the VBrowser this method
      * will return an interactive callback interface to the VBrowser.
-     * 
+     *
      * @return register UI or dummy UI for non-interactive environments.
      */
     public UI getUI() {
@@ -184,14 +182,14 @@ public class VRSContext {
      * Create absolute and normalized User Home VRL.
      */
     public VRL getHomeVRL() {
-        return new VRL(FSUtil.getDefault().getUserHomeURI());
+        return new VRL(FSUtil.fsutil().getUserHomeURI());
     }
 
     /**
      * Create absolute and normalized cwd of application Home VRL.
      */
     public VRL getCurrentPathVRL() {
-        return new VRL(FSUtil.getDefault().getWorkingDirURI());
+        return new VRL(FSUtil.fsutil().getWorkingDirURI());
     }
 
     public String getUserName() {
@@ -222,12 +220,12 @@ public class VRSContext {
                 // return 
                 return new VRL(propVal);
             } catch (Exception e) {
-                logger.errorPrintf("Could parse property %s:'%s'\n",
+                log.error("Could parse property {}:'{}'",
                         VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP, propVal);
             }
         }
 
-        logger.debugPrintf("Property not defined or wrong value:%s\n",
+        log.debug("Property not defined or wrong value:{}",
                 VRSContextProperties.VRS_PERSISTANT_CONFIG_LOCATION_PROP);
         return null;
     }
@@ -257,9 +255,9 @@ public class VRSContext {
 
     public void dispose() {
         this.registry.cleanupFor(this);
-        this.registry=null;
+        this.registry = null;
         this.resourceInfoRegistry.dispose();
-        this.resourceInfoRegistry=null;
+        this.resourceInfoRegistry = null;
     }
 
     public String getCharEncoding() {

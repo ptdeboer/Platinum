@@ -1,6 +1,6 @@
 package uitests.dnd;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 public class TestDropTextPanel {
     public static JFrame createTestFrame() {
@@ -15,7 +15,7 @@ public class TestDropTextPanel {
         return frame;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         createTestFrame();
 
     }

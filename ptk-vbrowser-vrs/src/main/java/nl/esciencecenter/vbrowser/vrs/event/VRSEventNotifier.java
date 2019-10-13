@@ -1,23 +1,14 @@
 package nl.esciencecenter.vbrowser.vrs.event;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.events.EventDispatcher;
 
-public class VRSEventNotifier extends
-        EventDispatcher<VRSEventType,VRSEvent, VRSEventListener> {
-
-    // ========================================================================
-    //
-    // ========================================================================
+@Slf4j
+public class VRSEventNotifier extends EventDispatcher<VRSEventType, VRSEvent, VRSEventListener> {
 
     private static VRSEventNotifier instance;
 
-    private static Logger logger;
-
     static {
-        logger = LoggerFactory.getLogger(VRSEventNotifier.class);
         instance = new VRSEventNotifier(true);
     }
 
@@ -27,19 +18,16 @@ public class VRSEventNotifier extends
     public static VRSEventNotifier getInstance() {
         return instance;
     }
-    
-    // ========================================================================
-    //
-    // ========================================================================
 
-    
+    // === Instance === //
+
     public VRSEventNotifier(boolean autoStart) {
         super(autoStart);
     }
 
     @Override
     protected boolean matchEventSource(VRSEventListener listener, Object wantedEventSource, VRSEvent event) {
-        logger.debug(">>>COMPARE:'{}' <=> '{}'", event.getEventSource(), wantedEventSource);
+        log.debug(">>>COMPARE:'{}' <=> '{}'", event.getEventSource(), wantedEventSource);
         // filter VRLs?
         return super.matchEventSource(listener, wantedEventSource, event);
     }

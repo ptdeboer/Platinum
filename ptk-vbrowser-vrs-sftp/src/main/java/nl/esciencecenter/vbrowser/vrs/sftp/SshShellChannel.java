@@ -1,28 +1,26 @@
 package nl.esciencecenter.vbrowser.vrs.sftp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import com.jcraft.jsch.ChannelShell;
+import com.jcraft.jsch.JSchException;
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
-
 import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
-
-import com.jcraft.jsch.ChannelShell;
-import com.jcraft.jsch.JSchException;
 import nl.piter.vterm.api.TermConst;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 @Slf4j
 public class SshShellChannel implements ShellChannel {
 
     public static class SshChannelOptions {
         // default!
-        public String termType= "xterm"; //"xterm-256color";
-        public int num_cols=80;
-        public int num_rows=24;
+        public String termType = "xterm"; //"xterm-256color";
+        public int num_cols = 80;
+        public int num_rows = 24;
 //        public final boolean xforwarding=false;
 //        public final String xforwaring_host=null;
 //        public final int xforwarding_port=0;
@@ -31,9 +29,9 @@ public class SshShellChannel implements ShellChannel {
         }
 
         public SshChannelOptions(String termType, int numCols, int numRows) {
-            this.termType=termType;
-            this.num_cols=numCols;
-            this.num_rows=numRows;
+            this.termType = termType;
+            this.num_cols = numCols;
+            this.num_rows = numRows;
         }
     }
 
@@ -48,7 +46,7 @@ public class SshShellChannel implements ShellChannel {
         this.session = sftpSession;
         this.channel = shellChannel;
         // TODO: proper options forwarding!
-        this.options = new SshChannelOptions(options.getTermType(), options.getDefaultColumns(),options.getDefaultRows());
+        this.options = new SshChannelOptions(options.getTermType(), options.getDefaultColumns(), options.getDefaultRows());
     }
 
     public void connect() throws IOException {
@@ -74,7 +72,7 @@ public class SshShellChannel implements ShellChannel {
 
             } else {
                 channel.setPtyType(TermConst.TERM_XTERM);
-                channel.setPtySize(80,24,80,24);
+                channel.setPtySize(80, 24, 80, 24);
             }
 
             this.stdin = channel.getOutputStream();

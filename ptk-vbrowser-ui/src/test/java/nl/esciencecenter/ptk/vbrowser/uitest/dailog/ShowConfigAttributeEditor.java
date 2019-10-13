@@ -1,6 +1,5 @@
 package nl.esciencecenter.ptk.vbrowser.uitest.dailog;
 
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributeEditorForm;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -10,12 +9,11 @@ import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 public class ShowConfigAttributeEditor {
-    public static void main(String args[]) {
-        PLogger.getRootLogger().setLevelToDebug();
+    public static void main(String[] args) {
 
         int len = 20;
 
-        Attribute attrs[] = new Attribute[len];
+        Attribute[] attrs = new Attribute[len];
 
         ResourceConfigInfo info = null;
 
@@ -30,7 +28,7 @@ public class ShowConfigAttributeEditor {
                                     "dummy://username@dummy.localhost.nocom:1234/?par1=par1Value&par2=par2Value#index"),
                             true);
 
-            Attribute infoAttrs[] = info.getConfigAttributeSet().toArray();
+            Attribute[] infoAttrs = info.getConfigAttributeSet().toArray();
 
             for (int i = 0; i < len; i++) {
                 if ((i < infoAttrs.length) && (infoAttrs[i] != null)) {

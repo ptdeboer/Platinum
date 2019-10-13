@@ -7,18 +7,16 @@
     <groupId>nl.esciencecenter.platinum</groupId>
     <artifactId>platinum</artifactId>
     <packaging>pom</packaging>
-    <name>Platinum</name>
+    <name>Platinum [PTK]</name>
     <version>1.3.0-SNAPSHOT</version>
 
     <properties>
         <ptk.version>${project.version}</ptk.version>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vterm.version>1.6.0-ptk</vterm.version>
+        <vterm.version>1.7.0-SNAPSHOT</vterm.version>
+        <jackson.version>2.8.11</jackson.version>
     </properties>
-
-    <repositories>
-    </repositories>
 
     <modules>
        <!-- external modules -->
@@ -32,7 +30,6 @@
         <module>ptk-vbrowser-vrs-sftp</module>
         <module>ptk-vbrowser-ui</module>
         <module>ptk-vbrowser-viewers</module>
-        <module>ptk-vbrowser-viewers-loboviewer</module>
         <module>ptk-vbrowser-vrs-it</module>
         <module>ptk-vbrowser-z-start</module>
         <!--  last one here doens't mean it will be executed last -->
@@ -52,6 +49,11 @@
                         <target>${java.version}</target>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>
                 <!-- Reporting -->
                 <plugin>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -61,11 +63,6 @@
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>2.6</version>
-                    <configuration>
-                        <descriptors>
-                            <descriptor>src/assembly/dist.xml</descriptor>
-                        </descriptors>
-                    </configuration>
                 </plugin>
                 <!-- Surefire for Unit tests -->
                 <plugin>
@@ -75,7 +72,7 @@
                     <configuration>
                         <!-- Skip UI Tests -->
                         <excludes>
-                            <exclude>**/uitest/**</exclude>
+                            <exclude>**/uitests/**</exclude>
                             <exclude>**/interactive/**</exclude>
                         </excludes>
                     </configuration>
@@ -106,6 +103,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.16.22</version>
+                <scope>provided</scope>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.25</version>
@@ -122,17 +126,61 @@
                 <version>4.12</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <!-- Toplevel dependencies inherited by all childs without refering to it. -->
+    <!-- Toplevel declared dependencies for all modules -->
     <dependencies>
-        <!-- Maven Properties Plugin -->
         <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>properties-maven-plugin</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <!-- testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+
+    <distributionManagement>
+        <repository>
+            <id>${dist.artifactory.releases.id}</id>
+            <name>Project Releases</name>
+            <url>${dist.artifactory.releases.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>${dist.artifactory.snapshots.id}</id>
+            <name>Project Snapshots</name>
+            <url>${dist.artifactory.snapshots.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

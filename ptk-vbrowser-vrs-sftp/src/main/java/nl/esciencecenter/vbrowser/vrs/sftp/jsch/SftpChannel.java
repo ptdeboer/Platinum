@@ -1,19 +1,18 @@
 package nl.esciencecenter.vbrowser.vrs.sftp.jsch;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Managed ChannelSftp.
@@ -76,7 +75,7 @@ public class SftpChannel implements AutoCloseable {
 
     /**
      * The user home is the starting directory when the user connects for the firs time.
-     * 
+     *
      * @return user home which was the starting path at the beginnen of a (sftp)sesion.
      */
     public String getUserHome() {
@@ -86,10 +85,8 @@ public class SftpChannel implements AutoCloseable {
     /**
      * List relative or absolute path. Both are allowed.
      *
-     * @param path
-     *            relative or absolute path.
+     * @param remotePath relative or absolute path.
      * @return List of relative filenames.
-     * @throws Exception
      */
     public List<SftpEntry> list(String remotePath) throws SftpException {
         logger.debug("list():'{}'", remotePath);
@@ -177,7 +174,7 @@ public class SftpChannel implements AutoCloseable {
 
     /**
      * Check whether remote path exists but use 'ls' method instead of 'stat'.
-     * 
+     *
      * @param remotePath
      * @return whether remote path exists using the 'ls' method.
      * @throws SftpException
@@ -189,10 +186,7 @@ public class SftpChannel implements AutoCloseable {
         try {
             Vector<LsEntry> entries = this.ls(remotePath);
 
-            if (entries.size() > 0) {
-                return true;
-            }
-            return false;
+            return entries.size() > 0;
 
         } catch (SftpException e) {
             if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
@@ -205,7 +199,7 @@ public class SftpChannel implements AutoCloseable {
     /**
      * Performs 'get()' but this blocks the current channel until the InputStream is closed. For a
      * private SftpChannel and InputStream use SshSession.createSftpInputStream();
-     * 
+     *
      * @see SshSession#createSftpInputStream(String)
      */
     protected InputStream get(String path) throws SftpException {
@@ -216,7 +210,7 @@ public class SftpChannel implements AutoCloseable {
     /**
      * Performs 'put()' but this blocks the current channel until the OutputStream is closed. For a
      * private SftpChannel and OutputStream use SshSession.createSftpOutputStream();
-     * 
+     *
      * @see SshSession#createSftpOutputStream(String)
      */
     protected OutputStream put(String remotePath, int mode) throws SftpException {

@@ -1,36 +1,34 @@
 /*
  * Copyrighted 2012-2013 Netherlands eScience Center.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").  
- * You may not use this file except in compliance with the License. 
- * For details, see the LICENCE.txt file location in the root directory of this 
- * distribution or obtain the Apache License at the following location: 
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * For details, see the LICENCE.txt file location in the root directory of this
+ * distribution or obtain the Apache License at the following location:
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * For the full license, see: LICENCE.txt (located in the root folder of this distribution). 
+ *
+ * For the full license, see: LICENCE.txt (located in the root folder of this distribution).
  * ---
  */
 // source: 
 
 package nl.esciencecenter.ptk.vbrowser.vrs.vrl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Test VRL.
@@ -173,7 +171,9 @@ public class Test_VRL {
 
     }
 
-    /** Test Duplicate Path VRLs */
+    /**
+     * Test Duplicate Path VRLs
+     */
     @Test
     public void testDuplicatePath() throws VRLSyntaxException {
         //
@@ -204,7 +204,9 @@ public class Test_VRL {
 
     }
 
-    /** Test Duplicate Reference VRLs */
+    /**
+     * Test Duplicate Reference VRLs
+     */
     @Test
     public void testDuplicateReference() throws VRLSyntaxException {
         //
@@ -316,7 +318,7 @@ public class Test_VRL {
 
     /**
      * Regressions unitTests for addPath:
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -331,7 +333,7 @@ public class Test_VRL {
         Assert.assertEquals("added path not expected path", "/testpath", newLoc.getPath());
 
         // tests with null path
-        loc = new VRL(null, null, (String) null);
+        loc = new VRL(null, null, null);
         newLoc = loc.appendPath("testpath");
         Assert.assertEquals("added path to <null> path not expected path", "/testpath",
                 newLoc.getPath());
@@ -386,7 +388,7 @@ public class Test_VRL {
 
     @Test
     public void testNewLocationFromNullString() throws Exception {
-        VRL loc = new VRL(null, null, (String) null);
+        VRL loc = new VRL(null, null, null);
 
         Assert.assertEquals("NULL location, shoud have NULL userinfo", null, loc.getUserinfo());
         Assert.assertEquals("NULL location, shoud have 0 port", true, loc.getPort() <= 0);
@@ -395,7 +397,7 @@ public class Test_VRL {
     }
 
     @Test
-    public void testPathEncoding() throws Exception, URISyntaxException {
+    public void testPathEncoding() throws Exception {
         // Special character to test.
         // All should be encoded except '?#&'.
         // - Character '@' should be encoded if not before hostname. 
@@ -443,7 +445,7 @@ public class Test_VRL {
 
     /**
      * Regression for query encoding bugs
-     * 
+     *
      * @throws VRLSyntaxException
      */
     @Test
@@ -576,14 +578,14 @@ public class Test_VRL {
     @Test
     public void testJavaURICompatibility() throws Exception {
         // scheme/host/path/fragment
-        URI uri = new URI("file", "", "/etc", (String) null);
+        URI uri = new URI("file", "", "/etc", null);
         VRL vrl = new VRL("file", "", "/etc");
 
         if (vrl.toURI().compareTo(uri) != 0)
             Assert.assertEquals("VRL not similar to URI", vrl.toString(), uri.toString());
 
         // scheme/host/path/fragment
-        uri = new URI("file", null, "/etc", (String) null);
+        uri = new URI("file", null, "/etc", null);
         vrl = new VRL("file", null, "/etc");
 
         if (vrl.toURI().compareTo(uri) != 0)
@@ -618,15 +620,12 @@ public class Test_VRL {
 
         Assert.assertEquals("getUserinfo() must return user part.", "user", vrl.getUserinfo());
         Assert.assertEquals("getUsername() must return user part.", "user", vrl.getUsername());
-        Assert.assertEquals("getPassword() must return NULL.", null, vrl.getPassword());
 
         vrl = new VRL("file://user:password@server/path");
 
         Assert.assertEquals("getUserinfo() must return user:password part.", "user:password",
                 vrl.getUserinfo());
         Assert.assertEquals("getUsername() must return user part.", "user", vrl.getUsername());
-        Assert.assertEquals("getPassword() must return password part.", "password",
-                vrl.getPassword());
 
         vrl = new VRL("file://user.domain:password@server/path");
 
@@ -634,22 +633,18 @@ public class Test_VRL {
                 "user.domain:password", vrl.getUserinfo());
         Assert.assertEquals("getUsername() must return user.domain part.", "user.domain",
                 vrl.getUsername());
-        Assert.assertEquals("getPassword() must return password part.", "password",
-                vrl.getPassword());
 
         vrl = new VRL("file://:password@server/path");
 
         Assert.assertEquals("getUserinfo() must return :password part.", ":password",
                 vrl.getUserinfo());
         Assert.assertEquals("getUsername() must return null userpart.", null, vrl.getUsername());
-        Assert.assertEquals("getPassword() must return password part.", "password",
-                vrl.getPassword());
 
     }
 
     /**
      * Regressions unitTests for windows locations:
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -682,10 +677,10 @@ public class Test_VRL {
 
     @Test
     public void testJDBCvrls() throws Exception {
-        String uristrs[] = new String[] { "jdbc:mysql://host:13/dbname",
+        String[] uristrs = new String[]{"jdbc:mysql://host:13/dbname",
                 "jdbc:mysql://host:13/dbname", "jdbc:postgresql://localhost/test",
                 "jdbc:dbproto:localdb", "jdbc:dbproto:localdb?parameter1=value1&parameter2=value2",
-                "jdbc:oracle:thin:@server.domain:1521:dbclass1" };
+                "jdbc:oracle:thin:@server.domain:1521:dbclass1"};
 
         for (String uristr : uristrs) {
             java.net.URI uri1 = new java.net.URI(uristr);

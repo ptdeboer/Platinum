@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,10 +20,10 @@
 
 package nl.esciencecenter.ptk.presentation;
 
-import java.awt.Color;
-import java.util.Map;
-
 import nl.esciencecenter.ptk.object.Duplicatable;
+
+import java.awt.*;
+import java.util.Map;
 
 /**
  * UI Presentation information for Attributes in the VBrowser.
@@ -33,19 +33,16 @@ public class AttributePresentation implements Duplicatable<AttributePresentation
     public static class ColorMap {
 
         protected Color foreground = null;
-
         protected Color background = null;
-
         protected Map<String, Color> statusColors = null;
+
     }
 
     public static class PreferredSizes implements Duplicatable<PreferredSizes> {
 
-        int minimum = -1;
-
-        int preferred = -1;
-
-        int maximum = -1;
+        protected int minimum = -1;
+        protected int preferred = -1;
+        protected int maximum = -1;
 
         protected PreferredSizes() {
         }
@@ -69,7 +66,7 @@ public class AttributePresentation implements Duplicatable<AttributePresentation
         }
 
         public int[] getValues() {
-            return new int[] { minimum, preferred, maximum };
+            return new int[]{minimum, preferred, maximum};
         }
 
         /**

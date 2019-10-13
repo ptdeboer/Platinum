@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,11 +20,11 @@
 
 package nl.esciencecenter.vbrowser.vrs.data;
 
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
 import java.net.URI;
 import java.net.URL;
 import java.util.Date;
-
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 /**
  * Basic Attribute Types.
@@ -38,9 +38,13 @@ public enum AttributeType {
     FLOAT("Float", Float.class), // 
     DOUBLE("Double", Double.class), //
     STRING("String", String.class), //
-    /** Enum type stores its values as String */
+    /**
+     * Enum type stores its values as String
+     */
     ENUM("Enum", String.class), //
-    /** Store date time as unified date-time string */
+    /**
+     * Store date time as unified date-time string
+     */
     DATETIME("DateTime", String.class), // 
     VRL("VRL", VRL.class)//
     ;
@@ -51,7 +55,7 @@ public enum AttributeType {
 
     private final Class<? extends Object> storageClass;
 
-    private AttributeType(String name, Class<?> storageClass) {
+    AttributeType(String name, Class<?> storageClass) {
         this.enumName = name;
         this.storageClass = storageClass;
     }

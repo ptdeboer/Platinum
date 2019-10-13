@@ -1,17 +1,15 @@
 package nl.esciencecenter.ptk.net;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-public class Test_URIFactory
-{
+import java.net.URI;
+import java.net.URISyntaxException;
+
+public class Test_URIFactory {
 
     @Test
-    public void test_URIFactoryChaining1() throws URISyntaxException
-    {
+    public void test_URIFactoryChaining1() throws URISyntaxException {
         String baseUri = "file:/base";
 
         URI result = new URIFactory(baseUri)
@@ -28,8 +26,7 @@ public class Test_URIFactory
     }
 
     @Test
-    public void testFileConstructors() throws Exception
-    {
+    public void testFileConstructors() throws Exception {
         // NOTE: use normalized URI strings here:
         testConstructor("file:/path", "file", null, -1, "/path");
 
@@ -70,8 +67,7 @@ public class Test_URIFactory
     }
 
     @Test
-    public void testOtherConstructors() throws Exception
-    {
+    public void testOtherConstructors() throws Exception {
         testConstructor("http://host:9909/path", "http", "host", 9909, "/path");
         testConstructor("https://server:1234/path?urlAttribute=value", "https", "server", 1234, "/path", "urlAttribute=value", null);
 
@@ -83,14 +79,12 @@ public class Test_URIFactory
     }
 
     private void testConstructor(String uristr, String expectedScheme, String expectedHost, int expectedPort, String expectedPath)
-            throws URISyntaxException
-    {
+            throws URISyntaxException {
         testConstructor(uristr, expectedScheme, expectedHost, expectedPort, expectedPath, null, null);
     }
 
     private void testConstructor(String uristr, String expectedScheme, String expectedHost, int expectedPort, String expectedPath,
-            String expectedQuery, String expectedFragment) throws URISyntaxException
-    {
+                                 String expectedQuery, String expectedFragment) throws URISyntaxException {
         URIFactory uriFactory = new URIFactory(uristr);
         Assert.assertEquals("String representation of URI must match original", uristr, uriFactory.toString());
 
@@ -111,14 +105,12 @@ public class Test_URIFactory
 
     }
 
-    private void testConstructor(String message, URIFactory uriFactory, String uristr)
-    {
+    private void testConstructor(String message, URIFactory uriFactory, String uristr) {
         Assert.assertEquals(message, uristr, uriFactory.toString());
     }
 
     @Test
-    public void testResolveAgainstRootPath() throws URISyntaxException
-    {
+    public void testResolveAgainstRootPath() throws URISyntaxException {
         // resolve against root:
         URIFactory root = new URIFactory("file:/");
         String newPath = root.resolvePath("/test");
@@ -126,8 +118,7 @@ public class Test_URIFactory
     }
 
     @Test
-    public void testResolveAgainstRootPathWithRelativePath() throws URISyntaxException
-    {
+    public void testResolveAgainstRootPathWithRelativePath() throws URISyntaxException {
         // resolve against root:
         URIFactory root = new URIFactory("file:/");
         String newPath = root.resolvePath("test");
@@ -135,8 +126,7 @@ public class Test_URIFactory
     }
 
     @Test
-    public void testDosRelativePaths() throws Exception
-    {
+    public void testDosRelativePaths() throws Exception {
         //
         // DOS relative paths
         //
@@ -160,15 +150,13 @@ public class Test_URIFactory
     }
 
     @Test
-    public void testDosSpacedRelativePaths() throws Exception
-    {
+    public void testDosSpacedRelativePaths() throws Exception {
         testResolveDosPath("file:///C:", "sub dir", "file:/C:/sub dir", "C:\\sub dir");
         testResolveDosPath("file:///C:/Spaced Dir", "sub dir", "file:/C:/Spaced Dir/sub dir", "C:\\Spaced Dir\\sub dir");
 
     }
 
-    protected void testResolveDosPath(String uri, String relativePath, String decodedURIStr, String dosPath) throws URISyntaxException
-    {
+    protected void testResolveDosPath(String uri, String relativePath, String decodedURIStr, String dosPath) throws URISyntaxException {
         URIFactory factory = new URIFactory(uri);
         String resolved = factory.resolvePath(relativePath);
 
@@ -182,9 +170,8 @@ public class Test_URIFactory
     }
 
     @Test
-    public void testJDBCURIS() throws Exception
-    {
-        String uristrs[] = new String[] {
+    public void testJDBCURIS() throws Exception {
+        String[] uristrs = new String[]{
                 "jdbc:mysql://host:13/dbname",
                 "jdbc:mysql://host:13/dbname",
                 "jdbc:postgresql://localhost/test",
@@ -193,8 +180,7 @@ public class Test_URIFactory
                 "jdbc:oracle:thin:@server.domain:1521:dbclass1"
         };
 
-        for (String uristr : uristrs)
-        {
+        for (String uristr : uristrs) {
             java.net.URI uri1 = new java.net.URI(uristr);
             Assert.assertEquals("JDBC URI must match with original String value.", uristr, uri1.toString());
 
@@ -207,8 +193,7 @@ public class Test_URIFactory
     }
 
     @Test
-    public void regressionTestDosURLs() throws Exception
-    {
+    public void regressionTestDosURLs() throws Exception {
         // plain
         testDosURLvsURI("file:////C:/MyDocuments/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv");
         // spaces
@@ -216,15 +201,14 @@ public class Test_URIFactory
         testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/Space File.xcsv");
         testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/TileFile~1.xcsv");
         testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/Ampersand&File.xcsv");
-        
+
         // Test query +fragment syntax: not supported for local file URLs (!), use URIs for this:
         //testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv?query");
         // testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv#ref");
         // testDosURLvsURI("file:////C:/Documents and Settings/p.deboer/Desktop/stuff/prog-1.2.3/file.xcsv?query#ref");
     }
 
-    protected void testDosURLvsURI(String uriStr) throws Exception
-    {
+    protected void testDosURLvsURI(String uriStr) throws Exception {
 
         // Use URIFactory to create normalized and Compatible URIs from URL!
         // I) Use string in constructor
@@ -241,15 +225,14 @@ public class Test_URIFactory
     }
 
     @Test
-    public void regressionTestDosURI2URL() throws Exception
-    {
+    public void regressionTestDosURI2URL() throws Exception {
         String exectedURIPath = "/C:/Root/Spaced File";
         String fileStr = "file:/C:/Root/Spaced File";
         URIFactory factory1 = new URIFactory(fileStr);
 
         // Check URI and URL compatibility
         URI factoryURI = factory1.toURI();
-        
+
         // URI.toURL() encodes the path, but URL class doesn't decode it when using url.getPath() so when converting URIs
         // to URLs. Either use toWebURL() which uses encoded paths, or use toFileURL() which uses decoded paths in the URL constructor. 
         java.net.URL factoryUrl = factory1.toFileURL();

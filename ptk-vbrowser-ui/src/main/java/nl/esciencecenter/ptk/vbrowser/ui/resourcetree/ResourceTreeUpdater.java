@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,10 +20,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.task.ITaskSource;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyDataSource;
@@ -35,15 +33,13 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.util.List;
+
 /**
  * Gets relevant data from the (Proxy)DataSource and updates the ResourceTreeModel.
  */
+@Slf4j
 public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpdater {
-    private static PLogger logger;
-
-    static {
-        logger = PLogger.getLogger(ResourceTreeUpdater.class);
-    }
 
     private ResourceTree tree;
 
@@ -94,7 +90,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
 
     @Override
     public void update() {
-        logger.debugPrintf("updateRoot():\n");
+        log.debug("updateRoot():");
 
         BrowserTask task = new BrowserTask(this.getTaskSource(),
                 "update resource tree model for node" + rootItem) {
@@ -115,7 +111,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
      * Get or repopulate childs nodes
      */
     public void updateChilds(final ResourceTreeNode node) {
-        logger.debugPrintf("updateChilds():%s\n", node.getVRI());
+        log.debug("updateChilds():{}", node.getVRI());
 
         BrowserTask task = new BrowserTask(this.getTaskSource(),
                 "update resource tree model for node" + rootItem) {
@@ -130,7 +126,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
 
     @Override
     public void notifyEvent(VRSEvent e) {
-        logger.debugPrintf("notifyDataSourceEvent:%s\n", e);
+        log.debug("notifyDataSourceEvent:{}", e);
 
         VRL parent = e.getParent();
         VRL[] sources = e.getResources();
@@ -152,7 +148,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
                 updateAttributes(e.getParent(), e.getResources(), e.getAttributeNames());
                 break;
             default:
-                logger.errorPrintf("FIXME: event not supported:%s\n", e);
+                log.error("FIXME: event not supported:{}", e);
         }
     }
 
@@ -164,7 +160,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
 
     protected void updateAttributes(VRL parent, VRL vrl, String[] attrNames) {
         // just refresh all:
-        this.update(new VRL[] { vrl }, attrNames);
+        this.update(new VRL[]{vrl}, attrNames);
     }
 
     protected void renameNodes(VRL optParent, VRL[] sources, VRL[] targets) {
@@ -177,28 +173,28 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
     protected void renameNode(VRL optParent, VRL orgSource, VRL newSource) {
         if (orgSource.equals(newSource)) {
             // logical rename: just fresh attributes
-            this.update(new VRL[] { orgSource }, null);
+            this.update(new VRL[]{orgSource}, null);
         } else if ((optParent != null) && optParent.isParentOf(orgSource)
                 && (optParent.isParentOf(newSource))) {
             // sibling rename in similar tree branch: remove old and add new:
-            logger.debugPrintf("sibling rename of %s=> %s\n", orgSource.getBasename(),
+            log.debug("sibling rename of {}=> {}", orgSource.getBasename(),
                     newSource.getBasename());
-            this.deleteNodes(new VRL[] { orgSource });
-            this.addNodes(optParent, new VRL[] { newSource });
+            this.deleteNodes(new VRL[]{orgSource});
+            this.addNodes(optParent, new VRL[]{newSource});
         } else {
             // delete old nodes, add new nodes from different tree branch.
-            this.deleteNodes(new VRL[] { orgSource });
+            this.deleteNodes(new VRL[]{orgSource});
 
-            logger.errorPrintf("FIXME: Guessing new PArent VRL of new (renamed) resource:%s\n",
+            log.error("FIXME: Guessing new PArent VRL of new (renamed) resource:{}",
                     newSource);
             VRL newParentVrl = newSource.getParent();
 
             // check parent:
             List<ResourceTreeNode> nodes = this.getModel().findNodes(newParentVrl);
             if (nodes != null) {
-                this.addNodes(newParentVrl, new VRL[] { newSource });
+                this.addNodes(newParentVrl, new VRL[]{newSource});
             }
-            logger.debugPrintf("New node not yet in resoruce tree:%s\n", newSource);
+            log.debug("New node not yet in resoruce tree:{}", newSource);
         }
     }
 
@@ -215,7 +211,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
     }
 
     protected void addNodes(final VRL parent, final VRL[] sources) {
-        logger.debugPrintf("addNodes():%s\n", parent);
+        log.debug("addNodes():{}", parent);
 
         BrowserTask task = new BrowserTask(this.getTaskSource(),
                 "update resource tree model for node" + rootItem) {
@@ -229,8 +225,8 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
     }
 
     @Override
-    public void update(final VRL sources[], final String optAttrNames[]) {
-        logger.debugPrintf("refreshNodes():%s\n", sources.length);
+    public void update(final VRL[] sources, final String[] optAttrNames) {
+        log.debug("refreshNodes():{}", sources.length);
 
         BrowserTask task = new BrowserTask(this.getTaskSource(), "refreshNodes" + sources.length) {
             @Override
@@ -253,9 +249,9 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
     private void _updateRoot() {
         try {
             this.rootItem = viewNodeSource.getRoot(getUIModel());
-            logger.debugPrintf("updateRoot():%s\n", rootItem.getVRL());
+            log.debug("updateRoot():{}", rootItem.getVRL());
 
-            logger.debugPrintf("_updateRoot():%s\n", rootItem.getVRL());
+            log.debug("_updateRoot():{}", rootItem.getVRL());
 
             ResourceTreeNode rtRoot = new ResourceTreeNode(null, rootItem, true);
             getModel().setRoot(rtRoot);
@@ -287,7 +283,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
         }
     }
 
-    private void _refreshNodes(VRL sources[], String attrNames[]) {
+    private void _refreshNodes(VRL[] sources, String[] attrNames) {
         // Warning: potential N x M => O(N^2) if resources and nodes arrays are
         // large.
 
@@ -295,10 +291,10 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
             try {
                 // Refresh Complete ViewNode:
                 ViewNode[] viewNodes = viewNodeSource.createViewNodes(getUIModel(),
-                        new VRL[] { vrl });
+                        new VRL[]{vrl});
 
                 if ((viewNodes == null) || (viewNodes.length <= 0)) {
-                    logger.errorPrintf("Internal error: _refreshNodes(): no viewNodes for:%s\n",
+                    log.error("Internal error: _refreshNodes(): no viewNodes for:{}",
                             vrl);
                     continue;
                 }
@@ -318,7 +314,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
 
     private void _addNodes(final VRL parent, final VRL[] sources) {
         try {
-            ViewNode childs[];
+            ViewNode[] childs;
 
             childs = viewNodeSource.createViewNodes(getUIModel(), sources);
 

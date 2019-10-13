@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,8 +20,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.task.ITaskSource;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserTask;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
@@ -34,8 +34,8 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventListener;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+@Slf4j
 public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdater {
-    private final static PLogger logger = PLogger.getLogger(IconsPanelUpdater.class);
 
     private ProxyDataSource dataSource;
 
@@ -91,10 +91,10 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
 
     @Override
     public void notifyEvent(VRSEvent e) {
-        VRL vrls[] = e.getResources();
+        VRL[] vrls = e.getResources();
         VRL parent = e.getParent();
 
-        VRL otherVrls[] = e.getOtherResources();
+        VRL[] otherVrls = e.getOtherResources();
 
         // check parent:
         if ((parent != null) && (rootNode.getVRL().equals(parent) == false)) {
@@ -104,7 +104,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
         switch (e.getType()) {
             case RESOURCES_CREATED: {
                 if (parent == null) {
-                    logger.errorPrintf("Cannot check if new resource are for me. parent==null!\n");
+                    log.error("Cannot check if new resource are for me. parent==null!");
                     return;
                 }
 
@@ -141,7 +141,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
 
     @Override
     public void update(VRL[] vrls, String[] optAttributeNames) {
-        logger.errorPrintf("FIXME:update(...,...)");
+        log.error("FIXME:update(...,...)");
         // update all for now: 
         update();
     }
@@ -153,7 +153,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
 
         int len = nodes.length;
 
-        IconItem items[] = new IconItem[len];
+        IconItem[] items = new IconItem[len];
 
         for (int i = 0; i < len; i++) {
             items[i] = createIconItem(nodes[i]);

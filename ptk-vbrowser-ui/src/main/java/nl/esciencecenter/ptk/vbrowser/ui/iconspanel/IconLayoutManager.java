@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,24 +20,19 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
-import java.awt.Point;
-import javax.swing.JViewport;
-
 import lombok.extern.slf4j.Slf4j;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.ui.model.UIViewModel;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Icons Panel layout manager. Default Icon Flow: Horizontal Flow:<br>
  * Starts icons in upper left and adds icons to the right, fitting window width, and expand
  * downwards. List View Flow: Vertical Flow:<br>
  * Start Upper Left, adding icons downwards, fitting window height, and expand to the left.
- * 
- * @author Piter T. de Boer.
+ *
+ *
  */
 @Slf4j
 public class IconLayoutManager implements LayoutManager {
@@ -93,13 +88,13 @@ public class IconLayoutManager implements LayoutManager {
 
     /**
      * Custom Layout method.
-     * 
+     * <p>
      * Important: Is executed during (SWing) object lock. Do not trigger new resize events to
      * prevent an endless aligniIcons loop !
      */
 
     protected Dimension alignIcons(Container container, boolean doLayout) {
-        log.trace("alignIcons(): doLayout={}",doLayout);
+        log.trace("alignIcons(): doLayout={}", doLayout);
 
         int row = 0;
         int column = 0;
@@ -203,7 +198,7 @@ public class IconLayoutManager implements LayoutManager {
                 if (currentYpos + cellMaxHeight > targetSize.height) {
                     // reset to ypos to top margin, increase new xpos. 
                     currentYpos = uiModel.getIconVGap();
-                    ;// reset to defaul offset
+                    // reset to defaul offset
                     currentXpos = maxx + uiModel.getIconHGap(); // next row
                     //ypos += celly + browser_icon_gap_width; // next row
                     row = 0;
@@ -250,7 +245,7 @@ public class IconLayoutManager implements LayoutManager {
             targetSize = container.getSize();
         }
 
-        log.trace("getTargetSize(), size=[{},{}]",targetSize.width,targetSize.height);
+        log.trace("getTargetSize(), size=[{},{}]", targetSize.width, targetSize.height);
         return targetSize;
     }
 

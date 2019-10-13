@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,29 +20,25 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.TreePath;
-
-import nl.esciencecenter.ptk.util.logging.PLogger;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
-public class ResourceTreeController implements TreeExpansionListener, ViewNodeActionListener {
-    private static PLogger logger;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.tree.TreePath;
 
-    static {
-        logger = PLogger.getLogger(ResourceTreeController.class);
-    }
+@Slf4j
+public class ResourceTreeController implements TreeExpansionListener, ViewNodeActionListener {
 
     private ResourceTree tree;
 
     private BrowserInterface browser;
 
     public ResourceTreeController(BrowserInterface browser, ResourceTree resourceTree,
-            ResourceTreeModel model) {
+                                  ResourceTreeModel model) {
         this.tree = resourceTree;
         this.browser = browser;
     }
@@ -53,11 +49,11 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
 
     // From TreeExpansionListener
     public void treeExpanded(TreeExpansionEvent evt) {
-        logger.debugPrintf("TreeExpansionHandler.treeExpanded()\n");
+        log.debug("TreeExpansionHandler.treeExpanded()");
 
         TreePath path = evt.getPath();
         if (evt.getSource().equals(tree) == false) {
-            logger.errorPrintf("***Received event from different tree!\n");
+            log.error("***Received event from different tree!");
             return;
         }
         // Get the last component of the path and
@@ -71,7 +67,7 @@ public class ResourceTreeController implements TreeExpansionListener, ViewNodeAc
 
     // From TreeExpansionListener
     public void treeCollapsed(TreeExpansionEvent evt) {
-        logger.debugPrintf("TreeExpansionHandler.treeCollapsed()\n");
+        log.debug("TreeExpansionHandler.treeCollapsed()");
     }
 
     public BrowserInterface getBrowserInterface() {

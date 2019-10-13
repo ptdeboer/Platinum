@@ -11,11 +11,10 @@ public interface VRenamable {
 
     /**
      * Rename this (virtual) resource.
-     * 
-     * @param newNameOrPath
-     *            - logical name or relative path.
+     *
+     * @param newNameOrPath - logical name or relative path.
      * @return update path if rename was successful.
      */
-    public VPath renameTo(String newNameOrPath) throws VrsException;
+    VPath renameTo(String newNameOrPath) throws VrsException;
 
 }

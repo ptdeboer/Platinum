@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,14 @@
 
 package nl.esciencecenter.ptk.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ActionTask;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.util.logging.PLogger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * BufferStreamTransferer copies data from in InputStream to an OutputStream. <br>
@@ -36,9 +36,8 @@ import nl.esciencecenter.ptk.util.logging.PLogger;
  * writing the data in current thread. This parallel read/write will better use the available
  * bandwidth by both reading and writing in parallel.
  */
+@Slf4j
 public class BufferStreamTransferer {
-
-    private static final PLogger logger = PLogger.getLogger(BufferStreamTransferer.class);
 
     // === instance ===
 
@@ -46,22 +45,30 @@ public class BufferStreamTransferer {
 
     // data buffer: acces is synchronized.
     // This object is also used as general mutex.
-    private byte buffer[] = null;
+    private byte[] buffer = null;
 
     private long totalRead = 0;
 
     private long nrWritten = 0;
 
-    /** either unkownSize==true or nrToTransfer>0) */
+    /**
+     * either unkownSize==true or nrToTransfer>0)
+     */
     private boolean unknownSize = true;
 
-    /** either unkownSize==true or nrToTransfer>0) */
+    /**
+     * either unkownSize==true or nrToTransfer>0)
+     */
     private long nrToTransfer = -1; // keep unknown for now
 
-    /** time in milliseconds */
+    /**
+     * time in milliseconds
+     */
     private long readTime = 0;
 
-    /** time in milliseconds */
+    /**
+     * time in milliseconds
+     */
     private long writeTime = 0;
 
     /**
@@ -74,13 +81,19 @@ public class BufferStreamTransferer {
     // optimization/limitation options
     // ***
 
-    /** nr of bytes thats get read per read iteration:32k buffers */
+    /**
+     * nr of bytes thats get read per read iteration:32k buffers
+     */
     private int readChunkSize = 32 * 1024;
 
-    /** nr of bytes thats get written each write iteration: 32k buffer. */
+    /**
+     * nr of bytes thats get written each write iteration: 32k buffer.
+     */
     private int writeChunkSize = 32 * 1024;
 
-    /** buffer size to use */
+    /**
+     * buffer size to use
+     */
     private int bufferSize = 0;
 
     /**
@@ -172,8 +185,8 @@ public class BufferStreamTransferer {
                 synchronized (buffer) {
                     delta = buflen; // ? istr.available();
                     int free = buflen - (int) (totalRead - nrWritten); // free
-                                                                       // space
-                                                                       // in
+                    // space
+                    // in
                     // buffer
                     // do not read past free space in buffer
                     if (delta > free)
@@ -189,18 +202,18 @@ public class BufferStreamTransferer {
                             delta = (int) (nrToTransfer - totalRead);
 
                     start = (int) (totalRead % buflen);// start in cicular
-                                                       // buffer
+                    // buffer
 
                     // do not read past buffer end (wrap around)
                     if (start + delta > buflen)
                         delta = buflen - start;
                 }
 
-                logger.debugPrintf("reader: nrRead    =%d\n", totalRead);
-                logger.debugPrintf("reader: nrWritten =%d\n", nrWritten);
-                logger.debugPrintf("reader: nrToRead  =%d\n", nrToTransfer);
-                logger.debugPrintf("reader: start     =%d\n", start);
-                logger.debugPrintf("reader: delta     =%d\n", delta);
+                log.trace("reader: nrRead    ={}", totalRead);
+                log.trace("reader: nrWritten ={}", nrWritten);
+                log.trace("reader: nrToRead  ={}", nrToTransfer);
+                log.trace("reader: start     ={}", start);
+                log.trace("reader: delta     ={}", delta);
 
                 // new data to tranfer ?
                 if (delta > 0) {
@@ -221,7 +234,6 @@ public class BufferStreamTransferer {
                             unknownSize = false;
                             nrToTransfer = totalRead;
                         } else {
-                            logger.errorPrintf("Got EOF while reading %d bytes from inputstream\n", nrToTransfer);
                             throw new IOException("Failed to read expected number of bytes: read=" + totalRead
                                     + " while expected=" + nrToTransfer);
                         }
@@ -229,12 +241,12 @@ public class BufferStreamTransferer {
                         // MUTEX save: field is only updated by reader:
                         totalRead += n; // update totalRead;
                     } else if (n == 0) {
-                        logger.debugPrintf("read(): Got 0 bytes ...\n");
+                        log.trace("read(): Got 0 bytes ...");
                         // ok, try again could be time out.
                     }
 
                     readTime += System.currentTimeMillis() - startTime;
-                    logger.debugPrintf("reader: after read, nrRead=%s\n", totalRead);
+                    log.trace("reader: after read, nrRead={}", totalRead);
 
                     // notify writer there is data (if writer is waiting)
                     synchronized (writerWait) {
@@ -249,13 +261,13 @@ public class BufferStreamTransferer {
                 }
             }
 
-            logger.debugPrintf("--- Reader done ---\n");
-            logger.debugPrintf("reader total nrRead    =%d\n", totalRead);
-            logger.debugPrintf("reader total nrWritten =%d\n", nrWritten);
-            logger.debugPrintf("reader nrToTransfer    =%d\n", nrToTransfer);
+            log.trace("--- Reader done ---");
+            log.trace("reader total nrRead    ={}", totalRead);
+            log.trace("reader total nrWritten ={}", nrWritten);
+            log.trace("reader nrToTransfer    ={}", nrToTransfer);
 
         } catch (Throwable err) {
-            logger.logException(PLogger.ERROR, err, "Exception:%s\n", err);
+            log.error("Reader Exception:" + err.getMessage(), err);
             // Signal Strop:
             this.cancelTransfer = true;
             // notify writer since there is a read error !
@@ -279,10 +291,8 @@ public class BufferStreamTransferer {
             return true;
 
         // User interaction through the dialog: Cancel!
-        if ((this.transferInfo != null) && (transferInfo.isCancelled()))
-            return true;
+        return (this.transferInfo != null) && (transferInfo.isCancelled());
 
-        return false;
     }
 
     protected void writeLoop() throws IOException {
@@ -310,11 +320,12 @@ public class BufferStreamTransferer {
                         delta = writeChunkSize;
                 }
 
-                logger.debugPrintf("writer nrRead    =%d\n", totalRead);
-                logger.debugPrintf("writer nrWritten =%d\n", nrWritten);
-                logger.debugPrintf("writer nrToRead  =%d\n", nrToTransfer);
-                logger.debugPrintf("writer start     =%d\n", start);
-                logger.debugPrintf("writer delta     =%d\n", delta);
+                log.trace("writer: nrRead    ={}", totalRead);
+                log.trace("writer: nrWritten ={}", nrWritten);
+                log.trace("writer: nrToRead  ={}", nrToTransfer);
+                log.trace("writer: start     ={}", start);
+                log.trace("writer: delta     ={}", delta);
+
 
                 // data to write ?
                 if (delta > 0) {
@@ -344,10 +355,10 @@ public class BufferStreamTransferer {
                 }
             }
 
-            logger.debugPrintf("--- Writer done ---\n");
-            logger.debugPrintf("writer total nrRead    =%d\n", totalRead);
-            logger.debugPrintf("writer total nrWritten =%d\n", nrWritten);
-            logger.debugPrintf("writer nrToTransfer    =%d\n", nrToTransfer);
+            log.trace("--- Writer done ---");
+            log.trace("writer total nrRead    ={}", totalRead);
+            log.trace("writer total nrWritten ={}", nrWritten);
+            log.trace("writer nrToTransfer    ={}", nrToTransfer);
 
             // in the case the reader still is waiting for the writer
             // to finish :
@@ -356,7 +367,7 @@ public class BufferStreamTransferer {
                 readerWait.notify();
             }
         } catch (Throwable err) {
-            logger.logException(PLogger.ERROR, err, "Exception:%s\n", err);
+            log.error("Writer Exception:" + err.getMessage(), err);
             // Signal Strop:
             this.cancelTransfer = true;
             // notify reader since there is a read error !
@@ -372,7 +383,7 @@ public class BufferStreamTransferer {
     /**
      * Transfer upto numTranfer bytes, or -1 for all.
      */
-    public void startTransfer(long numTransfer) throws Exception {
+    public void startTransfer(long numTransfer) throws IOException {
         // =============================================================
         // Pre Transfer
         // =============================================================
@@ -429,7 +440,8 @@ public class BufferStreamTransferer {
         try {
             readerTask.join();
         } catch (InterruptedException e) {
-            throw e;
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted:" + e.getMessage(), e);
         }
         // after transfer make sure all streams are flushes and closed !
 
@@ -445,15 +457,15 @@ public class BufferStreamTransferer {
             totalTime = 1;
 
         // unit B/ms= kB/s
-        logger.debugPrintf("read speed=%d kB/s\n", (nrToTransfer / readTime));
-        logger.debugPrintf("write speed=%d kB/s\n", (nrToTransfer / writeTime));
+        log.trace("read speed={} kB/s", (nrToTransfer / readTime));
+        log.trace("write speed={} kB/s", (nrToTransfer / writeTime));
 
         // bytes per second:
-        long totalSpeed = (long) (1000L * nrToTransfer / totalTime);
+        long totalSpeed = 1000L * nrToTransfer / totalTime;
 
         String totalSpeedStr = Presentation.createDefault().speedString(totalSpeed, "bytes/s");
 
-        logger.debugPrintf("total speed=%s\n", totalSpeedStr);
+        log.trace("total speed={}", totalSpeedStr);
 
         // Ugly:
         // if (this.transferInfo!=null)
@@ -461,10 +473,7 @@ public class BufferStreamTransferer {
 
         if (readerTask.hasException()) {
             Throwable e = readerTask.getException();
-            if (e instanceof Exception)
-                throw (Exception) e;
-            else
-                throw new Exception("ReadTaskException\n" + e.getMessage(), e);
+            throw new IOException("Reader Exception:" + e.getMessage(), e);
         }
     }
 

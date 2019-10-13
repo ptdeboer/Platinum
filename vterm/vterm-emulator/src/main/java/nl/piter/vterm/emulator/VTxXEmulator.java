@@ -1,8 +1,13 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.piter.vterm.api.CharacterTerminal;
 import nl.piter.vterm.api.EmulatorListener;
+import nl.piter.vterm.emulator.Tokens.Token;
 import nl.piter.vterm.ui.charpane.StyleChar;
 
 import java.io.IOException;
@@ -11,8 +16,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.piter.vterm.emulator.Tokens.*;
-import static nl.piter.vterm.emulator.VTxTokenDefs.*;
+import static nl.piter.vterm.emulator.VTxTokenDefs.CTRL_ESC;
 
 /**
  * Implementation of most VT100 codes, VT102, and some xterm/xterm-256-color;
@@ -84,7 +88,7 @@ public class VTxXEmulator implements Emulator {
     }
 
     void setInputStream(InputStream inps) {
-        this.tokenizer = new VTxTokenizer(inps) ;
+        this.tokenizer = new VTxTokenizer(inps);
     }
 
     /**
@@ -101,7 +105,7 @@ public class VTxXEmulator implements Emulator {
     }
 
     public void send(byte[] code) throws IOException {
-        if (code==null) {
+        if (code == null) {
             log.error("Cowardly refusing to send NULL bytes");
             return;
         }
@@ -231,6 +235,7 @@ public class VTxXEmulator implements Emulator {
 
     /**
      * Update terminal size and region without sending control sequences.
+     *
      * @param cols
      * @param rows
      * @param y1
@@ -246,7 +251,7 @@ public class VTxXEmulator implements Emulator {
     }
 
     public int[] getRegion() {
-        return new int[]{this.nr_columns,this.nr_rows,this.region_y1,this.region_y2};
+        return new int[]{this.nr_columns, this.nr_rows, this.region_y1, this.region_y2};
     }
 
     public boolean sendTermSize() {
@@ -284,7 +289,7 @@ public class VTxXEmulator implements Emulator {
         // Legend:  AVO = Advanced Video Option
 
         // I am vt10x compatible:
-       byte[] bytes = { CTRL_ESC, '[', '?','1',';','2','c'};
+        byte[] bytes = {CTRL_ESC, '[', '?', '1', ';', '2', 'c'};
 
         try {
             this.send(bytes);
@@ -292,7 +297,6 @@ public class VTxXEmulator implements Emulator {
             checkIOException(e, true);
         }
     }
-
 
 
     public void start() {
@@ -556,7 +560,7 @@ public class VTxXEmulator implements Emulator {
                 int mode = 0;
                 if (numIntegers > 0)
                     mode = arg1;
-                log.debug("LINE_ERASE: mode={}",mode);
+                log.debug("LINE_ERASE: mode={}", mode);
 
                 if (mode == 0) {
                     // cursor(inclusive) to end of line
@@ -568,7 +572,7 @@ public class VTxXEmulator implements Emulator {
                     // complete line
                     term.clearArea(0, y, nr_columns, y + 1);
                 } else {
-                    log.error("LINE_ERASE: unsupported mode:{}",mode);
+                    log.error("LINE_ERASE: unsupported mode:{}", mode);
                 }
                 break;
             }
@@ -664,7 +668,7 @@ public class VTxXEmulator implements Emulator {
             case SEND_PRIMARY_DA:
                 if (this.tokenizer.args().numArgs() > 0) {
                     FIXME("SEND_PRIMARY_DA: has argument(s):{}", arg1);
-                 }
+                }
                 sendTermType();
                 break;
             case SEND_SECONDARY_DA:
@@ -728,7 +732,7 @@ public class VTxXEmulator implements Emulator {
                         // blink supported ?
                         charTerm.addDrawStyle(StyleChar.STYLE_BLINK);
                         charTerm.addDrawStyle(StyleChar.STYLE_UBERBOLD);
-                   } else if (mode == 7)
+                    } else if (mode == 7)
                         charTerm.addDrawStyle(StyleChar.STYLE_INVERSE);
                     else if (mode == 8)
                         charTerm.addDrawStyle(StyleChar.STYLE_HIDDEN);
@@ -786,7 +790,7 @@ public class VTxXEmulator implements Emulator {
                 break;
             case 1034:
                 // P s = 1034 → Interpret "meta" key, sets eighth bit. (enables the eightBitInput resource).
-                FIXME("Metakey/8bit?{}",value);
+                FIXME("Metakey/8bit?{}", value);
                 break;
             case 1048:
                 if (value)
@@ -807,13 +811,13 @@ public class VTxXEmulator implements Emulator {
                 break;
             }
             default:
-                FIXME("Unknown DEC mode:set({},{})", mode,value);
+                FIXME("Unknown DEC mode:set({},{})", mode, value);
                 break;
         }
     }
 
     private void handleSetResetMode(CharacterTerminal charTerm, int numIntegers, int[] integers,
-                               boolean value) {
+                                    boolean value) {
         if (numIntegers == 0)
             return; //Reset all ?
 
@@ -821,12 +825,12 @@ public class VTxXEmulator implements Emulator {
 
         switch (mode) {
             case 4:
-                if (value==true) {
+                if (value == true) {
                     FIXME("INSERT (true=insert, false=replace):{}; ", value);
                 }
                 break;
             default:
-                FIXME("Unknown SET/RESET mode:{}={}", mode,value);
+                FIXME("Unknown SET/RESET mode:{}={}", mode, value);
                 break;
         }
     }
@@ -846,9 +850,9 @@ public class VTxXEmulator implements Emulator {
     }
 
     public byte[] getKeyCode(String keystr) {
-        byte[] bytes= KeyMappings.getKeyCode(termType, keystr.toUpperCase());
-        if (bytes==null) {
-            log.warn("Failed to find keycode:{}",keystr);
+        byte[] bytes = KeyMappings.getKeyCode(termType, keystr.toUpperCase());
+        if (bytes == null) {
+            log.warn("Failed to find keycode:{}", keystr);
         }
         return bytes;
     }
@@ -860,7 +864,7 @@ public class VTxXEmulator implements Emulator {
 
 
     protected void checkIOException(Exception e, boolean sendException) {
-        log.error("Exception",e);
+        log.error("Exception", e);
         System.err.println("***Error:" + (sendException ? "SEND" : "RECEIVE") + "Exception:" + e);
         e.printStackTrace();
     }

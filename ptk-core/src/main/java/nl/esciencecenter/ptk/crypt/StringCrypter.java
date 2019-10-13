@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,6 +20,11 @@
 
 package nl.esciencecenter.ptk.crypt;
 
+import nl.esciencecenter.ptk.util.StringUtil;
+
+import javax.crypto.*;
+import javax.crypto.spec.DESedeKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -30,17 +35,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import nl.esciencecenter.ptk.util.StringUtil;
-
 /**
  * String Encrypter/Decryptor class. Can also be used to encrypt/decrypt byte arrays, name is kept
  * for backwards compatibilty.
@@ -49,7 +43,7 @@ public class StringCrypter {
 
     public static class EncryptionException extends Exception {
 
-               public EncryptionException(Throwable t) {
+        public EncryptionException(Throwable t) {
             super(t);
         }
 
@@ -60,7 +54,7 @@ public class StringCrypter {
 
     public static class DecryptionFailedException extends EncryptionException {
 
-               public DecryptionFailedException(Throwable t) {
+        public DecryptionFailedException(Throwable t) {
             super(t);
         }
 
@@ -97,23 +91,13 @@ public class StringCrypter {
 
     private CryptScheme cryptScheme;
 
-    public StringCrypter(Secret encryptionKey) throws EncryptionException, NoSuchAlgorithmException,
-            UnsupportedEncodingException {
-        init(encryptionKey, CryptScheme.DESEDE_ECB_PKCS5, StringHasher.SHA_256, CHARSET_UTF8);
-    }
-
-    public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme) throws EncryptionException,
-            NoSuchAlgorithmException, UnsupportedEncodingException {
-        init(encryptionKey, encryptionScheme, StringHasher.SHA_256, CHARSET_UTF8);
-    }
-
     public StringCrypter(Secret encryptionKey, CryptScheme encryptionScheme, String keyHashingScheme,
-            String charEncoding) throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
+                         String charEncoding) throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
         init(encryptionKey, encryptionScheme, keyHashingScheme, charEncoding);
     }
 
-    public StringCrypter(byte encryptionKey[], CryptScheme encryptionScheme, String keyHashingScheme,
-            String charEncoding) throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public StringCrypter(byte[] encryptionKey, CryptScheme encryptionScheme, String keyHashingScheme,
+                         String charEncoding) throws EncryptionException, NoSuchAlgorithmException, UnsupportedEncodingException {
         setCharacterEncoding(charEncoding);
         keyHasher = MessageDigest.getInstance(keyHashingScheme);
         initKey(encryptionKey, null, encryptionScheme);
@@ -160,12 +144,12 @@ public class StringCrypter {
         // return MD5 or SHA-256 hash.
         this.keyHasher.reset();
         this.keyHasher.update(bbuf);
-        byte keyBytes[] = keyHasher.digest();
+        byte[] keyBytes = keyHasher.digest();
 
         return keyBytes;
     }
 
-    protected void initKey(byte rawKey[], byte IV[], CryptScheme encryptionScheme) throws EncryptionException {
+    protected void initKey(byte[] rawKey, byte[] IV, CryptScheme encryptionScheme) throws EncryptionException {
         if (rawKey == null) {
             throw new NullPointerException("Encryption key is null!");
         }
@@ -191,7 +175,7 @@ public class StringCrypter {
                 case AES128_ECB_PKCS5:
                     // case AES192_ECB_PKCS5:
                 case AES256_ECB_PKCS5: {
-                    byte subkey[] = null;
+                    byte[] subkey = null;
 
                     if (rawKey.length < keyLen) {
                         throw new EncryptionException("AES Key length to short. Length=" + rawKey.length
@@ -215,11 +199,7 @@ public class StringCrypter {
                 }
             } // switch
 
-        } catch (NoSuchAlgorithmException e) {
-            throw new EncryptionException(e.getMessage(), e);
-        } catch (NoSuchPaddingException e) {
-            throw new EncryptionException(e.getMessage(), e);
-        } catch (InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
             throw new EncryptionException(e.getMessage(), e);
         }
     }
@@ -246,7 +226,7 @@ public class StringCrypter {
      * String size by ~33%.
      */
     public String encryptToBase64(String unencryptedString) throws EncryptionException {
-        byte ciphertext[] = encrypt(unencryptedString);
+        byte[] ciphertext = encrypt(unencryptedString);
         return StringUtil.base64Encode(ciphertext);
     }
 
@@ -261,7 +241,7 @@ public class StringCrypter {
         return encrypt(unencryptedString.getBytes(charSet));
     }
 
-    public byte[] encrypt(byte bytes[]) throws EncryptionException {
+    public byte[] encrypt(byte[] bytes) throws EncryptionException {
         // 
         try {
             SecretKey key = null;
@@ -278,8 +258,6 @@ public class StringCrypter {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] ciphertext = cipher.doFinal(bytes);
             return ciphertext;
-        } catch (InvalidKeySpecException e) {
-            throw new EncryptionException(e.getMessage(), e);
         } catch (InvalidKeyException e) {
             if (this.cryptScheme.getCipherScheme().toUpperCase().startsWith("AES")) {
                 if (e.getMessage().contains("Illegal key size")) {
@@ -290,9 +268,7 @@ public class StringCrypter {
                 }
             }
             throw new EncryptionException(e.getMessage(), e);
-        } catch (IllegalBlockSizeException e) {
-            throw new EncryptionException(e.getMessage(), e);
-        } catch (BadPaddingException e) {
+        } catch (InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException e) {
             throw new EncryptionException(e.getMessage(), e);
         }
     }
@@ -333,7 +309,7 @@ public class StringCrypter {
     /**
      * Decrypt base64 encoded and encrypted String and return as bytes.
      */
-    public byte[] decrypt(byte crypt[]) throws EncryptionException {
+    public byte[] decrypt(byte[] crypt) throws EncryptionException {
         //
         if (crypt == null) {
             throw new NullPointerException("Byte array can't be null.");

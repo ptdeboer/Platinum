@@ -1,18 +1,15 @@
 package nl.esciencecenter.vbrowser.vrs.data.xml;
 
-import java.io.IOException;
-import java.util.Set;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
-import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
-import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Set;
+
+@Slf4j
 public class Test_XMLProperties {
 
     @Test
@@ -48,7 +45,7 @@ public class Test_XMLProperties {
         XMLData data = new XMLData(new VRSContext());
         String xml = data.toXML(attrs);
 
-        outPrintf("---xml---\n%s\n", XMLData.prettyFormat(xml, 3));
+        log.debug("---xml---\n{}", XMLData.prettyFormat(xml, 3));
 
         VRSProperties newSet = data.parseVRSProperties(xml);
         compare(attrs, newSet, true);
@@ -63,7 +60,7 @@ public class Test_XMLProperties {
         XMLData data = new XMLData(new VRSContext());
         String xml = data.toXML(attrs);
 
-        outPrintf("---xml---\n%s\n", XMLData.prettyFormat(xml, 3));
+        log.debug("---xml---\n{}", XMLData.prettyFormat(xml, 3));
 
         VRSProperties parsed = data.parseVRSProperties(xml);
 
@@ -71,7 +68,7 @@ public class Test_XMLProperties {
     }
 
     protected void compare(VRSProperties original, VRSProperties others,
-            boolean checkStringValuesOnly) {
+                           boolean checkStringValuesOnly) {
         Set<String> orgKeys = original.keySet();
         Set<String> otherKeys = others.keySet();
 
@@ -100,8 +97,8 @@ public class Test_XMLProperties {
         // Check order of fields:
         Assert.assertEquals("Number of fields don't match", orgKeys.size(), otherKeys.size());
 
-        String arr1[] = orgKeys.toArray(new String[0]);
-        String arr2[] = otherKeys.toArray(new String[0]);
+        String[] arr1 = orgKeys.toArray(new String[0]);
+        String[] arr2 = otherKeys.toArray(new String[0]);
         for (int i = 0; i < arr1.length; i++) {
             Assert.assertEquals("Field numbers #" + i + " don't match", arr1[i], arr2[i]);
         }
@@ -120,8 +117,5 @@ public class Test_XMLProperties {
 
     }
 
-    public static void outPrintf(String format, Object... args) {
-        System.out.printf(format, args);
-    }
 
 }

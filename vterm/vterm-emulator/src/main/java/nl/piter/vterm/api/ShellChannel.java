@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.api;
 
 import java.io.IOException;
@@ -49,6 +53,7 @@ public interface ShellChannel {
     /**
      * Tries to set terminal size to underlying shell channel.
      * Setting width and height in pixels do not seem to be supported anywhere.
+     *
      * @return true of terminal type was successfully updated. False if terminal type is not
      * supported.
      * @throws IOException

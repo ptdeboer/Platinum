@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,13 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
+
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
+import nl.esciencecenter.vbrowser.vrs.VRSTypes;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
+import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -32,17 +38,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-import nl.esciencecenter.vbrowser.vrs.VRSTypes;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
-import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 /**
  * Drag and Drop Data conversion methods and DataFlavors.
  */
+@Slf4j
 public class DnDData {
-    private static PLogger logger = PLogger.getLogger(DnDData.class);
 
     public static final String VBROWSER_VRS_MIMETYPE_PREFIX = VRSTypes.VBROWSER_VRS_MIMETYPE_PREFIX;
 
@@ -70,7 +70,7 @@ public class DnDData {
             + "-directory";
 
     public static class VRLEntry implements Serializable {
-               public VRL vrl;
+        public VRL vrl;
 
         public String resourceType;
 
@@ -84,7 +84,7 @@ public class DnDData {
     }
 
     public static class VRLEntryList extends ArrayList<VRLEntry> implements Serializable {
-               public VRLEntryList(int n) {
+        public VRLEntryList(int n) {
             super(n);
         }
 
@@ -96,7 +96,7 @@ public class DnDData {
             return vrls;
         }
 
-    };
+    }
 
     /**
      * List of VRLs
@@ -114,35 +114,35 @@ public class DnDData {
     /**
      * DataFlavors which can be converted to VRLs
      */
-    public static DataFlavor[] dataFlavorsToVRLs = new DataFlavor[] {
+    public static DataFlavor[] dataFlavorsToVRLs = new DataFlavor[]{
             DnDFlavors.javaURLFlavor, // single URL not a list. 
             flavorVFSPaths, flavorVRLEntryList, DnDFlavors.javaFileListFlavor,
-            DnDFlavors.javaURIListAsTextFlavor };
+            DnDFlavors.javaURIListAsTextFlavor};
 
     /**
      * DataFlavors which can be converted to VFSPaths (VFS VRLs)
      */
-    public static DataFlavor[] dataFlavorsToVFSPaths = new DataFlavor[] { flavorVFSPaths,
-            DnDFlavors.javaFileListFlavor };
+    public static DataFlavor[] dataFlavorsToVFSPaths = new DataFlavor[]{flavorVFSPaths,
+            DnDFlavors.javaFileListFlavor};
 
     /**
      * DataFlavors which can be constructed from VRLs.
      */
-    public static DataFlavor[] dataFlavorsFromVRLs = new DataFlavor[] { flavorVRLEntryList,
+    public static DataFlavor[] dataFlavorsFromVRLs = new DataFlavor[]{flavorVRLEntryList,
             DnDFlavors.javaURIListAsTextFlavor, DnDFlavors.javaStringFlavor,
-    // If plain text is supported, all charsets must be supported. 
-    // DnDFlavors.plainTextFlavor 
-    // flavorJavaURL, // => VRLs are URIs not URLs 
+            // If plain text is supported, all charsets must be supported.
+            // DnDFlavors.plainTextFlavor
+            // flavorJavaURL, // => VRLs are URIs not URLs
     };
 
     /**
      * DataFlavors which can be constructed from VFSPaths. JavaFileList might not work if files are
      * remote files.
      */
-    public static DataFlavor[] dataFlavorsFromVFSPaths = new DataFlavor[] { flavorVFSPaths,
+    public static DataFlavor[] dataFlavorsFromVFSPaths = new DataFlavor[]{flavorVFSPaths,
             flavorVRLEntryList, DnDFlavors.javaURIListAsTextFlavor, DnDFlavors.javaStringFlavor,
-    //DnDFlavors.plainTextFlavor,
-    //DnDFlavors.javaFileListFlavor 
+            //DnDFlavors.plainTextFlavor,
+            //DnDFlavors.javaFileListFlavor
     };
 
     // ========================================================================
@@ -150,7 +150,7 @@ public class DnDData {
     // ========================================================================
     public static void staticInit() {
         for (DataFlavor flav : dataFlavorsFromVFSPaths) {
-            logger.debugPrintf("- VFSPath DataFlavor=%s\n", flav);
+            log.debug("- VFSPath DataFlavor={}", flav);
         }
     }
 
@@ -188,7 +188,7 @@ public class DnDData {
     }
 
     /**
-     * Retrieve VRLs if URL/URI style dataflavors are supported. 
+     * Retrieve VRLs if URL/URI style dataflavors are supported.
      */
     public static List<VRL> getVRLsFrom(Transferable t) throws VRLSyntaxException,
             UnsupportedFlavorException, IOException {
@@ -247,7 +247,7 @@ public class DnDData {
 
     /**
      * Retrieve Java File List. Both windows and KDE can drop actual Java Files.
-     * 
+     *
      * @throws IOException
      * @throws UnsupportedFlavorException
      */
@@ -265,7 +265,7 @@ public class DnDData {
         List<VRL> vris = new ArrayList<VRL>(len);
 
         while (iterator.hasNext()) {
-            java.io.File file = (File) iterator.next();
+            java.io.File file = iterator.next();
             VRL vrl = new VRL("file", null, file.getAbsolutePath());
             vris.add(vrl);
         }
@@ -273,8 +273,8 @@ public class DnDData {
         return vris;
     }
 
-    /** 
-     * Get dropped data as text if a String Flavor is supported. 
+    /**
+     * Get dropped data as text if a String Flavor is supported.
      */
     public String getText(Transferable t) throws UnsupportedFlavorException, IOException {
         if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {

@@ -1,13 +1,11 @@
 package nl.esciencecenter.ptk.util;
 
+import nl.esciencecenter.ptk.io.IOUtil;
+import nl.esciencecenter.ptk.io.Readable;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Properties;
-
-import nl.esciencecenter.ptk.io.IOUtil;
-
-import nl.esciencecenter.ptk.io.Readable;
 
 /**
  * Content reader util class which can automatically close the OutputStream written to.
@@ -15,12 +13,9 @@ import nl.esciencecenter.ptk.io.Readable;
 public class ContentReader implements Readable {
 
     private boolean autoClose;
-
     private InputStream inputStream;
-
     private String charEncoding;
 
-    private IOException closeException;
 
     public ContentReader(InputStream inps) {
         this.inputStream = inps;
@@ -50,7 +45,7 @@ public class ContentReader implements Readable {
         return IOUtil.readAll(inputStream, autoClose);
     }
 
-    public String readString() throws UnsupportedEncodingException, IOException {
+    public String readString() throws IOException {
         return new String(IOUtil.readAll(inputStream, autoClose), charEncoding);
     }
 
@@ -66,21 +61,9 @@ public class ContentReader implements Readable {
             return props;
         } finally {
             if (autoClose) {
-                autoClose();
+                IOUtil.autoClose(inputStream);
             }
         }
-    }
-
-    public void autoClose() {
-        try {
-            this.inputStream.close();
-        } catch (IOException e) {
-            this.closeException = e;
-        }
-    }
-
-    public Exception getCloseException() {
-        return this.closeException;
     }
 
 }

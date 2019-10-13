@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,11 +20,11 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.events;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import nl.esciencecenter.ptk.events.IEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ViewerEvent implements IEvent<ViewerEventType> {
 
@@ -39,7 +39,7 @@ public class ViewerEvent implements IEvent<ViewerEventType> {
     public static ViewerEvent createDisposedEvent(ViewerEventSource source) {
         return new ViewerEvent(source, ViewerEventType.VIEWER_DISPOSED);
     }
-    
+
     public static ViewerEvent createHyperLinkEvent(ViewerEventSource source, ViewerEventType eventType, VRL vrl) {
         ViewerEvent event = new ViewerEvent(source, eventType);
         event.setVrl(vrl);
@@ -47,16 +47,16 @@ public class ViewerEvent implements IEvent<ViewerEventType> {
     }
 
     public static ViewerEvent createHyperLinkEvent(ViewerEventSource source, ViewerEventType eventType, VRL parent,
-            VRL vrl) {
+                                                   VRL vrl) {
         ViewerEvent event = new ViewerEvent(source, eventType);
         event.setParentVrl(parent);
         event.setVrl(vrl);
         return event;
     }
 
-    public static ViewerEvent createExceptionEvent(ViewerEventSource source,String message, Throwable ex) {
-        ViewerEvent event=new ViewerEvent(source, ViewerEventType.VIEWER_ERROR);
-        event.eventProperties=new HashMap<String,String>(); 
+    public static ViewerEvent createExceptionEvent(ViewerEventSource source, String message, Throwable ex) {
+        ViewerEvent event = new ViewerEvent(source, ViewerEventType.VIEWER_ERROR);
+        event.eventProperties = new HashMap<String, String>();
         event.eventProperties.put("exception", ex.getMessage());
         return event;
     }
@@ -96,12 +96,12 @@ public class ViewerEvent implements IEvent<ViewerEventType> {
         this.eventType = type;
     }
 
-    public ViewerEvent(ViewerEventSource source, ViewerEventType type, Map<String,String> eventProperties) {
+    public ViewerEvent(ViewerEventSource source, ViewerEventType type, Map<String, String> eventProperties) {
         this.eventSource = source;
         this.eventType = type;
-        this.eventProperties=eventProperties;
+        this.eventProperties = eventProperties;
     }
-    
+
     @Override
     public ViewerEventSource getEventSource() {
         return this.eventSource;
@@ -121,7 +121,6 @@ public class ViewerEvent implements IEvent<ViewerEventType> {
     protected Map<String, String> getEvents() {
         return this.eventProperties;
     }
-
 
 
 }

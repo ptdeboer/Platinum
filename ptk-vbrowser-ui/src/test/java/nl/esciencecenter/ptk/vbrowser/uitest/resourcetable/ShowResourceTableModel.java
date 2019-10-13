@@ -2,7 +2,6 @@ package nl.esciencecenter.ptk.vbrowser.uitest.resourcetable;
 
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel.RowData;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,12 +11,12 @@ public class ShowResourceTableModel {
     // Asserts
     // ================
 
-    static protected void assertEmpty(ResourceTableModel model, String headers[]) {
+    static protected void assertEmpty(ResourceTableModel model, String[] headers) {
         Assert.assertEquals("Empty model should have 0 rows.", 0, model.getRowCount());
         Assert.assertEquals("Number of header doesn't match.", headers.length,
                 model.getColumnCount());
 
-        String actualHeaders[] = model.getHeaders();
+        String[] actualHeaders = model.getHeaders();
 
         for (int i = 0; i < headers.length; i++) {
             Assert.assertEquals("Header list entry #" + i + "doesn't match", headers[i],
@@ -35,13 +34,13 @@ public class ShowResourceTableModel {
 
     @Test
     public void test_CreateNew() {
-        testNewTable(new String[] { "header" });
-        testNewTable(new String[] { "header1", "header2" });
+        testNewTable(new String[]{"header"});
+        testNewTable(new String[]{"header1", "header2"});
         // nill table(!) 
-        testNewTable(new String[] { "" });
+        testNewTable(new String[]{""});
     }
 
-    public void testNewTable(String headers[]) {
+    public void testNewTable(String[] headers) {
         ResourceTableModel model = new ResourceTableModel(headers);
         assertEmpty(model, headers);
     }
@@ -65,33 +64,33 @@ public class ShowResourceTableModel {
 
     @Test
     public void test_AddRows() {
-        testTableRows(new String[] { "headerA" }, new String[][] { { "value1" } });
-        testTableRows(new String[] { "headerB" }, new String[][] { { "value1" }, { "value2" },
-                { "value3" } });
-        testTableRows(new String[] { "headerC" }, new String[][] { { "1" }, { "2" }, { "3" } });
+        testTableRows(new String[]{"headerA"}, new String[][]{{"value1"}});
+        testTableRows(new String[]{"headerB"}, new String[][]{{"value1"}, {"value2"},
+                {"value3"}});
+        testTableRows(new String[]{"headerC"}, new String[][]{{"1"}, {"2"}, {"3"}});
         // nill row
-        testTableRows(new String[] { "" }, new String[][] { { "value" } });
+        testTableRows(new String[]{""}, new String[][]{{"value"}});
 
         // nill row
-        testTableRows(new String[] { "headerD" }, new String[][] { { "" } });
+        testTableRows(new String[]{"headerD"}, new String[][]{{""}});
         // nill table
-        testTableRows(new String[] { "" }, new String[][] { { "" } });
+        testTableRows(new String[]{""}, new String[][]{{""}});
         // --- 
         // multi data
         // ---
-        testTableRows(new String[] { "headerA", "headerB" }, new String[][] { { "1", "2" },
-                { "4", "5" } });
-        testTableRows(new String[] { "headerA", "headerB", "headerC" }, new String[][] {
-                { "1", "2", "3" }, { "4", "5", "6" } });
+        testTableRows(new String[]{"headerA", "headerB"}, new String[][]{{"1", "2"},
+                {"4", "5"}});
+        testTableRows(new String[]{"headerA", "headerB", "headerC"}, new String[][]{
+                {"1", "2", "3"}, {"4", "5", "6"}});
     }
 
-    public void testTableRows(String headers[], String rowData[][]) {
+    public void testTableRows(String[] headers, String[][] rowData) {
         ResourceTableModel tableModel = testAddTableRows(headers, rowData);
 
         testDeleteTableRows(tableModel, headers, rowData);
     }
 
-    protected ResourceTableModel testAddTableRows(String headers[], String rowData[][]) {
+    protected ResourceTableModel testAddTableRows(String[] headers, String[][] rowData) {
         int numRows = rowData.length;
 
         ResourceTableModel model = new ResourceTableModel(headers);
@@ -111,7 +110,7 @@ public class ShowResourceTableModel {
             Assert.assertEquals("New index of key:'" + key + "'must match row number", i,
                     rowKeyIndex);
 
-            String rowValues[] = rowData[i];
+            String[] rowValues = rowData[i];
 
             for (int j = 0; j < rowValues.length; j++) {
                 String name = headers[j];
@@ -125,8 +124,8 @@ public class ShowResourceTableModel {
         return model;
     }
 
-    protected void testDeleteTableRows(ResourceTableModel tableModel, String headers[],
-            String rowData[][]) {
+    protected void testDeleteTableRows(ResourceTableModel tableModel, String[] headers,
+                                       String[][] rowData) {
         int numRows = rowData.length;
         int numToDeleted = tableModel.getRowCount();
 

@@ -1,5 +1,8 @@
 package uitests.dnd;
 
+import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
+
+import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -7,12 +10,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import javax.swing.TransferHandler;
-
-import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
-
 public class DnDTestTransferHandler extends TransferHandler {
-       public boolean importData(TransferSupport support) {
+    public boolean importData(TransferSupport support) {
         outPrintf("importData()");
 
         try {

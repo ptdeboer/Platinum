@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -30,14 +30,14 @@ import java.net.URI;
  */
 public interface ResourceProvider {
 
-    public java.net.URI resolvePathURI(String relpath) throws Exception;
+    java.net.URI resolvePathURI(String relpath) throws Exception;
 
-    public OutputStream createOutputStream(URI uri) throws Exception;
+    OutputStream createOutputStream(URI uri) throws Exception;
 
-    public InputStream createInputStream(URI uri) throws Exception;
+    InputStream createInputStream(URI uri) throws Exception;
 
-    public RandomReadable createRandomReader(URI uri) throws Exception;
+    RandomReadable createRandomReader(URI uri) throws Exception;
 
-    public RandomWritable createRandomWriter(URI uri) throws Exception;
+    RandomWritable createRandomWriter(URI uri) throws Exception;
 
 }

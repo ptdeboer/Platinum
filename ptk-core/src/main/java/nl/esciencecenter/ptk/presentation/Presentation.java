@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,23 +20,19 @@
 
 package nl.esciencecenter.ptk.presentation;
 
-import java.nio.file.attribute.FileTime;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import javax.swing.JTable;
-
+import lombok.ToString;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.object.Duplicatable;
 
+import javax.swing.*;
+import java.nio.file.attribute.FileTime;
+import java.util.*;
+
 /**
  * Custom Presentation and formatting methods to show values, attributes and localization.
  */
+@ToString
 public class Presentation implements Duplicatable<Presentation> {
 
     // =======================================================================
@@ -46,7 +42,7 @@ public class Presentation implements Duplicatable<Presentation> {
     /**
      * Default sort options.
      */
-    public static enum SortOption {
+    public enum SortOption {
 
         NEVER(false, false, false), //
         DEFAULT(true, false, false), //
@@ -57,13 +53,13 @@ public class Presentation implements Duplicatable<Presentation> {
 
         // privates 
 
-        private boolean doSort = true;
+        private boolean doSort;
 
-        private boolean ignoreCase = false;
+        private boolean ignoreCase;
 
-        private boolean reverseSort = false;
+        private boolean reverseSort;
 
-        private SortOption(boolean doSort, boolean ignoreCase, boolean reverseSort) {
+        SortOption(boolean doSort, boolean ignoreCase, boolean reverseSort) {
             this.doSort = doSort;
             this.ignoreCase = ignoreCase;
             this.reverseSort = reverseSort;
@@ -172,8 +168,8 @@ public class Presentation implements Duplicatable<Presentation> {
      * Returns time string relative to current time in millis since 'epoch'. If, for example, the
      * date is 'today' it will print 'today hh:mm:ss' if the year is this year, the year will be
      * ommitted.
-     * 
-     * @param date
+     *
+     * @param dateTime
      * @return relative date time string.
      */
     public static String relativeTimeString(Date dateTime) {
@@ -273,15 +269,11 @@ public class Presentation implements Duplicatable<Presentation> {
     /**
      * Returns size in xxx.yyy[KMGTP] format. argument base1024 specifies wether unit base is 1024
      * or 1000.
-     * 
-     * @param size
-     *            actual size
-     * @param base1024
-     *            whether to use unit = base 1024 (false is base 1000)
-     * @param unitScaleThreshold
-     *            at which 1000 unit to show ISO term (1=K,2=M,3=G,etc)
-     * @param nrDecimalsBehindPoint
-     *            number of decimals behind the point.
+     *
+     * @param size               actual size
+     * @param base1024           whether to use unit = base 1024 (false is base 1000)
+     * @param unitScaleThreshold at which 1000 unit to show ISO term (1=K,2=M,3=G,etc)
+     * @param nrDecimals         number of decimals behind the point.
      */
     public static String createSizeString(long size, boolean base1024, int unitScaleThreshold, int nrDecimals) {
         // boolean negative;
@@ -308,7 +300,7 @@ public class Presentation implements Duplicatable<Presentation> {
 
         scale = (int) Math.floor(Math.log(size) / Math.log(base));
 
-        switch ((int) scale) {
+        switch (scale) {
             default:
             case 0:
                 unitstr = "";
@@ -354,7 +346,7 @@ public class Presentation implements Duplicatable<Presentation> {
     /**
      * Size of Strings, at which they are consider to be 'big'. Currentlty this value determines
      * when the AttributeViewer pop-ups.
-     * 
+     *
      * @return
      */
     public static int getBigStringSize() {
@@ -421,7 +413,7 @@ public class Presentation implements Duplicatable<Presentation> {
             value = value.substring(1);
             yearSign = -1;
         }
-        String strs[] = value.split("[ :-]");
+        String[] strs = value.split("[ :-]");
 
         int year = new Integer(strs[0]);
         int month = new Integer(strs[1]) - 1; // January=0!
@@ -563,23 +555,33 @@ public class Presentation implements Duplicatable<Presentation> {
      */
     protected Integer defaultUnitScaleThreshold = 2;
 
-    /** Numbers of decimals behind point */
+    /**
+     * Numbers of decimals behind point
+     */
     protected Integer defaultNrDecimals = 1;
 
-    /** KiB/Mib versus KB and MB */
+    /**
+     * KiB/Mib versus KB and MB
+     */
     protected Boolean useBase1024 = true;
 
     protected SortOption sortOption = null;
 
-    /** Attribute names from child (contents) to show by default. See also UIPresentation */
+    /**
+     * Attribute names from child (contents) to show by default. See also UIPresentation
+     */
     protected StringList contentAttributeNames = null;
 
     protected StringList sortFields = null;
 
-    /** Parent Presentation object. */
+    /**
+     * Parent Presentation object.
+     */
     protected Presentation parent = null; // No hierarchical presentation (yet)
 
-    /** Set this to override platform Locale */
+    /**
+     * Set this to override platform Locale
+     */
     protected Locale locale = null;
 
     // Attribute/Table resize mode
@@ -682,14 +684,16 @@ public class Presentation implements Duplicatable<Presentation> {
 
     /**
      * Returns size in xxx.yyy[KMGTP] format (base 1024). Uses settings from Presentation instance.
-     * 
+     *
      * @see #createSizeString(long, boolean, int, int)
      */
     public String sizeString(long size) {
         return sizeString(size, useBase1024, this.defaultUnitScaleThreshold, this.defaultNrDecimals);
     }
 
-    /** @see #createSizeString(long, boolean, int, int) */
+    /**
+     * @see #createSizeString(long, boolean, int, int)
+     */
     public String sizeString(long size, boolean base1024, int unitScaleThreshold, int nrDecimals) {
         return createSizeString(size, base1024, unitScaleThreshold, nrDecimals);
     }
@@ -806,9 +810,8 @@ public class Presentation implements Duplicatable<Presentation> {
 
     /**
      * The first month (Jan) is 0 not 1. If month is null of len is < 3 will return -1
-     * 
-     * @param month
-     *            String of len 3 (Jan,Feb..,etc)
+     *
+     * @param month String of len 3 (Jan,Feb..,etc)
      * @return the 0-based month number;
      */
     public static int getMonthNumber(String month) {
@@ -865,7 +868,7 @@ public class Presentation implements Duplicatable<Presentation> {
      * 3, but actual values may be null.
      */
     public Integer[] getAttributePreferredWidths(String name) {
-        Integer vals[] = new Integer[3];
+        Integer[] vals = new Integer[3];
 
         AttributePresentation attrPres = this.attributePresentations.get(name);
         if (attrPres == null)
@@ -940,7 +943,7 @@ public class Presentation implements Duplicatable<Presentation> {
 
     /**
      * Option for JTable objects: "AutoResizeMode"
-     * 
+     *
      * @see javax.swing.JTable
      */
     public int getColumnsAutoResizeMode() {
@@ -949,7 +952,7 @@ public class Presentation implements Duplicatable<Presentation> {
 
     /**
      * Option for JTable objects: "AutoResizeMode"
-     * 
+     *
      * @see javax.swing.JTable
      */
     public void setColumnsAutoResizeMode(int value) {
@@ -962,16 +965,6 @@ public class Presentation implements Duplicatable<Presentation> {
 
     public String getIconAttributeName() {
         return iconAttributeName;
-    }
-
-    @Override
-    public String toString() {
-        return "Presentation:[defaultUnitScaleThreshold:'" + defaultUnitScaleThreshold + "', defaultNrDecimals:'"
-                + defaultNrDecimals + "', useBase1024:'" + useBase1024 + "', sortOption:'" + sortOption
-                + "', contentAttributeNames:'" + contentAttributeNames + "', sortFields:'" + sortFields + "', locale:'"
-                + locale + "', jtableColumnsAutoResizeMode:'" + jtableColumnsAutoResizeMode
-                + "', attributePresentations:'" + attributePresentations + "', iconAttributeName:'" + iconAttributeName
-                + "']";
     }
 
 }

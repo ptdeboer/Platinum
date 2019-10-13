@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,27 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.internal;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Frame;
-import java.awt.dnd.DropTarget;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.TooManyListenersException;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-
-//import net.sf.jmimemagic.MagicMatchNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.RandomReadable;
@@ -50,24 +30,32 @@ import nl.esciencecenter.ptk.ui.fonts.FontToolBar;
 import nl.esciencecenter.ptk.ui.fonts.FontToolbarListener;
 import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
-import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.dnd.DropTarget;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.TooManyListenersException;
+
+//import net.sf.jmimemagic.MagicMatchNotFoundException;
 
 /**
  * Implementation of a simple Binary Hex Viewer.<br>
  * Show the contents of in hexidecimal form
- * 
- * @author Piter.NL.
+ *
+ *
  */
+@Slf4j
 public class HexViewer extends ViewerJPanel implements FontToolbarListener// , ToolPlugin
 {
-    private static final PLogger logger = PLogger.getLogger(HexViewer.class);
 
     // todo: UTF-8 Char Mapping
-    public final String specialCharMapping[] = { "", "", "", "", "", "", "", "", "", "", "", "",
+    public final String[] specialCharMapping = {"", "", "", "", "", "", "", "", "", "", "", "",
             "", "", "", "", // 00 - 0F
             "", "", "", "\u240d", "", "", "", "", "", "", "", "", "", "", "", "", // 10-1F
             "", "A", "B", "C", "D", "E", "F", "G", "", "", "", "", "", "", "", "", // 20
@@ -85,7 +73,9 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
             "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", // f0
     };
 
-    /** unicode for Carriage return C/R */
+    /**
+     * unicode for Carriage return C/R
+     */
 
     public final static String CHAR_CR = "\u240d";
 
@@ -94,21 +84,24 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     /**
      * Needed by swing
      */
-       /** The mimetypes I can view */
-    private static String mimeTypes[] = { "application/octet-stream", };
+    /**
+     * The mimetypes I can view
+     */
+    private static String[] mimeTypes = {"application/octet-stream",};
 
     static private boolean default_show_font_toolbar = false;
 
-    public static enum UTFType {
+    public enum UTFType {
         UTF8, UTF16
-    };
+    }
 
     public static class UTFDecoder {
         public UTFDecoder() {
-        };
+        }
 
         public UTFDecoder(UTFType type) {
-        };
+        }
+
     }
 
     // =======================================================================
@@ -121,13 +114,15 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
 
     private int maxBufferSize = 1 * 1024 * 1024;
 
-    private byte buffer[] = new byte[0];
+    private byte[] buffer = new byte[0];
 
     private long length;
 
     private int wordSize = 2;
 
-    /** Actual bytes per line (nrBytesPerLine) is nrWordPerLine*wordSize */
+    /**
+     * Actual bytes per line (nrBytesPerLine) is nrWordPerLine*wordSize
+     */
     private int minimumBytesPerLine = 32;
 
     // ================================
@@ -306,7 +301,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
             try {
                 dropTarget.addDropTargetListener(new URIDropHandler(this.hexViewController));
             } catch (TooManyListenersException e) {
-                logger.errorPrintf("FIXME:TooManyListenersException:%s\n", e);
+                log.error("FIXME:TooManyListenersException:{}", e);
             }
         }
     }
@@ -511,7 +506,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
 
         Dimension targetSize = textArea.getSize();
         FontMetrics metrics = textArea.getFontMetrics(textArea.getFont());
-        char chars[] = { 'w' };
+        char[] chars = {'w'};
         int charWidth = metrics.charsWidth(chars, 0, 1);
         int charHeight = metrics.getHeight();
         int maxLineChars = targetSize.width / (charWidth);
@@ -528,7 +523,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
         // minimumBytesPerLine=32;
         nrWordsPerLine = (int) Math.ceil((float) getMinimumBytesPerLine() / (float) getWordSize());
         nrBytesPerLine = nrWordsPerLine * getWordSize(); // actual bytes per
-                                                         // line
+        // line
         nrBytesPerView = maxRows * nrBytesPerLine;
 
         long scrollMax = length - nrBytesPerView;
@@ -546,9 +541,9 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
 
         /**
          * if (offset+nrBytesPerView>length) offset=(length-nrBytesPerView);
-         * 
+         *
          * //offset=offset-offset%wordSize;
-         * 
+         *
          * if (offset<0) offset=0;
          */
 
@@ -562,23 +557,23 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
         // note: if scrolbar value is exactly Integer.MIN_VALUE the scrollbar is not visible.
 
         if (value >= Integer.MAX_VALUE) {
-            logger.errorPrintf("Offset exceeds Integer.MAX_VALUE:%d\n", value);
+            log.error("Offset exceeds Integer.MAX_VALUE:{}", value);
         } else if (value <= Integer.MIN_VALUE) {
-            logger.errorPrintf("Offset exceeds Integer.MIN_VALUE:%d\n,value");
+            log.error("Offset exceeds Integer.MIN_VALUE:{}\n,value");
         }
 
-        logger.debugPrintf("setScrollBarValue(): %d\n", value);
+        log.debug("setScrollBarValue(): {}", value);
         this.scrollbar.setValue((int) value);
     }
 
     protected void updateScrollBarRange(int min, long max, int blockIncrement, int unitIncrement) {
         if (max >= Integer.MAX_VALUE) {
-            logger.errorPrintf("Maximum exceeds Integer.MAX_VALUE\n");
+            log.error("Maximum exceeds Integer.MAX_VALUE");
         } else if (max <= Integer.MIN_VALUE) {
-            logger.errorPrintf("Maximum exceeds Integer.MAX_VALUE\n");
+            log.error("Maximum exceeds Integer.MAX_VALUE");
         }
 
-        logger.debugPrintf("updateScrollBarRange(): range=[%d,%d], block,unit=[%d,%d]\n", min, max,
+        log.debug("updateScrollBarRange(): range=[{},{}], block,unit=[{},{}]", min, max,
                 blockIncrement, unitIncrement);
         this.scrollbar.setMinimum(min);
         this.scrollbar.setMaximum((int) max);
@@ -587,7 +582,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     }
 
     private String fillWithSpaces(String orgstr, int len) {
-        String newstr = new String(orgstr);
+        String newstr = orgstr;
 
         for (int i = orgstr.length(); i < len; i++)
             newstr += " ";
@@ -624,7 +619,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
         else if (n == 8)
             return "00000000";
 
-        char chars[] = new char[n + 1];
+        char[] chars = new char[n + 1];
         for (int i = 0; i < chars.length; i++)
             chars[i] = '0';
 
@@ -653,7 +648,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
         return str;
     }
 
-    public String decodeChars(byte buffer[], int start, int len, boolean plainBytes) {
+    public String decodeChars(byte[] buffer, int start, int len, boolean plainBytes) {
         String charStr = "";
 
         if (plainBytes) {
@@ -670,7 +665,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
             val = val + 128;
 
         if ((val < 0) || (val > 255)) {
-            errorPrintf("Error: Character number out of bound:%d\n", val);
+            log.error("Error: Character number out of bound:{}", val);
             return "?";
         }
 
@@ -689,7 +684,6 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
                     break;
                 case '\t':
                     str = " ";/* CHAR_TAB */
-                    ;
                     break;
                 default:
                     str = String.valueOf((char) val);
@@ -701,13 +695,13 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
 
     public void moveToOffset(final long offset) {
         if (this.offset == offset) {
-            logger.debugPrintf("Ignoring moveTo same offset:%d\n", offset);
+            log.debug("Ignoring moveTo same offset:{}", offset);
             return;
         }
 
         if (updateTask != null) {
             if (updateTask.isAlive()) {
-                logger.errorPrintf("FIXME: Already updating! Ignoring move to:%d\n", offset);
+                log.error("FIXME: Already updating! Ignoring move to:{}", offset);
                 return;
             }
         }
@@ -728,7 +722,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     }
 
     void debug(String msg) {
-        logger.debugPrintf("%s\n", msg);
+        log.debug("{}", msg);
     }
 
     public void addOffset(int delta) {
@@ -741,7 +735,9 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
         redrawContents();
     }
 
-    /** Resets focus to textArea for key commands */
+    /**
+     * Resets focus to textArea for key commands
+     */
     public void resetFocus() {
         textArea.requestFocus();
     }
@@ -801,7 +797,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
         for (int i = 0; i < mimeTypes.length; i++) {
-            List<String> list = new StringList(new String[] { "view:View Binary" });
+            List<String> list = new StringList("view:View Binary");
             mappings.put(mimeTypes[i], list);
         }
 
@@ -882,7 +878,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     }
 
     private void _readBytes(RandomReadable reader, long fileOffset, byte[] buffer,
-            int bufferOffset, int numBytes) throws IOException, VrsException {
+                            int bufferOffset, int numBytes) throws IOException, VrsException {
         this.getResourceHandler().syncReadBytes(reader, fileOffset, buffer, bufferOffset, numBytes);
     }
 
@@ -931,13 +927,13 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     public void _updateMagic() {
         this.magicField.setText("?");
 //        try {
-//            String magic = MimeTypes.getDefault().getMagicMimeType(buffer);
-//            logger.debugPrintf("Magic Type=%s\n", magic);
+//            String magic = MimeTypes.fsutil().getMagicMimeType(buffer);
+//            log.debug("Magic Type={}", magic);
 //            this.magicField.setText(magic);
 //        } catch (MagicMatchNotFoundException e) {
 //            logger.logException(PLogger.ERROR, e, "MagicMatchNotFoundException for:%s\n", getVRL()
 //                    .getPath());
-//            // this.logger.errorPrintf("Could fing magic for:%s\n".getVRL().getPath());
+//            // this.log.error("Could fing magic for:{}".getVRL().getPath());
 //        } catch (Exception e) {
 //            logger.logException(PLogger.ERROR, e, "Exception when updating magic\n");
 //        }

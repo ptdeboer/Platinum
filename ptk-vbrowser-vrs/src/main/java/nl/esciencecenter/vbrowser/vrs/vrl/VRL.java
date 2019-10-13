@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,23 +20,23 @@
 
 package nl.esciencecenter.vbrowser.vrs.vrl;
 
+import nl.esciencecenter.ptk.net.URIFactory;
+import nl.esciencecenter.ptk.object.Duplicatable;
+import nl.esciencecenter.ptk.util.StringUtil;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import nl.esciencecenter.ptk.net.URIFactory;
-import nl.esciencecenter.ptk.object.Duplicatable;
-import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
-
 /**
  * Virtual Resource Locator Class. URI compatible Class. See URIFactory.
  */
 public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>, Serializable {
 
-       public static VRL createVRL(URIFactory factory, boolean duplicateFactory) {
+    public static VRL createVRL(URIFactory factory, boolean duplicateFactory) {
         if (duplicateFactory)
             factory = factory.duplicate();
         return new VRL(factory.duplicate());
@@ -50,7 +50,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
 
     /**
      * Create Opaque VRL from Opaque URI String.
-     * 
+     *
      * @param opaqueUriStr
      * @return
      */
@@ -79,7 +79,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
      * Construct Opaque VRL. keep schemeSpecificPart 'as-is' and do not parse the
      * schemeSpecificPath. getPath(),getReference() and getSchemeSpecificPart() return the String
      * part after the
-     * 
+     *
      * @param scheme
      * @param schemeSpecificPart
      * @throws VRLSyntaxException
@@ -92,7 +92,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
         try {
             init(url.toURI());
         } catch (URISyntaxException e) {
-            throw new VRLSyntaxException(e);
+            throw new VRLSyntaxException("URISyntax exception for:"+url+":"+e.getMessage(),e);
         }
     }
 
@@ -141,7 +141,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
     }
 
     private void
-            init(String scheme, String userInfo, String host, int port, String path, String query, String fragment) {
+    init(String scheme, String userInfo, String host, int port, String path, String query, String fragment) {
         this.uriFactory = new URIFactory(scheme, userInfo, host, port, path, query, fragment);
     }
 
@@ -237,7 +237,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
             return null;
 
         // strip password:
-        String parts[] = info.split(":");
+        String[] parts = info.split(":");
 
         if ((parts == null) || (parts.length == 0))
             return info;
@@ -246,25 +246,6 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
             return null;
 
         return parts[0];
-    }
-
-    /**
-     * Returns password part (if specified !) from userInfo string.
-     * 
-     * @deprecated It is NOT safe to use clear text password in any URI!
-     */
-    public String getPassword() {
-        String info = uriFactory.getUserInfo();
-
-        if (info == null)
-            return null;
-
-        String parts[] = info.split(":");
-
-        if ((parts == null) || (parts.length < 2))
-            return null;
-
-        return parts[1];
     }
 
     public String getBasename() {
@@ -317,8 +298,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
 
         // uripath normalized windosh root "/X:/" 
         if (upath.length() == 4)
-            if ((upath.charAt(0) == URIFactory.URI_SEP_CHAR) && (upath.substring(2, 4).compareTo(":/") == 0))
-                return true;
+            return (upath.charAt(0) == URIFactory.URI_SEP_CHAR) && (upath.substring(2, 4).compareTo(":/") == 0);
 
         return false;
     }
@@ -364,9 +344,8 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
 
     /**
      * Check whether URI (and path) is a parent location of <code>subLocation</code>.
-     * 
-     * @param subLocation
-     *            child path of this VRL.
+     *
+     * @param subLocation child path of this VRL.
      * @return true if the subLocation is a child location of this VRL.
      */
     public boolean isParentOf(VRL subLocation) {
@@ -378,8 +357,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
             // To prevent that paths like '<..>/dir123' appear to be subdirs of '<..>/dir' 
             // last part of subpath after '<..>/dir' must be '/' 
             // Debug("subPath.charAt="+subPath.charAt(pathStr.length()));
-            if ((subPath.length() > pathStr.length()) && (subPath.charAt(pathStr.length()) == URIFactory.URI_SEP_CHAR))
-                return true;
+            return (subPath.length() > pathStr.length()) && (subPath.charAt(pathStr.length()) == URIFactory.URI_SEP_CHAR);
         }
         return false;
     }
@@ -452,7 +430,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
     /**
      * Create URI, ignore exceptions. Use this method if it is sure the URI is valid. Exceptions are
      * nested into Errors.
-     * 
+     *
      * @return URI representation of this VRL.
      */
     public URI toURINoException() {

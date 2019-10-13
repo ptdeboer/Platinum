@@ -36,7 +36,7 @@ public class TableColumnUpdater implements TableColumnModelListener {
             int w = column.getWidth();
             String name = column.getHeaderValue().toString();
 
-            // Global.debugPrintf(this,"columnMarginChanged name:%s=%s\n",name,w);
+            // Global.log.debug(this,"columnMarginChanged name:{}={}",name,w);
             // store the new column width in the table Presentation:
 
             resourceTable.columnMarginChanged(name, w);

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,30 +20,24 @@
 
 package nl.esciencecenter.ptk.ui.panels.monitoring;
 
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.MonitorStats;
-import nl.esciencecenter.ptk.task.ITaskMonitor.TaskStats;
 import nl.esciencecenter.ptk.task.MonitorStats.MonitorStatsType;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * TaskMonitor Panel uses ProgrssPanel as main panel and a ITaskMonitor as Monitor Source.
  */
 public class TaskMonitorPanel extends JPanel implements ActionListener {
-       private JTextField mainTaskTF;
+    private JTextField mainTaskTF;
     private JTextField mainTaskStatusTF;
 
     private JPanel progresPanel;
@@ -75,7 +69,9 @@ public class TaskMonitorPanel extends JPanel implements ActionListener {
         update(false);
     }
 
-    /** Whether speeds in [GMK]B/s should be shown */
+    /**
+     * Whether speeds in [GMK]B/s should be shown
+     */
     public void setShowTransferSpeed(boolean val) {
         this.showTransfersSpeeds = val;
     }
@@ -114,7 +110,7 @@ public class TaskMonitorPanel extends JPanel implements ActionListener {
             } else {
                 this.currentTF.setText("Done in:"
                         + Presentation.createRelativeTimeString(
-                                this.monitorStats.getTotalDoneDeltaTime(), false));
+                        this.monitorStats.getTotalDoneDeltaTime(), false));
             }
         } else {
             // Sub Task if active:
@@ -209,7 +205,9 @@ public class TaskMonitorPanel extends JPanel implements ActionListener {
         // }
     }
 
-    /** return progress information */
+    /**
+     * return progress information
+     */
     public String getTotalProgressText() {
         ITaskMonitor info = taskMonitor;
 

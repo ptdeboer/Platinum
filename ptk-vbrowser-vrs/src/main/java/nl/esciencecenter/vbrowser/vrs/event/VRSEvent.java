@@ -20,19 +20,19 @@
 
 package nl.esciencecenter.vbrowser.vrs.event;
 
-import java.io.Serializable;
-
 import nl.esciencecenter.ptk.events.IEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-public class VRSEvent implements IEvent<VRSEventType>, Serializable  {
+import java.io.Serializable;
 
-       // ========================================================================
+public class VRSEvent implements IEvent<VRSEventType>, Serializable {
+
+    // ========================================================================
     //
     // ========================================================================
 
-    public static VRSEvent createChildsAddedEvent(VRL optionalParent, VRL childs[]) {
-        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_CREATED);
+    public static VRSEvent createChildsAddedEvent(VRL optionalParent, VRL[] childs) {
+        VRSEvent event = new VRSEvent(optionalParent, VRSEventType.RESOURCES_CREATED);
         event.resources = childs;
         return event;
     }
@@ -41,35 +41,35 @@ public class VRSEvent implements IEvent<VRSEventType>, Serializable  {
         return createChildsAddedEvent(parent, new VRL[]{child});
     }
 
-    public static VRSEvent createChildsDeletedEvent(VRL optionalParent, VRL childs[]) {
-        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_DELETED);
+    public static VRSEvent createChildsDeletedEvent(VRL optionalParent, VRL[] childs) {
+        VRSEvent event = new VRSEvent(optionalParent, VRSEventType.RESOURCES_DELETED);
         event.resources = childs;
         return event;
     }
 
     public static VRSEvent createChildDeletedEvent(VRL optionalParent, VRL child) {
-        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_DELETED,new VRL[]{child});
+        VRSEvent event = new VRSEvent(optionalParent, VRSEventType.RESOURCES_DELETED, new VRL[]{child});
         return event;
     }
 
-    public static VRSEvent createNodesDeletedEvent(VRL nodeVrls[]) {
-        VRSEvent event = new VRSEvent(null,VRSEventType.RESOURCES_DELETED);
+    public static VRSEvent createNodesDeletedEvent(VRL[] nodeVrls) {
+        VRSEvent event = new VRSEvent(null, VRSEventType.RESOURCES_DELETED);
         // multi event without parent.
         event.resources = nodeVrls;
         return event;
     }
 
     public static VRSEvent createRefreshEvent(VRL optionalParent, VRL res) {
-        VRSEvent event = new VRSEvent(optionalParent,VRSEventType.RESOURCES_UPDATED);
+        VRSEvent event = new VRSEvent(optionalParent, VRSEventType.RESOURCES_UPDATED);
         event.resources = new VRL[1];
         event.resources[0] = res;
         return event;
     }
 
     public static VRSEvent createNodeRenamedEvent(VRL optParentVRL, VRL oldVrl, VRL newVrl) {
-        VRSEvent event = new VRSEvent(optParentVRL,VRSEventType.RESOURCES_RENAMED);
-        event.resources = new VRL[] { oldVrl };
-        event.otherResources = new VRL[] { newVrl };
+        VRSEvent event = new VRSEvent(optParentVRL, VRSEventType.RESOURCES_RENAMED);
+        event.resources = new VRL[]{oldVrl};
+        event.otherResources = new VRL[]{newVrl};
         return event;
     }
 
@@ -97,30 +97,34 @@ public class VRSEvent implements IEvent<VRSEventType>, Serializable  {
     /**
      * Optional attribute names involved.
      */
-    protected String attributeNames[];
+    protected String[] attributeNames;
 
 
     public VRSEvent(VRL sourceVRL, VRSEventType type) {
-        this.parentSource=sourceVRL;
-        this.type=type;
+        this.parentSource = sourceVRL;
+        this.type = type;
     }
 
     protected VRSEvent(VRL optionalParent, VRSEventType type, VRL[] vrls) {
         this.type = type;
-        this.parentSource=optionalParent;
-        this.resources=vrls;
+        this.parentSource = optionalParent;
+        this.resources = vrls;
     }
 
     public VRSEventType getType() {
         return this.type;
     }
 
-    /** Resources this event applies to. */
+    /**
+     * Resources this event applies to.
+     */
     public VRL[] getResources() {
         return this.resources;
     }
 
-    /** Resources this event applies to. */
+    /**
+     * Resources this event applies to.
+     */
     public VRL[] getOtherResources() {
         return this.otherResources;
     }
@@ -133,7 +137,9 @@ public class VRSEvent implements IEvent<VRSEventType>, Serializable  {
         return parentSource;
     }
 
-    /** Attributes this event applies to if this is an Attribute Event */
+    /**
+     * Attributes this event applies to if this is an Attribute Event
+     */
     public String[] getAttributeNames() {
         return this.attributeNames;
     }
@@ -161,8 +167,8 @@ public class VRSEvent implements IEvent<VRSEventType>, Serializable  {
     }
 
     @Override
-    public Object getEventSource() {
-      return parentSource;
+    public VRL getEventSource() {
+        return parentSource;
     }
 
 }

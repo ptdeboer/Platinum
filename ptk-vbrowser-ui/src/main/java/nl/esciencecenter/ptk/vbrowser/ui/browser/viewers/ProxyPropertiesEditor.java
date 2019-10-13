@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,18 +20,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser.viewers;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.border.EtchedBorder;
-
+import nl.esciencecenter.ptk.data.HashMapList;
+import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributePanel;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
@@ -41,49 +31,47 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Properties Viewer/Editor. Uses ProxyNode as attribute source.
  */
 public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
 
     public static final String APPLY_ACTION = "Apply";
-
     public static final String RESET_ACTION = "Reset";
-
     public static final String OK_ACTION = "OK";
-
     public static final String CANCEL_ACTION = "Cancel";
 
-    private JScrollPane attrSP;
+    private static String[] mimeTypes = {"ResourceInfoConfig" ,"application/vbrowser-vrs-infors-ResourceInfoConfig",
+    "application/vbrowser-vrs-ResourceLink"};
 
-    private JScrollPane configAttrSP;
-
-    private JPanel mainPanel;
-
-    private JPanel topPanel;
-
-    private JPanel midPanel;
+    // === instance === //
 
     private ViewNode viewNode;
-
+    // ui
+    private JScrollPane resourceAttrSP;
+    private JScrollPane configAttrSP;
+    private JScrollPane linkConfigPanelSP;
+    private JPanel mainPanel;
+    private JPanel topPanel;
     private JLabel iconLabel;
-
-    private AttributePanel attrPanel;
-
-    private AttributePanel configAttrPanel;
+    private JTabbedPane tabPanel;
+    private JPanel configAttrButtonPnl;
+    // controller
+    private ProxyPropertiesEditorController controller;
+    // panels
+    private AttributePanel resourceAttrPanel;
+    private AttributePanel resourceConfigPanel;
+    private AttributePanel linkConfigPanel;
 
     // Browser registry :
     private BrowserInterface browser;
-
     private UIViewModel uiModel;
-
-    private JTabbedPane tabPanel;
-
-    private JPanel configAttrMainPnl;
-
-    private JPanel configAttrButtonPnl;
-
-    private ProxyPropertiesEditorController controller;
 
     public ProxyPropertiesEditor() {
         super();
@@ -97,7 +85,7 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
 
     @Override
     public String[] getMimeTypes() {
-        return null;
+        return mimeTypes;
     }
 
     public void initGui() {
@@ -130,14 +118,14 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
                     this.tabPanel = new JTabbedPane();
                     mainPanel.add(tabPanel, BorderLayout.CENTER);
                     {
-                        this.attrSP = new JScrollPane();
-                        tabPanel.addTab("properties", attrSP);
+                        this.resourceAttrSP = new JScrollPane();
+                        tabPanel.addTab("properties", resourceAttrSP);
                         // AttributePanel
                         {
-                            attrPanel = new AttributePanel();
-                            attrSP.setViewportView(attrPanel);
-                            attrPanel.setSize(400, 800);
-                            attrPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+                            resourceAttrPanel = new AttributePanel();
+                            resourceAttrSP.setViewportView(resourceAttrPanel);
+                            resourceAttrPanel.setSize(400, 800);
+                            resourceAttrPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
                         }
                     }
@@ -147,10 +135,22 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
                         tabPanel.addTab("config", configAttrSP);
                         // Config AttributePanel
                         {
-                            configAttrPanel = new AttributePanel();
-                            configAttrSP.setViewportView(configAttrPanel);
-                            configAttrPanel.setSize(400, 800);
-                            configAttrPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+                            resourceConfigPanel = new AttributePanel();
+                            configAttrSP.setViewportView(resourceConfigPanel);
+                            resourceConfigPanel.setSize(400, 800);
+                            resourceConfigPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+                        }
+                    }
+
+                    {
+                        this.linkConfigPanelSP = new JScrollPane();
+                        tabPanel.addTab("link", linkConfigPanel);
+                        // Config AttributePanel
+                        {
+                            linkConfigPanel = new AttributePanel();
+                            linkConfigPanelSP.setViewportView(linkConfigPanel);
+                            linkConfigPanel.setSize(400, 800);
+                            linkConfigPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
                         }
                     }
                 }
@@ -229,9 +229,15 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
         }
     }
 
-    @Override
     public Map<String, List<String>> getMimeMenuMethods() {
-        return null;
+        String[] mimeTypes = getMimeTypes();
+        // Use HashMapList to keep order of menu entries: first is default(!)
+        Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
+        for (int i = 0; i < mimeTypes.length; i++) {
+            List<String> list = new StringList("config:Edit Configuration");
+            mappings.put(mimeTypes[i], list);
+        }
+        return mappings;
     }
 
     @Override
@@ -264,14 +270,14 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
     }
 
     public AttributePanel getAttributePanel() {
-        return this.attrPanel;
+        return this.resourceAttrPanel;
     }
 
     public AttributePanel getConfigAttributePanel() {
-        return this.configAttrPanel;
+        return this.resourceConfigPanel;
     }
 
     public void setEditable(boolean isEditable) {
-        this.configAttrPanel.setEditable(isEditable);
+        this.resourceConfigPanel.setEditable(isEditable);
     }
 }

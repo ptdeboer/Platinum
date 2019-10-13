@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,22 +20,10 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ICONURL;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_LOCATION;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_MIMETYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_NAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PATH;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_TYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_SCHEME;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.util.StringUtil;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSTypes;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
@@ -46,23 +34,28 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.node.VPathNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
+
 /**
  * Super class for all InfoRS Nodes. Manages a list of "sub" nodes.
  */
+@Slf4j
 public abstract class InfoRSPathNode extends VPathNode {
-
-    private static final PLogger logger = PLogger.getLogger(InfoRSPathNode.class);
 
     // ===============
     // Class Constants
     // ===============
 
-    public final static String subNodeTypes_arr[] = { InfoRSConstants.RESOURCEFOLDER,//
-            InfoRSConstants.RESOURCELINK, VRSTypes.VLINK_TYPE };
+    public final static String[] subNodeTypes_arr = {InfoRSConstants.RESOURCEFOLDER,//
+            InfoRSConstants.RESOURCELINK, VRSTypes.VLINK_TYPE};
 
     public static StringList defaultFolderChildTypes = new StringList(subNodeTypes_arr);
 
-    static protected String[] inforsImmutableAttributeNames = { ATTR_SCHEME, //
+    static protected String[] inforsImmutableAttributeNames = {ATTR_SCHEME, //
             ATTR_LOCATION,//
             ATTR_RESOURCE_TYPE,//
             ATTR_NAME,//
@@ -79,9 +72,9 @@ public abstract class InfoRSPathNode extends VPathNode {
     /**
      * Store all settings of this node into persistent VRSPoperties object.
      */
-    protected AttributeSet attributes = null;
+    protected AttributeSet attributes;
 
-    protected ArrayList<InfoRSPathNode> subNodes = new ArrayList<InfoRSPathNode>();
+    protected ArrayList<InfoRSPathNode> subNodes = new ArrayList<>();
 
     protected InfoRSPathNode parent;
 
@@ -97,7 +90,7 @@ public abstract class InfoRSPathNode extends VPathNode {
 
     /**
      * Return subset of immutable attributes.
-     * 
+     *
      * @return List containing the Immutable Attributes.
      */
     public Map<String, AttributeDescription> getImmutableAttributeDescriptions() {
@@ -277,9 +270,8 @@ public abstract class InfoRSPathNode extends VPathNode {
 
     /**
      * Return node with logical (base)name.
-     * 
-     * @param name
-     *            logical name or basename of node.
+     *
+     * @param name logical name or basename of node.
      * @return - InfoRSNode or null.
      */
     protected InfoRSPathNode getSubNodeByName(String name) {
@@ -320,7 +312,7 @@ public abstract class InfoRSPathNode extends VPathNode {
         if (node instanceof InfoRootNode) {
             return (InfoRootNode) node;
         } else {
-            logger.warnPrintf("Couldn't find rootNode for:%s\n", this);
+            log.warn("Couldn't find rootNode for:{}", this);
             return null;
         }
     }

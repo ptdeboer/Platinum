@@ -1,20 +1,13 @@
 package uitests.dnd;
 
+import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
+import nl.esciencecenter.ptk.ui.widgets.URIDropTargetLister;
+
+import javax.swing.*;
 import java.awt.dnd.DropTarget;
 import java.net.URI;
 import java.util.List;
 import java.util.TooManyListenersException;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
-
-import nl.esciencecenter.ptk.ui.widgets.URIDropHandler;
-import nl.esciencecenter.ptk.ui.widgets.URIDropTargetLister;
 
 public class DnDTestPanel extends JPanel implements URIDropTargetLister {
 

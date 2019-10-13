@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,21 +20,15 @@
 
 package nl.esciencecenter.ptk.ui.widgets;
 
-import java.awt.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
 
@@ -44,6 +38,7 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
     private JLabel iconLabel;
     private ActionListener textFieldListener;
     private String comboBoxChangedCmd;
+    private String comboBoxEditedCmd;
     private String comboBoxAutocompletedCmd;
 
     public ComboBoxIconTextPanel() {
@@ -109,14 +104,16 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
         this.textField.addActionListener(this);
     }
 
-    public void setComboActionCommands(String comboChanged, String comboAutocompleted) {
+    public void setComboActionCommands(String comboChanged, String comboAutocompleted, String comboEdited) {
         this.comboBoxChangedCmd = comboChanged;
         this.comboBoxAutocompletedCmd = comboAutocompleted;
+        this.comboBoxEditedCmd = comboEdited;
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        logger.error("Event:{}", e);
+        logger.debug("Event:{}", e);
 
         String cmd = e.getActionCommand();
 
@@ -125,6 +122,11 @@ public class ComboBoxIconTextPanel extends JPanel implements ActionListener {
 
         if (cmd.equals(AutoCompleteTextField.COMBOBOX_AUTOCOMPLETED))
             cmd = this.comboBoxAutocompletedCmd;
+
+        // Hardcoded Combobox event (TODO: check origin)
+        if (cmd.equals("comboBoxEdited"))
+            cmd = this.comboBoxEditedCmd;
+
 
         if (cmd == null) {
             logger.debug("NULL command for event:{}", e);

@@ -1,13 +1,12 @@
 package nl.esciencecenter.vbrowser.vrs.data.xml;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Annotated XML Proxy Object for a List of AttributeSets.

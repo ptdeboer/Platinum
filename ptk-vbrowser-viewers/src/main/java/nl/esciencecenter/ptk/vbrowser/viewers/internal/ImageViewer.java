@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,27 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.viewers.internal;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Point;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
 
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
@@ -42,18 +28,28 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Implementation of an Image Viewer.<br>
  */
 public class ImageViewer extends ViewerJPanel {
-       /** The mimetypes I can view */
-    private static String mimeTypes[] = { "image/gif", "image/jpeg", "image/bmp", "image/png" };
+    /**
+     * The mimetypes I can view
+     */
+    private static String[] mimeTypes = {"image/gif", "image/jpeg", "image/bmp", "image/png"};
 
-    private static double zoomOutFactors[] = { 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 };
+    private static double[] zoomOutFactors = {0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1};
 
-    private static double zoomInFactors[] = {
+    private static double[] zoomInFactors = {
             // 100,125,150,200,300,400,500,600,800,1000%
-            1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 4, 5, 6, 7, 8, 9, 10 };
+            1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 4, 5, 6, 7, 8, 9, 10};
 
     // ====================================================================
     //
@@ -129,7 +125,7 @@ public class ImageViewer extends ViewerJPanel {
     @Override
     public void doDisposeViewer() {
         // Help the garbage collector, images can be big:
-        if (imagePane!=null){ 
+        if (imagePane != null) {
             this.imagePane.dispose();
             this.remove(imagePane);
         }
@@ -192,7 +188,6 @@ public class ImageViewer extends ViewerJPanel {
         try {
             inps.close();
         } catch (Exception e) {
-            ;
         }
 
         if (image == null) {
@@ -202,7 +197,7 @@ public class ImageViewer extends ViewerJPanel {
 
         imagePane.setImage(image, wait);
     }
-   
+
     /**
      * I manage my own scrollpane for panning/autoscrolling
      */
@@ -222,7 +217,7 @@ public class ImageViewer extends ViewerJPanel {
      * Set ScrollPane ViewPosition
      */
     public void setViewPosition(int newx, int newy) {
-        // /UIGlobal.debugPrintf(this,"moveViewPoint:"+newx+","+newy);
+        // /UIGlobal.log.debug(this,"moveViewPoint:"+newx+","+newy);
 
         JViewport viewP = this.scrollPane.getViewport();
         Dimension scrollPaneSize = scrollPane.getSize();
@@ -281,7 +276,7 @@ public class ImageViewer extends ViewerJPanel {
 
         final Image sourceImage = this.orgImage;
         if (sourceImage == null) {
-            errorPrintf("doZoom(): NULL source image!\n");
+//            log.error("doZoom(): NULL source image!");
             return;
         }
 
@@ -421,7 +416,7 @@ public class ImageViewer extends ViewerJPanel {
         Map<String, List<String>> mappings = new HashMapList<String, List<String>>();
 
         for (int i = 0; i < mimeTypes.length; i++) {
-            List<String> list = new StringList(new String[] { "view:View Image" });
+            List<String> list = new StringList("view:View Image");
             mappings.put(mimeTypes[i], list);
         }
 

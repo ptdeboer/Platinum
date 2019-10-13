@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,14 +20,14 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.actionmenu;
 
+import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.StringList;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import lombok.extern.slf4j.Slf4j;
-import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 
 @Slf4j
 public class ActionCmd {
@@ -40,19 +40,19 @@ public class ActionCmd {
 
 
     public static ActionCmd create(ActionCmdType actionCmdType, Object... args) {
-       List<String> setrArgs = Arrays.stream(args).map(Object::toString).collect(Collectors.toList());
-       return new ActionCmd(null, actionCmdType,setrArgs.toArray(new String[0]));
+        List<String> setrArgs = Arrays.stream(args).map(Object::toString).collect(Collectors.toList());
+        return new ActionCmd(null, actionCmdType, setrArgs.toArray(new String[0]));
     }
 
     // === //
     private final ActionCmdType actionCmdType;
     private final Object source;
-    private final String args[];
+    private final String[] args;
 
     public ActionCmd(Object eventSource, ActionCmdType actionCmdType, String... args) {
         this.source = eventSource;
         this.actionCmdType = actionCmdType;
-        this.args=args;
+        this.args = args;
     }
 
     public ActionCmdType getActionCmdType() {
@@ -60,25 +60,25 @@ public class ActionCmd {
     }
 
     public String toString() {
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(actionCmdType.toString());
-        if ((args!=null) && (args.length>0)) {
+        if ((args != null) && (args.length > 0)) {
             sb.append(COMMAND_SEPERATOR_CHAR);
-            for (int i=0;i<args.length;i++) {
+            for (int i = 0; i < args.length; i++) {
                 sb.append(args[i]);
-                if (i+1<args.length) {
+                if (i + 1 < args.length) {
                     sb.append(ARGUMENT_SEPERATOR_CHAR);
                 }
-             }
+            }
         }
         String str = sb.toString();
-        log.debug("ActionCmd.toString:'{}'",str);
+        log.debug("ActionCmd.toString:'{}'", str);
         return str;
     }
 
     public static ActionCmd createFrom(ActionEvent event) {
         String cmdStr = event.getActionCommand();
-        String cmds[] = cmdStr.split(COMMAND_SEPERATOR_CHAR);
+        String[] cmds = cmdStr.split(COMMAND_SEPERATOR_CHAR);
 
         String methodStr = null;
         String argsStr = null;
@@ -89,10 +89,10 @@ public class ActionCmd {
         if (cmds.length > 1)
             argsStr = cmds[1];
 
-        ActionCmd action = new ActionCmd(event.getSource(), ActionCmdType.createFrom(methodStr),parseArgs(argsStr));
-        action.parseArgs(argsStr);
+        ActionCmd action = new ActionCmd(event.getSource(), ActionCmdType.createFrom(methodStr), parseArgs(argsStr));
+        parseArgs(argsStr);
 
-        log.debug("ActionCmd.createFrom():'{}' => '{}'",cmdStr,action.toString());
+        log.debug("ActionCmd.createFrom():'{}' => '{}'", cmdStr, action.toString());
         return action;
     }
 

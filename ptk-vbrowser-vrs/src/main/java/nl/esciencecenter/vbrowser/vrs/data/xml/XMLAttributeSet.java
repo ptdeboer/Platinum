@@ -1,19 +1,18 @@
 package nl.esciencecenter.vbrowser.vrs.data.xml;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeUtil;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * XML Proxy Object for AttributeSet;
@@ -23,7 +22,7 @@ public class XMLAttributeSet {
     /**
      * XML Proxy Object for Attribute.
      */
-    @JsonPropertyOrder({ "attributeType", "attributeName", "attributeValue", "attributeEnumValues" })
+    @JsonPropertyOrder({"attributeType", "attributeName", "attributeValue", "attributeEnumValues"})
     public static class XMLAttribute {
 
         public XMLAttribute() {
@@ -44,7 +43,7 @@ public class XMLAttributeSet {
 
         @JacksonXmlProperty(localName = "attributeEnumValue")
         @JacksonXmlElementWrapper(localName = "attributeEnumValue", useWrapping = false)
-        public String attributeEnumValues[];
+        public String[] attributeEnumValues;
 
         @JacksonXmlProperty(localName = "attributeValue")
         public Object attributeValue;
@@ -93,7 +92,7 @@ public class XMLAttributeSet {
     }
 
     @JsonIgnore
-    public void setXMLAttributes(XMLAttribute attrs[]) {
+    public void setXMLAttributes(XMLAttribute[] attrs) {
         attributes = new ArrayList<XMLAttribute>();
         for (int i = 0; i < attrs.length; i++) {
             attributes.add(attrs[i]);
@@ -109,7 +108,7 @@ public class XMLAttributeSet {
 
         attributes = new ArrayList<XMLAttribute>();
 
-        String keys[] = attrs.keySet().toArray(new String[0]);
+        String[] keys = attrs.keySet().toArray(new String[0]);
 
         for (int i = 0; i < keys.length; i++) {
             attributes.add(new XMLAttribute(attrs.get(keys[i])));

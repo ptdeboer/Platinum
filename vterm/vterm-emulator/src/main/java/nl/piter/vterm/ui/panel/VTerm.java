@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.ui.panel;
 
 import nl.piter.vterm.api.ShellChannel;
@@ -12,11 +16,11 @@ import java.net.URI;
  */
 public class VTerm {
 
-    private VTermChannelProvider  channelProvider;
+    private VTermChannelProvider channelProvider;
 
     private VTermJFrame vtermJFrame;
 
-    public VTerm () {
+    public VTerm() {
     }
 
     public VTerm withVTermChannelProvider(VTermChannelProvider channelProvider) {
@@ -32,7 +36,7 @@ public class VTerm {
      * Start with Custom ShellChannel provided by already authenticated sub system like an SFTP Browser.
      */
     public VTerm start(ShellChannel shellChan, URI optionalLoc) {
-        return start( shellChan, optionalLoc, new String[0]);
+        return start(shellChan, optionalLoc, new String[0]);
     }
 
     /**
@@ -42,7 +46,7 @@ public class VTerm {
         return start(null, loc, new String[0]);
     }
 
-    public VTerm start(final ShellChannel shellChan, final URI optionalLocation,  String[] args) {
+    public VTerm start(final ShellChannel shellChan, final URI optionalLocation, String[] args) {
         // check args[]
         if (this.channelProvider == null) {
             this.channelProvider = new VTermChannelProvider();
@@ -69,7 +73,6 @@ public class VTerm {
                     try {
                         vtermJFrame.openLocation(optionalLocation);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -79,6 +82,12 @@ public class VTerm {
 
         SwingUtilities.invokeLater(creator);
         return this;
+    }
+
+    public void dispose() {
+        if (this.vtermJFrame != null) {
+            this.vtermJFrame.dispose();
+        }
     }
 
 }

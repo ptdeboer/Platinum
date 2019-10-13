@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.emulator.tokens;
 
 import nl.piter.vterm.emulator.Tokens;

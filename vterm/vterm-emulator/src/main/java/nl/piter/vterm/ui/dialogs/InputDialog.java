@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.ui.dialogs;
 
 import java.awt.*;
@@ -5,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class InputDialog implements ActionListener {
+
     private String result = null;
     private Dialog dialog;
     private TextField textf;

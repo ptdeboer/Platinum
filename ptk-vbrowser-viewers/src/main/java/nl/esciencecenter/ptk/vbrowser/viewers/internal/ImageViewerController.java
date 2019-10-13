@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,18 +20,9 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.internal;
 
-import java.awt.Point;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-import javax.swing.JViewport;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 public class ImageViewerController implements ComponentListener {
     // simple mouse and key navigator:
@@ -109,7 +100,6 @@ public class ImageViewerController implements ComponentListener {
         }
 
         public void mouseClicked(MouseEvent e) {
-            imageViewer.errorPrintf("MouseClicked:%s\n", e);
 
             // if (GuiSettings.isAltMouseButton(e))
             // {

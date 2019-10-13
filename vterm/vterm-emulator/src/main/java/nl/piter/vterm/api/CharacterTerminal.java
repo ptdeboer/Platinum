@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.api;
 
 import nl.piter.vterm.ui.charpane.ColorMap;
@@ -6,8 +10,9 @@ import java.awt.*;
 
 /**
  * Interface to a Character Terminal.
- *
- OutputStream */
+ * <p>
+ * OutputStream
+ */
 public interface CharacterTerminal {
 
     // VT100 CharSets:

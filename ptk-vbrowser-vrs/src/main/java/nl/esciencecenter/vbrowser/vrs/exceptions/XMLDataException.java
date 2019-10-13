@@ -1,7 +1,8 @@
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
 public class XMLDataException extends VrsException {
-       public XMLDataException(String message) {
+
+    public XMLDataException(String message) {
         super(message, null);
     }
 

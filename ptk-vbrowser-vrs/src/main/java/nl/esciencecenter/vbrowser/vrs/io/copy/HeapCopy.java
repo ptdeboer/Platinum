@@ -1,23 +1,22 @@
 package nl.esciencecenter.vbrowser.vrs.io.copy;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.presentation.Presentation;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.MonitorStats;
 import nl.esciencecenter.ptk.task.TaskMonitorAdaptor;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceTypeMismatchException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
-public class HeapCopy {
+import java.util.ArrayList;
+import java.util.List;
 
-    private final static PLogger logger = PLogger.getLogger(HeapCopy.class);
+@Slf4j
+public class HeapCopy {
 
     public class HeapCopyElement {
         protected VPath sourcePath;
@@ -63,7 +62,7 @@ public class HeapCopy {
     Object mutex = new Object();
 
     public HeapCopy(VRSCopyManager copyManager, List<? extends VPath> sources, VFSPath targetDirPath, boolean isMove,
-            ITaskMonitor optMonitor) {
+                    ITaskMonitor optMonitor) {
         //
         this.actionStr = ((isMove == true) ? "HeapMoving" : "HeapCopying");
         this.copyManager = copyManager;
@@ -124,7 +123,7 @@ public class HeapCopy {
         }
         // general contract of unhandled interrupt is to stop.
         if (Thread.currentThread().isInterrupted()) {
-            // forward, if not alread done, to monitor.
+            // forward, if not already done, to monitor.
             if (monitor != null) {
                 monitor.setIsCancelled();
             }
@@ -148,12 +147,12 @@ public class HeapCopy {
 
             VPath vpath = orgSources.get(i);
             nodes.add(vpath);
-            logger.debugPrintf(" - toplevel path:%s\n", vpath);
+            log.debug(" - toplevel path:{}", vpath);
         }
         // Pass two: depth first recursive scan.
         heapScan(this.targetDirPath, nodes);
 
-        monitorLogPrintf(" - total bytes=%s (%d bytes)\n", Presentation.createSizeString(totalBytesTodo, true, 1, 6),
+        logPrintf(" - total bytes=%s (%s bytes)\n", Presentation.createSizeString(totalBytesTodo, true, 1, 6),
                 totalBytesTodo);
     }
 
@@ -163,7 +162,7 @@ public class HeapCopy {
             if (node.isComposite()) {
                 VFSPath subTargetDir = targetDir.resolve(node.getVRL().getBasename());
 
-                monitorLogPrintf(" - scanning directory:%s\n", node.getVRL());
+                logPrintf(" - scanning directory:%s", node.getVRL());
                 heapAddPath(targetDir, node, node.getResourceType());
                 // recursive add, depth first!
 
@@ -188,7 +187,7 @@ public class HeapCopy {
     }
 
     private void heapAddPath(VFSPath targetDirPath, VPath vpath, String type) throws VrsException {
-        logger.debugPrintf(" - adding path:%s\n", vpath);
+        log.debug(" - adding path:{}", vpath);
         HeapCopyElement el = new HeapCopyElement(vpath, type);
         if (vpath instanceof VFSPath) {
             el.size = ((VFSPath) vpath).fileLength();
@@ -225,7 +224,7 @@ public class HeapCopy {
                 VFSPath resolvedTargetPath = heapEl.destDirPath.resolve(sourcePath.getVRL().getBasename());
                 heapEl.resolvedDestPath = resolvedTargetPath;
 
-                logger.debugPrintf("Resolved targetFile: '%s' + '%s' => '%s'\n", targetDirPath.getVRL(), sourcePath
+                log.debug("Resolved targetFile: '{}' + '{}' => '{}'", targetDirPath.getVRL(), sourcePath
                         .getVRL().getBasename(), resolvedTargetPath.getVRL());
 
                 VFSPath vfsPath = (VFSPath) sourcePath;
@@ -235,7 +234,7 @@ public class HeapCopy {
                     throw new ResourceNotFoundException("Source path doesn't exists!. Has it been moved ?:" + vfsPath,
                             null);
                 } else if (vfsPath.isDir()) {
-                    monitorLogPrintf(" - %s directory:%s => %s\n", actionStr, sourcePath.getVRL(),
+                    logPrintf(" - %s directory:%s => %s\n", actionStr, sourcePath.getVRL(),
                             resolvedTargetPath.getVRL());
 
                     if ((isMove) && (isSameFileSystem(vfsPath, resolvedTargetPath))) {
@@ -245,11 +244,11 @@ public class HeapCopy {
                         status = resolvedTargetPath.mkdir(true);
                     }
                 } else if (copyAll || vfsPath.isFile()) {
-                    monitorLogPrintf(" - %s file:%s => %s\n", actionStr, sourcePath.getVRL(),
+                    logPrintf(" - %s file:%s => %s\n", actionStr, sourcePath.getVRL(),
                             resolvedTargetPath.getVRL());
                     status = copyManager.doCopyMoveResourceToFile(vfsPath, resolvedTargetPath, isMove, monitor);
                 } else {
-                    monitorLogPrintf(" - Error: Unknown VFS resource:%s\n", vfsPath);
+                    logPrintf(" - Error: Unknown VFS resource:%s\n", vfsPath);
                     throw new ResourceTypeMismatchException("Can not copy VFSPath:" + vfsPath, null);
                 }
 
@@ -264,7 +263,7 @@ public class HeapCopy {
                     throw new VrsException("Invalid state, copy or move went wrong for:" + sourcePath);
                 }
             } else {
-                monitorLogPrintf(" - Error: non VFS Path:%s\n", sourcePath);
+                logPrintf(" - Error: non VFS Path:%s\n", sourcePath);
                 throw new ResourceTypeMismatchException("Can not copy:" + sourcePath, null);
             }
 
@@ -290,7 +289,7 @@ public class HeapCopy {
         }
     }
 
-    private void monitorLogPrintf(String format, Object... args) {
+    private void logPrintf(String format, Object... args) {
         if (monitor != null) {
             monitor.logPrintf(format, args);
         }

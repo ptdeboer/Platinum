@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,38 +20,33 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
 
 /**
  * Table Header popup menu + popup listener. Creates dynamic menu from DataModel.
  */
 public class HeaderPopupMenu extends JPopupMenu {
-       // ========================================================================
+    // ========================================================================
     // Class Stuff
     // ========================================================================
 
     public enum HeaderCommand {
         INSERT_COLUMN_AFTER, INSERT_COLUMN_BEFORE, DELETE_COLUMN, AUTO_FIT_COLUMNS_ON,
         AUTO_FIT_COLUMNS_OFF
-    };
+    }
 
-    /** Non static ActionListener so that it can access outer class members */
+    /**
+     * Non static ActionListener so that it can access outer class members
+     */
     public class ANPopupListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             // Global.debugPrintln("PopupListener","ActionCmd:"+e);
             // Global.debugPrintln("PopupListener","source:"+e.getSource());
 
             String cmdstr = e.getActionCommand();
-            String vals[] = cmdstr.split(":");
+            String[] vals = cmdstr.split(":");
             cmdstr = vals[0];
             String argstr = null;
 
@@ -128,7 +123,7 @@ public class HeaderPopupMenu extends JPopupMenu {
         menu.setText("Columns");
 
         // All Headers!
-        String names[] = tablePanel.getModel().getAllAttributeNames();
+        String[] names = tablePanel.getModel().getAllAttributeNames();
 
         @SuppressWarnings("unused")
         JMenuItem mitem = null;

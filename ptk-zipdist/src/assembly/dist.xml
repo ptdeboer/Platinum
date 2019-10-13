@@ -1,18 +1,15 @@
 <assembly>
 	<id>dist</id>
 	<formats>
-		<format>dir</format>
+
 		<format>zip</format>
 	</formats>
 
-
-	<!-- strip the 'target/MODULES-VERSION-bin/MODULE-VERSION/' basedir -->
+	<!-- Strip the 'target/MODULES-VERSION-dist/MODULE-VERSION/' basedir -->
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<moduleSets>
 		<moduleSet>
-			<!-- Enable access to all projects in the current multimodule build
-			     This will also drag in their dependencies ?
-			  -->
+			<!-- Enable access to all projects in the current multimodule build -->
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<!-- Now, select which projects to include in this module-set, this will 
 				include dependencies to other modules available in the reactor vat -->
@@ -25,14 +22,16 @@
 				<include>*:ptk-vbrowser-vrs-sftp</include>
 				<include>*:ptk-vbrowser-ui</include>
 				<include>*:ptk-vbrowser-viewers</include>
-				<include>*:ptk-vbrowser-viewers-loboviewer</include>
 				<include>*:ptk-vbrowser-z-start</include>
 			</includes>
 
 			<binaries>
-				<outputDirectory>lib</outputDirectory>
+				<outputDirectory>lib/</outputDirectory>
 				<!-- default targets are 'jar' so keep them packed -->
 				<unpack>false</unpack>
+					<dependencySets>
+						<dependencySet><!-- filter here --></dependencySet>
+					</dependencySets>
 			</binaries>
 		</moduleSet>
 
@@ -54,6 +53,7 @@
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
+				<include>*:ptk-vbrowser-vrs</include>
 				<include>*:ptk-vbrowser-z-start</include>
 			</includes>
 			<binaries>
@@ -68,7 +68,7 @@
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
-				<include>*:ptk-ui</include>
+<!--				<include>*:ptk-ui</include>-->
 				<include>*:ptk-vbrowser-ui</include>
 			</includes>
 			<binaries>
@@ -78,28 +78,28 @@
 					This should match expected classpath prefix of "icons/" when appending "lib/" 
 					to the application classpath. This way custom 'icons' directories are possible, 
 					for example "lib/icons-theme/" -->
-				<outputDirectory>lib</outputDirectory>
+				<outputDirectory>lib/</outputDirectory>
 				<includeDependencies>false</includeDependencies>
 				<unpack>true</unpack>
 			</binaries>
 		</moduleSet>
 
-		<!-- External libraries: "*-lib-ext" -> lobobrowser only -->
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>*:ptk-vbrowser-viewers-loboviewer</include>
-			</includes>
-			<binaries>
-				<!-- The lib-ext is used here to specify custom, non maven, library dependencies 
-					These jars are in ${module}/lib/* directory. Modules must export them with 
-					the "-lib-ext" identifier. -->
-				<attachmentClassifier>lib-ext</attachmentClassifier>
-				<outputDirectory>lib</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>true</unpack>
-			</binaries>
-		</moduleSet>
+<!--		&lt;!&ndash; External libraries: "*-plugin-lib-ext" -> lobobrowser only &ndash;&gt;-->
+<!--		<moduleSet>-->
+<!--			<useAllReactorProjects>true</useAllReactorProjects>-->
+<!--			<includes>-->
+<!--				<include>*:ptk-vbrowser-viewers-loboviewer</include>-->
+<!--			</includes>-->
+<!--			<binaries>-->
+<!--				&lt;!&ndash; The lib-ext is used here to specify custom, non maven, library dependencies -->
+<!--					These jars are in ${module}/lib/* directory. Modules must export them with -->
+<!--					the "-lib-ext" identifier. &ndash;&gt;-->
+<!--				<attachmentClassifier>plugin-ext-lib</attachmentClassifier>-->
+<!--				<outputDirectory>lib/plugins/</outputDirectory>-->
+<!--				<includeDependencies>false</includeDependencies>-->
+<!--				<unpack>true</unpack>-->
+<!--			</binaries>-->
+<!--		</moduleSet>-->
 	</moduleSets>
 
 	<dependencySets>
@@ -120,8 +120,8 @@
 	<fileSets>
 		<fileSet>
 			<!-- From Platinum Root -->
-			<directory>${project.basedir}</directory>
-			<outputDirectory>.</outputDirectory>
+			<directory>../</directory>
+			<outputDirectory></outputDirectory>
 			<includes>
 				<include>README*</include>
 				<include>LICENSE*</include>

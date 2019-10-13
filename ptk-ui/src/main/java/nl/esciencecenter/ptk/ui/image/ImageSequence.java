@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,15 +20,13 @@
 
 package nl.esciencecenter.ptk.ui.image;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
+import nl.esciencecenter.ptk.data.IntegerHolder;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import nl.esciencecenter.ptk.data.IntegerHolder;
 
 /**
  * An ImageSquence is an sequence of images which can be played in a certain order to show an
@@ -70,12 +68,16 @@ public class ImageSequence {
             this.waitTimeMs = delayMillis;
         }
 
-        /** Returns corresponding image number associated with this frame */
+        /**
+         * Returns corresponding image number associated with this frame
+         */
         public int getImageNr() {
             return imageNr;
         }
 
-        /** Returns wait times in milliseconds */
+        /**
+         * Returns wait times in milliseconds
+         */
         public int getDelay() {
             return imageNr;
         }
@@ -140,7 +142,7 @@ public class ImageSequence {
     /**
      * Returns Frame Count. If no frame sequence information is defined it returns the number of
      * images.
-     * 
+     *
      * @return
      */
     public int getFrameCount() {
@@ -153,7 +155,9 @@ public class ImageSequence {
         return 0;
     }
 
-    /** Returns wait time in milliseconds */
+    /**
+     * Returns wait time in milliseconds
+     */
     public int getFrameDelay(int n) {
         if (this.frameInfo == null)
             return 0;
@@ -165,12 +169,16 @@ public class ImageSequence {
         return inf.waitTimeMs;
     }
 
-    /** Use single image as image source */
+    /**
+     * Use single image as image source
+     */
     public void setSingleImage(BufferedImage newImage) {
         this.initImage(newImage);
     }
 
-    /** Adds image to the image list */
+    /**
+     * Adds image to the image list
+     */
     public int addImage(BufferedImage newImage) {
         if (this.images == null)
             initImage(newImage); // first image: 
@@ -221,9 +229,8 @@ public class ImageSequence {
      * Paints Current Image using the specified sequence information. This method is stateless and
      * uses the sequence information from the arguments. Use this method if the state of the
      * sequence is stored outside this component.
-     * 
-     * @param sequenceName
-     *            optional named seqeunce, can be 'null' for the default sequence.
+     *
+     * @param sequenceName optional named seqeunce, can be 'null' for the default sequence.
      */
     public void paintImage(String sequenceName, int frameNr, Component c, Graphics g, int x, int y) {
         //debugPrintf("paintImage %s#%d: %d,%d@%s\n",sequenceName,frameNr,x,y,c); 
@@ -254,7 +261,7 @@ public class ImageSequence {
      * Returns whether this sequence has frame information. If not all the images are sequentially
      * played in order. A particular frame sequence might play the stored images in a different
      * order.
-     * 
+     *
      * @return
      */
     public boolean hasFrameInfo() {
@@ -287,7 +294,7 @@ public class ImageSequence {
     }
 
     public boolean calculateNextFrame(String sequenceName, IntegerHolder currentLoop,
-            IntegerHolder currentFrame, boolean reverse) {
+                                      IntegerHolder currentFrame, boolean reverse) {
         int loop = 0;
         int frameNr = 0;
 
@@ -323,7 +330,9 @@ public class ImageSequence {
         return true;
     }
 
-    /** Dispose speeds up garbage collection and flushes image resources ! */
+    /**
+     * Dispose speeds up garbage collection and flushes image resources !
+     */
     public void dispose() {
         if (this.images != null) {
             for (Image image : images)

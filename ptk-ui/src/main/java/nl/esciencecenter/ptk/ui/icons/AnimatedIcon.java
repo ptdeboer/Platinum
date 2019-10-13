@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,27 +20,24 @@
 
 package nl.esciencecenter.ptk.ui.icons;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.Serializable;
-
-import javax.swing.Icon;
-
 import nl.esciencecenter.ptk.data.IntegerHolder;
 import nl.esciencecenter.ptk.ui.image.ImageSequence;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 /**
  * AnimatedIcon wraps around a AnimatedImage and holds the state information which image from the
  * ImageSequence needs to be painted. <br>
  * For an AnimatedIcon to animate,the AnimatedIcon needs to be registered at an IconAnimator.
- * 
+ *
  * @see IconAnimator
  */
 public class AnimatedIcon implements Icon, Serializable {
     // === //
-       // === //
+    // === //
 
     protected String description;
 
@@ -101,7 +98,9 @@ public class AnimatedIcon implements Icon, Serializable {
         //        g.drawString(text, 0,getIconHeight());
     }
 
-    /** Whether a paint() has been issued */
+    /**
+     * Whether a paint() has been issued
+     */
     public boolean isPainted() {
         return this.painted;
     }
@@ -109,7 +108,7 @@ public class AnimatedIcon implements Icon, Serializable {
     /**
      * Specify animation speed. 1.0 = standard, 2.0 =2x faster,etc A negative value results in a
      * reverse animation.
-     * 
+     *
      * @param speed
      */
     public void setAnimationSpeed(double speed) {
@@ -173,7 +172,9 @@ public class AnimatedIcon implements Icon, Serializable {
         return (int) Math.floor(animImage.getFrameDelay(frameNr) * Math.abs(animationSpeed));
     }
 
-    /** Unregisters this icon. */
+    /**
+     * Unregisters this icon.
+     */
     public void dispose() {
         // unregister if registered !
         if (this.iconAnimator != null)
@@ -184,12 +185,16 @@ public class AnimatedIcon implements Icon, Serializable {
 
     }
 
-    /** Specify the Icon Animator for this icon. It can only have one. */
+    /**
+     * Specify the Icon Animator for this icon. It can only have one.
+     */
     protected void setIconAnimator(IconAnimator iconAnimator) {
         this.iconAnimator = iconAnimator;
     }
 
-    /** Reset Frame Sequence. Doesn't stop animation */
+    /**
+     * Reset Frame Sequence. Doesn't stop animation
+     */
     public void reset() {
         this.sequenceName = null;
         this.frameNr = 0;

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,26 +20,8 @@
 
 package nl.esciencecenter.vbrowser.vrs.node;
 
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_HOSTNAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_ICONURL;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_LOCATION;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_MIMETYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_NAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PATH;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PORT;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_TYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_SCHEME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_URI_FRAGMENT;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_URI_QUERY;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
@@ -50,11 +32,15 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import javax.smartcardio.ATR;
+import java.util.*;
+
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
+
+@Slf4j
 public class VPathNode implements VPath {
 
-    private final static PLogger logger = PLogger.getLogger(VPathNode.class);
-
-    static protected String[] vpathImmutableAttributeNames = { ATTR_LOCATION, //
+    static protected String[] vpathImmutableAttributeNames = {ATTR_LOCATION, //
             ATTR_SCHEME,//
             ATTR_RESOURCE_TYPE,//
             ATTR_NAME,//
@@ -106,8 +92,19 @@ public class VPathNode implements VPath {
         return MimeTypes.getDefault().getMimeType(getVRL().getPath());
     }
 
-    public String getResourceStatus() throws VrsException {
+    public String getResourceStatus() {
         return null;
+    }
+
+
+    public Map<String, AttributeDescription> getAttributeDescriptions(String names[]) throws VrsException {
+        Map<String, AttributeDescription> all = this.getAttributeDescriptions();
+
+        Map<String, AttributeDescription> filtered=new LinkedHashMap<>();
+        for (String name:names) {
+            filtered.put(name,all.get(name));
+        }
+        return filtered;
     }
 
     public Map<String, AttributeDescription> getAttributeDescriptions() throws VrsException {
@@ -125,7 +122,7 @@ public class VPathNode implements VPath {
      * Default Immutable Attributes. Typically these are location derived attributes, like
      * scheme,port,hostname,etc. ResourceType is also immutable, but mime-type isn't as the content
      * of a file may change.
-     * 
+     *
      * @return List containing the Immutable Attributes.
      */
     public Map<String, AttributeDescription> getImmutableAttributeDescriptions() {
@@ -142,7 +139,7 @@ public class VPathNode implements VPath {
 
     /**
      * Final getAttributeNames, override getAttributeDiscriptions for actual Attribute Definitions.
-     * 
+     *
      * @throws VrsException
      */
     final public List<String> getAttributeNames() throws VrsException {
@@ -159,14 +156,14 @@ public class VPathNode implements VPath {
     }
 
     @Override
-    public List<Attribute> getAttributes(String names[]) throws VrsException {
+    public List<Attribute> getAttributes(String[] names) throws VrsException {
         ArrayList<Attribute> list = new ArrayList<Attribute>();
         for (String name : names) {
             Attribute attr = getAttribute(name);
             if (attr != null) {
                 list.add(attr);
             } else {
-                logger.warnPrintf("Attribute not defined:%s\n", name);
+                log.warn("Attribute not defined:{}", name);
             }
         }
         return list;
@@ -192,9 +189,8 @@ public class VPathNode implements VPath {
     /**
      * Get Immutable attribute. Typically these are location derived attributes like
      * Scheme,Host,Port,etc. and do not change during the lifetime of this object.
-     * 
-     * @param name
-     *            - immutable attribute name
+     *
+     * @param name - immutable attribute name
      * @return Attribute or null if attribute isn't defined.
      */
     public Attribute getImmutableAttribute(String name) throws VrsException {

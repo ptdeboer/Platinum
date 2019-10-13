@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,11 +20,11 @@
 
 package nl.esciencecenter.ptk.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.ssl.SslConst;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * All configurable parameters to connect to a web service.
@@ -43,9 +43,9 @@ public class WebConfig {
         public boolean disable_strict_hostname_checking = true;
     }
 
-    public static enum AuthenticationType {
+    public enum AuthenticationType {
         NONE, BASIC
-    };
+    }
 
     /**
      * Default time out of 30 seconds. The is the time to setup a TCP connection. It is not a
@@ -162,7 +162,7 @@ public class WebConfig {
     /**
      * Return Web Service URI as java.net.URI including the web service path name, for example
      * "https://www.cnn.nl:443/theNews/"
-     * 
+     *
      * @return The Web service URI as java.net.URI
      * @throws URISyntaxException
      */
@@ -173,9 +173,9 @@ public class WebConfig {
 
     /**
      * Return web server URI as java.net.URI, for example "http://www.cnn.nl/"
-     * 
+     * <p>
      * This is the HOST URI without the service path name.
-     * 
+     *
      * @return The server or host URI as java.net.URI
      * @throws URISyntaxException
      */
@@ -189,11 +189,11 @@ public class WebConfig {
     }
 
     public boolean isHTTPS() {
-        return (protocol != null ? (protocol.equals(WebConst.HTTPS_SCHEME)) : false);
+        return (protocol != null && (protocol.equals(WebConst.HTTPS_SCHEME)));
     }
 
     public boolean isHTTP() {
-        return (protocol != null ? (protocol.equals(WebConst.HTTP_SCHEME)) : false);
+        return (protocol != null && (protocol.equals(WebConst.HTTP_SCHEME)));
     }
 
     public void setCredentials(String user, Secret passwd) {
@@ -223,7 +223,7 @@ public class WebConfig {
 
     /**
      * Returns password as char array. Please clear array after usage.
-     * 
+     *
      * @return - password as char array.
      */
     public char[] getPasswordChars() {
@@ -235,7 +235,7 @@ public class WebConfig {
 
     /**
      * Returns whether a JSESSION must be initialized when connecting.
-     * 
+     *
      * @return
      */
     public boolean useJSession() {

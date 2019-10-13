@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,27 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.vbrowser.viewers;
-
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.FlowLayout;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.swing.Icon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.ui.dialogs.ExceptionDialog;
@@ -45,23 +31,29 @@ import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerListener;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Embedded Viewer JPanel and abstract ViewerPlugin adaptor for VBrowser Viewers and Tools.
  */
 public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerPlugin,
         MimeViewer, ViewerEventSource {
-       // === Instance === //
+    // === Instance === //
 
     private JPanel innerPanel;
     private VRL viewedUri;
     private boolean isBusy;
     private ViewerContext viewerContext;
 
-    protected String textEncoding = "UTF-8";
     protected Cursor busyCursor = new Cursor(Cursor.WAIT_CURSOR);
     protected Properties properties;
     protected Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -81,7 +73,7 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
 
     /**
      * Add custom content to this panel.
-     * 
+     *
      * @return
      */
     public JPanel getContentPanel() {
@@ -89,10 +81,10 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     }
 
     @Override
-    public ViewerPlugin getViewer()  {
-        return this; 
+    public ViewerPlugin getViewer() {
+        return this;
     }
-    
+
     public JPanel initInnerPanel() {
         this.innerPanel = new JPanel();
         this.add(innerPanel, BorderLayout.CENTER);
@@ -111,8 +103,8 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     /**
      * Whether Viewer has its own ScrollPane. If not the parent Component might embedd the viewer
      * into a ScrollPanel.
-     * 
-     * @return whethee viewer manages its own scrolling/scrolpane. 
+     *
+     * @return whethee viewer manages its own scrolling/scrolpane.
      */
     public boolean haveOwnScrollPane() {
         return false;
@@ -121,9 +113,9 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     /**
      * Whether to start this viewer always in a StandAlone Dialog/Frame. Some Viewers are not
      * embedded viewers and must be started in a seperate Window.
-     * 
+     *
      * @return whether viewer is a stand-alone viewer which must be started in its own window
-     *         (frame).
+     * (frame).
      */
     public boolean isStandaloneViewer() {
         return false;
@@ -151,9 +143,9 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     /**
      * Returns parent ViewerFrame (JFrame) if contained in one. Might return NULL if parent is not a
      * JFrame. Uses getTopLevelAncestor() to get the (AWT) toplevel component.
-     * 
-     * @see javax.swing.JComponent#getTopLevelAncestor()
+     *
      * @return the containing JFrame or null.
+     * @see javax.swing.JComponent#getTopLevelAncestor()
      */
     final public ViewerFrame getJFrame() {
         Container topcomp = this.getTopLevelAncestor();
@@ -174,13 +166,13 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
      * If this panel is embedded in a (J)Frame, request that the parent JFrame performs a pack() and
      * resizes the Frame to the preferred size. If this viewer is embedded in another panel, the
      * method will not perform a resize and return false.
-     * 
+     *
      * @return true if frame could perform pack, although the actual pack() might be delayed.
      */
     final public boolean requestFramePack() {
         JFrame frame = getJFrame();
 
-        // only pack stand alone viewers embeeded in ViewerFrames.
+        // only pack stand alone viewers embedded in ViewerFrames.
         if ((frame == null) || ((frame instanceof ViewerFrame) == false)) {
             return false;
         }
@@ -197,15 +189,15 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
         disposeViewer();
         return true;
     }
-    
-    /** 
-     * Inherited method from Disposable. Calss disposeViewer(); 
+
+    /**
+     * Inherited method from Disposable. Calss disposeViewer();
      */
     @Override
     final public void dispose() {
         disposeViewer();
     }
-    
+
     @Override
     final public void initViewer(ViewerContext viewerContext) {
         this.viewerContext = viewerContext;
@@ -231,11 +223,9 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
 
     @Override
     final public void disposeViewer() {
-        try
-        {
+        try {
             doDisposeViewer();
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
         }
         disposeFrame();
@@ -261,8 +251,8 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
         return this;
     }
 
-    /** 
-     * @return embedded resource loader. 
+    /**
+     * @return embedded resource loader.
      */
     public ViewerResourceLoader getResourceHandler() {
         PluginRegistry reg = getViewerRegistry();
@@ -310,15 +300,7 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     }
 
     protected Icon getIconOrBroken(String iconUrl) {
-        return getIconProvider().getIconOrBroken("icons/"+iconUrl);
-    }
-
-    public String getTextEncoding() {
-        return this.textEncoding;
-    }
-
-    public void setTextEncoding(String charSet) {
-        this.textEncoding = charSet;
+        return getIconProvider().getIconOrBroken("icons/" + iconUrl);
     }
 
     /**
@@ -338,10 +320,11 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
         return vrl;
     }
 
-    /** 
-     * Load Configuration properties for this Viewer from the persistant property store. 
-     * @param configPropsName - properties name for example "viewer.props". 
-     * @return Properties  loaded from the ViewerContext property store. 
+    /**
+     * Load Configuration properties for this Viewer from the persistant property store.
+     *
+     * @param configPropsName - properties name for example "viewer.props".
+     * @return Properties  loaded from the ViewerContext property store.
      * @throws IOException
      */
     protected Properties loadConfigProperties(String configPropsName) throws IOException {
@@ -358,14 +341,15 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
         return properties;
     }
 
-    /** 
-     * Save Configuration properties for this Viewer to the persistant property store. 
-     * @param configPropsName - properties name for example "viewer.props". 
-     * @throws IOException 
+    /**
+     * Save Configuration properties for this Viewer to the persistant property store.
+     *
+     * @param configPropsName - properties name for example "viewer.props".
+     * @throws IOException
      */
     protected void saveConfigProperties(Properties configProps, String configPropsName) throws IOException {
         try {
-            getResourceHandler().saveProperties(getConfigPropertiesURI(configPropsName), configProps, "Saving properties:"+configPropsName);
+            getResourceHandler().saveProperties(getConfigPropertiesURI(configPropsName), configProps, "Saving properties:" + configPropsName);
         } catch (URISyntaxException e) {
             throw new IOException("Invalid properties location:" + e.getReason(), e);
         } catch (Exception e) {
@@ -385,7 +369,7 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
      * Notify Viewer Manager or other Listeners that an Exception has occured.
      */
     protected void notifyException(String message, Throwable ex) {
-        this.fireEvent(ViewerEvent.createExceptionEvent(this,message,ex));
+        this.fireEvent(ViewerEvent.createExceptionEvent(this, message, ex));
         ExceptionDialog.show(this, message, ex, false);
     }
 
@@ -394,7 +378,7 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     // =========================================================================
 
     public boolean isMyMimeType(String mimeType) {
-        String types[] = this.getMimeTypes();
+        String[] types = this.getMimeTypes();
 
         if (types == null) {
             return false;
@@ -413,36 +397,30 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     // Event Interface.
     // =========================================================================
 
-    protected Logger getLogger() { 
+    protected Logger getLogger() {
         return LoggerFactory.getLogger(this.getClass());
     }
-    
-    public void errorPrintf(String format, Object... args) {
-        getLogger().error(String.format(format,args));
+
+    public void error(String format, Object... args) {
+        getLogger().error(format, args);
     }
 
-    protected void warnPrintf(String format, Object... args) {
-        if (getLogger().isWarnEnabled()) {
-            getLogger().warn(String.format(format,args));
-        }
+    protected void warn(String format, Object... args) {
+        getLogger().warn(format, args);
     }
 
-    protected void infoPrintf(String format, Object... args) {
-        if (getLogger().isInfoEnabled()) {
-            getLogger().info(String.format(format,args));
-        }
+    protected void info(String format, Object... args) {
+        getLogger().info(format, args);
     }
 
-    protected void debugPrintf(String format, Object... args) {
-        if (getLogger().isDebugEnabled()) {
-            getLogger().debug(String.format(format,args));
-        }
+    protected void debug(String format, Object... args) {
+        getLogger().debug(format, args);
     }
 
-    public void showMessage(String title,String format, Object... args) {
+    public void showMessage(String title, String format, Object... args) {
         getLogger().info("MESSAGE:" + String.format(format, args));
-        if (viewerContext!=null) { 
-            this.viewerContext.getUI().showMessage(title,String.format(format, args),false); 
+        if (viewerContext != null) {
+            this.viewerContext.getUI().showMessage(title, String.format(format, args), false);
         }
     }
 
@@ -473,7 +451,7 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     }
 
     protected void fireEvent(ViewerEvent event) {
-        getLogger().debug(">>> fireEvent():{}",event);
+        getLogger().debug(">>> fireEvent():{}", event);
 
         ViewerEventDispatcher dispatcher = getViewerEventDispatcher();
 
@@ -504,16 +482,12 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     /**
      * Initialize GUI Component of viewer. Do not start loading resource. Typically this method is
      * called during The Swing Event Thread.
-     * 
-     * @param viewerContext
-     *            - Contains setting from VBrowser
      */
-
     abstract protected void doInitViewer();
 
     /**
      * Start the viewer, load resources if necessary.
-     * 
+     *
      * @param vrl
      * @param optionalMethod
      * @throws VrsException
@@ -523,7 +497,6 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
     /**
      * Update content.
      */
-
     abstract protected void doUpdate(VRL vrl) throws VrsException;
 
     /**
@@ -537,7 +510,6 @@ public abstract class ViewerJPanel extends JPanel implements Disposable, ViewerP
      * Stop viewer and dispose resources. After a disposeViewer() a viewer will never be started but
      * multiple disposeViewers() might ocure.
      */
-
     abstract protected void doDisposeViewer();
 
     // =====================================

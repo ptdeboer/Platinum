@@ -1,15 +1,16 @@
 package nl.esciencecenter.vbrowser.vrs.dummyrs;
 
-import java.util.List;
-import java.util.Map;
-
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.vbrowser.vrs.VPath;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.util.List;
+import java.util.Map;
 
 public class DummyNode implements VPath {
     protected DummyRS dummyRS;
@@ -33,82 +34,82 @@ public class DummyNode implements VPath {
     }
 
     @Override
-    public String getResourceType() throws VrsException {
+    public String getResourceType()  {
         return "DUMMY";
     }
 
     @Override
-    public VResourceSystem getResourceSystem() throws VrsException {
+    public VResourceSystem getResourceSystem()  {
         return this.dummyRS;
     }
 
     @Override
-    public VRL resolveVRL(String path) throws VrsException {
+    public VRL resolveVRL(String path) throws VRLSyntaxException {
         return vrl.resolvePath(path);
     }
 
     @Override
-    public VPath resolve(String path) throws VrsException {
+    public VPath resolve(String path) throws VRLSyntaxException {
         return this.dummyRS.createNode(resolveVRL(path));
     }
 
     @Override
-    public VPath getParent() throws VrsException {
+    public VPath getParent()  {
         return dummyRS.createNode(vrl.getParent());
     }
 
     @Override
-    public String getIconURL(int size) throws VrsException {
+    public String getIconURL(int size)  {
         return "dummy.png";
     }
 
     @Override
-    public String getMimeType() throws VrsException {
+    public String getMimeType() {
         return "dummy";
     }
 
     @Override
-    public String getResourceStatus() throws VrsException {
+    public String getResourceStatus() {
         return "dummy";
     }
 
     @Override
-    public Map<String, AttributeDescription> getAttributeDescriptions() throws VrsException {
+    public Map<String, AttributeDescription> getAttributeDescriptions(String[] names) {
         return null;
     }
 
     @Override
-    public List<Attribute> getAttributes(String names[]) throws VrsException {
+    public List<Attribute> getAttributes(String[] names)  {
         return null;
     }
 
     @Override
-    public List<String> getAttributeNames() throws VrsException {
+    public List<String> getAttributeNames()  {
         return null;
     }
 
     @Override
-    public boolean sync() throws VrsException {
+    public boolean sync()  {
         return true;
     }
 
     @Override
-    public boolean isComposite() throws VrsException {
+    public boolean isComposite()  {
         return isComposite;
     }
 
     @Override
-    public List<String> getChildResourceTypes() throws VrsException {
+    public List<String> getChildResourceTypes()  {
         return new StringList("dummy");
     }
 
     @Override
-    public List<? extends VPath> list() throws VrsException {
+    public List<? extends VPath> list()  {
         return null;
     }
 
     @Override
-    public VPath create(String type, String name) throws VrsException {
+    public VPath create(String type, String name) throws VRLSyntaxException {
         return dummyRS.createNode(resolveVRL(name));
     }
 

@@ -1,6 +1,10 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.exceptions;
 
-public class VTxRuntimeException extends RuntimeException{
+public class VTxRuntimeException extends RuntimeException {
 
     public VTxRuntimeException(String message) {
         super(message);

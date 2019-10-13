@@ -1,107 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ptk-vbrowser-ui</artifactId>
-	<name>${project.artifactId} ${project.version}</name>
+    <artifactId>ptk-vbrowser-ui</artifactId>
 
-	<parent>
-		<groupId>nl.esciencecenter.platinum</groupId>
-		<artifactId>platinum</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    <parent>
+        <groupId>nl.esciencecenter.platinum</groupId>
+        <artifactId>platinum</artifactId>
+        <version>1.3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-	<build>
-		<resources>
-			<resource>
-				<directory>src/resources/images</directory>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<!-- exclude icons from default jar. They have their own assembly description "-icons" -->
-				<configuration>
-					 <excludes> 
-					 	<exclude>icons/**</exclude> 
-					 </excludes> 
-				</configuration> 
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/icons.xml</descriptor>
-					</descriptors>
-				</configuration>
-				<executions>
-					<execution>
-						<id>icons</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- inhereted plugins -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <!-- exclude icons from default jar. They have their own assembly description "-icons" -->
+                <configuration>
+                    <excludes>
+                        <exclude>icons/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/icons.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>icons</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- inhereted plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>nl.esciencecenter.platinum</groupId>
-			<artifactId>ptk-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>nl.esciencecenter.platinum</groupId>
-			<artifactId>ptk-vbrowser-vrs</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>nl.esciencecenter.platinum</groupId>
-			<artifactId>ptk-vbrowser-viewers</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.devzendo/Quaqua -->
-		<dependency>
-			<groupId>org.devzendo</groupId>
-			<artifactId>Quaqua</artifactId>
-			<version>7.3.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>looks</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.seaglasslookandfeel/seaglasslookandfeel -->
-		<dependency>
-			<groupId>com.seaglasslookandfeel</groupId>
-			<artifactId>seaglasslookandfeel</artifactId>
-			<version>0.2.1</version>
-		</dependency>
-		<!--<dependency>
-			<groupId>nl.esciencecenter.platinum</groupId>
-			<artifactId>ptk-vbrowser-ui-theme-icons</artifactId>
-			<version>${project.version}</version>
-		</dependency>  -->
-		<!-- JUnit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-vbrowser-vrs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.esciencecenter.platinum</groupId>
+            <artifactId>ptk-vbrowser-viewers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.devzendo/Quaqua -->
+        <dependency>
+            <groupId>org.devzendo</groupId>
+            <artifactId>Quaqua</artifactId>
+            <version>7.3.4</version>
+        </dependency>
+        <!-- jgoofies -->
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>looks</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.seaglasslookandfeel/seaglasslookandfeel -->
+        <dependency>
+            <groupId>com.seaglasslookandfeel</groupId>
+            <artifactId>seaglasslookandfeel</artifactId>
+            <version>0.2.1</version>
+        </dependency>
+        <!-- JUnit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 
 </project>

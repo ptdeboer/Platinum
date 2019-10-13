@@ -6,7 +6,6 @@ import nl.esciencecenter.vbrowser.vrs.infors.InfoResourceNode;
 import nl.esciencecenter.vbrowser.vrs.infors.InfoRootNode;
 import nl.esciencecenter.vbrowser.vrs.infors.Test_InfoRS;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.junit.Assert;
 import org.junit.Test;
 

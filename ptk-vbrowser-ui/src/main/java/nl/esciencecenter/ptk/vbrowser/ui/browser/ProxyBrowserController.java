@@ -20,16 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.List;
-
-import javax.swing.*;
-
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.History;
 import nl.esciencecenter.ptk.ui.SimpelUI;
@@ -62,8 +52,13 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.List;
 
 /**
  * Master Proxy Browser Controller.
@@ -154,6 +149,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     private ProxyActionHandler proxyActionHandler = null;
     private ViewerManager viewerManager;
     private ProxyUI proxyUI = new ProxyUI();
+
     public ProxyBrowserController(BrowserPlatform platform, boolean show) {
         init(platform, show);
     }
@@ -221,11 +217,11 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     /**
      * Navigation bar event.
-     * 
+     *
      * @param e
      */
     public void handleNavBarEvent(ActionEvent e) {
-        log.debug(">>> NavBarAction:{}", e);
+        log.debug("[>] handleNavBarEvent():{}", e);
         String cmd = e.getActionCommand();
 
         NavigationBar.NavigationAction navAction = NavigationBar.getCommand(cmd);
@@ -244,12 +240,12 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case REFRESH:
                 meth = ActionCmdType.REFRESH;
                 break;
-            case LOCATION_AUTOCOMPLETED:
-                log.debug("AutoComplete:{}", e);
-                //this.updateLocationFromNavBar();
+            case LOCATION_COMBOBOX_EDITED:
+                log.debug("ignoring:{}",navAction);
                 break;
-            case LOCATION_EDITED:
-                this.updateLocationFromNavBar();
+            case LOCATION_AUTOCOMPLETED:
+            case LOCATION_CHANGED:
+                meth = ActionCmdType.NAVBAR_LOCATION_CHANGED;
                 break;
             default:
                 log.error("FIXME: NavBar action not implemented:{}", navAction);
@@ -268,21 +264,16 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     /**
      * Actual action handler.
-     * 
-     * @param viewComp
-     *            - Either ViewNodeComponent of ViewNodeContainer from where the action originates.
-     *            Is null for global menu actions.
-     * @param node
-     *            - originating ViewNode for example when a click or pop-up menu action was
-     *            triggered.
-     * @param action
-     *            - Actual action method with optional argument.
-     * @param globalMenuAction
-     *            - true for Global menu and Navigation Bar event, false for ViewNodeComponent
-     *            events.
+     *
+     * @param viewComp         Either ViewNodeComponent of ViewNodeContainer from where the action originates.
+     *                           Is null for global menu actions.
+     * @param node             originating ViewNode for example when a click or pop-up menu action was
+     *                           triggered.
+     * @param action           Actual action method with optional argument.
+     * @param globalMenuAction true for Global menu and Navigation Bar event, false for ViewNodeComponent
+     *                           events.
      */
-    protected void
-            doHandleNodeAction(ViewNodeComponent viewComp, ViewNode node, ActionCmd action, boolean globalMenuAction) {
+    protected void doHandleNodeAction(ViewNodeComponent viewComp, ViewNode node, ActionCmd action, boolean globalMenuAction) {
         Object eventSource = action.getEventSource();
         log.debug("nodeAction: {} on:{} (Object source={})", action, node, eventSource);
 
@@ -300,6 +291,9 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 break;
             case BROWSE_UP:
                 doBrowseUp();
+                break;
+            case NAVBAR_LOCATION_CHANGED:
+                this.doNavBarLocationChanged();
                 break;
             case CREATE_NEW:
                 this.proxyActionHandler.handleCreate(action, node, action.getArg0(), action.getArg1());
@@ -400,24 +394,22 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     }
 
     private void doOpenNodeViewer(final ViewNode node, String optViewerClass, final String optMenuMethod,
-            boolean standaloneWindow) {
+                                  boolean standaloneWindow) {
 
         log.debug("doOpenNodeViewer(),node={},optViewerClass={},optMenuMethod={}", node, optViewerClass, optMenuMethod);
         boolean filterOctetStreamMimeType = true;
 
         if (node == null) {
             try {
-            log.error("doOpenNodeViewer():NULL node");
-
-            ViewerPlugin viewer = viewerManager.createViewerFor(null, null, null, optViewerClass);
-            doStartViewer(null, viewer, optMenuMethod, standaloneWindow);
+                log.error("doOpenNodeViewer():NULL node");
+                ViewerPlugin viewer = viewerManager.createViewerFor(null, null, null, optViewerClass);
+                doStartViewer(null, viewer, optMenuMethod, standaloneWindow);
 
             } catch (Exception e) {
                 this.handleException("Couldn't start Default Viewer:" + optViewerClass, e);
             }
 
             return;
-
         }
 
         String resourceType = node.getResourceType();
@@ -441,14 +433,14 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             }
 
             doStartViewer(vrl, viewer, optMenuMethod, standaloneWindow);
-            
+
         } catch (Exception e) {
             this.handleException("Couldn't start Viewer for:" + node, e);
         }
     }
 
     private void doOpenViewer(VRL loc, String resourceType, String mimeType, String optViewerClass,
-            final String optMenuMethod, boolean standaloneWindow) {
+                              final String optMenuMethod, boolean standaloneWindow) {
         log.debug("doOpenViewer:{}", loc);
 
         try {
@@ -467,8 +459,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     }
 
-    private void
-            doStartViewer(final VRL vrl, ViewerPlugin viewer, final String optMenuMethod, boolean standaloneWindow) {
+    private void doStartViewer(final VRL vrl, ViewerPlugin viewer, final String optMenuMethod, boolean standaloneWindow) {
 
         if (standaloneWindow || viewer.isStandaloneViewer()) {
             viewerManager.startStandaloneViewer(viewer, vrl, optMenuMethod, false);
@@ -494,12 +485,12 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     private void doViewAsIcons(ActionCmd action) {
         String sizeStr = action.getArg0();
-        int size=Integer.parseInt(sizeStr);
-        if (size==16) {
+        int size = Integer.parseInt(sizeStr);
+        if (size == 16) {
             this.browserFrame.setViewMode(BrowserViewMode.ICONS16);
-        } else if (size==48) {
+        } else if (size == 48) {
             this.browserFrame.setViewMode(BrowserViewMode.ICONS48);
-        } else if (size==96) {
+        } else if (size == 96) {
             this.browserFrame.setViewMode(BrowserViewMode.ICONS96);
         }
     }
@@ -613,7 +604,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         if (tab == null) {
             newTab = true; // auto add !
         }
-        
+
         if (newTab == false) {
 
             tab = this.browserFrame.getTabManager().getCurrentTab();
@@ -624,12 +615,11 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
                 if (comp instanceof IconsPanel) {
                     ((IconsPanel) comp).setDataSource(node, true);
-                }
-                else if (comp instanceof ResourceTable) {
+                } else if (comp instanceof ResourceTable) {
                     ((ResourceTable) comp).setDataSource(node, true);
                 } else {
                     log.error("***FIXME:setViewedNode():Unknown Component:{}", comp.getClass());
-                    newTab=true;
+                    newTab = true;
                 }
             } else {
 
@@ -644,7 +634,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
             }
         }
-        
+
         if (newTab) {
             tab = browserFrame.createIconsPanelTab(node, true);
         }
@@ -663,7 +653,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         }
     }
 
-    public void updateLocationFromNavBar() {
+    public void doNavBarLocationChanged() {
         String txt = this.browserFrame.getNavigationBar().getLocationText();
         VRL vrl;
         try {
@@ -760,7 +750,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
 
     @Override
     public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction,
-            List<VRL> vris) {
+                          List<VRL> vris) {
         // delegate to action handler.
         return this.proxyActionHandler.handleDrop(uiComponent, optPoint, viewNode, dropAction, vris);
     }

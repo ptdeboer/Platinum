@@ -3,7 +3,7 @@
  * Copyright 2012-2013 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -26,13 +26,13 @@ import nl.esciencecenter.vbrowser.vrs.data.AttributeType;
 
 public interface IAttributeField {
 
-    public String getViewerName();
+    String getViewerName();
 
-    public String getValue();
+    String getValue();
 
-    public void updateFrom(Attribute attr);
+    void updateFrom(Attribute attr);
 
-    public AttributeType getVAttributeType();
+    AttributeType getVAttributeType();
 
-    public void setEditable(boolean flag);
+    void setEditable(boolean flag);
 }

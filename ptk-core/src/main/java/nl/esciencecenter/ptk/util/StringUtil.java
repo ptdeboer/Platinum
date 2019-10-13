@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,13 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
 // source:
 
 package nl.esciencecenter.ptk.util;
+
+import nl.esciencecenter.ptk.data.StringList;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -27,19 +29,17 @@ import java.math.BigInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nl.esciencecenter.ptk.data.StringList;
-
 /**
  * StringUtil class contains a collection of standard String manipulation methods.
  */
 public class StringUtil {
 
-    public static final char[] HEX_CHAR_TABLE = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-            'E', 'F' };
+    public static final char[] HEX_CHAR_TABLE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+            'E', 'F'};
 
     public static byte[] HEX_CHAR_TABLE_reverse = new byte[256];
 
-    public static final String NIL_STRING = new String(new byte[] {}); // empty
+    public static final String NIL_STRING = new String(new byte[]{}); // empty
 
     static {
         initByteTables();
@@ -54,15 +54,11 @@ public class StringUtil {
      * @return true when string is null or empty ("")
      */
     public static boolean isEmpty(String str) {
-        if (str == null)
-            return true;
-        if (str.compareTo("") == 0)
-            return true;
-        return false;
+        return ((str == null) || (str.length()==0));
     }
 
     public static boolean notEmpty(String str) {
-        return (isEmpty(str) == false);
+        return !isEmpty(str);
     }
 
     /**
@@ -83,9 +79,7 @@ public class StringUtil {
      * @return null save copy of String or null
      */
     public static String duplicate(String str) {
-        if (str == null)
-            return null;
-        return new String(str);
+        return str;
     }
 
     /**
@@ -137,7 +131,7 @@ public class StringUtil {
 
     /**
      * Create InputStream from specified String to read from.
-     * 
+     *
      * @throws UnsupportedEncodingException
      */
     public static ByteArrayInputStream createStringInputStream(String xmlString, String encoding)
@@ -149,11 +143,9 @@ public class StringUtil {
 
     /**
      * Whether first String 'str' matches one of the other Strings given as variable arguments.
-     * 
-     * @param str1
-     *            - String to match.
-     * @param strs
-     *            - variable argument list of Strings to check.
+     *
+     * @param str1 - String to match.
+     * @param strs - variable argument list of Strings to check.
      * @return
      */
     public static boolean equals(String str1, String... strs) {
@@ -181,7 +173,7 @@ public class StringUtil {
     /**
      * Padd string with extra chars (paddChar) upto maxLen. If prefix==true the padding string will
      * be added before the text.
-     * 
+     *
      * @return
      */
     public static String paddString(String text, int maxLen, char paddChar, boolean prefix) {
@@ -191,7 +183,7 @@ public class StringUtil {
         if (n < 0) {
             n = 0;
         }
-        char chars[] = new char[n];
+        char[] chars = new char[n];
         for (int i = 0; i < n; i++)
             chars[i] = paddChar;
         String paddStr = new String(chars);
@@ -205,7 +197,7 @@ public class StringUtil {
      * Null Pointer proof String.endsWith() method. First argument is complete string and second
      * argument is the substring which the first argument should end with. If either strings is
      * NULL, false is returned.
-     * 
+     *
      * @param fullString
      * @param subString
      * @return true if no argument is NULL and fullString.endsWith(subString)==true
@@ -221,7 +213,7 @@ public class StringUtil {
     /**
      * If this string consists of multiple lines each newline will be prepended by the identStr; If
      * the String is a non newline terminated String, only the String itself will be prepended.
-     * 
+     *
      * @param orgStr
      * @param indentStr
      * @return
@@ -233,7 +225,7 @@ public class StringUtil {
         if (indentStr == null)
             return orgStr;
         //
-        String lines[] = orgStr.split("\n");
+        String[] lines = orgStr.split("\n");
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < lines.length; i++) {
             // do not prepend empty lines !
@@ -271,7 +263,9 @@ public class StringUtil {
         }
     }
 
-    /** Returns true if the String strVal represents the string value "false" */
+    /**
+     * Returns true if the String strVal represents the string value "false"
+     */
     public static boolean isFalseString(String strVal) {
         if (strVal == null)
             return false;
@@ -283,18 +277,22 @@ public class StringUtil {
         }
     }
 
-    /** Convert bytes to (non "0x" prefixed) hexadecimal String */
+    /**
+     * Convert bytes to (non "0x" prefixed) hexadecimal String
+     */
     public static String toHexString(byte[] raw) {
         return toHexString(raw, true);
     }
 
-    /** Convert bytes to (non "0x" prefixed) hexadecimal String */
+    /**
+     * Convert bytes to (non "0x" prefixed) hexadecimal String
+     */
     public static String toHexString(byte[] raw, boolean upperCase) {
         //
         if (raw == null)
             return null;
         int len = raw.length;
-        char chars[] = new char[len * 2];
+        char[] chars = new char[len * 2];
         //
         for (int i = 0; i < len; i++) {
             chars[i * 2] = HEX_CHAR_TABLE[(raw[i] >> 4) & 0x0f]; // upper byte
@@ -306,7 +304,9 @@ public class StringUtil {
         return str;
     }
 
-    /** Null Pointer Safe toString() method */
+    /**
+     * Null Pointer Safe toString() method
+     */
     public static String toString(Object obj) {
         if (obj == null) {
             return "<NULL>";
@@ -320,11 +320,7 @@ public class StringUtil {
      */
     public static boolean equalsIgnoreCase(Object obj1, Object obj2) {
         if (obj1 == null) {
-            if (obj2 == null) {
-                return true;
-            } else {
-                return false;
-            }
+            return obj2 == null;
         } else {
             if (obj2 == null) {
                 return false;
@@ -339,11 +335,7 @@ public class StringUtil {
      */
     public static boolean equals(Object obj1, Object obj2) {
         if (obj1 == null) {
-            if (obj2 == null) {
-                return true;
-            } else {
-                return false;
-            }
+            return obj2 == null;
         } else {
             if (obj2 == null) {
                 return false;
@@ -373,12 +365,16 @@ public class StringUtil {
         return boolString(val, "true", "false");
     }
 
-    /** Convenience method for functional statements */
+    /**
+     * Convenience method for functional statements
+     */
     public static String boolString(boolean val, String trueValue, String falseValue) {
         return val ? trueValue : falseValue;
     }
 
-    /** Remove spaces, newlines and tabs. Does not respect quoted values! */
+    /**
+     * Remove spaces, newlines and tabs. Does not respect quoted values!
+     */
     public static String stripWhiteSpace(String val) {
         if ((val == null) || (val.equals("")))
             return null;
@@ -394,7 +390,6 @@ public class StringUtil {
         try {
             return Boolean.parseBoolean(valstr);
         } catch (Throwable t) {
-            ;
         }
         return defVal;
     }
@@ -465,7 +460,7 @@ public class StringUtil {
             return null;
 
         if (bytesAsHexString.equals("")) {
-            byte bytes[] = new byte[0];
+            byte[] bytes = new byte[0];
             return bytes;
         }
 
@@ -485,7 +480,7 @@ public class StringUtil {
 
         int len = n / 2;
 
-        byte bytes[] = new byte[len];
+        byte[] bytes = new byte[len];
 
         for (int i = 0; i < len; i++) {
             char c1 = bytesAsHexString.charAt(i * 2);
@@ -518,7 +513,7 @@ public class StringUtil {
 
         if (signed == false) {
             // pad zero byte to big endian array:
-            byte newbytes[] = new byte[len + 1];
+            byte[] newbytes = new byte[len + 1];
             newbytes[0] = 0;
             for (int i = 0; i < len; i++)
                 newbytes[i + 1] = bytes[i];
@@ -541,8 +536,8 @@ public class StringUtil {
             return false;
 
         boolean val = StringUtil.matchRE(text, "[^ \t\n]+", true, true);// use
-                                                                        // expensive
-                                                                        // RE
+        // expensive
+        // RE
         return (val == false);
     }
 

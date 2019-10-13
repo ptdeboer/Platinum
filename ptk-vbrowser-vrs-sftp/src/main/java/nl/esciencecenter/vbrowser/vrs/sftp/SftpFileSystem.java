@@ -20,23 +20,13 @@
 
 package nl.esciencecenter.vbrowser.vrs.sftp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.LinkOption;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.jcraft.jsch.*;
 import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.vbrowser.vrs.VCloseable;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAlreadyExistsException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceNotFoundException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.*;
 import nl.esciencecenter.vbrowser.vrs.io.VShellChannelCreator;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.node.VFileSystemNode;
@@ -47,31 +37,36 @@ import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpEntry;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRLUtil;
-
 import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelShell;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpATTRS;
-import com.jcraft.jsch.SftpException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.LinkOption;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
         VShellChannelCreator, VCloseable {
 
     private static final Logger logger = LoggerFactory.getLogger(SftpFileSystem.class);
 
-    /** Configuration subdir relative to user home, for example ".ssh" */
+    /**
+     * Configuration subdir relative to user home, for example ".ssh"
+     */
     public static final String SSH_USER_CONFIGSUBDIR_PROPERTY = "sshUserConfigSubDir";
 
-    /** User known hosts file relative to user's configuration directory, for example "known_hosts". */
+    /**
+     * User known hosts file relative to user's configuration directory, for example "known_hosts".
+     */
     public static final String SSH_USER_KNOWN_HOSTS_PROPERTY = "sshUserKnownHostsFile";
 
-    /** Users identidyf files, matching the global ResourceSystemInfo property name */
+    /**
+     * Users identidyf files, matching the global ResourceSystemInfo property name
+     */
     public static final String SSH_USER_IDENTITY_FILES = ResourceConfigInfo.ATTR_USER_KEY_FILES;
 
     private SshSession sftpSession;
@@ -111,7 +106,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
     }
 
     protected SftpConfig updateSftpConfig(SftpConfig config, VRSContext context,
-            ResourceConfigInfo info) {
+                                          ResourceConfigInfo info) {
         //
         config.host = info.getServerHostname();
         config.port = info.getServerPort();
@@ -133,7 +128,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
         if (knownHosts != null) {
             config.userConfigDir = context.getHomeVRL().getPath() + "/" + subDir;
         }
-        config.privateKeys = new String[] { "id_rsa", "id_dsa" };
+        config.privateKeys = new String[]{"id_rsa", "id_dsa"};
 
         config.sshKnowHostFile = SftpConfig.SSH_USER_KNOWN_HOSTS;
         logger.debug("updateSftpConfig(): config:{}", config);
@@ -298,13 +293,11 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
             case ChannelSftp.SSH_FX_NO_SUCH_FILE:
                 return new ResourceNotFoundException("Resource not found:" + action, e);
             case ChannelSftp.SSH_FX_EOF:
-                return new ResourceException("Resource read exception (EOF):" + action, e,
-                        "EOF Exception");
+                return new ResourceException("Resource read exception (EOF):" + action, e);
             case ChannelSftp.SSH_FX_PERMISSION_DENIED:
-                return new ResourceAccessDeniedException("Resource read exception (EOF):" + action,
-                        e);
+                return new ResourceAccessDeniedException("Resource read exception (EOF):" + action,e);
             case ChannelSftp.SSH_FX_FAILURE:
-                return new ResourceException("Unknown Failure:" + action, e, "Unknown");
+                return new ResourceException("Unknown Failure:" + action, e);
 
         }
 
@@ -315,7 +308,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
     public ShellChannel createShellChannel(VRL optionalLocation, ChannelOptions options) throws IOException {
         try {
             ChannelShell shellChannel = this.sftpSession.createShellChannel();
-            SshShellChannel sshShellChannel = new SshShellChannel(this.sftpSession, shellChannel,options);
+            SshShellChannel sshShellChannel = new SshShellChannel(this.sftpSession, shellChannel, options);
             return sshShellChannel;
         } catch (JSchException e) {
             throw new IOException("Failed to create (SSH)ShellChannel" + e.getMessage(), e);

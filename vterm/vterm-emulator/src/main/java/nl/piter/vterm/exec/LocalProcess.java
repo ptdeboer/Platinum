@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.exec;
 
 import java.io.IOException;
@@ -107,7 +111,7 @@ public class LocalProcess {
 
     /**
      * Start streamreaders to read from stderr,stdout.
-     * 
+     *
      * @param syncWait
      * @throws IOException
      */

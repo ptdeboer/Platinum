@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm.ui.charpane;
 
 import lombok.extern.slf4j.Slf4j;
@@ -639,8 +643,8 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
         Color fg = resolveColor(sChar.foregroundColor);
         Color bg = resolveColor(sChar.backgroundColor);
 
-        if (sChar.customForeground!=null) {
-            fg=sChar.customForeground;
+        if (sChar.customForeground != null) {
+            fg = sChar.customForeground;
         }
 
         // Component defaults:
@@ -698,8 +702,6 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
     private void renderGraphicsChar(Graphics imageGraphics, Color fg, Color bg, int xpos, int ypos,
                                     int charWidth, int charHeight, StyleChar schar) {
 
-        String org = "abcdefghi" + "jklmnopqrstuvwxyz";
-        String graphs = "▒␉␌␍␊°±␤␋" + "┘┐┌└┼⎺⎻─⎼⎽├┤┴┬│≤≥";
         char c = (char) schar.charBytes[0];
 
         boolean leftLine = false;
@@ -755,7 +757,6 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
                 lowerLine = true;
                 rightLine = true;
                 break;
-
             case 'v':
                 leftLine = true;
             case 'm': // └
@@ -824,6 +825,7 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
 
             imageGraphics.setColor(drawFG);
 
+            // todo: beter logic
             if (leftLine) {
                 if (upperLine)
                     imageGraphics.drawLine(xpos, midhy - i, midlx - i, midhy - i);
@@ -1558,9 +1560,9 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
             for (int y = 0; y < size.height; y++) {
                 StyleChar c = currentBuffer.get(x, y);
 
-                double phase0 = (( (animationCounter+x*16) / 7) % numSteps);
-                double phase1 = (( (animationCounter+x*16) / 11) % numSteps);
-                double phase2 = (( (animationCounter+x*16) / 17) % numSteps);
+                double phase0 = (((animationCounter + x * 16) / 7) % numSteps);
+                double phase1 = (((animationCounter + x * 16) / 11) % numSteps);
+                double phase2 = (((animationCounter + x * 16) / 17) % numSteps);
 
                 double cos0 = Math.cos((phase0 / numSteps) * Math.PI * 2);
                 double cos1 = Math.cos((phase1 / numSteps) * Math.PI * 2);
@@ -1578,7 +1580,7 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
                         currentBuffer.needsRepaint(x, y, true);// update
                     }
 
-                    c.customForeground = new Color(val0,val1,val2);
+                    c.customForeground = new Color(val0, val1, val2);
                 }
             }
 
@@ -1636,8 +1638,8 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
 
     public void setCursorOptions(boolean blink) {
         //this.cursorBlink = value; // default is off (no blinkink)
-        if (blink==true) {
-            this.log.warn("*** Fixme: cursor blink:{}", blink);
+        if (blink == true) {
+            CharPane.log.warn("*** Fixme: cursor blink:{}", blink);
         }
     }
 

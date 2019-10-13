@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm;
 
 import nl.piter.vterm.api.ShellChannel;
@@ -17,12 +21,12 @@ public class VTermStarter {
     private VTermChannelProvider vTermChannelProvider;
 
     public VTermStarter withChannelProvider(VTermChannelProvider vTermChannelProvider) {
-        this.vTermChannelProvider=vTermChannelProvider;
+        this.vTermChannelProvider = vTermChannelProvider;
         return this;
     }
 
-    public void start(String[] args) {
-        new VTerm().withVTermChannelProvider(vTermChannelProvider).start(args);
+    public VTerm start(String[] args) {
+        return new VTerm().withVTermChannelProvider(vTermChannelProvider).start(args);
     }
 
     /**
@@ -31,11 +35,12 @@ public class VTermStarter {
      * </p>
      * If no ShellChannel has been provided the VTerm will try to the provided URI using the VTermChannelProvider.
      * If a ShellChannel is provided together with an location, the path will be updated.
+     *
      * @param optShellChannel authenticated shell channel
-     * @param optionalLoc optional location. Can be combined with authenticated shell channel.
+     * @param optionalLoc     optional location. Can be combined with authenticated shell channel.
      */
-    public void start(ShellChannel optShellChannel, URI optionalLoc) {
-        new VTerm().withVTermChannelProvider(vTermChannelProvider).start(optShellChannel,optionalLoc);
+    public VTerm start(ShellChannel optShellChannel, URI optionalLoc) {
+        return new VTerm().withVTermChannelProvider(vTermChannelProvider).start(optShellChannel, optionalLoc);
     }
 
 }

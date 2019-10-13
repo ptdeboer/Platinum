@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,30 +20,24 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.actions;
 
+import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
-
-import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 
 public class KeyMappings {
 
     public static class InputAction extends UIAction {
 
-               InputAction(String name) {
+        InputAction(String name) {
             super(name);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            DnDUtil.debugPrintf("ActionPerformed:%s\n", e);
+            DnDUtil.log.debug("ActionPerformed:{}", e);
             Object source = e.getSource();
         }
     }

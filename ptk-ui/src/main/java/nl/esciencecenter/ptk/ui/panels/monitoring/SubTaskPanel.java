@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,34 +20,22 @@
 
 package nl.esciencecenter.ptk.ui.panels.monitoring;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-
-import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.task.ActionTask;
-import nl.esciencecenter.ptk.task.ITaskMonitor;
-import nl.esciencecenter.ptk.task.MonitorStats;
-import nl.esciencecenter.ptk.task.TaskWatcher;
-import nl.esciencecenter.ptk.task.ITaskMonitor.TaskStats;
-import nl.esciencecenter.ptk.util.logging.PLogger;
-
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.task.*;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Mini Status Panel
  */
 public class SubTaskPanel extends JPanel implements ActionListener {
-       private JTextField titleTextField;
+    private JTextField titleTextField;
 
     private JLabel destLabel;
 
@@ -153,7 +141,7 @@ public class SubTaskPanel extends JPanel implements ActionListener {
                 try {
                     Thread.sleep(100);// 10fps
                 } catch (InterruptedException e) {
-                    PLogger.getLogger(this.getClass()).errorPrintf("Interrupted!\n");
+                    e.printStackTrace();
                 }
             }
 
@@ -240,7 +228,9 @@ public class SubTaskPanel extends JPanel implements ActionListener {
 
     }
 
-    /** return progress information */
+    /**
+     * return progress information
+     */
     public String getTotalProgressText() {
         ITaskMonitor info = taskMonitor;
 
@@ -286,7 +276,9 @@ public class SubTaskPanel extends JPanel implements ActionListener {
         return sizeString((int) monitorStats.getTotalSpeed()) + "B/s";
     }
 
-    /** return progress information */
+    /**
+     * return progress information
+     */
     public String getCurrentProgressText() {
         ITaskMonitor info = taskMonitor;
 
@@ -336,7 +328,9 @@ public class SubTaskPanel extends JPanel implements ActionListener {
         return subStats.doneLastUpdateTimeMillies;
     }
 
-    /** Return percentage in 3 chars */
+    /**
+     * Return percentage in 3 chars
+     */
     private String percentage3(double x, double y) {
         double perc = (x * 1000) / y;
 

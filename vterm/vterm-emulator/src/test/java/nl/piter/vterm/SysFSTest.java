@@ -1,3 +1,7 @@
+/*
+ * (C) Piter.NL
+ */
+//---
 package nl.piter.vterm;
 
 
@@ -59,16 +63,19 @@ public class SysFSTest {
 
     @Test
     public void testFilesPaths() throws IOException {
-
+        // under linux any path starting with c: is considered relative:
         testFilePath("c:/path/to/file");
+        // ¿illegal in dos?:
+        //testFilePath("/c:/path/to/file");
         testFilePath("/c/path/to/file");
+        testFilePath("c/relative/path/to/file");
         testFilePath("///c/path/to/file");
-        testFilePath("c:/path/to/file");
-
+        testFilePath("c:relative/path/to/file");
     }
 
-    private void testFilePath(String filePath) throws IOException {
+    private void testFilePath(String filePath) {
         URI uri = new SysFS().resolveFileURI(filePath);
         log.info("resolve:'{}'=>'{}'",filePath,uri);
     }
+
 }

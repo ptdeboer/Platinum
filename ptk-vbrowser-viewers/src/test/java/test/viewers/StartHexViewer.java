@@ -6,7 +6,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public class StartHexViewer {
     // === Main ===
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         // Global.setDebug(true);
 
         try {

@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -20,13 +20,9 @@
 
 package nl.esciencecenter.vbrowser.vrs.infors;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.util.ContentReader;
 import nl.esciencecenter.ptk.util.ContentWriter;
-import nl.esciencecenter.ptk.util.logging.PLogger;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
@@ -34,15 +30,15 @@ import nl.esciencecenter.vbrowser.vrs.data.xml.XMLData;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
 /**
  * Root Resource to start browsing from.<br>
  */
+@Slf4j
 public class InfoRootNode extends InfoResourceNode {
-    private static final PLogger logger = PLogger.getLogger(InfoRootNode.class);
-
-    // ========
-    // Instance
-    // ========
 
     protected InfoRS infors;
 
@@ -73,7 +69,7 @@ public class InfoRootNode extends InfoResourceNode {
      * Root node has top level recursive find node method.
      */
     public InfoRSPathNode findNode(VRL vrl) throws VrsException {
-        String paths[] = vrl.getPathElements();
+        String[] paths = vrl.getPathElements();
 
         if (paths == null) {
             return this;
@@ -146,7 +142,7 @@ public class InfoRootNode extends InfoResourceNode {
 
     /**
      * Only root info node can be saved to XML.
-     * 
+     *
      * @return persistant Info Nodes as XML String.
      */
     public String toXML() throws VrsException {
@@ -158,7 +154,7 @@ public class InfoRootNode extends InfoResourceNode {
     public VRL getPersistantConfigVRL() {
         VRL configVrl = this.getVRSContext().getPersistantConfigLocation();
         if (configVrl == null) {
-            logger.errorPrintf("Persistant configuration enabled, but no persistant save location defined\n");
+            log.error("Persistant configuration enabled, but no persistant save location defined");
             return null;
         }
 
@@ -169,7 +165,7 @@ public class InfoRootNode extends InfoResourceNode {
     protected void save() {
         // check autosave
         if ((this.getVRSContext().hasPersistantConfig() == false) || (autoSaveConfig == false)) {
-            logger.debugPrintf("save():hasPersistantConfig=False\n");
+            log.debug("save():hasPersistantConfig=False");
             return;
         }
 
@@ -177,14 +173,15 @@ public class InfoRootNode extends InfoResourceNode {
 
         try {
             saveTo(saveVrl);
-            logger.debugPrintf("Saved to %s\n", saveVrl);
+            log.debug("Saved to {}", saveVrl);
         } catch (VrsException e) {
-            logger.logException(PLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, saveVrl);
+            log.error("Failed to save RootNode:{} to:{}", this, saveVrl);
+            log.error(e.getMessage(), e);
         }
     }
 
     protected void saveTo(VRL configVrl) throws VrsException {
-        logger.debugPrintf("Saving InfoRootNode to:%s\n", configVrl);
+        log.debug("Saving InfoRootNode to:{}", configVrl);
 
         VRSClient vrsClient = this.infors.getVRSClient();
         try {
@@ -195,13 +192,13 @@ public class InfoRootNode extends InfoResourceNode {
             VFSPath dir = path.getParent();
 
             if (dir.exists() == false) {
-                logger.debugPrintf("Creating new config dir:%s\n", dir);
+                log.debug("Creating new config dir:{}", dir);
                 dir.mkdirs(true);
             }
-            try (OutputStream outps=vrsClient.createOutputStream(path,false)) {
-                new ContentWriter(outps,false).write(xml);
+            try (OutputStream outps = vrsClient.createOutputStream(path, false)) {
+                new ContentWriter(outps, false).write(xml);
             }
-            
+
         } catch (Exception e) {
             throw new VrsException(e.getMessage(), e);
         }
@@ -217,7 +214,8 @@ public class InfoRootNode extends InfoResourceNode {
         try {
             loadFrom(loadVrl);
         } catch (VrsException e) {
-            logger.logException(PLogger.ERROR, e, "Failed to save RootNode:%s to:%s\n", this, loadVrl);
+            log.error("Failed to save RootNode:{} to:{}", this, loadVrl);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -227,12 +225,12 @@ public class InfoRootNode extends InfoResourceNode {
         try {
             VFSPath path = vrsClient.openVFSPath(loadVrl);
             if (path.exists() == false) {
-                logger.debugPrintf("Root config XML file not found:%s", loadVrl);
+                log.debug("Root config XML file not found:{}", loadVrl);
                 return;
             }
             String xml;
-            try (InputStream inps=vrsClient.createInputStream(path)){
-                 xml=new ContentReader(inps).readString(); 
+            try (InputStream inps = vrsClient.createInputStream(path)) {
+                xml = new ContentReader(inps).readString();
             }
             XMLData data = new XMLData(this.getVRSContext());
             data.addXMLResourceNodesTo(this, xml);

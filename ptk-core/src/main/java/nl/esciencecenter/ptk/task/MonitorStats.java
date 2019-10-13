@@ -2,7 +2,7 @@
  * Copyright 2012-2014 Netherlands eScience Center.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License. 
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at the following location:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * For the full license, see: LICENSE.txt (located in the root folder of this distribution).
  * ---
  */
@@ -21,7 +21,6 @@
 package nl.esciencecenter.ptk.task;
 
 import nl.esciencecenter.ptk.presentation.Presentation;
-import nl.esciencecenter.ptk.task.ITaskMonitor.TaskStats;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 /**
@@ -34,15 +33,13 @@ public class MonitorStats {
      */
     public enum MonitorStatsType {
         TOTAL_BYTES_TRANSFERRED, CURRENT_BYTES_TRANSFERRED, TOTAL_SOURCES_COPIED, TOTAL_SOURCES_DELETED
-    };
+    }
 
-    // ========================================================================
-    //
-    // ========================================================================
+    // === Instance === //
 
-    protected ITaskMonitor monitor = null;
+    protected ITaskMonitor monitor;
 
-    Presentation presentation = new Presentation();
+    protected Presentation presentation = new Presentation();
 
     public MonitorStats(ITaskMonitor monitor) {
         this.monitor = monitor;
@@ -82,13 +79,13 @@ public class MonitorStats {
 
     /**
      * Returns ETA in millis. Depends on totalTodo/totalDone to calculate ETA.
-     * 
+     *
      * <pre>
      * -1 = no statistics
-     *  0 = done 
+     *  0 = done
      * >0 = estimated finishing time in milli seconds
      * </pre>
-     * 
+     *
      * @return
      */
     public long getETA() {
@@ -120,10 +117,10 @@ public class MonitorStats {
     }
 
     /**
-     * Return ETA in milli sconds.
-     * 
+     * Return ETA in milliseconds.
+     *
      * @return the return value is -1 for unknown, 0 for done or 0> for actual estimated time in
-     *         milli seconds.
+     * milli seconds.
      */
     public long calcETA(long done, long todo, double speed) {
         // no statistics !
@@ -239,9 +236,8 @@ public class MonitorStats {
 
     /**
      * Returns Task speed in &lt;task steps&gt;/second.
-     * 
-     * @param stats
-     *            TaskStats to use.
+     *
+     * @param stats TaskStats to use.
      * @return - speed of current task. Unit depends on used Task Step scale.
      */
     public double calculateTaskSpeed(TaskStats stats) {
@@ -271,11 +267,10 @@ public class MonitorStats {
     /**
      * Return milli seconds between sub task updates. Method returns -1 if not known ! Return value
      * of 0 is possible if delta time < 1ms.
-     * 
-     * @param subTaskName
-     *            - logical task name to check.
+     *
+     * @param subTaskName - logical task name to check.
      * @return time in milliseconds between updates of subTasks, or -1 if value or subTaskName not
-     *         known.
+     * known.
      * @see #getSubTaskDoneDeltaTime(String)
      */
     public long getSubTaskDoneDeltaTime(String subTaskName) {
@@ -285,9 +280,8 @@ public class MonitorStats {
     /**
      * Return milli seconds between sub task updates. Beware of 0 values. Method return -1 if not
      * known !
-     * 
-     * @param stats
-     *            - TaskStats to check.
+     *
+     * @param stats - TaskStats to check.
      * @return time in milliseconds between updates or -1 if not known.
      */
     public long getTaskDoneDeltaTime(TaskStats stats) {
@@ -326,7 +320,7 @@ public class MonitorStats {
 
     /**
      * Produce Time String of current Subtask. Returns time running plus estimated time of arrival.
-     * 
+     *
      * @return
      */
     public String getCurrentSubTaskTimeStatusText() {

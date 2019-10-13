@@ -26,7 +26,7 @@ public class SftpEntry {
 
     /**
      * @return LSEntry text as reported by the remote filesystem. Typically this the output from a
-     *         remote 'ls -l' command.
+     * remote 'ls -l' command.
      */
     public String getLSText() {
         return lsEntry.getLongname();
@@ -34,7 +34,7 @@ public class SftpEntry {
 
     /**
      * Actual SftpATTRS object.
-     * 
+     *
      * @return
      */
     public SftpATTRS getAttrs() {
