@@ -107,7 +107,7 @@ public class VRSProxyNode extends ProxyNode {
     @Override
     protected List<? extends ProxyNode>
     doGetChilds(int offset, int range, LongHolder numChildsLeft) throws ProxyException {
-        log.debug("doGetChilds:{}", this);
+        log.debug("@{}: doGetChilds:{}", this.id, this);
 
         try {
             VPath targetPath = vnode;
@@ -308,7 +308,7 @@ public class VRSProxyNode extends ProxyNode {
 
         // Race Condition: During prefetch phase this might ocure !  
         if (vnode.getVRL() == null) {
-            log.error("FIXME:getVRL() of vnode is null:{}", vnode);
+            log.error("@{}: FIXME:getVRL() of vnode is null:{}", this.id, vnode);
             return false;
         }
 
