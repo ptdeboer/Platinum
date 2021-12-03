@@ -26,6 +26,7 @@ import nl.esciencecenter.ptk.exceptions.FileURISyntaxException;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.io.FSUtil;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
@@ -211,7 +212,7 @@ public class FSNodeProxyNode extends ProxyNode {
     }
 
     @Override
-    protected VRL doGetResourceLinkVRL() {
+    protected VRL doGetResourceLinkTargetVRL() {
         return null;
     }
 
@@ -237,7 +238,7 @@ public class FSNodeProxyNode extends ProxyNode {
     }
 
     @Override
-    protected void doDelete(boolean recurse) throws ProxyException {
+    protected void doDelete(boolean recurse, ITaskMonitor monitor) throws ProxyException {
         throw new ProxyException("Won't delete stuff.");
     }
 

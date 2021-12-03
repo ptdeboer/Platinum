@@ -813,7 +813,7 @@ public final class URIFactory implements Serializable, Cloneable, Duplicatable<U
      * fragments or query strings. When appending file system paths use explicit appendPath()!
      */
     public URIFactory appendString(String substr) throws URISyntaxException {
-        return new URIFactory(this.toString() + substr);
+        return new URIFactory(this + substr);
     }
 
     /**

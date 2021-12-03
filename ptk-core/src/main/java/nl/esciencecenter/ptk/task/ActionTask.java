@@ -40,7 +40,7 @@ public abstract class ActionTask implements Runnable {
      */
     private Thread[] threads;
 
-    private Object threadMutex = new Object();
+    private final Object threadMutex = new Object();
 
     private ITaskMonitor taskMonitor = null;
 

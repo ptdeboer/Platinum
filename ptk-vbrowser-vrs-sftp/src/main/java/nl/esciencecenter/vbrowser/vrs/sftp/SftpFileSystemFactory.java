@@ -35,7 +35,7 @@ public class SftpFileSystemFactory implements VResourceSystemFactory {
 
     private final static Logger logger = LoggerFactory.getLogger(SftpFileSystemFactory.class);
 
-    private JSch jsch;
+    private final JSch jsch;
 
     public SftpFileSystemFactory() throws VrsException {
         // an JSch instance is created per SftpFileSystemFactory instance.

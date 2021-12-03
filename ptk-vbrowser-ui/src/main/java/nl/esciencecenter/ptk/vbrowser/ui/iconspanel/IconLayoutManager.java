@@ -31,8 +31,6 @@ import java.awt.*;
  * Starts icons in upper left and adds icons to the right, fitting window width, and expand
  * downwards. List View Flow: Vertical Flow:<br>
  * Start Upper Left, adding icons downwards, fitting window height, and expand to the left.
- *
- *
  */
 @Slf4j
 public class IconLayoutManager implements LayoutManager {
@@ -161,7 +159,10 @@ public class IconLayoutManager implements LayoutManager {
                 if (prefSize.width > cellMaxWidth)
                     prefSize.width = cellMaxWidth;
                 comp.setSize(prefSize);
-                //comp.validate(); // now 
+                //comp.validate(); // now
+                if (comp instanceof IconItem) {
+                    ((IconItem) comp).setRowColumn(row, column);
+                }
             }
 
             // II) Current Icon Flow Layout stats  

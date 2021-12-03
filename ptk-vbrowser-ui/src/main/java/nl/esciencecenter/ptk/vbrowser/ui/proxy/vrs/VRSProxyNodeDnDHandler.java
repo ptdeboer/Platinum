@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.Holder;
 import nl.esciencecenter.ptk.data.ListHolder;
@@ -33,17 +34,18 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.copy.VRSCopyManager;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * Handles DnD by doing actual VRS/VFS transfers.
+ * Also updates ProxyFactory (cache) and fires update events to notify various resource panels that a backgrounded
+ * transfer has been performed.
+ */
+@Slf4j
 public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler {
 
-    private final static Logger logger = LoggerFactory.getLogger(VRSProxyNodeDnDHandler.class);
-
     protected VRSCopyManager vrsManager;
-
     protected VRSProxyFactory proxyFactory;
 
     public VRSProxyNodeDnDHandler(VRSProxyFactory vrsProxyFactory, VRSCopyManager vrsTaskManager) {
@@ -66,12 +68,11 @@ public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler {
                         taskMonitor);
 
                 if (result) {
-                    // register proxy nodes: 
-                    ProxyNode targetNode = proxyFactory.updateProxyNode(destPathH.get(), true);
+                    // register proxy nodes for prefetching.
+                    ProxyNode targetNode = proxyFactory.registerVRSProxyNode(destPathH.get());
 
-                    // register proxy nodes: 
-                    List<ProxyNode> dropNodes = proxyFactory.updateProxyNodes(resultNodesH.get(),
-                            true);
+                    // register proxy nodes for prefetching.
+                    List<ProxyNode> dropNodes = proxyFactory.registerVRSProxyNodes(resultNodesH.get());
                     this.fireNewNodesEvent(targetNode, dropNodes);
                 }
 
@@ -94,17 +95,15 @@ public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler {
                         throw new VrsException("CopyMove has NULL destination nodes holder value!");
                     }
 
-                    // register proxy nodes: 
-                    ProxyNode targetNode = proxyFactory.updateProxyNode(destPathH.value, true);
+                    // register proxy node for prefetching.
+                    ProxyNode targetNode = proxyFactory.registerVRSProxyNode(destPathH.value);
 
-                    // register proxy nodes: 
-                    List<ProxyNode> dropNodes = proxyFactory.updateProxyNodes(resultNodesH.values,
-                            true);
+                    // register proxy nodes for prefetching.
+                    List<ProxyNode> dropNodes = proxyFactory.registerVRSProxyNodes(resultNodesH.values);
                     this.fireNewNodesEvent(targetNode, dropNodes);
 
                     if ((deletedNodesH.values != null) && (deletedNodesH.values.size() > 0)) {
-                        List<ProxyNode> deletedNodes = proxyFactory.updateProxyNodes(
-                                deletedNodesH.values, true);
+                        List<ProxyNode> deletedNodes = proxyFactory.registerVRSProxyNodes(deletedNodesH.values);
                         this.fireNodesDeletedEvent(deletedNodes);
                     }
                 }
@@ -112,7 +111,7 @@ public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler {
                 throw new ProxyException(e.getMessage(), e);
             }
         } else {
-            logger.error(String.format(
+            log.error(String.format(
                     "FIXME: VRSViewNodeDnDHandler unrecognized DROP:%s:on %s, list=%s\n",
                     dropAction, targetDropNode, new ExtendedList<VRL>(vrls)));
             return false;

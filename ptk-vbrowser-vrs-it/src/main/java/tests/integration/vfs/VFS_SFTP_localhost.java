@@ -12,7 +12,7 @@ import tests.integration.vfs.Settings.TestLocation;
  * Test Local case TestSuite uses testVFS class to tests Local FileSystem implementation.
  */
 public class VFS_SFTP_localhost extends VFSTests {
-    
+
     static {
         initSFTPFS();
     }

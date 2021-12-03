@@ -24,99 +24,19 @@ import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmdType;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.MiniIcons;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 /**
- * Custom tab header mini icons.
+ * Custom tab header: Title + mini action icons.
  */
 public class TabTopLabelPanel extends JPanel {
-
-    private final static MouseListener buttonMouseListener = new MouseAdapter() {
-        public void mouseEntered(MouseEvent e) {
-            Component component = e.getComponent();
-            if (component instanceof AbstractButton) {
-                AbstractButton button = (AbstractButton) component;
-                button.setBorderPainted(true);
-            }
-        }
-
-        public void mouseExited(MouseEvent e) {
-            Component component = e.getComponent();
-            if (component instanceof AbstractButton) {
-                AbstractButton button = (AbstractButton) component;
-                button.setBorderPainted(false);
-            }
-        }
-    };
-
-    private TabButton addButton;
-    private TabButton delButton;
-    private TabContentPanel tabPane;
-    private JLabel tabLabel;
-
-    public TabTopLabelPanel(final TabContentPanel pane,
-                            final BrowserJTabbedPaneController.TabButtonHandler buttonHandler) {
-
-        // unset default FlowLayout' gaps
-        super(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
-        if (pane == null) {
-            throw new NullPointerException("Tab pane or Parent TabbedPane is null");
-        }
-
-        tabPane = pane;
-        setOpaque(false);
-        // ---
-        // tab label
-        // ---
-        {
-            this.tabLabel = new JLabel(pane.getName());
-            add(tabLabel);
-        }
-
-        // add more space between the label and the button
-        tabLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-        // tab button
-
-        {
-            delButton = new TabButton(TabButtonType.Delete);
-            add(delButton);
-            delButton.setActionCommand("" + ActionCmdType.CLOSE_TAB);
-            delButton.addActionListener(buttonHandler);
-        }
-        {
-            addButton = new TabButton(TabButtonType.Add);
-            add(addButton);
-            addButton.setActionCommand("" + ActionCmdType.NEW_TAB);
-            addButton.addActionListener(buttonHandler);
-        }
-
-        // add more space to the top of the component
-        setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
-    }
-
-    TabContentPanel getTabPanel() {
-        return this.tabPane;
-    }
-
-    public void setEnableAddButton(boolean value) {
-        addButton.setVisible(value);
-    }
-
-    public void setTabLabelText(String text) {
-        tabLabel.setText(text);
-    }
 
     public enum TabButtonType {
         Delete, Add
     }
 
-    public class TabButton extends JButton // implements ActionListener
-    {
+    public class TabButton extends JButton {
         TabButtonType type;
 
         public TabButton(TabButtonType buttonType) {
@@ -139,28 +59,123 @@ public class TabTopLabelPanel extends JPanel {
                     break;
             }
 
-            // Make the button looks the same for all Laf's
-            setUI(new BasicButtonUI());
             // Make it transparent
             setContentAreaFilled(false);
-            // No need to be focusable
-            setFocusable(false);
+            setFocusable(true);
             setBorder(BorderFactory.createEtchedBorder());
             setBorderPainted(false);
             // Making nice rollover effect
             // we use the same listener for all buttons
+            TabButtonListener buttonMouseListener = new TabButtonListener();
             addMouseListener(buttonMouseListener);
-            setRolloverEnabled(true);
+            addFocusListener(buttonMouseListener);
+            setRolloverEnabled(false); // do it myself for consistency between LaFs
             // Close the proper tab by clicking the button
             // addActionListener(this);
-        }
-
-        public void updateUI() {
         }
 
         public TabContentPanel getTabPanel() {
             return TabTopLabelPanel.this.getTabPanel();
         }
     }
+
+    public static class TabButtonListener extends MouseAdapter implements FocusListener {
+
+        public void mouseEntered(MouseEvent e) {
+            setBorder(e.getComponent(), true);
+        }
+
+        public void mouseExited(MouseEvent e) {
+            setBorder(e.getComponent(), false);
+        }
+
+        @Override
+        public void focusGained(FocusEvent e) {
+            setBorder(e.getComponent(), true);
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            setBorder(e.getComponent(), false);
+        }
+
+        public void setBorder(Component component, boolean value) {
+            if (component instanceof AbstractButton) {
+                AbstractButton button = (AbstractButton) component;
+                button.setBorderPainted(value);
+            }
+        }
+
+    }
+
+    private final TabButton addButton;
+    private final TabButton delButton;
+    private final TabContentPanel tabPane;
+    private final JLabel tabLabel;
+
+    public TabTopLabelPanel(String name,
+                            final TabContentPanel pane,
+                            final BrowserJTabbedPaneController.TabButtonHandler buttonHandler) {
+
+        // Unset default FlowLayout' gaps
+        super(new FlowLayout(FlowLayout.LEFT, 1, 0));
+
+        if (pane == null) {
+            throw new NullPointerException("Tab pane or Parent TabbedPane is null.");
+        }
+
+        tabPane = pane;
+        setOpaque(false);
+
+        {
+            // === Layout === //
+            {
+                // === Tab JLabel === //
+                this.tabLabel = new JLabel(name) {
+                    // block mouse events to allow default tab switching
+                    public boolean contains(int x, int y) {
+                        return false;
+                    }
+                };
+
+                add(tabLabel);
+                setLabelText(name);
+            }
+            // add more space between the label and the button
+            tabLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+            {
+                // === Delete Button === //
+                delButton = new TabButton(TabButtonType.Delete);
+                add(delButton);
+                delButton.setActionCommand("" + ActionCmdType.CLOSE_TAB);
+                delButton.addActionListener(buttonHandler);
+            }
+            {
+                // === Add Button === //
+                addButton = new TabButton(TabButtonType.Add);
+                add(addButton);
+                addButton.setActionCommand("" + ActionCmdType.NEW_TAB);
+                addButton.addActionListener(buttonHandler);
+            }
+
+            // Add more space to the top of the component
+            setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+            this.setFocusable(true);
+        }
+    }
+
+    public void setLabelText(String name) {
+        this.tabLabel.setText(name);
+        tabLabel.setToolTipText(name);
+    }
+
+    protected TabContentPanel getTabPanel() {
+        return this.tabPane;
+    }
+
+    public void setEnableAddButton(boolean value) {
+        addButton.setVisible(value);
+    }
+
 
 }

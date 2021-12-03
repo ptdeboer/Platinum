@@ -25,6 +25,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
  * ViewNodeContainer
  */
 public interface ViewNodeComponent {
+
     /**
      * UIViewModel
      */
@@ -35,10 +36,10 @@ public interface ViewNodeComponent {
      */
     ViewNode getViewNode();
 
-    /**
-     * Request focus for this component. Returns true if succesful.
-     */
-    boolean requestFocus(boolean value);
+//    /**
+//     * Request focus for this component. Returns true if succesful.
+//     */
+//    boolean requestFocus(boolean value);
 
     /**
      * Parent of this ViewNodeComponent

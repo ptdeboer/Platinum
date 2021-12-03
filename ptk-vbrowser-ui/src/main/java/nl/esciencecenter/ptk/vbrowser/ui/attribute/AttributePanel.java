@@ -69,13 +69,13 @@ public class AttributePanel extends JPanel {
 
     private JLabel[] jLabels;
 
-    private boolean useFormLayout = true;
+    private final boolean useFormLayout = true;
 
     private int rowOffset;
 
     private FormLayout formLayout;
 
-    private Vector<AttributePanelListener> listeners = new Vector<AttributePanelListener>();
+    private final Vector<AttributePanelListener> listeners = new Vector<AttributePanelListener>();
 
     public void initGui() {
         formLayout = new FormLayout("10px,right:pref:grow, 5px, fill:pref:grow,10px",
@@ -140,8 +140,8 @@ public class AttributePanel extends JPanel {
     /**
      * Creates labels & fields.
      *
-     * @param newSet Attributes to edit.
-     * @param editable     whether to view (false) or edit (true) these attributes.
+     * @param newSet   Attributes to edit.
+     * @param editable whether to view (false) or edit (true) these attributes.
      */
     public void setAttributes(AttributeSet newSet, boolean editable) {
 
@@ -178,9 +178,9 @@ public class AttributePanel extends JPanel {
         String[] keys = newSet.createKeyArray();
 
         // filter out null Attributes and create duplicates !
-        for (String key:keys) {
+        for (String key : keys) {
             Attribute attr;
-            if ((attr=newSet.get(key)) != null) {
+            if ((attr = newSet.get(key)) != null) {
                 attributes.put(attr.duplicate(false));
             }
         }
@@ -190,7 +190,7 @@ public class AttributePanel extends JPanel {
         setFormRows(attributes.size());
 
         // Field Names
-        for (int i=0;i<keys.length;i++) {
+        for (int i = 0; i < keys.length; i++) {
             Attribute attr = attributes.get(keys[i]);
 
             String name = attr.getName();

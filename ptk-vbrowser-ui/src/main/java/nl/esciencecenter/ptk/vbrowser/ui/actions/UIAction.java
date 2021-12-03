@@ -22,8 +22,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.actions;
 
 import javax.swing.*;
 
-//import javax.swing.ActionCmd;
-
 public abstract class UIAction extends AbstractAction {
 
     public UIAction(String name) {

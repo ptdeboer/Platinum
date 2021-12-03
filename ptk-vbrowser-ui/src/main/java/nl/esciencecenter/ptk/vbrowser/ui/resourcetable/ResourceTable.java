@@ -47,8 +47,6 @@ import java.util.Enumeration;
 
 /**
  * Generic Resource Table.
- *
- *
  */
 @Slf4j
 public class ResourceTable extends JTable implements UIDisposable, ViewNodeContainer {
@@ -116,7 +114,20 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
         header.addMouseListener(mouseHandler);
         this.addMouseListener(mouseHandler);
+//        this.initFocusCycle();
     }
+
+    // restore default cycle
+//    private void initFocusCycle() {
+//        Set<AWTKeyStroke> forward = new HashSet<>(
+//        this.getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+//        forward.add(KeyStroke.getKeyStroke("TAB"));
+//        this.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forward);
+//        Set<AWTKeyStroke> backward = new HashSet<AWTKeyStroke>();
+//        this.getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+//        backward.add(KeyStroke.getKeyStroke("shift TAB"));
+//        this.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backward);
+//    }
 
     public TableMouseListener getTableMouseHandler() {
         return mouseHandler;
@@ -135,7 +146,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
             // Use all attribute names.
             headers = getModel().getAllAttributeNames();
             log.debug("initColumns(): getAllHeaders() = {}",
-                    new StringList(headers).toString());
+                    new StringList(headers));
         }
 
         if ((headers == null) || (headers.length <= 0)) {
@@ -185,10 +196,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
                 }
             }
         }
-    }
-
-    public MouseListener getMouseListener() {
-        return this.mouseHandler;
     }
 
     public ResourceTableModel getResourceTableModel() {
@@ -545,7 +552,7 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     }
 
     @Override
-    public ViewNode[] getNodeSelection() {
+    public java.util.List<ViewNode> getNodeSelection() {
         log.debug("getNodeSelection()");
 
         int[] rowNrs = getSelectedRows();
@@ -558,14 +565,14 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
 
         String[] keys = model.getRowKeys(rowNrs);
 
-        ArrayList<ViewNode> nodes = new ArrayList<ViewNode>();
+        java.util.List<ViewNode> nodes = new ArrayList<>();
 
         for (String key : keys) {
             nodes.add(model.getViewNode(key));
         }
 
         log.debug("getNodeSelection()=#{}", nodes.size());
-        return nodes.toArray(new ViewNode[0]);
+        return nodes;
     }
 
     @Override
@@ -616,12 +623,6 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
                 lastNode);
     }
 
-    @Override
-    public boolean requestNodeFocus(ViewNode node, boolean value) {
-        log.error("FIXME:requestNodeFocus():focus={}, for:{}", value, node);
-        return false;
-    }
-
     public ResourceTableUpdater getDataProducer() {
         return this.dataProducer;
     }
@@ -651,6 +652,11 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
     @Override
     public BrowserInterface getBrowserInterface() {
         return controller.getBrowserInterface();
+    }
+
+    @Override
+    public Rectangle findBoundsOfSelectionNode(ViewNode node) {
+        return new Rectangle(0, 0, 0, 0);
     }
 
     public ProxyDataSource getDataSource() {
@@ -684,4 +690,9 @@ public class ResourceTable extends JTable implements UIDisposable, ViewNodeConta
         VRSPresentation.storePresentation(vrl, resourceType, getPresentation());
         //log.error("--- presentation ---\n{}", getPresentation());
     }
+
+    public JComponent getJComponent() {
+        return this;
+    }
+
 }

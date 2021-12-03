@@ -22,11 +22,8 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 
-// under construction
 public interface ViewNodeActionListener {
-    // void handleNodeSelection(ViewNode node);
 
     void handleNodeActionEvent(ViewNode node, ActionCmd action);
 
-    //
 }

@@ -39,7 +39,7 @@ import java.util.List;
 @Slf4j
 public class SftpPathNode extends VFSPathNode implements VStreamAccessable, VRandomAccessable {
 
-    private SftpFileSystem sftpfs;
+    private final SftpFileSystem sftpfs;
 
     /**
      * Absolute path on remote filesystem

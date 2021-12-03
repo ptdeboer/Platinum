@@ -35,7 +35,7 @@ import java.io.Console;
 @Slf4j
 public class ConsoleUI implements UI {
 
-    private Console console;
+    private final Console console;
 
     public ConsoleUI() {
         console = System.console();
@@ -153,7 +153,7 @@ public class ConsoleUI implements UI {
     @Override
     public String askInput(String title, String message, String defaultValue) {
         if (console == null) {
-            log.warn("NO CONSOLE:askInput:[{}}:{}", title,message);
+            log.warn("NO CONSOLE:askInput:[{}}:{}", title, message);
             return null;
         }
         console.printf("[%s]\n%s\n '%s'?", title, message, defaultValue);

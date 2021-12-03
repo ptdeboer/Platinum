@@ -135,9 +135,9 @@ public class ImageViewerController implements ComponentListener {
     //
     // ===
 
-    private KeyMouseMapper keyMouseMapper;
+    private final KeyMouseMapper keyMouseMapper;
 
-    private ImageViewer imageViewer;
+    private final ImageViewer imageViewer;
 
     public ImageViewerController(ImageViewer imageVwr) {
         this.imageViewer = imageVwr;

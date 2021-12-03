@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.ui.dnd.DnDFlavors;
 import nl.esciencecenter.ptk.util.StringUtil;
@@ -33,25 +34,27 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
+import java.util.List;
 import java.util.Vector;
 
 /**
  * List of Resource VRLs including some type information.
  */
+@Slf4j
 public class VRLEntryListTransferable implements Transferable {
 
-    public static VRLEntryListTransferable createFrom(ViewNode[] nodes) {
+    public static VRLEntryListTransferable createFrom(List<ViewNode> nodes) {
         if (nodes == null) {
             return null;
         }
 
-        int n = nodes.length;
+        int n = nodes.size();
         VRLEntryList vris = new VRLEntryList(n);
         for (int i = 0; i < n; i++) {
             VRLEntry entry = new VRLEntry();
-            entry.vrl = nodes[i].getVRL();
-            entry.resourceType = nodes[i].getResourceType();
-            entry.mimeType = nodes[i].getMimeType();
+            entry.vrl = nodes.get(i).getVRL();
+            entry.resourceType = nodes.get(i).getResourceType();
+            entry.mimeType = nodes.get(i).getMimeType();
             vris.add(entry);
         }
         return new VRLEntryListTransferable(vris);
@@ -76,7 +79,7 @@ public class VRLEntryListTransferable implements Transferable {
             if (isAllVFSPaths()) {
                 return vris;
             } else {
-                DnDUtil.log.error("Requested for VFSPaths but not all VRLs are VFS Paths!");
+                log.error("Requested for VFSPaths but not all VRLs are VFS Paths!");
             }
             return vris; // filter ?
         }
@@ -130,14 +133,14 @@ public class VRLEntryListTransferable implements Transferable {
                     File file = new File(vri.getPath());
                     fileList.add(file);
                 } else {
-                    DnDUtil.log.error("Cannot export remote file as local file flavor:{}", vri);
+                    log.error("Cannot export remote file as local file flavor:{}", vri);
                     // cannot export remote file as local files !
                 }
             }
             return fileList;
         }
 
-        DnDUtil.log.error("VRLEntryList:DataFlavor not supported:{}", flavor);
+        log.error("VRLEntryList:DataFlavor not supported:{}", flavor);
         throw new UnsupportedFlavorException(flavor);
     }
 
@@ -169,7 +172,7 @@ public class VRLEntryListTransferable implements Transferable {
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        DnDUtil.log.debug("VRLEntryList:isDataFlavorSupported:{}", flavor);
+        log.debug("VRLEntryList:isDataFlavorSupported:{}", flavor);
 
         for (DataFlavor flav : getTransferDataFlavors()) {
             if (flav.equals(flavor)) {

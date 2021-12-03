@@ -36,7 +36,7 @@ import java.awt.event.MouseEvent;
  */
 @Slf4j
 public class TableMouseListener extends ViewContainerEventAdapter {
-    private ResourceTable table;
+    private final ResourceTable table;
 
     public TableMouseListener(ResourceTable source, ResourceTableControler controller) {
         super(source, controller);

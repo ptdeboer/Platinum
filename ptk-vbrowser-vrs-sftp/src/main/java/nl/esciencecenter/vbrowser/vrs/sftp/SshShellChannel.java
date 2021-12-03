@@ -35,10 +35,10 @@ public class SshShellChannel implements ShellChannel {
         }
     }
 
-    private SshSession session;
+    private final SshSession session;
     private ChannelShell channel;
-    private Object waitForObject = new Object();
-    private SshChannelOptions options;
+    private final Object waitForObject = new Object();
+    private final SshChannelOptions options;
     private OutputStream stdin;
     private InputStream stdout;
 

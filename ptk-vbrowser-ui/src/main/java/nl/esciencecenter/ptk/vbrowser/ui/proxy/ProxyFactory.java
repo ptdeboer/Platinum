@@ -178,10 +178,6 @@ public abstract class ProxyFactory {
         }
     }
 
-    final public void setEnableCache(boolean value) {
-        this.enableCache = value;
-    }
-
     final public ProxyNode openLocation(VRL locator) throws ProxyException {
         if (locator == null) {
             throw new ProxyException("NULL Locator!");
@@ -246,25 +242,19 @@ public abstract class ProxyFactory {
     public void refreshChilds(VRL parentVrl) {
         ProxyCacheElement cacheEl = this.proxyCache.get(parentVrl);
         if (cacheEl != null) {
-            cacheEl.getNode().refresh();
+            cacheEl.getNode().clearCache();
         }
     }
 
-    public void refreshNode(VRL vrl) {
+    public void clearCache(VRL vrl) {
         ProxyCacheElement cacheEl = this.proxyCache.get(vrl);
         if (cacheEl != null) {
-            cacheEl.getNode().refresh();
+            cacheEl.getNode().clearCache();
         }
     }
 
     protected void handleException(String message, Exception e) {
         log.error(message, e);
-    }
-
-    protected boolean cacheExists(VRL vrl) {
-        synchronized (proxyCache) {
-            return proxyCache.exists(vrl);
-        }
     }
 
     protected ProxyNode cacheFetch(VRL locator) {
@@ -283,7 +273,12 @@ public abstract class ProxyFactory {
         }
     }
 
+    /**
+     * Removing a ProxyNode does not invalidate it. Instances might be kept.
+     */
     protected void cacheRemove(ProxyNode proxyNode) {
+        log.debug("--- Cache: cacheRemove: @{}", proxyNode.id);
+
         ProxyNode cacheNode = cacheFetch(proxyNode.getVRL());
         this.proxyCache.remove(proxyNode);
 
@@ -297,18 +292,11 @@ public abstract class ProxyFactory {
             ProxyNode parent = cacheNode.cache.parent;
             if (parent != null) {
                 // clear parent; 
-                parent.cache.childs = null;
+                parent.cache.childNodes = null;
             }
         }
     }
 
-    // ========================================================================
-    // DND Handler
-    // ========================================================================
-
-    public ProxyNodeDnDHandler getProxyDnDHandler(ViewNode viewNode) {
-        return ProxyNodeDnDHandler.getInstance();
-    }
 
     // ========================================================================
     // Proxy Node Events
@@ -326,5 +314,8 @@ public abstract class ProxyFactory {
     abstract public ProxyNode doOpenLocation(VRL locator) throws ProxyException;
 
     abstract public boolean canOpen(VRL locator, StringHolder reason);
+
+    // DND Handler
+    abstract public ProxyNodeDnDHandler getProxyDnDHandler(ViewNode viewNode);
 
 }

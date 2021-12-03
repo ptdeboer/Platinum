@@ -41,7 +41,7 @@ import java.util.List;
 @Slf4j
 public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpdater {
 
-    private ResourceTree tree;
+    private final ResourceTree tree;
 
     private ProxyDataSource viewNodeSource;
 
@@ -111,7 +111,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
      * Get or repopulate childs nodes
      */
     public void updateChilds(final ResourceTreeNode node) {
-        log.debug("updateChilds():{}", node.getVRI());
+        log.debug("updateChilds():{}", node.getVRL());
 
         BrowserTask task = new BrowserTask(this.getTaskSource(),
                 "update resource tree model for node" + rootItem) {
@@ -126,7 +126,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
 
     @Override
     public void notifyEvent(VRSEvent e) {
-        log.debug("notifyDataSourceEvent:{}", e);
+        log.debug("notifyEvent:{}", e);
 
         VRL parent = e.getParent();
         VRL[] sources = e.getResources();
@@ -228,7 +228,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
     public void update(final VRL[] sources, final String[] optAttrNames) {
         log.debug("refreshNodes():{}", sources.length);
 
-        BrowserTask task = new BrowserTask(this.getTaskSource(), "refreshNodes" + sources.length) {
+        BrowserTask task = new BrowserTask(this.getTaskSource(), "refreshNodes " + sources.length) {
             @Override
             public void doTask() {
                 _refreshNodes(sources, optAttrNames);
@@ -276,7 +276,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
         ViewNode[] childs;
 
         try {
-            childs = this.viewNodeSource.getChilds(getUIModel(), node.getVRI(), 0, -1, null);
+            childs = this.viewNodeSource.getChilds(getUIModel(), node.getVRL(), 0, -1, null);
             getModel().setChilds(node, childs);
         } catch (ProxyException e) {
             bgHandle("Failed to update child nodes.", e);
@@ -289,6 +289,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
 
         for (VRL vrl : sources) {
             try {
+
                 // Refresh Complete ViewNode:
                 ViewNode[] viewNodes = viewNodeSource.createViewNodes(getUIModel(),
                         new VRL[]{vrl});
@@ -302,8 +303,7 @@ public class ResourceTreeUpdater implements VRSEventListener, ProxyDataSourceUpd
                 // Tree might have multiple entries, just update all
                 List<ResourceTreeNode> nodes = getModel().findNodes(vrl);
                 for (ResourceTreeNode node : nodes) {
-                    node.setViewNode(viewNodes[0]);
-                    this.getModel().uiFireNodeChanged(node);
+                    _updateChilds(node);
                 }
 
             } catch (ProxyException e) {

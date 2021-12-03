@@ -18,14 +18,18 @@
  */
 // source:
 
-package nl.esciencecenter.ptk.vbrowser.ui.browser;
+package nl.esciencecenter.ptk.vbrowser.uitest.resourcetable;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.data.ExtendedList;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.task.ITaskSource;
 import nl.esciencecenter.ptk.task.TaskWatcher;
 import nl.esciencecenter.ptk.ui.SimpelUI;
 import nl.esciencecenter.ptk.ui.UI;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -46,6 +50,15 @@ public class BrowserInterfaceAdaptor implements BrowserInterface {
     private BrowserPlatform platform;
 
     private JPopupMenu jpopupMenu;
+
+    private ProxyNodeDnDHandler dndHandler=new ProxyNodeDnDHandler() {
+        @Override
+        public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls, ITaskMonitor taskMonitor) throws ProxyException {
+            System.err.printf("FIXME: ViewNodeDnDHandler.doDrop:%s:%s:", dropAction,
+                    new ExtendedList<VRL>(vrls));
+            return true;
+        }
+    };
 
     public BrowserInterfaceAdaptor(BrowserPlatform platform) {
         this.platform = platform;
@@ -85,7 +98,7 @@ public class BrowserInterfaceAdaptor implements BrowserInterface {
     public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode,
                           DropAction dropAction, List<VRL> vris) {
         try {
-            return ProxyNodeDnDHandler.getInstance().doDrop(viewNode, dropAction, vris, null);
+            return dndHandler.doDrop(viewNode, dropAction, vris, null);
         } catch (ProxyException e) {
             handleException("Drop Failed", e);
             return false;

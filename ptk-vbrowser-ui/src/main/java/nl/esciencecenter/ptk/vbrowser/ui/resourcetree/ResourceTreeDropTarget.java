@@ -30,8 +30,6 @@ import java.awt.dnd.DropTargetDropEvent;
 
 /**
  * A node in a JTree can't have DropTargets, so the Parent component (JTree) handles the drops.
- *
- *
  */
 @Slf4j
 public class ResourceTreeDropTarget extends ViewNodeDropTarget {

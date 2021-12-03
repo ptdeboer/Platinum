@@ -52,7 +52,7 @@ public class WebNode extends VPathNode implements VStreamAccessable {
     // Class
     // =====
 
-    static private StringList attributeNames = new StringList(ATTR_RESOURCE_TYPE, ATTR_NAME, ATTR_HOSTNAME, ATTR_PORT,
+    static private final StringList attributeNames = new StringList(ATTR_RESOURCE_TYPE, ATTR_NAME, ATTR_HOSTNAME, ATTR_PORT,
             ATTR_ICON, ATTR_PATH, ATTR_MIMETYPE, ATTR_CHARSET, ATTR_LOCATION);
 
     // ========
@@ -61,7 +61,7 @@ public class WebNode extends VPathNode implements VStreamAccessable {
 
     private String mimeType = null;
 
-    private WebResourceSystem httprs;
+    private final WebResourceSystem httprs;
 
     private boolean isHTTPS = false;
 

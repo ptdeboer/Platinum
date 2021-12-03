@@ -4,11 +4,14 @@ import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmdType;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.laf.LookAndFeelType;
+import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+
+import static nl.esciencecenter.ptk.vbrowser.ui.browser.laf.LookAndFeelType.*;
 
 public class BrowserMenuBarCreator {
 
@@ -43,7 +46,7 @@ public class BrowserMenuBarCreator {
             {
                 JMenuItem openMenuItem = new JMenuItem();
                 mainMenu.add(openMenuItem);
-                openMenuItem.setText("Open Location");
+                openMenuItem.setText("Open");
                 openMenuItem.setMnemonic(KeyEvent.VK_O);
                 openMenuItem.addActionListener(actionListener);
                 openMenuItem.setActionCommand(ActionCmdType.OPEN_LOCATION.toString());
@@ -100,12 +103,30 @@ public class BrowserMenuBarCreator {
                         globalPreferencesMI.setForeground(Color.GRAY);
                     }
                     {
+                        JCheckBoxMenuItem singleClickActionMenuItem = new JCheckBoxMenuItem();
+                        preferencesMenu.add(singleClickActionMenuItem);
+                        singleClickActionMenuItem.setText("Single Click Action");
+                        singleClickActionMenuItem.setActionCommand(ActionCmdType.GLOBAL_SET_SINGLE_ACTION_CLICK.toString());
+                        singleClickActionMenuItem.setState(getUIProperties().getSingleClickAction());
+                        singleClickActionMenuItem.addActionListener(actionListener);
+                    }
+                    {
                         preferencesMenu.add(new JSeparator());
                     }
                     {
                         JMenu lafMenu = createLafMenu(actionListener);
                         lafMenu.setText("Look and Feel");
                         preferencesMenu.add(lafMenu);
+                    }
+                    {
+                        preferencesMenu.add(new JSeparator());
+                    }
+                    {
+                        JMenuItem singleClickActionMenuItem = new JMenuItem();
+                        preferencesMenu.add(singleClickActionMenuItem);
+                        singleClickActionMenuItem.setText("Save settings");
+                        singleClickActionMenuItem.addActionListener(actionListener);
+                        singleClickActionMenuItem.setActionCommand(ActionCmdType.SAVE_SETTINGS.toString());
                     }
                 }
                 // viewNewWindowMenuItem.setActionCommand(ActionCmdType.CREATE_NEW_WINDOW.toString());
@@ -141,57 +162,50 @@ public class BrowserMenuBarCreator {
         return menuBar;
     }
 
+    private UIProperties getUIProperties() {
+        return this.browserController.getPlatform().getGuiSettings();
+    }
+
     public JMenu createLafMenu(ActionListener actionListener) {
+
+        LookAndFeelType lafType = getUIProperties().getLAFType();
+        boolean lafEnabled = getUIProperties().getLaFEnabled();
+
         JMenu lafMenu = new JMenu();
-        // Windows LAF doesn't work on Linux :-D
+        // Windows LaF doesn't work on Linux :-D
         {
-            JMenuItem lafMI = new JMenuItem();
-            lafMenu.add(lafMI);
-            lafMI.setText("Metal (Default)");
-            lafMI.setActionCommand(ActionCmd.create(ActionCmdType.LOOKANDFEEL, LookAndFeelType.METAL).toString());
-            lafMI.addActionListener(actionListener);
+            JCheckBoxMenuItem lafEnabledCB = new JCheckBoxMenuItem();
+            lafMenu.add(lafEnabledCB);
+            lafEnabledCB.setText("Enable");
+            lafEnabledCB.setActionCommand(ActionCmdType.LOOKANDFEEL_ENABLED.toString());
+            lafEnabledCB.setState(getUIProperties().getLaFEnabled());
+            lafEnabledCB.addActionListener(actionListener);
         }
+        lafMenu.add(new JSeparator());
         {
-            JMenuItem lafMI = new JMenuItem();
-            lafMenu.add(lafMI);
-            lafMI.setText("Plastic 3D");
-            lafMI.setActionCommand(ActionCmd.create(ActionCmdType.LOOKANDFEEL, LookAndFeelType.PLASTIC_3D).toString());
-            lafMI.addActionListener(actionListener);
-        }
-        {
-            JMenuItem lafMI = new JMenuItem();
-            lafMenu.add(lafMI);
-            lafMI.setText("Plastic XP");
-            lafMI.setActionCommand(ActionCmd.create(ActionCmdType.LOOKANDFEEL, LookAndFeelType.PLASTIC_XP).toString());
-            lafMI.addActionListener(actionListener);
-        }
-        {
-            JMenuItem lafMI = new JMenuItem();
-            lafMenu.add(lafMI);
-            lafMI.setText("Quaqua (leopard)");
-            lafMI.setActionCommand(ActionCmd.create(ActionCmdType.LOOKANDFEEL, LookAndFeelType.QUAQUA).toString());
-            lafMI.addActionListener(actionListener);
-        }
-        {
-            JMenuItem lafMI = new JMenuItem();
-            lafMenu.add(lafMI);
-            lafMI.setText("Nimbus");
-            lafMI.setActionCommand(ActionCmd.create(ActionCmdType.LOOKANDFEEL, LookAndFeelType.NIMBUS.toString()).toString());
-            lafMI.addActionListener(actionListener);
-        }
-        {
-            JMenuItem lafMI = new JMenuItem();
-            lafMenu.add(lafMI);
-            lafMI.setText("Seaglass");
-            lafMI.setActionCommand(ActionCmd.create(ActionCmdType.LOOKANDFEEL, LookAndFeelType.SEAGLASS.toString()).toString());
-            lafMI.addActionListener(actionListener);
+            // LookAndFeelType[] supported = new LookAndFeelType[]{NATIVE, METAL, PLASTIC_3D, PLASTIC_XP, NIMBUS, SEAGLASS};
+            // JDK11 supported and tested: others are buggy or fugly.
+            LookAndFeelType[] supported = new LookAndFeelType[]{NATIVE, METAL, NIMBUS};
+
+            for (LookAndFeelType type : supported) {
+                JMenuItem lafMI = new JMenuItem();
+                lafMenu.add(lafMI);
+                String name=type.getName();
+//                if (lafEnabled && type==lafType) {
+//                    name="<html><b>"+type.getName()+"</b></html>";
+//                }
+                lafMI.setText(name);
+                lafMI.setActionCommand(ActionCmd.create(ActionCmdType.LOOKANDFEEL, type).toString());
+                lafMI.addActionListener(actionListener);
+                //lafMI.setEnabled(lafEnabled);
+            }
         }
         lafMenu.add(new JSeparator());
         {
             JMenuItem lafMI = new JMenuItem();
             lafMenu.add(lafMI);
             lafMI.setText("Save Look and Feel");
-            lafMI.setActionCommand(ActionCmdType.SAVE_LOOKANDFEEL.toString());
+            lafMI.setActionCommand(ActionCmdType.SAVE_SETTINGS.toString());
             lafMI.addActionListener(actionListener);
         }
         return lafMenu;

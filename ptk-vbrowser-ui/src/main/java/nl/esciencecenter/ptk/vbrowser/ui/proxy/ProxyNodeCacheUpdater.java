@@ -33,7 +33,7 @@ public class ProxyNodeCacheUpdater implements VRSEventListener {
                     factory.refreshChilds(parentVrl);
                 }
                 for (VRL vrl : vrls) {
-                    factory.refreshNode(vrl);
+                    factory.clearCache(vrl);
                 }
                 break;
             }

@@ -43,15 +43,17 @@ public class ActionMenu extends JPopupMenu {
     /**
      * @param browserPlatform
      * @param actionListener
-     * @param viewComp         ViewComponent from which the pop-up click occured.
+     * @param viewComp         ViewComponent from which the pop-up click occurred.
      * @param actionSourceNode actual ViewNode under click
      * @param canvasMenu       whether this is a canvasClick
      * @return
      */
     public static ActionMenu createDefaultPopUpMenu(BrowserPlatform browserPlatform,
-                                                    ActionMenuListener actionListener, ViewNodeComponent viewComp,
-                                                    ViewNode actionSourceNode, boolean canvasMenu) {
-        ViewNodeContainer container = null;
+                                                    ActionMenuListener actionListener,
+                                                    ViewNodeComponent viewComp,
+                                                    ViewNode actionSourceNode,
+                                                    boolean canvasMenu) {
+        ViewNodeContainer container;
 
         if (viewComp instanceof ViewNodeContainer) {
             container = (ViewNodeContainer) viewComp;
@@ -59,7 +61,7 @@ public class ActionMenu extends JPopupMenu {
             container = viewComp.getViewContainer();
         }
 
-        ViewNode containerNode = null;
+        ViewNode containerNode;
 
         if (container == null) {
             if (canvasMenu) {
@@ -76,13 +78,13 @@ public class ActionMenu extends JPopupMenu {
         ActionMenu menu = new ActionMenu(browserPlatform, viewComp, actionSourceNode,
                 actionListener);
 
-        ViewNode[] selections = null;
+        List<ViewNode> selections = null;
         if ((canvasMenu) && (container != null)) {
             selections = container.getNodeSelection();
         }
 
-        boolean hasSelection = ((selections != null) && (selections.length > 0));
-        boolean multiSelection = ((selections != null) && (selections.length > 1));
+        boolean hasSelection = ((selections != null) && (selections.size() > 0));
+        boolean multiSelection = ((selections != null) && (selections.size() > 1));
 
         String nodeMimeType = null;
 
@@ -109,7 +111,6 @@ public class ActionMenu extends JPopupMenu {
         {
             JMenu openMenu = new JMenu("Open in");
             menu.add(openMenu);
-
             openMenu.add(menu.createItem(container, "New Window", ActionCmdType.OPEN_IN_NEW_WINDOW));
             openMenu.add(menu.createItem(container, "New Tab", ActionCmdType.OPEN_IN_NEW_TAB));
         }
@@ -141,10 +142,19 @@ public class ActionMenu extends JPopupMenu {
         // Delete/rename
         // ---------------
 
+
         if (multiSelection) {
-            menu.add(menu.createItem(container, "Delete All", ActionCmdType.DELETE_SELECTION));
+            menu.add(menu.createItem(container, "Delete Selected", ActionCmdType.DELETE_SELECTION));
         } else {
-            menu.add(menu.createItem(container, "Delete", ActionCmdType.DELETE));
+            if (canvasMenu) {
+                menu.add(menu.createItem(container, "Delete", ActionCmdType.DELETE));
+            } else {
+                if (actionSourceNode.isComposite()) {
+                    menu.add(menu.createItem(container, "Delete Recursive", ActionCmdType.DELETE_RECURSIVE));
+                } else {
+                    menu.add(menu.createItem(container, "Delete", ActionCmdType.DELETE));
+                }
+            }
             menu.add(menu.createItem(container, "Rename", ActionCmdType.RENAME));
         }
 
@@ -152,20 +162,16 @@ public class ActionMenu extends JPopupMenu {
         menu.add(new JSeparator());
         {
             JMenuItem item;
-            String name = "Copy";
-            if (multiSelection) {
-                name = "Copy All";
-            }
 
-            menu.add(item = menu.createItem(container, name, ActionCmdType.COPY_SELECTION));
+            if (!multiSelection) {
+                menu.add(item = menu.createItem(container, "Copy", ActionCmdType.COPY));
+            } else {
+                menu.add(item = menu.createItem(container, "Copy All", ActionCmdType.COPY_SELECTION));
+            }
 
             // enable copy in canvas menu only when there is something selected
             if (canvasMenu) {
-                if (hasSelection) {
-                    item.setEnabled(true);
-                } else {
-                    item.setEnabled(false);
-                }
+                item.setEnabled(hasSelection);
             }
 
             menu.add(menu.createItem(container, "Paste", ActionCmdType.PASTE));
@@ -257,7 +263,7 @@ public class ActionMenu extends JPopupMenu {
      * Translates pop action events to MenuActions and invokes them on the ActionMenuListener.
      */
     public class PopupHandler implements ActionListener {
-        private ActionMenuListener menuActionListener;
+        private final ActionMenuListener menuActionListener;
 
         public PopupHandler(ActionMenuListener listener) {
             this.menuActionListener = listener;
@@ -328,8 +334,8 @@ public class ActionMenu extends JPopupMenu {
         mitem.setText(name);
 
         Font f = mitem.getFont();
-        int style = f.getStyle() | ITALIC | BOLD ;
-        Font newF =new Font(f.getName(),style,f.getSize());
+        int style = f.getStyle() | ITALIC | BOLD;
+        Font newF = new Font(f.getName(), style, f.getSize());
         mitem.setFont(newF);
 
         mitem.setActionCommand(new ActionCmd(eventSource, actionMeth, arguments).toString());

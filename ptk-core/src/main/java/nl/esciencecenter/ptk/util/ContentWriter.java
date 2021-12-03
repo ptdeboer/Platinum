@@ -12,9 +12,9 @@ import java.util.Properties;
  */
 public class ContentWriter implements Writable {
 
-    private boolean autoClose;
-    private OutputStream outputStream;
-    private String charEncoding;
+    private final boolean autoClose;
+    private final OutputStream outputStream;
+    private final String charEncoding;
 
     public ContentWriter(OutputStream outps) {
         this.outputStream = outps;

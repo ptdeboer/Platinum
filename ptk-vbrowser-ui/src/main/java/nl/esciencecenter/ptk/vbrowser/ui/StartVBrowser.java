@@ -24,8 +24,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
-import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
-import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
@@ -39,7 +37,6 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  */
 public class StartVBrowser {
 
-
     public static void main(String[] args) {
         try {
             new StartVBrowser().start(args);
@@ -48,15 +45,15 @@ public class StartVBrowser {
         }
     }
 
-    public static BrowserPlatform getPlatform() {
-        // vbrowser
-        return BrowserPlatform.getInstance("vbrowser");
-    }
-
     private static void handleError(String message, Throwable e) {
         // assume no logging framework available:
         System.err.printf("Exception:%s:%s\n", message, e);
         e.printStackTrace();
+    }
+
+    public static BrowserPlatform getBrowserPlatform() {
+        // BrowserPlatform
+        return BrowserPlatform.getInstance("vbrowser");
     }
 
     // ===
@@ -90,23 +87,24 @@ public class StartVBrowser {
     public ProxyBrowserController start(String[] args) {
 
         try {
-            // BrowserPlatform
-            BrowserPlatform platform = getPlatform();
+            BrowserPlatform platform=getBrowserPlatform();
 
-            // VRSContext
+            // Default VRSContext
             VRSContext context = platform.getVRSContext();
 
-            // Setting the persistant configuration location before initializing the plugins allow
+            // Setting the persistent configuration location before initializing the plugins allow
             // the plugins to read from the configuration, but not already writing to it.
             VRL config = context.getHomeVRL().resolvePath(confDir);
-            platform.setPersistantConfigLocation(config, false);
+            platform.setPersistentConfigLocation(config, false);
 
             // Init VRSRegistry/VRSPlugins
-            initVRSPlugins(context, vrsClasses);
-            initVRSViewers(platform, this.viewers);
+            registerVRSPlugins(context, vrsClasses);
+            registerVRSViewers(platform, this.viewers);
 
-            // Now enable location to load()/save
-            platform.setPersistantConfigLocation(config, true);
+            // Now enable location to load()/save configurations.
+            platform.setPersistentConfigLocation(config, true);
+            platform.loadUIProperties();
+            platform.initLookAndFeel();
 
             // ProxyBrowser
             ProxyBrowserController browser = (ProxyBrowserController) platform.createBrowser();
@@ -117,14 +115,18 @@ public class StartVBrowser {
             InfoRootNode rootNode = fac.getVRSClient().getInfoRootNode();
             rootNode.loadPersistantConfig();
 
-            if (defaultLinks != null) {
+            // Add optional 'Favorites' if it doesn't exist yet
+            String myLinksName = "Favorites";
+            boolean myLinksExists = rootNode.getSubNodes().stream()
+                    .anyMatch(n -> n.getName().equals(myLinksName));
+
+            if ((defaultLinks != null) && (!myLinksExists)) {
                 for (String[] link : defaultLinks) {
-                    // Add default links, will be ignored if already exists.
-                    rootNode.addResourceLink("My Links", link[0], new VRL(link[1]), null, false);
+                    rootNode.addResourceLink(myLinksName, link[0], new VRL(link[1]), true, null, false);
                 }
             }
 
-            // main location to start browsing:
+            // Main virtual root to browsing. Use the 'info' system resource:
             ProxyNode root = fac.openLocation("info:/");
             browser.setRoot(root, true, true);
 
@@ -135,7 +137,7 @@ public class StartVBrowser {
         }
     }
 
-    public void initVRSPlugins(VRSContext context, Class<? extends VResourceSystemFactory>[] vrsClasses) {
+    public void registerVRSPlugins(VRSContext context, Class<? extends VResourceSystemFactory>[] vrsClasses) {
         if (vrsClasses == null) {
             return;
         }
@@ -148,7 +150,7 @@ public class StartVBrowser {
         }
     }
 
-    public void initVRSViewers(BrowserPlatform platform, Class<? extends ViewerPlugin>[] viewers) {
+    public void registerVRSViewers(BrowserPlatform platform, Class<? extends ViewerPlugin>[] viewers) {
         if (viewers == null) {
             return;
         }

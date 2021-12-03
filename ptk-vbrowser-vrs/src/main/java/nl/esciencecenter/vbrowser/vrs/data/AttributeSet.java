@@ -429,14 +429,14 @@ public class AttributeSet extends HashMapList<String, Attribute> implements Seri
         //
         int numChanged = 0;
         int index = 0;
-        for (String key:keySet()) {
+        for (String key : keySet()) {
             if (this.get(key).hasChanged() == true) {
                 numChanged++;
             }
         }
         //
         Attribute[] attrs = new Attribute[numChanged];
-        for (String key:keySet()) {
+        for (String key : keySet()) {
             if (this.get(key).hasChanged() == true) {
                 attrs[index++] = this.get(key);
             }

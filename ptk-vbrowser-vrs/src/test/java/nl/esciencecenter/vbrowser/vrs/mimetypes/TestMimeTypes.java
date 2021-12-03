@@ -19,6 +19,12 @@ public class TestMimeTypes {
 
     }
 
+    @Test
+    public void testMediaPlayerMimeTypes() {
+        MimeTypes mimeTypes = new MimeTypes();
+        assertMimeType(mimeTypes, "test.mp4", "video/mp4");
+    }
+
     protected void assertMimeType(MimeTypes mimeTypes, String filename, String expected) {
 
         String mimeType = mimeTypes.getMimeType(filename);

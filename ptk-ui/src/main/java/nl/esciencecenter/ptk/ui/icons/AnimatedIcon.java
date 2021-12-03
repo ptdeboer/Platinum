@@ -112,10 +112,7 @@ public class AnimatedIcon implements Icon, Serializable {
      * @param speed
      */
     public void setAnimationSpeed(double speed) {
-        boolean inverse = false;
-
-        if ((speed > 0) && (animationSpeed < 0) || (speed < 0) && (animationSpeed > 0))
-            inverse = true;
+        boolean inverse = (speed > 0) && (animationSpeed < 0) || (speed < 0) && (animationSpeed > 0);
 
         this.animationSpeed = speed;
 

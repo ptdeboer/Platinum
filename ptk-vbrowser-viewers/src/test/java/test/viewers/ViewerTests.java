@@ -7,6 +7,7 @@ import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.events.ViewerEventDispatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
 import nl.esciencecenter.vbrowser.vrs.VRS;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
@@ -15,8 +16,7 @@ public class ViewerTests {
 
     public static PluginRegistry getViewerRegistry() {
         if (viewerRegistry == null) {
-            viewerRegistry = new PluginRegistry(new ViewerResourceLoader(VRS.createVRSClient(),
-                    null));
+            viewerRegistry = new PluginRegistry(new ViewerResourceLoader(new VRSContext(),null));
         }
 
         return viewerRegistry;

@@ -54,7 +54,7 @@ public class StringUtil {
      * @return true when string is null or empty ("")
      */
     public static boolean isEmpty(String str) {
-        return ((str == null) || (str.length()==0));
+        return ((str == null) || (str.length() == 0));
     }
 
     public static boolean notEmpty(String str) {

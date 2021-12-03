@@ -41,9 +41,7 @@ import java.security.NoSuchAlgorithmException;
 public class StringHasher implements Cloneable, Duplicatable<StringHasher> {
 
     public final static String SHA_256 = "SHA-256";
-
     public final static String SHA_1 = "SHA-1";
-
     public final static String MD5 = "MD5";
 
     // ========================================================================

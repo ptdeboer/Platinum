@@ -26,11 +26,11 @@ public class InfoRegistrySaver {
 
     private final static String PERSISTANT_CONFIG_ID = "persistant-config-id";
 
-    private ResourceSystemInfoRegistry infoRegistry;
+    private final ResourceSystemInfoRegistry infoRegistry;
 
-    private VRL configDir;
+    private final VRL configDir;
 
-    private String fileName;
+    private final String fileName;
 
     public InfoRegistrySaver(ResourceSystemInfoRegistry registry, VRL cfgDir, String fileName) {
         this.infoRegistry = registry;

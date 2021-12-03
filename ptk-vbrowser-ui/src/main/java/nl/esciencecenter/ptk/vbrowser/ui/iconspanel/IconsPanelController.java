@@ -26,9 +26,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
 public class IconsPanelController implements ViewNodeActionListener {
-    private BrowserInterface browser;
 
-    private IconsPanel iconsPanel;
+    private final BrowserInterface browser;
+    private final IconsPanel iconsPanel;
 
     public IconsPanelController(BrowserInterface browser, IconsPanel iconsPanel) {
         this.browser = browser;

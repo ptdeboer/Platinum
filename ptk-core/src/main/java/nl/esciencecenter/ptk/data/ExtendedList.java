@@ -31,12 +31,6 @@ import java.util.*;
  */
 public class ExtendedList<T> extends ArrayList<T> implements Cloneable, Serializable {
 
-    // ========================================================================
-    //
-    // ========================================================================
-
-    protected boolean allowNull = true;
-
     /**
      * Construct list from Array. Creates new backing array, does not copy/clone the elements.
      */

@@ -48,10 +48,10 @@ import java.awt.event.ActionListener;
 public class BrowserFrame extends JFrame {
 
     // Main Components/Managers
-    private BrowserInterface browserController;
+    private final BrowserInterface browserController;
     private ResourceTree uiResourceTree;
     private NavigationBar uiNavigationBar;
-    private ActionListener menuActionListener;
+    private final ActionListener menuActionListener;
     private BrowserJTabbedPaneController tabManager;
 
     // Main Panels/Panes:
@@ -112,7 +112,7 @@ public class BrowserFrame extends JFrame {
                             viewToolBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons_small.png"));
-                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString() + ":16");
+                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS + ":16");
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -121,7 +121,7 @@ public class BrowserFrame extends JFrame {
                             viewToolBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons.png"));
-                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString() + ":48");
+                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS + ":48");
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -130,7 +130,7 @@ public class BrowserFrame extends JFrame {
                             viewToolBar.add(uiViewAsIconsBtn);
                             // viewAsIconsBut.setText("IC");
                             uiViewAsIconsBtn.setIcon(loadIcon("menu/viewasicons_big.png"));
-                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS.toString() + ":96");
+                            uiViewAsIconsBtn.setActionCommand(ActionCmdType.VIEW_AS_ICONS + ":96");
                             uiViewAsIconsBtn.addActionListener(menuActionListener);
                             // uiViewAsIconsBtn.setToolTipText(Messages.TT_VIEW_AS_ICONS);
                         }
@@ -169,8 +169,9 @@ public class BrowserFrame extends JFrame {
                 {
 
                     this.uiLeftTabPane = new JTabbedPane();
+                    this.uiLeftTabPane.setFocusable(true);
                     this.uiLeftScrollPane = new JScrollPane();
-                    this.uiLeftTabPane.add(uiLeftScrollPane);
+                    this.uiLeftTabPane.addTab("Resources", uiLeftScrollPane);
                     this.uiMainSplitPane.add(this.uiLeftTabPane, JSplitPane.LEFT);
                     {
                         // no data source during initialization !
@@ -199,11 +200,11 @@ public class BrowserFrame extends JFrame {
         this.setSize(1000, 600);
     }
 
-    protected IconsPanel getIconsPanel() {
-        return getIconsPanel(true);
+    protected IconsPanel getCurrentIconsPanel(boolean create) {
+        return getCreateIconsPanel(create);
     }
 
-    protected IconsPanel getIconsPanel(boolean autoCreate) {
+    protected IconsPanel getCreateIconsPanel(boolean autoCreate) {
         TabContentPanel currentTab = tabManager.getCurrentTab();
         if (currentTab == null) {
             if (autoCreate == false) {
@@ -273,7 +274,12 @@ public class BrowserFrame extends JFrame {
         return;
     }
 
-    public ResourceTree getResourceTree() {
+    /**
+     * Currently only one.
+     *
+     * @return ResourceTree
+     */
+    public ResourceTree getCurrentResourceTree() {
         return this.uiResourceTree;
     }
 
@@ -286,8 +292,6 @@ public class BrowserFrame extends JFrame {
         TabContentPanel tab = tabManager.getCurrentTab();
         if (tab != null)
             return tab.getViewNode();
-        // EMPTY TABS!
-        // this.uiResourceTree.getSel
         return null;
     }
 
@@ -306,11 +310,11 @@ public class BrowserFrame extends JFrame {
             case ICONS16:
             case ICONS48:
             case ICONS96:
-                this.getIconsPanel(true).updateUIModel(UIViewModel.createIconsModel(mode.getIconSize()));
+                this.getCurrentIconsPanel(true).updateUIModel(UIViewModel.createIconsModel(mode.getIconSize()));
                 break;
             case ICONLIST16:
             case ICONSLIST48:
-                this.getIconsPanel(true).updateUIModel(UIViewModel.createIconsListModel(mode.getIconSize()));
+                this.getCurrentIconsPanel(true).updateUIModel(UIViewModel.createIconsListModel(mode.getIconSize()));
                 break;
             case TABLE:
                 this.updateTableTab(true, this.getViewedProxyNode());

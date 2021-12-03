@@ -30,10 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Properties;
 
 /**
  * Generic ResourceLoader class which supports (relative) URIs and URLs. It is recommended to use
@@ -147,10 +146,12 @@ public class ResourceLoader {
             // (III) keep absolute url as is:
             if (resolvedUrl == null) {
                 try {
-                    URL url2 = new URL(urlStr);
-                    resolvedUrl = url2;
-                } catch (MalformedURLException e) {
-                    log.warn("resolveURL() IV: Not an absolute url:{}", urlStr);
+                    URI uri = new URI(urlStr);
+                    if (uri.isAbsolute()) {
+                        resolvedUrl = uri.toURL();
+                    } // else do not use here.
+                } catch (MalformedURLException | URISyntaxException e) {
+                    log.warn("resolveURL() IV: url is not absolute or malformed:'{}; => {}", urlStr, e);
                 }
             }
 
@@ -296,27 +297,6 @@ public class ResourceLoader {
             return resourceProvider.createOutputStream(uri);
         } catch (Exception e) {
             throw new IOException("Cannot get inputstream from" + uri + "\n" + e.getMessage(), e);
-        }
-    }
-
-    // =================================================================
-    // Properties
-    // =================================================================
-
-    /**
-     * Load properties file from specified location.<br>
-     */
-    public Properties loadProperties(URL url) throws IOException {
-        return new ContentReader(this.createInputStream(url), true).loadProperties();
-    }
-
-    /**
-     * Save properties file to specified location.
-     */
-    public void saveProperties(URL loc, Properties props, String comments) throws IOException {
-        try (OutputStream outps = createOutputStream(loc)) {
-            props.store(outps, comments);
-            outps.flush();
         }
     }
 

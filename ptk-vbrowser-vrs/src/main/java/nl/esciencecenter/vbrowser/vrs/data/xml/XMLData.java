@@ -202,7 +202,7 @@ public class XMLData {
             xml = xmlMapper.writeValueAsString(xmlNode);
             return xml;
         } catch (JsonProcessingException e) {
-            throw new VrsIOException(e.getMessage(),e);
+            throw new VrsIOException(e.getMessage(), e);
         }
     }
 

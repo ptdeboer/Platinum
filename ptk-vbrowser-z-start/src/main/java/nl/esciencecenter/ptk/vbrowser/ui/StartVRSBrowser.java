@@ -21,7 +21,6 @@
 package nl.esciencecenter.ptk.vbrowser.ui;
 
 import nl.esciencecenter.ptk.GlobalProperties;
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.ProxyBrowserController;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.viewers.ProxyPropertiesEditor;
 import nl.esciencecenter.ptk.vbrowser.ui.tool.vtermstarter.VTermStarter;
@@ -49,13 +48,9 @@ public class StartVRSBrowser {
 
         String[][] links = new String[][]{
                 {"Root:/", "file:///"},
-                {"Home:~/", "file:///"+ GlobalProperties.getGlobalUserHome()},
+                {"Home:~/", "file:///" + GlobalProperties.getGlobalUserHome()},
                 {"sftp://localhost/", "sftp://localhost/"}
         };
-
-        // Static platform available pre-initailization.
-        BrowserPlatform platform = new StartVBrowser().getPlatform();
-        // Legacy static bindings:
 
         ProxyBrowserController browser = new StartVBrowser()
                 .withVRSPlugins(createVRSPlugins())
@@ -70,17 +65,16 @@ public class StartVRSBrowser {
     public Class<? extends VResourceSystemFactory>[] createVRSPlugins() {
         List<Class<? extends VResourceSystemFactory>> vrsFactories = new ArrayList<>();
         vrsFactories.add(SftpFileSystemFactory.class);
-//        vrsFactories.add(nl.esciencecenter.ptk.vbrowser.viewers.loboviewer.resfs.ResFS.class);
         return vrsFactories.toArray(new Class[0]);
     }
 
     /**
      * Register internal Viewers/Plugins:
+     *
      * @return
      */
     public Class<? extends ViewerPlugin>[] createViewerPlugins() {
         List<Class<? extends ViewerPlugin>> viewers = new ArrayList<>();
-//        viewers.add(LoboBrowser.class);
         viewers.add(VTermStarter.class);
         // internals:
         viewers.add(ProxyPropertiesEditor.class);

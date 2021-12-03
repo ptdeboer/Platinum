@@ -65,7 +65,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
     /**
      * The mimetypes i can view
      */
-    private static String[] mimeTypes = {MimeTypes.MIME_TEXT_PLAIN, MimeTypes.MIME_TEXT_HTML, "text/x-c",
+    private static final String[] mimeTypes = {MimeTypes.MIME_TEXT_PLAIN, MimeTypes.MIME_TEXT_HTML, "text/x-c",
             "text/x-cpp", "text/x-java", "application/x-sh", "application/x-csh", "application/x-shellscript",
             // MimeTypes.MIME_BINARY, -> Now handled by MimeType mapping!
             "application/vlet-type-definition",
@@ -82,7 +82,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
 
     private boolean muststop = false;
 
-    private Properties configProperties = new Properties();
+    private final Properties configProperties = new Properties();
 
     // =======================================================================
     // =======================================================================
@@ -263,7 +263,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
                 toolPanel.setLayout(new FlowLayout());
                 // // Font Toolbar
                 {
-                    this.fontToolbar = new FontToolBar(this);
+                    this.fontToolbar = new FontToolBar(this, 16,24);
                     toolPanel.add(fontToolbar);
                 }
                 {

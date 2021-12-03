@@ -20,16 +20,13 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.browser;
 
-import ch.randelshofer.quaqua.snow_leopard.Quaqua16SnowLeopardLookAndFeel;
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import com.seaglasslookandfeel.SeaGlassLookAndFeel;
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.ui.icons.IconProvider;
 import nl.esciencecenter.ptk.util.ResourceLoader;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.laf.LookAndFeelType;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.DnDUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
+import nl.esciencecenter.ptk.vbrowser.ui.properties.UIPropertiesSaver;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactoryRegistry;
 import nl.esciencecenter.ptk.vbrowser.viewers.PluginRegistry;
@@ -40,6 +37,8 @@ import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 import nl.esciencecenter.vbrowser.vrs.VResourceSystemFactory;
 import nl.esciencecenter.vbrowser.vrs.event.VRSEventNotifier;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import javax.swing.*;
@@ -49,15 +48,17 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import static nl.esciencecenter.ptk.vbrowser.ui.browser.laf.LookAndFeelType.NATIVE;
+
 /**
- * Browser Platform. Typically one Platform instance per application environment is created.
+ * Browser Platform. Typically, one Platform instance per application environment is created.
  * The BrowserPlatform object contains all configurable context(s) in an non static environment.
- * The main context object is VRSContext.
+ * The main backing context object is VRSContext, which is also a singleton per platform.
  */
 @Slf4j
 public class BrowserPlatform {
 
-    private static Map<String, BrowserPlatform> platforms = new Hashtable<String, BrowserPlatform>();
+    private static final Map<String, BrowserPlatform> platforms = new Hashtable<>();
 
     /**
      * Get specific BrowserPlatform. Multiple browser platforms may be register/created in one
@@ -73,7 +74,6 @@ public class BrowserPlatform {
                 try {
                     instance = new BrowserPlatform(instanceId);
                     platforms.put(instanceId, instance);
-                    instance.switchLookAndFeelType(LookAndFeelType.NIMBUS);
                 } catch (Exception e) {
                     log.error("FATAL: Could not initialize browser platform:'{}'!", instanceId);
                     log.error("Exception during initialization", e);
@@ -93,32 +93,30 @@ public class BrowserPlatform {
     private PluginRegistry viewerRegistry;
     private JFrame rootFrame;
     private IconProvider iconProvider;
-    //    private VRSContext vrsContext;
-    private VRSClient vrsClient;
+    private VRSContext vrsContext;
     private UIProperties guiSettings;
     private ViewerEventDispatcher viewerEventDispatcher;
-    private List<ProxyBrowserController> browsers = new ArrayList<ProxyBrowserController>();
+    private final List<ProxyBrowserController> browsers = new ArrayList<ProxyBrowserController>();
+    private UIPropertiesSaver uiPropertiesSaver;
 
     protected BrowserPlatform(String id) throws Exception {
         init(id);
     }
 
     private void init(String id) throws Exception {
-        this.platformID = id;
         // init defaults:
+        this.platformID = id;
         this.proxyRegistry = ProxyFactoryRegistry.createInstance();
 
         // ===================================
         // Init VRS Classes
         // ===================================
-
-        initVRSContext(null);
+        initVRSContext();
 
         // ===================================
         // Swing resources and producers
         // ===================================
-
-        guiSettings = new UIProperties();
+        this.uiPropertiesSaver = new UIPropertiesSaver(getVRSContext());
 
         // root Frame and Icon Renderer/provider:
         this.rootFrame = new JFrame();
@@ -126,25 +124,23 @@ public class BrowserPlatform {
         // ===================================
         // Init Viewers and ViewerPlugins.
         // ===================================
-
         this.viewerEventDispatcher = new ViewerEventDispatcher(true);
         initViewers();
     }
 
-    protected void initVRSContext(VRL cfgDir) throws Exception {
+    protected void initVRSContext() {
         VRSProperties props = new VRSProperties("VRSBrowserProperties");
-        VRSContext vrsContext = new VRSContext(props);
-        this.vrsClient = new VRSClient(vrsContext);
+        this.vrsContext = new VRSContext(props);
     }
 
-    public void setPersistantConfigLocation(VRL configHome, boolean enablePersistantConfig) {
+    public void setPersistentConfigLocation(VRL configHome, boolean enablePersistantConfig) {
         this.getVRSContext().setPersistantConfigLocation(configHome, enablePersistantConfig);
     }
 
     /**
      * @return persistent configuration directory where to store properties for example
-     * '$HOME/.mypropertiesrc/'. <br>
-     * Is null for non persistent platforms.
+     * '$HOME/.vrsrc/'. <br>
+     * Is null for non-persistent platforms.
      */
     public VRL getPersistantConfigLocation() {
         return this.getVRSContext().getPersistantConfigLocation();
@@ -152,13 +148,13 @@ public class BrowserPlatform {
 
     protected void initViewers() throws Exception {
         // create custom sub-directory for viewer settings. 
-        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsClient, "viewers");
+        ViewerResourceLoader resourceHandler = new ViewerResourceLoader(vrsContext, "viewers");
         // Viewer Registry for this Platform:
         this.viewerRegistry = new PluginRegistry(resourceHandler);
     }
 
     public VRSContext getVRSContext() {
-        return vrsClient.getVRSContext();
+        return vrsContext;
     }
 
     public void registerVRSFactory(Class<? extends VResourceSystemFactory> clazz) throws Exception {
@@ -224,7 +220,7 @@ public class BrowserPlatform {
         // lazy loading:
         synchronized (this) {
             if (this.iconProvider == null) {
-                this.iconProvider = new IconProvider(rootFrame, new ResourceLoader(vrsClient));
+                this.iconProvider = new IconProvider(rootFrame, new ResourceLoader(new VRSClient(vrsContext)));
             }
         }
 
@@ -262,7 +258,7 @@ public class BrowserPlatform {
         log.debug("{}:unregister():{}", this, browser);
         this.browsers.remove(browser);
         if (this.browsers.size() <= 0) {
-            log.info(">>> Closed *last* browser for this Platform:{}", this.getPlatformID());
+            log.info("Closed last browser for this Platform:{}. Initiating shutdown.", this.getPlatformID());
             shutDown();
         }
     }
@@ -274,30 +270,43 @@ public class BrowserPlatform {
                 "                                   \n";
     }
 
-    public void switchLookAndFeelType(LookAndFeelType lafType) {
-        if (!SwingUtilities.isEventDispatchThread()) {
-            log.info("switchLookAndFeelType():{} => invokeLater()!", lafType);
+    public void initLookAndFeel() {
+        if (this.getGuiSettings().getLaFEnabled()) {
+            this.switchLookAndFeelType(rootFrame, guiSettings.getLAFType(),true);
+        }
+    }
 
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    switchLookAndFeelType(lafType);
-                }
-            });
-            return;
-        } else {
-            log.info("switchLookAndFeelType():{}", lafType);
+    public void switchLookAndFeelType(JFrame browserFrame, LookAndFeelType lafType, boolean enable) {
+
+
+//        if (!SwingUtilities.isEventDispatchThread()) {
+//            log.info("switchLookAndFeelType():{} => invokeLater()!", lafType);
+//
+//            SwingUtilities.invokeLater(new Runnable() {
+//                @Override
+//                public void run() {
+//                    switchLookAndFeelType(lafType);
+//                }
+//            });
+//            return;
+//        } else {
+//            log.info("switchLookAndFeelType():{}", lafType);
+//        }
+
+        if ((lafType==null) || (!enable)) {
+            // switch back for now and disable.
+            lafType=NATIVE;
         }
 
         try {
             switch (lafType) {
-                case DEFAULT:
-                case METAL:
-                    // "javax.swing.plaf.metal.MetalLookAndFeel"
-                    javax.swing.UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                    break;
                 case NATIVE:
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    break;
+                case DEFAULT:
+                case METAL:
+                    // On linux this is also default:
+                    UIManager.setLookAndFeel(javax.swing.plaf.metal.MetalLookAndFeel.class.getCanonicalName());
                     break;
                 case WINDOWS:
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -305,33 +314,67 @@ public class BrowserPlatform {
                 case GTK:
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
                     break;
-                case KDEQT:
-                    //org.freeasinspeech.kdelaf.KdeLAF
-                    break;
-                case PLASTIC_3D:
-                    UIManager.setLookAndFeel(Plastic3DLookAndFeel.class.getCanonicalName());
-                    break;
-                case PLASTIC_XP:
-                    UIManager.setLookAndFeel(PlasticXPLookAndFeel.class.getCanonicalName());
-                    break;
-                case QUAQUA:
-                    UIManager.setLookAndFeel(Quaqua16SnowLeopardLookAndFeel.class.getCanonicalName());
-                    break;
+//                case PLASTIC_3D:
+//                    UIManager.setLookAndFeel(Plastic3DLookAndFeel.class.getCanonicalName());
+//                    break;
+//                case PLASTIC_XP:
+//                    UIManager.setLookAndFeel(PlasticXPLookAndFeel.class.getCanonicalName());
+//                    break;
                 case NIMBUS:
                     UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
                     break;
-                case SEAGLASS:
-                    UIManager.setLookAndFeel(SeaGlassLookAndFeel.class.getCanonicalName());
+//                case SEAGLASS:
+//                    UIManager.setLookAndFeel(SeaGlassLookAndFeel.class.getCanonicalName());
+//                    break;
+                case MOTIF:
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
                     break;
                 default:
                     log.warn("Look and feel not recognised:{}", lafType);
-                    break;
+                    return;
+                //break;
             }
+            this.guiSettings.setLAFType(lafType);
+            SwingUtilities.updateComponentTreeUI(browserFrame);
+            browserFrame.pack();
+
         } catch (Exception e) {
             log.error("Failed to switch Look and Feel:" + lafType, e);
             e.printStackTrace();
         }
-        // load()/save()
+    }
+
+
+    // ==========================
+    // Persistent UI Properties.
+    // ==========================
+
+    /**
+     * Load/Reload properties. Call this again if persistent config settings have changed.
+     *
+     * @return
+     */
+    public UIProperties loadUIProperties() throws VrsException {
+        VRL propLoc=getGUISettingsLoc();
+        if (propLoc != null) {
+            if (new VRSClient(vrsContext).existsFile(propLoc)) {
+                this.guiSettings = uiPropertiesSaver.loadFrom(propLoc);
+                return this.guiSettings;
+            }
+        }
+        this.guiSettings = new UIProperties();
+        return guiSettings;
+    }
+
+    public void saveUIProperties() throws VrsException {
+        if (!getVRSContext().hasPersistantConfig()) {
+            return;
+        }
+        this.uiPropertiesSaver.saveProperties(this.guiSettings, getGUISettingsLoc());
+    }
+
+    public VRL getGUISettingsLoc() throws VRLSyntaxException {
+        return this.getVRSContext().getPersistantConfigLocation().resolvePath(this.platformID + ".props");
     }
     // ==============  
     // Dispose/Misc.
@@ -342,26 +385,33 @@ public class BrowserPlatform {
      */
     public void shutDown() {
         dispose();
+        // Use nano sleep to allow for thread switching and cleanup.
+        try {
+            Thread.sleep(0, 42);
+        } catch (InterruptedException e) {
+            log.warn("Interrupted during shutdown:" + e.getMessage(), e);
+        }
+        log.info("Post shutdown().");
     }
 
     /**
-     * Immediately close and dipsose all registered resources;
+     * Immediately close and dipspose all registered resources;
      */
     public void dispose() {
-        if (vrsClient != null) {
-            vrsClient.dispose();
-        }
-        if (getVRSContext() != null) {
-            getVRSContext().dispose();
+        if (rootFrame!=null) {
+            this.rootFrame.dispose();
         }
         this.viewerEventDispatcher.stop();
         this.viewerEventDispatcher.dispose();
-        this.vrsClient = null;
+
+        if (vrsContext != null) {
+            vrsContext.dispose();
+        }
+        this.vrsContext = null;
     }
 
     public String toString() {
         return "BrowserPlatform:[platformID='" + this.platformID + "']";
     }
-
 
 }

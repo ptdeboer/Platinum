@@ -20,8 +20,6 @@
 
 package nl.esciencecenter.vbrowser.vrs.exceptions;
 
-import java.io.IOException;
-
 /**
  * Super class of all VRS Exceptions.
  * <p>
@@ -74,7 +72,7 @@ public class VrsException extends Exception {
     }
 
     public String toStringPlusStacktrace() {
-        return this.toString() + "\n ---Stack Trace --- \n" + getChainedStackTraceText(this);
+        return this + "\n ---Stack Trace --- \n" + getChainedStackTraceText(this);
     }
 
     /**

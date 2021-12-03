@@ -97,7 +97,7 @@ public class GlobalProperties {
     /**
      * Private copy for non system properties
      */
-    private static Properties globalProperties = new Properties();
+    private static final Properties globalProperties = new Properties();
 
     /**
      * Dummy method. Call this method to initialize class loading. See static{...}

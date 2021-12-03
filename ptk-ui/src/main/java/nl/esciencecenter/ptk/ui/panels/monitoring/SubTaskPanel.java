@@ -47,7 +47,7 @@ public class SubTaskPanel extends JPanel implements ActionListener {
 
     private JPanel transferInfo;
 
-    private Presentation presentation = Presentation.createDefault();
+    private final Presentation presentation = Presentation.createDefault();
 
     private ITaskMonitor taskMonitor = null;
 

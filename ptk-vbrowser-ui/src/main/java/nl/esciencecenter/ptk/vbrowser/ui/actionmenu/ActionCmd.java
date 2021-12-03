@@ -92,7 +92,7 @@ public class ActionCmd {
         ActionCmd action = new ActionCmd(event.getSource(), ActionCmdType.createFrom(methodStr), parseArgs(argsStr));
         parseArgs(argsStr);
 
-        log.debug("ActionCmd.createFrom():'{}' => '{}'", cmdStr, action.toString());
+        log.debug("ActionCmd.createFrom():'{}' => '{}'", cmdStr, action);
         return action;
     }
 
@@ -149,6 +149,15 @@ public class ActionCmd {
 
     public static ActionCmd createGlobalAction(ActionCmdType meth) {
         ActionCmd action = new ActionCmd(null, meth);
+        return action;
+    }
+
+    public static ActionCmd createCustomAction(ActionCmdType cmdType, ViewNode node) {
+        String arg = null;
+        if (node != null) {
+            arg = node.getVRL().toString();
+        }
+        ActionCmd action = new ActionCmd(null, cmdType, arg);
         return action;
     }
 

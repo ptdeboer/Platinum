@@ -23,11 +23,11 @@ package nl.esciencecenter.vbrowser.vrs.exceptions;
 public class ValueParseException extends ValueException {
 
     public ValueParseException(String message, String valueStr) {
-        super("Value Parse exception for:" + valueStr+":"+message,null);
+        super("Value Parse exception for:" + valueStr + ":" + message, null);
     }
 
     public ValueParseException(String message, Throwable e, String valueStr) {
-        super("Value Parse exception for:" + valueStr+":"+message,e);
+        super("Value Parse exception for:" + valueStr + ":" + message, e);
     }
 
 }

@@ -21,24 +21,6 @@
 
 package tests.integration.vfs;
 
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_FILE_SIZE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_HOSTNAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_LOCATION;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_MIMETYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_NAME;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PATH;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_PORT;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_EXISTS;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_RESOURCE_TYPE;
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_SCHEME;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Random;
-
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.io.RandomReadable;
@@ -47,28 +29,29 @@ import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAccessDeniedException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceAlreadyExistsException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceCreationException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.ResourceException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
+import nl.esciencecenter.vbrowser.vrs.exceptions.*;
 import nl.esciencecenter.vbrowser.vrs.io.VReplicatable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamReadable;
 import nl.esciencecenter.vbrowser.vrs.io.VStreamWritable;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import tests.integration.vfs.Settings.TestLocation;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Random;
+
+import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
 
 /**
  * This is an abstract test class which must be subclassed by a VFS implementation.
- *
- *
  */
 public abstract class VFSTests extends VTestCase {
 
@@ -93,15 +76,15 @@ public abstract class VFSTests extends VTestCase {
 
     private boolean doBigTests = true;
 
-    private VRL localTempDirVrl = Settings.getTestLocation(TestLocation.VFS_LOCAL_TEMPDIR_LOCATION);
+    private final VRL localTempDirVrl = Settings.getTestLocation(TestLocation.VFS_LOCAL_TEMPDIR_LOCATION);
 
     private VRL remoteTestDirVrl = null;
 
-    private Object uniquepathnrMutex = new Object();
+    private final Object uniquepathnrMutex = new Object();
 
-    private Object setupMutex = new Object();
+    private final Object setupMutex = new Object();
 
-    private VRL otherRemoteLocation = null;
+    private final VRL otherRemoteLocation = null;
 
     private boolean testEncodedPaths = true;
 
@@ -140,7 +123,7 @@ public abstract class VFSTests extends VTestCase {
     }
 
     private void writeContents(VFSPath file, byte[] bytes) throws IOException, VrsException, URISyntaxException {
-        this.getVFS().writeContents(file,bytes); 
+        this.getVFS().writeContents(file, bytes);
     }
 
     private void streamWrite(VFSPath file, byte[] buffer, int bufOffset, int numBytes) throws IOException, VrsException {
@@ -166,7 +149,7 @@ public abstract class VFSTests extends VTestCase {
      */
     @Before
     public void setUpTestEnv() throws Exception {
-        
+
         debugPrintf("setUp(): Checking remote test location:%s\n", getRemoteLocation());
         checkAuthentication();
 
@@ -243,7 +226,7 @@ public abstract class VFSTests extends VTestCase {
     }
 
     protected void checkAuthentication() throws Exception {
-        ; // check here
+        // check here
     }
 
     @After
@@ -312,7 +295,6 @@ public abstract class VFSTests extends VTestCase {
      * <p>
      * The exists() methods should return true if resource exists, false if it doesn't exists and only throw an exception when the
      * method couldn't determine whether the resource exists or not.
-     *
      */
     @Test
     public void testExists() throws Exception {
@@ -363,9 +345,9 @@ public abstract class VFSTests extends VTestCase {
         VFileSystem fs = dir.getFileSystem();
         //
         VFSPath resolved = fs.resolve("~/someDirectory");
-        Assert.assertNotNull("Tilde should be allowed as character in path",resolved);
+        Assert.assertNotNull("Tilde should be allowed as character in path", resolved);
         //
-        for (String tildePath : new String[] { "~","~/" }) {
+        for (String tildePath : new String[]{"~", "~/"}) {
 
             VFSPath node = fs.resolve(tildePath);
             VRL homeVrl = getVRSContext().getHomeVRL();
@@ -376,7 +358,7 @@ public abstract class VFSTests extends VTestCase {
                         homeVrl, node.getVRL());
             }
 
-            Assert.assertTrue("Default HOME reports is does not exist (SRB might do this):'"+tildePath+"' => '" + node + "'", node.exists());
+            Assert.assertTrue("Default HOME reports is does not exist (SRB might do this):'" + tildePath + "' => '" + node + "'", node.exists());
             messagePrintf("Tilde expansion of '/~' => '%s'\n", node.getVRL().getPath());
         }
 
@@ -935,7 +917,7 @@ public abstract class VFSTests extends VTestCase {
 
         int len = 1024 * 1024 + 1024;
 
-        char chars[] = new char[len];
+        char[] chars = new char[len];
 
         for (int i = 0; i < len; i++) {
             chars[i] = (char) ('A' + (i % 26));
@@ -981,7 +963,7 @@ public abstract class VFSTests extends VTestCase {
 
         int len = 1024 * 1024 + 1024;
 
-        char chars[] = new char[len];
+        char[] chars = new char[len];
 
         for (int i = 0; i < len; i++) {
             chars[i] = (char) ('A' + (i % 26));
@@ -1051,7 +1033,7 @@ public abstract class VFSTests extends VTestCase {
 
             // create random file: fixed seed for reproducable tests
             Random generator = new Random(13);
-            byte buffer[] = new byte[size];
+            byte[] buffer = new byte[size];
             generator.nextBytes(buffer);
             verbose(1, "streamWriting to localfile:" + localFile);
             streamWrite(localFile, buffer, 0, buffer.length);
@@ -1102,7 +1084,7 @@ public abstract class VFSTests extends VTestCase {
 
             // check contents:
 
-            byte newcontents[] = readContents(newLocalFile);
+            byte[] newcontents = readContents(newLocalFile);
             int newlen = newcontents.length;
             // check size:
             Assert.assertEquals("size of new contents does not match.", size, newlen);
@@ -1147,7 +1129,7 @@ public abstract class VFSTests extends VTestCase {
             // fixed seed for reproducable tests
             Random generator = new Random(13);
 
-            byte buffer[] = new byte[len];
+            byte[] buffer = new byte[len];
             generator.nextBytes(buffer);
             verbose(1, "Creating local file");
             streamWrite(localFile, buffer, 0, buffer.length);
@@ -1159,7 +1141,7 @@ public abstract class VFSTests extends VTestCase {
             Assert.assertFalse("local file reports it still exists, after it has moved", localFile.exists());
 
             verbose(1, "Allocing new buffer, len=" + len);
-            byte newcontents[] = new byte[len];
+            byte[] newcontents = new byte[len];
 
             verbose(1, "Getting inputstream of:" + remoteFile);
             InputStream inps = getVFS().createInputStream(remoteFile);
@@ -1223,7 +1205,7 @@ public abstract class VFSTests extends VTestCase {
             // fixed seed for reproducable tests
             Random generator = new Random(13);
 
-            byte buffer[] = new byte[len];
+            byte[] buffer = new byte[len];
             generator.nextBytes(buffer);
 
             long read_start_time = System.currentTimeMillis();
@@ -1242,7 +1224,7 @@ public abstract class VFSTests extends VTestCase {
             Assert.assertFalse("remote file reports it still exists, after it has moved", remoteFile.exists());
 
             // get contents of localfile:
-            byte newcontents[] = readContents(localFile);
+            byte[] newcontents = readContents(localFile);
             int newlen = newcontents.length;
 
             // check size:
@@ -1275,7 +1257,7 @@ public abstract class VFSTests extends VTestCase {
         // fixed seed for reproducable tests!
         Random generator = new Random(45);
 
-        byte buffer[] = new byte[originalLength];
+        byte[] buffer = new byte[originalLength];
         generator.nextBytes(buffer);
         // use streamWrite for now:
         verbose(1, "streadWriting to:" + remoteFile);
@@ -1318,7 +1300,7 @@ public abstract class VFSTests extends VTestCase {
         Random generator = new Random(123123);
         VFSPath remoteFile = null;
 
-        byte buffer[] = new byte[maxSize];
+        byte[] buffer = new byte[maxSize];
         for (int i = 0; i < numTries; i++) {
             int testSize = generator.nextInt(maxSize);
             remoteFile = createRemoteFile("testStreamWriteTest-" + i, false);
@@ -1333,7 +1315,7 @@ public abstract class VFSTests extends VTestCase {
             Assert.assertEquals("LFC File size NOT correct", remoteFile.fileLength(), testSize);
 
             if (remoteFile instanceof VReplicatable) {
-                VRL reps[] = ((VReplicatable) remoteFile).getReplicas();
+                VRL[] reps = ((VReplicatable) remoteFile).getReplicas();
                 if ((reps == null) || (reps.length <= 0)) {
                     Assert.fail("No replicas for Replicatable File!");
                 }
@@ -1403,7 +1385,7 @@ public abstract class VFSTests extends VTestCase {
     public void testRandomReadable() throws Exception {
         VFSPath localFile = this.localTempDir.resolve("readBytesFile1");
         int len = 16;
-        byte orgBuffer[] = new byte[len];
+        byte[] orgBuffer = new byte[len];
 
         for (int i = 0; i < len; i++)
             orgBuffer[i] = (byte) (i);
@@ -1454,8 +1436,8 @@ public abstract class VFSTests extends VTestCase {
         rfile.delete();
     }
 
-    private void _testRandomReadable(RandomReadable rfile, int offset, int end, byte orgBuffer[]) throws Exception {
-        byte readBuffer[] = new byte[orgBuffer.length];
+    private void _testRandomReadable(RandomReadable rfile, int offset, int end, byte[] orgBuffer) throws Exception {
+        byte[] readBuffer = new byte[orgBuffer.length];
 
         int numread = rfile.readBytes(offset, readBuffer, offset, end - offset);
 
@@ -1549,12 +1531,12 @@ public abstract class VFSTests extends VTestCase {
 
         // write single byte:
 
-        byte buffer[] = new byte[] { 13 };
+        byte[] buffer = new byte[]{13};
         testReadWriteBytes(newFile, 0, buffer);
 
         // write array of bytes;
 
-        buffer = new byte[] { 42, 13, 1, 2, 3, 4, 5, 6, 7, 8, 0, 9 };
+        buffer = new byte[]{42, 13, 1, 2, 3, 4, 5, 6, 7, 8, 0, 9};
         testReadWriteBytes(newFile, 0, buffer);
 
         // >64k block
@@ -1583,7 +1565,6 @@ public abstract class VFSTests extends VTestCase {
      * Writes 1,11,64k+ and 1MB+ number of bytes useing writeBytes() and readBytes();
      *
      * @throws Exception
-     *
      */
     @Test
     public void testReadWriteRandomBytes() throws Exception {
@@ -1610,7 +1591,7 @@ public abstract class VFSTests extends VTestCase {
 
         // write small (#12) array of bytes;
         // include NEGATIVE number to test negative to postive
-        byte buffer1[] = new byte[] { 127, 42, 13, 1, 2, 3, 4, 5, 6, 7, 8, 0, 9, -1, -10, -126, -127, -128 };
+        byte[] buffer1 = new byte[]{127, 42, 13, 1, 2, 3, 4, 5, 6, 7, 8, 0, 9, -1, -10, -126, -127, -128};
         int nrBytes = buffer1.length;
 
         randomWriter.writeBytes(4, buffer1, 4, 4);
@@ -1619,7 +1600,7 @@ public abstract class VFSTests extends VTestCase {
         // write remainder:
         randomWriter.writeBytes(12, buffer1, 12, nrBytes - 12);
 
-        byte buffer2[] = new byte[nrBytes];
+        byte[] buffer2 = new byte[nrBytes];
 
         // use syncReadBytes!
         int numRead = IOUtil.readAll(randomReader, 0, buffer2, 0, nrBytes);
@@ -1669,7 +1650,7 @@ public abstract class VFSTests extends VTestCase {
                 partlen = maxlen - offset;
 
             // generate random bytes:
-            byte part[] = new byte[partlen];
+            byte[] part = new byte[partlen];
             generator.nextBytes(part);
 
             // write bytes:
@@ -1715,7 +1696,7 @@ public abstract class VFSTests extends VTestCase {
             return;
         }
 
-        byte buffer2[] = new byte[buffer1.length];
+        byte[] buffer2 = new byte[buffer1.length];
 
         int numBytes = buffer1.length;
 
@@ -1750,9 +1731,9 @@ public abstract class VFSTests extends VTestCase {
         // Also: for negative values <-128 the lowest significant byte is used
         // which
         // is a positive byte
-        int values[] = { 0, 1, 127, 128, 255, -1, -2, -126, -127, -128, -129, -130 };
+        int[] values = {0, 1, 127, 128, 255, -1, -2, -126, -127, -128, -129, -130};
         // positive (usigned byte) values of above integers !
-        int bytevals[] = { 0, 1, 127, 128, 255, 255, 254, 130, 129, 128, 127, 126 };
+        int[] bytevals = {0, 1, 127, 128, 255, 255, 254, 130, 129, 128, 127, 126};
 
         {
             remoteFile = this.createRemoteFile("single_byte", true);
@@ -1824,7 +1805,7 @@ public abstract class VFSTests extends VTestCase {
 
         int numFiles = 10;
 
-        String fileNames[] = new String[numFiles];
+        String[] fileNames = new String[numFiles];
 
         for (int i = 0; i < numFiles; i++) {
             fileNames[i] = "testFile" + i;
@@ -1930,7 +1911,7 @@ public abstract class VFSTests extends VTestCase {
     }
 
     private Attribute getFileAttribute(VFSPath file, String name) throws VrsException {
-        List<Attribute> attrs = file.getAttributes(new String[] { name });
+        List<Attribute> attrs = file.getAttributes(new String[]{name});
 
         if ((attrs == null) || (attrs.size() <= 0)) {
             Assert.fail("Mandatory Attribute not returned:" + name);
@@ -2032,7 +2013,7 @@ public abstract class VFSTests extends VTestCase {
             newFile = createRemoteFile("testFile1", false);
             Assert.fail("Should raise at least an Exception ");
         } catch (Exception e) {
-            ; // ok
+            // ok
         }
 
         newFile.delete();
@@ -2075,9 +2056,7 @@ public abstract class VFSTests extends VTestCase {
         try {
             newDir = createRemoteDir("testDir1", false);
             Assert.fail("Should raise and Exception. Preferably:" + ResourceCreationException.class);
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             debug("Caugh expected Exception:" + e);
             // Global.debugPrintStacktrace(e);
         }
@@ -2218,7 +2197,7 @@ public abstract class VFSTests extends VTestCase {
 
     /**
      * Regression test for SFTP:
-     *
+     * <p>
      * When writing to a file, last write must be 32k or else the write will not complete...
      *
      * @param targetSize

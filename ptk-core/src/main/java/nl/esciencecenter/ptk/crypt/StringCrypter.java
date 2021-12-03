@@ -37,7 +37,7 @@ import java.security.spec.KeySpec;
 
 /**
  * String Encrypter/Decryptor class. Can also be used to encrypt/decrypt byte arrays, name is kept
- * for backwards compatibilty.
+ * for backwards compatibility.
  */
 public class StringCrypter {
 
@@ -74,13 +74,9 @@ public class StringCrypter {
     // ========================================================================
 
     private KeySpec keySpec;
-
     private SecretKeyFactory keyFactory;
-
     private Cipher cipher;
-
     private Charset charSet;
-
     private MessageDigest keyHasher;
 
     /**

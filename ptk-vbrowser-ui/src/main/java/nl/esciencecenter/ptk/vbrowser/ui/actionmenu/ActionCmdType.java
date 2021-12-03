@@ -34,6 +34,7 @@ public enum ActionCmdType implements Serializable {
     DEFAULT_ACTION("DefaultAction"), // double click or single left-click
     // Menu actions
     DELETE("Delete"), //
+    DELETE_RECURSIVE("DeleteRecursive"), //
     SHOW_PROPERTIES("Properties"), //
     CREATE_NEW("Create"), //
     RENAME("Rename"), //
@@ -43,6 +44,7 @@ public enum ActionCmdType implements Serializable {
     REFRESH("Refresh"), //
     CREATE_NEW_WINDOW("CreateNewWindow"), //
     OPEN_LOCATION("OpenLocation"), //
+    OPEN_CONTAINER("OpenContainer"), //
     OPEN_IN_NEW_WINDOW("OpenInNewWindow"), //
     // Nav Bar
     BROWSE_BACK("BrowseBack"), //
@@ -68,12 +70,14 @@ public enum ActionCmdType implements Serializable {
     GLOBAL_HELP("Help"), //
     GLOBAL_ABOUT("About"),
     //
-    LOOKANDFEEL("Look and Feel"),
-    SAVE_LOOKANDFEEL("Save Look and Feel");
-
+    LOOKANDFEEL("LookAndFeel"),
+    LOOKANDFEEL_ENABLED("LookAndFeelEnabled"),
+    SAVE_SETTINGS("SaveSettings"),
+    //
+    GLOBAL_SET_SINGLE_ACTION_CLICK("Global Single Click Action");
     // === Instance ===
 
-    private String cmdName;
+    private final String cmdName;
 
     ActionCmdType(String method) {
         this.cmdName = method;

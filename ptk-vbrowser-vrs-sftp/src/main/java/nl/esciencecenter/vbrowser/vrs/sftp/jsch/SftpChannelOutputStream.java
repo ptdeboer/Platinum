@@ -31,7 +31,7 @@ public class SftpChannelOutputStream extends OutputStream implements AutoCloseab
 
     private OutputStream outps = null;
 
-    private SftpChannel channel;
+    private final SftpChannel channel;
 
     public SftpChannelOutputStream(OutputStream outps, SftpChannel outputChannel) {
         this.outps = outps;

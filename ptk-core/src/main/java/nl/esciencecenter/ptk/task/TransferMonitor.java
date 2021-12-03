@@ -37,9 +37,9 @@ public class TransferMonitor extends TaskMonitorAdaptor {
     private int transferId = 0;
     private URI[] sources;
     private String[] sourceTypes;
-    private URI dest;
+    private final URI dest;
     private String destType;
-    private String actionType;
+    private final String actionType;
     private int sourcesDone;
 
     /**

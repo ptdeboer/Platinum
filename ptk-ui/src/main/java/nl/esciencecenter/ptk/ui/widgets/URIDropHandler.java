@@ -37,7 +37,7 @@ import java.util.List;
 @Slf4j
 public class URIDropHandler implements DropTargetListener {
 
-    private URIDropTargetLister uriDropTargetListener;
+    private final URIDropTargetLister uriDropTargetListener;
 
     public URIDropHandler(URIDropTargetLister uriDropListener) {
         this.uriDropTargetListener = uriDropListener;

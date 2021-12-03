@@ -47,8 +47,6 @@ import java.util.TooManyListenersException;
 /**
  * Implementation of a simple Binary Hex Viewer.<br>
  * Show the contents of in hexidecimal form
- *
- *
  */
 @Slf4j
 public class HexViewer extends ViewerJPanel implements FontToolbarListener// , ToolPlugin
@@ -87,9 +85,9 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     /**
      * The mimetypes I can view
      */
-    private static String[] mimeTypes = {"application/octet-stream",};
+    private static final String[] mimeTypes = {"application/octet-stream",};
 
-    static private boolean default_show_font_toolbar = false;
+    static private final boolean default_show_font_toolbar = false;
 
     public enum UTFType {
         UTF8, UTF16
@@ -112,7 +110,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
 
     private long fileOffset; // start of current buffer in file !
 
-    private int maxBufferSize = 1 * 1024 * 1024;
+    private final int maxBufferSize = 1 * 1024 * 1024;
 
     private byte[] buffer = new byte[0];
 
@@ -242,7 +240,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
             }
             // FontToolBar
             {
-                fontToolBar = new FontToolBar(this);
+                fontToolBar = new FontToolBar(this,16,32);
                 toolPanel.add(fontToolBar);
                 fontToolBar.setFocusable(false);
                 fontToolBar.setVisible(default_show_font_toolbar);
@@ -653,7 +651,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
 
         if (plainBytes) {
             for (int i = start; (i < start + len) && (i < buffer.length); i++) {
-                charStr += charStr((int) buffer[i]);
+                charStr += charStr(buffer[i]);
             }
         }
 
@@ -743,10 +741,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
     }
 
     public void toggleFontToolBar() {
-        if (this.fontToolBar.isVisible())
-            this.fontToolBar.setVisible(false);
-        else
-            this.fontToolBar.setVisible(true);
+        this.fontToolBar.setVisible(!this.fontToolBar.isVisible());
 
         this.validate();
         // this.requestFrameResizeToPreferred();

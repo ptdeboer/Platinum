@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Simple (Icon) Image Renderer class. Performs scaling, merging and greying out of (icon) images.
- *
- *
  */
 @Slf4j
 public class ImageRenderer {
@@ -260,7 +258,7 @@ public class ImageRenderer {
 
         Image linkImage = getLinkImage();
 
-        if ((isLink) && (linkImage!=null)) {
+        if ((isLink) && (linkImage != null)) {
             // create merged icon image + shortcut image:
             sync(linkImage);
 
@@ -466,6 +464,14 @@ public class ImageRenderer {
             return null;
 
         String[] lines = imageStr.split("\n");
+        return createImage(lines, colorMap, defaultColor, alphaChar);
+    }
+
+    /**
+     * Create simple bitmap image from XPM like String definition, but with separate lines.
+     */
+    public Image createImage(String[] lines, Map<String, Color> colorMap, Color defaultColor,
+                             char alphaChar) {
         int height = lines.length;
 
         if (height <= 0) {

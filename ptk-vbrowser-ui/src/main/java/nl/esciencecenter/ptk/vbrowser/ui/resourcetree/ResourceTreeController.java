@@ -33,9 +33,9 @@ import javax.swing.tree.TreePath;
 @Slf4j
 public class ResourceTreeController implements TreeExpansionListener, ViewNodeActionListener {
 
-    private ResourceTree tree;
+    private final ResourceTree tree;
 
-    private BrowserInterface browser;
+    private final BrowserInterface browser;
 
     public ResourceTreeController(BrowserInterface browser, ResourceTree resourceTree,
                                   ResourceTreeModel model) {

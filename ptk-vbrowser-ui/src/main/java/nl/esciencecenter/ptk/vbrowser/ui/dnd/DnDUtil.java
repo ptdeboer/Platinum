@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
@@ -27,8 +28,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -36,9 +35,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.util.List;
 
+@Slf4j
 public class DnDUtil {
-
-    public static Logger log = LoggerFactory.getLogger(DnDUtil.class);
 
     public static DnDTransferHandler getDefaultTransferHandler() {
         return DnDTransferHandler.getDefault();
@@ -86,7 +84,7 @@ public class DnDUtil {
      * Paste Data call when for example CTRL-V IS called ! Supplied component is the Swing Component
      * which has the focus when CTRL-V was called !
      *
-     * @param dropAction
+     * @param effectiveDnDAction
      */
     public static boolean doPasteData(Component uiComponent, ViewNode viewNode, Transferable data,
                                       DropAction effectiveDnDAction) {

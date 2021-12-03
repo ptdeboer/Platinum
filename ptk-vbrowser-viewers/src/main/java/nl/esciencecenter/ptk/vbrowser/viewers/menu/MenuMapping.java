@@ -2,10 +2,10 @@ package nl.esciencecenter.ptk.vbrowser.viewers.menu;
 
 public class MenuMapping {
 
-    private String resourceTypeRE;
-    private String resourceSchemeRE;
-    private String resourceStatusRE;
-    private String mimeTypeRE;
+    private final String resourceTypeRE;
+    private final String resourceSchemeRE;
+    private final String resourceStatusRE;
+    private final String mimeTypeRE;
 
     public MenuMapping(String type, String scheme, String status, String mimeType) {
         this.resourceSchemeRE = scheme;

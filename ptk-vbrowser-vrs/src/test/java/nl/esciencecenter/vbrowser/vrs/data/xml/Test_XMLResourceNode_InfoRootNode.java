@@ -29,16 +29,16 @@ public class Test_XMLResourceNode_InfoRootNode {
         InfoRootNode rootNode = vrsClient.getInfoRootNode();
 
         rootNode.addResourceLink("links", "GFTP eslt007.local", new VRL(
-                "http://eslt007.local:2811/~"), null, false);
+                "http://eslt007.local:2811/~"),true, null, false);
         rootNode.addResourceLink("links", "SFTP eslt007.local", new VRL(
-                "https://eslt007.local:22/~"), null, false);
-        rootNode.addResourceLink("links", "LocalHome:/~", new VRL("file:///~"), null, false);
+                "https://eslt007.local:22/~"),true, null, false);
+        rootNode.addResourceLink("links", "LocalHome:/~", new VRL("file:///~"),true, null, false);
 
         rootNode.addResourceLink(null, "GFTP eslt007.local",
-                new VRL("http://eslt007.local:2811/~"), null, false);
+                new VRL("http://eslt007.local:2811/~"),true, null, false);
         rootNode.addResourceLink(null, "SFTP eslt007.local", new VRL("https://eslt007.local:22/~"),
-                null, false);
-        rootNode.addResourceLink(null, "LocalHome:/~", new VRL("file:///~"), null, false);
+                true,null, false);
+        rootNode.addResourceLink(null, "LocalHome:/~", new VRL("file:///~"),true, null, false);
 
         XMLData data = new XMLData(ctx);
         String xml = data.toXML(rootNode);

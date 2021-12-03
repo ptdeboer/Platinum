@@ -117,8 +117,8 @@ public class CertUtil {
         certStr += indent + "Issuer DN :" + cert.getIssuerDN() + eolStr;
         certStr += indent + "SHA1      :" + StringUtil.toHexString(sha1.digest(), true) + eolStr;
         certStr += indent + "SHA2(256) :" + StringUtil.toHexString(sha2.digest(), true) + eolStr;
-        certStr += indent + "Not before:" + cert.getNotBefore()+ eolStr;
-        certStr += indent + "Not after :" + cert.getNotAfter()+ eolStr;
+        certStr += indent + "Not before:" + cert.getNotBefore() + eolStr;
+        certStr += indent + "Not after :" + cert.getNotAfter() + eolStr;
 
         return certStr;
     }

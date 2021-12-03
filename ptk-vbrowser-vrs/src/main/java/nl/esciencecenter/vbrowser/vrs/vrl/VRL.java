@@ -92,7 +92,7 @@ public final class VRL implements Cloneable, Comparable<VRL>, Duplicatable<VRL>,
         try {
             init(url.toURI());
         } catch (URISyntaxException e) {
-            throw new VRLSyntaxException("URISyntax exception for:"+url+":"+e.getMessage(),e);
+            throw new VRLSyntaxException("URISyntax exception for:" + url + ":" + e.getMessage(), e);
         }
     }
 

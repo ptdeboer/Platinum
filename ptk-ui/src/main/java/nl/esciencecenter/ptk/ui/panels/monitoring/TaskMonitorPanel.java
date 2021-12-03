@@ -46,7 +46,7 @@ public class TaskMonitorPanel extends JPanel implements ActionListener {
     private JTextField currentTF;
     private JProgressBar progressBar;
     private JTextField subTaskTF;
-    private Presentation presentation = Presentation.createDefault();
+    private final Presentation presentation = Presentation.createDefault();
     private ITaskMonitor taskMonitor = null;
     private MonitorStats monitorStats;
     private boolean showTransfersSpeeds = true;

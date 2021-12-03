@@ -18,7 +18,7 @@ public class LogBuffer {
         boolean newline;
     }
 
-    private List<LogEvent> events = new LinkedList<>();
+    private final List<LogEvent> events = new LinkedList<>();
 
     public void record(String message, boolean newline) {
         events.add(new LogEvent(System.currentTimeMillis(), message, newline));

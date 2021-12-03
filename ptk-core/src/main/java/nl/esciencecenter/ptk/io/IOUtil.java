@@ -34,7 +34,7 @@ import java.io.OutputStream;
 @Slf4j
 public class IOUtil {
 
-    private static int defaultBufferSize = 1 * 1024 * 1024;
+    private static final int defaultBufferSize = 1 * 1024 * 1024;
 
     public static class ReadFunctor implements Readable {
 

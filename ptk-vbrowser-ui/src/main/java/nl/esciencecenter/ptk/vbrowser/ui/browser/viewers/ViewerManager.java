@@ -43,7 +43,7 @@ import java.awt.event.WindowListener;
  */
 public class ViewerManager implements ViewerListener {
 
-    private static Logger logger = LoggerFactory.getLogger(ViewerManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ViewerManager.class);
 
     public class FrameWatcher implements WindowListener {
 
@@ -84,7 +84,7 @@ public class ViewerManager implements ViewerListener {
 
     }
 
-    private ProxyBrowserController browserController;
+    private final ProxyBrowserController browserController;
 
     public ViewerManager(ProxyBrowserController proxyBrowser) {
         browserController = proxyBrowser;
@@ -103,7 +103,7 @@ public class ViewerManager implements ViewerListener {
     }
 
     /**
-     * Factory method to instanciate a viewer, do not start or register the instance.
+     * Factory method to instantiate a viewer, do not start or register the instance.
      *
      * @param resourceType   - optional resource type.
      * @param mimeType       - optional mimeType

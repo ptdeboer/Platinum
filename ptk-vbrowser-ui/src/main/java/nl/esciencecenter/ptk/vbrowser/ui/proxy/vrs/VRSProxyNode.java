@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.presentation.IPresentable;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.VEditable;
@@ -53,7 +54,7 @@ import java.util.Map;
 @Slf4j
 public class VRSProxyNode extends ProxyNode {
 
-    private VPath vnode;
+    private final VPath vnode;
 
     public VRSProxyNode(VRSProxyFactory vrsProxyFactory, VPath vnode, VRL locator)
             throws ProxyException {
@@ -268,12 +269,12 @@ public class VRSProxyNode extends ProxyNode {
     protected void doUpdateAttributes(Attribute[] attrs) throws ProxyException {
         if (this.vnode instanceof VEditable) {
             try {
-                ((VEditable)this.vnode).setAttributes(attrs);
+                ((VEditable) this.vnode).setAttributes(attrs);
             } catch (VrsException e) {
                 throw new ProxyException("Couldn't set attributes:" + e.getMessage(), e);
             }
         } else {
-            throw new ProxyException("Resource (attributes) arn't editable:"+this.vnode);
+            throw new ProxyException("Resource (attributes) arn't editable:" + this.vnode);
         }
 
     }
@@ -296,7 +297,7 @@ public class VRSProxyNode extends ProxyNode {
 
     @Override
     protected boolean doGetIsEditable() {
-        return  (this.vnode instanceof  VEditable);
+        return (this.vnode instanceof VEditable);
     }
 
     @Override
@@ -317,7 +318,7 @@ public class VRSProxyNode extends ProxyNode {
     }
 
     @Override
-    protected VRL doGetResourceLinkVRL() {
+    protected VRL doGetResourceLinkTargetVRL() {
         if (this.vnode instanceof VInfoResource) {
             return ((VInfoResource) vnode).getTargetVRL();
         }
@@ -335,10 +336,10 @@ public class VRSProxyNode extends ProxyNode {
     }
 
     @Override
-    protected void doDelete(boolean recurse) throws ProxyException {
+    protected void doDelete(boolean recurse, ITaskMonitor optMonitor) throws ProxyException {
         try {
             if (vnode instanceof VFSDeletable) {
-                ((VFSDeletable) vnode).delete(recurse);
+                ((VFSDeletable) vnode).delete(recurse, optMonitor);
             } else if (vnode instanceof VDeletable) {
                 ((VDeletable) vnode).delete();
             } else {
@@ -354,7 +355,7 @@ public class VRSProxyNode extends ProxyNode {
         if (vnode instanceof VRenamable) {
             try {
                 VPath newPath = ((VRenamable) vnode).renameTo(nameOrNewPath);
-                return factory().updateProxyNode(newPath, true);
+                return factory().registerVRSProxyNode(newPath);
             } catch (VrsException e) {
                 throw new ProxyException(e.getMessage(), e);
             }

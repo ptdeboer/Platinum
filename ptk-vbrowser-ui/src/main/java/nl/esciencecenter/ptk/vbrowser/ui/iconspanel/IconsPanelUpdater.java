@@ -38,9 +38,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdater {
 
     private ProxyDataSource dataSource;
-
-    private IconsPanel iconsPanel;
-
+    private final IconsPanel iconsPanel;
     private ViewNode rootNode;
 
     public IconsPanelUpdater(IconsPanel panel, ProxyDataSource dataSource) {
@@ -91,6 +89,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
 
     @Override
     public void notifyEvent(VRSEvent e) {
+        log.debug("notifyEvent:{}", e);
         VRL[] vrls = e.getResources();
         VRL parent = e.getParent();
 
@@ -112,22 +111,29 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
                 break;
             }
             case RESOURCES_DELETED: {
-                deleteChilds(vrls);
+                deleteChilds(vrls, true);
+                break;
+            }
+            case RESOURCES_RENAMED:
+            case ATTRIBUTES_UPDATED:
+            case RESOURCES_UPDATED: {
+                update();
                 break;
             }
             default: {
+                log.error("***FIXME: event not supported:{}:{}", e.getType(), e);
                 update();
                 break;
             }
         }
     }
 
-    private void deleteChilds(VRL[] vrls) {
+    private void deleteChilds(VRL[] vrls, boolean fireEvents) {
         // perform delete during Event thread.
         IconListModel model = iconsPanel.getModel();
 
         for (VRL vrl : vrls) {
-            model.deleteItem(vrl, true);
+            model.deleteItem(vrl, fireEvents);
         }
 
         iconsPanel.revalidate();
@@ -166,6 +172,7 @@ public class IconsPanelUpdater implements VRSEventListener, ProxyDataSourceUpdat
         IconItem item = new IconItem(iconsPanel, getUIModel(), node);
         item.initDND(iconsPanel.getPlatform().getTransferHandler(),
                 iconsPanel.getDragGestureListener());
+
         return item;
     }
 

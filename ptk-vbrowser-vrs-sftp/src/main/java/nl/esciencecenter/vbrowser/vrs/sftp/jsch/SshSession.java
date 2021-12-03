@@ -63,9 +63,9 @@ public class SshSession implements AutoCloseable {
 
     private Session session;
 
-    private JSch jsch;
+    private final JSch jsch;
 
-    private SftpConfig config;
+    private final SftpConfig config;
 
     public SshSession(JSch jsch, SftpConfig config, boolean autoConnect) throws JSchException {
         this.jsch = jsch;

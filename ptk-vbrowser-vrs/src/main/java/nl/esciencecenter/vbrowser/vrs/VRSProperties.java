@@ -98,7 +98,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
 
     protected void init(String name) {
         this.propertiesName = name;
-        _properties = new LinkedHashMap<String, Object>();
+        _properties = new LinkedHashMap<>();
     }
 
     public void setName(String name) {
@@ -302,7 +302,7 @@ public class VRSProperties implements Serializable, Cloneable, Duplicatable<VRSP
     }
 
     protected Object doGet(String name) {
-        Object value = null;
+        Object value;
 
         value = _properties.get(name);
 

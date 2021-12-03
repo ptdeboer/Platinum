@@ -40,7 +40,7 @@ public class ProxyFactoryRegistry {
     //
     // ========================================================================
 
-    private Vector<ProxyFactory> factories = new Vector<ProxyFactory>();
+    private final Vector<ProxyFactory> factories = new Vector<ProxyFactory>();
 
     protected ProxyFactoryRegistry() {
         initRegistry();

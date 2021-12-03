@@ -33,7 +33,7 @@ import java.util.List;
 public class HexViewController implements AdjustmentListener, KeyListener, ActionListener,
         URIDropTargetLister {
 
-    private HexViewer hexViewer;
+    private final HexViewer hexViewer;
 
     public HexViewController(HexViewer viewer) {
         this.hexViewer = viewer;

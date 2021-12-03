@@ -22,91 +22,53 @@ package nl.esciencecenter.ptk.vbrowser.ui.model;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
+import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmdType;
+import nl.esciencecenter.ptk.vbrowser.ui.actions.UIAction;
+import nl.esciencecenter.ptk.vbrowser.ui.actions.UIActionListener;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
+
+import static java.awt.event.MouseEvent.NOBUTTON;
+import static nl.esciencecenter.ptk.util.CollectionUtil.getFirstOrNull;
+import static nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings.*;
 
 /**
- * Generic event handler for ViewComponents. Handles Mouse and Focus events.
+ * Generic event handler for ViewComponents. Handles Mouse and Actions events.
+ * Handles both AWT Actions and VBrowser UIActions.
  */
 @Slf4j
-public class ViewContainerEventAdapter implements MouseListener, MouseMotionListener, FocusListener {
+public class ViewContainerEventAdapter extends MouseAdapter implements ActionListener, UIActionListener {
 
-    private ViewNodeContainer viewComp;
-
-    private ViewNodeActionListener nodeActionListener;
-
+    private final ViewNodeContainer viewComp;
+    private final ViewNodeActionListener nodeActionListener;
     private ViewNode firstNode;
-
     private ViewNode lastNode;
 
-    private boolean notifySelectionEvents = true;
-
-    private boolean notifyActionEvents = true;
+    private final boolean notifySelectionEvents = true;
 
     public ViewContainerEventAdapter(ViewNodeContainer viewComp,
                                      ViewNodeActionListener componentController) {
         this.viewComp = viewComp;
         this.nodeActionListener = componentController;
-        // this.notifySelectionEvents=handleSelectionEvents;
-        // this.notifyActionEvents=handleActionEvents;
     }
 
     public BrowserInterface getBrowserInterface() {
         return this.viewComp.getBrowserInterface();
     }
 
-    public void setNotifySelectionEvent(boolean val) {
-        this.notifySelectionEvents = val;
-    }
-
     @Override
-    public void focusGained(FocusEvent event) {
-        log.debug("focusGained:{}", event);
-    }
-
-    @Override
-    public void focusLost(FocusEvent event) {
-        log.debug("focusLost:{}", event);
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent event) {
-        // log.debug("mouseClicked:{}",event);
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent event) {
-        // log.debug("mouseClicked:{}",event);
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent event) {
-        ViewNode node = this.getViewNode(event);
-
-        if (node == null)
-            viewComp.requestFocus(true); // container focus
-        else
-            viewComp.requestNodeFocus(node, true); // child focus
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent event) {
-        // log.debug("mouseClicked:{}", event);
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent event) {
-        // log.debug("mouseClicked:{}", event);
-    }
-
     public void mousePressed(MouseEvent e) {
         doMousePressed(e);
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
         doMouseClicked(e);
     }
@@ -120,11 +82,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
         ViewNode node = getViewNode(e);
 
-        boolean canvasClick = false;
-
-        if (node == null) {
-            canvasClick = true;
-        }
+        boolean canvasClick = node == null;
 
         boolean shift = ((e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0);
         boolean combine = ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0);
@@ -133,7 +91,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
         // When clicked, selection is made:
         if (isSelection(e)) {
             if (canvasClick) {
-                if (combine == false) {
+                if ((combine == false) && (shift == false)) {
                     notifyClearSelection(viewComp);
                     // clear range select
                     this.firstNode = null;
@@ -187,7 +145,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
         }
 
         if ((combine == false) && (shift == false)) {
-            if (isAction(e)) {
+            if (isActionClick(e)) {
                 fireNodeDefaultAction(node);// nodeActionListener.handleNodeAction(node);
             }
         }
@@ -195,6 +153,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
     protected void doMousePressed(MouseEvent e) {
         log.debug("mousePressed:{}", e);
+
 
         ViewNode node = getViewNode(e);
         boolean canvasclick = false;
@@ -217,21 +176,17 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
             }
         }
 
-        ViewNode[] refs = this.viewComp.getNodeSelection();
+        List<ViewNode> refs = this.viewComp.getNodeSelection();
 
         // check whether more then one nodes are selected
         // If two nodes are selected use Canvas Menu for Multiple Selections !
-        if ((refs != null) && (refs.length > 1) && (combine == true)) {
+        if ((refs != null) && (refs.size() > 1) && ((combine == true) || (shift == true))) {
             canvasclick = true;
         }
 
         // right click -> Popup
         if (isPopupTrigger(e)) {
-            if (canvasclick == false) {
-                doShowPopupMenu(viewComp, node, false, e);
-            } else {
-                doShowPopupMenu(viewComp, node, true, e);
-            }
+            doShowPopupMenu(viewComp, node, canvasclick != false, e);
         }
     }
 
@@ -261,6 +216,7 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
     private void fireNodeDefaultAction(ViewNode node) {
         this.nodeActionListener.handleNodeActionEvent(node, ActionCmd.createDefaultAction(node));
     }
+
 
     protected void notifySetSelectionRange(ViewNodeContainer viewC, ViewNode node1, ViewNode node2,
                                            boolean value) {
@@ -299,10 +255,8 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
         return null;
     }
 
-    // === misc/todo ===
-
-    public boolean isAction(MouseEvent e) {
-        return getBrowserInterface().getPlatform().getGuiSettings().isAction(e);
+    public boolean isActionClick(MouseEvent e) {
+        return getBrowserInterface().getPlatform().getGuiSettings().isActionClick(e);
     }
 
     public boolean isSelection(MouseEvent e) {
@@ -311,6 +265,47 @@ public class ViewContainerEventAdapter implements MouseListener, MouseMotionList
 
     public boolean isPopupTrigger(MouseEvent e) {
         return getBrowserInterface().getPlatform().getGuiSettings().isPopupTrigger(e);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        log.debug("Action Performed:{}:{}", e.getActionCommand(), e);
+    }
+
+    /**
+     * Handles Key Mappings which use registered InputMap and ActionMap.
+     */
+    @Override
+    public void uiActionPerformed(UIAction action, ActionEvent e) {
+        JComponent comp = (JComponent) e.getSource();
+
+        List<ViewNode> nodes = this.viewComp.getNodeSelection();
+        ViewNode node = getFirstOrNull(nodes);
+
+        if (action == ESCAPE) {
+            this.viewComp.clearNodeSelection();
+        }
+
+        if (action == OPEN_ACTION) {
+            this.nodeActionListener.handleNodeActionEvent(node, ActionCmd.createCustomAction(ActionCmdType.OPEN_LOCATION, node));
+        }
+
+        if (action == FULL_OPEN) {
+            this.nodeActionListener.handleNodeActionEvent(node, ActionCmd.createCustomAction(ActionCmdType.OPEN_CONTAINER, node));
+        }
+
+        if (action == OPEN_MENU) {
+            boolean canvasMenu = false;
+            Rectangle bounds = this.viewComp.findBoundsOfSelectionNode(node);
+            if (bounds == null) {
+                bounds = viewComp.getJComponent().getBounds();
+                canvasMenu = true;
+            }
+            int px = bounds.x + bounds.width / 2;
+            int py = bounds.y + bounds.height / 2;
+            MouseEvent dummyEvent = new MouseEvent(comp, -1, e.getWhen(), 0, px, py, 1, false, NOBUTTON);
+            doShowPopupMenu(viewComp, node, canvasMenu, dummyEvent);
+        }
     }
 
 }

@@ -32,7 +32,6 @@ import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
-import javax.smartcardio.ATR;
 import java.util.*;
 
 import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.*;
@@ -97,12 +96,12 @@ public class VPathNode implements VPath {
     }
 
 
-    public Map<String, AttributeDescription> getAttributeDescriptions(String names[]) throws VrsException {
+    public Map<String, AttributeDescription> getAttributeDescriptions(String[] names) throws VrsException {
         Map<String, AttributeDescription> all = this.getAttributeDescriptions();
 
-        Map<String, AttributeDescription> filtered=new LinkedHashMap<>();
-        for (String name:names) {
-            filtered.put(name,all.get(name));
+        Map<String, AttributeDescription> filtered = new LinkedHashMap<>();
+        for (String name : names) {
+            filtered.put(name, all.get(name));
         }
         return filtered;
     }

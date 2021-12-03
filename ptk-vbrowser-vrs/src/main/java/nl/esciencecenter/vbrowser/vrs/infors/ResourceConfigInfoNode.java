@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Resource SystemInfo node. Provides configuration information about a VResourceSystem.
  * <p>
- * Information is fetch from the ResourceSystemInfo registry.
+ * Information is fetched from the ResourceSystemInfo registry.
  */
 public class ResourceConfigInfoNode extends InfoResourceNode implements VResourceConfigurable {
 
@@ -55,6 +55,10 @@ public class ResourceConfigInfoNode extends InfoResourceNode implements VResourc
 
     public boolean isResourceLink() {
         return false;
+    }
+
+    public boolean isComposite() {
+        return false; //leaf.
     }
 
     public Map<String, AttributeDescription> getAttributeDescriptions() throws VrsException {

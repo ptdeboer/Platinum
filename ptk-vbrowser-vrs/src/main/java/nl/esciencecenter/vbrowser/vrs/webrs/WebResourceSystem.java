@@ -53,9 +53,9 @@ public class WebResourceSystem extends VResourceSystemNode {
     //
     // ========================================================================
 
-    private VRSContext vrsContext;
+    private final VRSContext vrsContext;
 
-    private VRL sourceVrl;
+    private final VRL sourceVrl;
 
     protected WebClient webClient;
 

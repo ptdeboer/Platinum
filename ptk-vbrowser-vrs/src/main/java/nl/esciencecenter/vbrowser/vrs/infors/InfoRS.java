@@ -41,7 +41,7 @@ public class InfoRS extends VResourceSystemNode // implements VStreamCreator
 
     private InfoRootNode rootNode = null;
 
-    private VRSClient vrsClient;
+    private final VRSClient vrsClient;
 
     public InfoRS(VRSContext context) throws VrsException {
         super(context, new VRL("info:/"));

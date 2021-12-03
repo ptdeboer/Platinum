@@ -58,7 +58,7 @@ public class FontUtil {
 
     // breadcrump to update renderingHints:
     public static boolean updateRenderingHints(JComponent comp, Map<?, ?> renderingHints) {
-        if (renderingHints==null) {
+        if (renderingHints == null) {
             // clear hints ?
             return false;
         }

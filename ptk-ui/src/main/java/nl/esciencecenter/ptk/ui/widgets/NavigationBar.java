@@ -21,7 +21,6 @@
 package nl.esciencecenter.ptk.ui.widgets;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.esciencecenter.ptk.crypt.Secret;
 import nl.esciencecenter.ptk.util.StringUtil;
 
 import javax.swing.*;
@@ -190,7 +189,7 @@ public class NavigationBar extends JToolBar implements URIDropTargetLister {
                 locationToolBar.add(locationTextField);
                 locationTextField.setText("location:///", false);
                 locationTextField.setComboActionCommands(NavigationAction.LOCATION_CHANGED.toString(),
-                        NavigationAction.LOCATION_AUTOCOMPLETED.toString(),NavigationAction.LOCATION_COMBOBOX_EDITED.toString());
+                        NavigationAction.LOCATION_AUTOCOMPLETED.toString(), NavigationAction.LOCATION_COMBOBOX_EDITED.toString());
 
 
                 // set Preferred Width for the GTK/Window LAF!

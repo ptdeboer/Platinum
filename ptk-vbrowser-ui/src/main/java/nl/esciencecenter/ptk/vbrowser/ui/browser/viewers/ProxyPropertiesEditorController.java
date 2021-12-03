@@ -25,7 +25,7 @@ public class ProxyPropertiesEditorController implements ActionListener {
 
     private final static Logger logger = LoggerFactory.getLogger(ProxyPropertiesEditorController.class);
 
-    private ProxyPropertiesEditor editorPanel;
+    private final ProxyPropertiesEditor editorPanel;
 
     private ResourceConfigInfo configInfo;
 
@@ -96,8 +96,8 @@ public class ProxyPropertiesEditorController implements ActionListener {
     private void doUpdateAttributes(Attribute[] attrs) {
         try {
             this.getProxyNode(editorPanel.getViewNode().getVRL()).updateAttributes(attrs);
-        } catch ( ProxyException e) {
-            logger.error(e.getMessage(),e);
+        } catch (ProxyException e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -152,11 +152,11 @@ public class ProxyPropertiesEditorController implements ActionListener {
         AttributeSet attrSet = new AttributeSet(attrs);
         Map<String, AttributeDescription> descriptions = proxyNode.getAttributeDescriptions(attrNames.toArray(new String[0]));
 
-        for (String key:descriptions.keySet()) {
+        for (String key : descriptions.keySet()) {
             AttributeDescription desc = descriptions.get(key);
-            if (desc!=null) {
+            if (desc != null) {
                 Attribute attr = attrSet.get(key);
-                if (attr!=null) {
+                if (attr != null) {
                     attr.setEditable(desc.isEditable());
                 }
             }
@@ -171,11 +171,7 @@ public class ProxyPropertiesEditorController implements ActionListener {
 
         String resourceType = proxyNode.getResourceType();
 
-        boolean editConfig = false;
-
-        if (InfoRSConstants.RESOURCEINFO_CONFIG.equals(resourceType)) {
-            editConfig = true;
-        }
+        boolean editConfig = InfoRSConstants.RESOURCEINFO_CONFIG.equals(resourceType);
 
         this.configInfo = proxyNode.getResourceConfigInfo();
 

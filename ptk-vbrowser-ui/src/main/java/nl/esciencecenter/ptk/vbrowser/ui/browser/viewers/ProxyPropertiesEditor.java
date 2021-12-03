@@ -47,8 +47,11 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
     public static final String OK_ACTION = "OK";
     public static final String CANCEL_ACTION = "Cancel";
 
-    private static String[] mimeTypes = {"ResourceInfoConfig" ,"application/vbrowser-vrs-infors-ResourceInfoConfig",
-    "application/vbrowser-vrs-ResourceLink"};
+    private static final String[] mimeTypes = {
+            "ResourceInfoConfig",//
+            "application/vbrowser-vrs-infors-ResourceInfoConfig",//
+            "application/vbrowser-vrs-ResourceLink"//
+    };
 
     // === instance === //
 
@@ -93,8 +96,8 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
         this.controller = new ProxyPropertiesEditorController(this);
         uiModel = UIViewModel.createIconsModel(64);
 
-        // hiearchy
         {
+            // === Layout === //
             BorderLayout thisLayout = new BorderLayout();
             this.setLayout(thisLayout);
             {

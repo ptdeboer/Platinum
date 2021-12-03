@@ -25,7 +25,6 @@ package nl.esciencecenter.ptk.bootstrap;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -57,14 +56,10 @@ public class Bootstrapper {
     public static class BootOptions {
 
         public String toolPrefix = "ptk";
-
         public String confSubDir = "etc";
-
         public String libSubDir = "lib";
-
         public String binSubDir = "bin";
-
-        public String javaVersion = "1.8";
+        public String javaVersion = "11";
 
         /**
          * Default library sub-directories explicitly added to bootstrapper classpath.<br>
@@ -414,6 +409,7 @@ public class Bootstrapper {
      * - ${APP_SYSCONFDIR}/etc/${APP_PREFIX}rc.prop
      * - /etc/${APP_PREFIX}rc.prop
      * </pre>
+     *
      * @returns property set if loaded or EMPTY property set when failed !
      */
     public Properties getAppProperties(String sysconfdir) {

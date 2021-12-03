@@ -50,7 +50,7 @@ public class VRSContext {
 
     // === Instance === //
 
-    private long id = instanceCounter++;
+    private final long id = instanceCounter++;
 
     protected Registry registry;
 
@@ -196,6 +196,12 @@ public class VRSContext {
         return GlobalProperties.getGlobalUserName();
     }
 
+    /**
+     * Update persistent configuration. This will trigger reloading of registered resources.
+     *
+     * @param configHome config location for example $HOME/.vrsrc/
+     * @param enabled    start using this config location.
+     */
     public void setPersistantConfigLocation(VRL configHome, boolean enabled) {
         this.persistantConfigLocation = configHome;
         this.hasPersistantConfig = enabled;

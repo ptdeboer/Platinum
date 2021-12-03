@@ -20,6 +20,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
@@ -31,33 +33,34 @@ import java.awt.dnd.DragSourceListener;
  * work when dragging and dropping, but when dragging into the local desktop, the 'drag' is out of
  * reach of the VBrowser.
  */
+@Slf4j
 public class ViewNodeDragSourceListener implements DragSourceListener {
     public ViewNodeDragSourceListener() {
     }
 
     @Override
     public void dragEnter(DragSourceDragEvent dsde) {
-        DnDUtil.log.debug("dragSource:dragEnter():{}", dsde);
+        //log.debug("dragSource:dragEnter():{}", dsde);
     }
 
     @Override
     public void dragOver(DragSourceDragEvent dsde) {
-        DnDUtil.log.debug("dragSource:dragOver():{}", dsde);
+        //log.debug("dragSource:dragOver():{}", dsde);
     }
 
     @Override
     public void dropActionChanged(DragSourceDragEvent dsde) {
-        DnDUtil.log.debug("dragSource:dropActionChanged():{}", dsde);
+        //log.debug("dragSource:dropActionChanged():{}", dsde);
     }
 
     @Override
     public void dragExit(DragSourceEvent dse) {
-        DnDUtil.log.debug("dragSource:dragExit():{}", dse);
+        //log.debug("dragSource:dragExit():{}", dse);
     }
 
     @Override
     public void dragDropEnd(DragSourceDropEvent dsde) {
-        DnDUtil.log.debug("dragSource:dragDropEnd():{}", dsde);
+        //log.debug("dragSource:dragDropEnd():{}", dsde);
     }
 
 }

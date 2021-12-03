@@ -47,9 +47,9 @@ public class HeapCopy {
 
     private List<VPath> deletedPaths;
 
-    private VRSCopyManager copyManager;
+    private final VRSCopyManager copyManager;
 
-    private String actionStr;
+    private final String actionStr;
 
     private boolean started;
 

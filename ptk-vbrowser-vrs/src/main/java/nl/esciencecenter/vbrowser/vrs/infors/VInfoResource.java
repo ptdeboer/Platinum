@@ -22,7 +22,7 @@ public interface VInfoResource {
 
     VInfoResourcePath createFolder(String name) throws VrsException;
 
-    VInfoResourcePath createResourceLink(VRL targetVRL, String logicalName) throws VrsException;
+    VInfoResourcePath createResourceLink(VRL targetVRL, String logicalName, boolean targetIsComposite) throws VrsException;
 
     AttributeSet getInfoAttributes() throws VrsException;
 

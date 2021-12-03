@@ -31,7 +31,7 @@ public class SftpChannelInputStream extends InputStream implements AutoCloseable
 
     private InputStream inps = null;
 
-    private SftpChannel channel;
+    private final SftpChannel channel;
 
     private long numRead = 0;
 

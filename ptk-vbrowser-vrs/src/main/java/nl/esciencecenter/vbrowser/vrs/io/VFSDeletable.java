@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.vbrowser.vrs.io;
 
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
 public interface VFSDeletable extends VDeletable {
@@ -31,5 +32,7 @@ public interface VFSDeletable extends VDeletable {
      * @reeturns false if not applicable.
      */
     boolean delete(boolean recursive) throws VrsException;
+
+    boolean delete(boolean recursive, ITaskMonitor optMonitor) throws VrsException;
 
 }

@@ -26,9 +26,9 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeActionListener;
 
 public class ResourceTableControler implements ViewNodeActionListener {
-    private ResourceTable table;
+    private final ResourceTable table;
 
-    private BrowserInterface browserController;
+    private final BrowserInterface browserController;
 
     public ResourceTableControler(ResourceTable resourceTable, BrowserInterface browserController) {
         this.table = resourceTable;

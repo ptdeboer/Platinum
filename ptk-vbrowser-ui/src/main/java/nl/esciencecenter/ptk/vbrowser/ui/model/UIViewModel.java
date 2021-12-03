@@ -107,13 +107,13 @@ public class UIViewModel {
 
     private int maximumIconLabelWidth = 180;
 
-    private Color fgColor = Color.BLACK;
+    private final Color fgColor = Color.BLACK;
 
-    private Color bgColor = Color.WHITE;
+    private final Color bgColor = Color.WHITE;
 
-    private Color fgColorSelected = null; // null=default; Color.RED;
+    private final Color fgColorSelected = null; // null=default; Color.RED;
 
-    private Color bgColorSelected = Color.LIGHT_GRAY;
+    private final Color bgColorSelected = Color.LIGHT_GRAY;
 
 
     public int getIconSize() {

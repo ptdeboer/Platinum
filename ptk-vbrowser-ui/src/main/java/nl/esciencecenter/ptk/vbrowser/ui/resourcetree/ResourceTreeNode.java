@@ -24,7 +24,6 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -35,9 +34,9 @@ import java.util.Vector;
  */
 public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
 {
-    private ResourceTreeNode parent = null;
+    private ResourceTreeNode parent;
 
-    private Vector<ResourceTreeNode> childs = new Vector<ResourceTreeNode>();
+    private final Vector<ResourceTreeNode> childs = new Vector<ResourceTreeNode>();
 
     private boolean isRoot = false;
 
@@ -64,13 +63,6 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
 
     public boolean isRoot() {
         return isRoot;
-    }
-
-    /**
-     * Creates new TreePath to this node
-     */
-    public TreePath getTreePath() {
-        return new TreePath(this.getPath());
     }
 
     public ResourceTreeNode[] getPath() {
@@ -180,13 +172,13 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
     public ResourceTreeNode getNode(VRL locator) {
         // use hash ?
         for (ResourceTreeNode node : this.childs)
-            if (node.getVRI().equals(locator))
+            if (node.getVRL().equals(locator))
                 return node;
 
         return null;
     }
 
-    public VRL getVRI() {
+    public VRL getVRL() {
         return this.viewNode.getVRL();
     }
 
@@ -210,7 +202,7 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
     }
 
     public String toString() {
-        return "{<ResourceTreeNode>:" + getVRI().toString() + "}";
+        return "{<ResourceTreeNode>:" + getVRL().toString() + "}";
     }
 
     public void setHasFocus(boolean value) {
@@ -241,4 +233,5 @@ public class ResourceTreeNode implements TreeNode // , ViewNodeComponent
     public void updateName(String newName) {
         this.viewNode.setName(newName);
     }
+
 }

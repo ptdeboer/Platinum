@@ -86,11 +86,11 @@ public class LocalFileSystem extends VFileSystemNode implements VStreamCreator, 
         } else if (ex instanceof FileSystemException) {
             // Exception name provide reason
             String exName = ex.getClass().getName();
-            return new VrsIOException(actionText + "\n" + exName + ".\n" + ex.getMessage(), (IOException) ex);
+            return new VrsIOException(actionText + "\n" + exName + ".\n" + ex.getMessage(), ex);
         } else if (ex instanceof IOException) {
             // Exception name provide reason
             String exName = ex.getClass().getName();
-            return new VrsIOException(actionText + "\n" + exName + ".\n" + ex.getMessage(), (IOException) ex);
+            return new VrsIOException(actionText + "\n" + exName + ".\n" + ex.getMessage(), ex);
         } else {
             return new VrsException(actionText + "\n" + ex.getMessage(), ex);
         }

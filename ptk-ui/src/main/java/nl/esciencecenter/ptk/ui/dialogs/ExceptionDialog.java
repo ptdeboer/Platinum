@@ -94,7 +94,7 @@ public class ExceptionDialog extends javax.swing.JDialog implements ActionListen
     private JPanel topPane;
     private JButton okButton;
     private JPanel buttonPanel;
-    private String message = "No message";
+    private final String message = "No message";
 
     protected ExceptionDialog(Throwable e) {
         super();

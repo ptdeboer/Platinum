@@ -24,7 +24,7 @@ import nl.esciencecenter.ptk.task.TaskWatcher;
 
 public class ProxyBrowserTaskWatcher extends TaskWatcher {
 
-    private ProxyBrowserController browserController;
+    private final ProxyBrowserController browserController;
 
     public ProxyBrowserTaskWatcher(ProxyBrowserController browser) {
         super("ProxyBrowserTaskWatcher" + browser.getBrowserId());

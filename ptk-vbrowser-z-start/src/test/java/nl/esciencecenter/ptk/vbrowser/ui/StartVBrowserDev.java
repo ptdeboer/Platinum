@@ -24,7 +24,7 @@ package nl.esciencecenter.ptk.vbrowser.ui;
 import java.net.URL;
 
 /**
- * Start vanilla VBrowser in dev environment including log4j from test/resourcess
+ * Start vanilla VBrowser in dev environment including log4j from test/resources
  */
 public class StartVBrowserDev {
     

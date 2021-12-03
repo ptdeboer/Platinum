@@ -43,11 +43,11 @@ public class ImageViewer extends ViewerJPanel {
     /**
      * The mimetypes I can view
      */
-    private static String[] mimeTypes = {"image/gif", "image/jpeg", "image/bmp", "image/png"};
+    private static final String[] mimeTypes = {"image/gif", "image/jpeg", "image/bmp", "image/png"};
 
-    private static double[] zoomOutFactors = {0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1};
+    private static final double[] zoomOutFactors = {0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1};
 
-    private static double[] zoomInFactors = {
+    private static final double[] zoomInFactors = {
             // 100,125,150,200,300,400,500,600,800,1000%
             1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -243,7 +243,7 @@ public class ImageViewer extends ViewerJPanel {
     // Zoom
     // ====
 
-    private Object zoomTaskMutex = new Object();
+    private final Object zoomTaskMutex = new Object();
 
     private Runnable zoomTask = null;
 

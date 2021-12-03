@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
@@ -38,6 +39,7 @@ import java.util.List;
  * <p>
  * Swing/AWT Compatible DnD Support.
  */
+@Slf4j
 public class ViewNodeDropTarget extends DropTarget implements DropTargetListener {
     public ViewNodeDropTarget(Component comp) {
         super(comp, DnDConstants.ACTION_LINK, null, true);
@@ -54,28 +56,28 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
     }
 
     public void dragEnter(DropTargetDragEvent dtde) {
-        DnDUtil.log.debug("dragEnter:{}", dtde);
+        log.debug("dragEnter:{}", dtde);
         super.dragEnter(dtde);
 
         updateDropAction(dtde);
     }
 
     public void dragOver(DropTargetDragEvent dtde) {
-        DnDUtil.log.debug("dragOver:{}", dtde);
+        log.debug("dragOver:{}", dtde);
         super.dragOver(dtde);
 
         updateDropAction(dtde);
     }
 
     public void dropActionChanged(DropTargetDragEvent dtde) {
-        DnDUtil.log.debug("dropActionChanged:{}", dtde);
+        log.debug("dropActionChanged:{}", dtde);
         super.dropActionChanged(dtde);
         // accept change ?
         updateDropAction(dtde);
     }
 
     public void dragExit(DropTargetEvent dte) {
-        DnDUtil.log.debug("dragExit:{}", dte);
+        log.debug("dragExit:{}", dte);
         super.dragExit(dte);
     }
 
@@ -89,7 +91,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         ViewNode targetNode = this.getViewNode(uiComp, p);
 
         if (targetNode == null) {
-            DnDUtil.log.error("drop(): No Target ViewNode for:{}!", dtde);
+            log.error("drop(): No Target ViewNode for:{}!", dtde);
             dtde.rejectDrop();
         }
 
@@ -108,7 +110,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
             succes = DnDUtil.performAcceptedDrop(uiComp, p, targetNode, transferable,
                     DnDUtil.getDropAction(userDropAction), DnDUtil.getDropAction(effectiveAction));
         } else {
-            DnDUtil.log.debug("Effective ActionCmd=NONE for:{}", dtde);
+            log.debug("Effective ActionCmd=NONE for:{}", dtde);
         }
 
         dtde.getDropTargetContext().dropComplete(succes);
@@ -128,7 +130,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         // all actions allowed:
         int sourceActions = dtde.getSourceActions();
 
-        DnDUtil.log.debug("> updateAllowDrop(): source actions/drop action={}/{}",
+        log.debug("> updateAllowDrop(): source actions/drop action={}/{}",
                 sourceActions, userDropAction);
 
         // {
@@ -218,7 +220,7 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         DataFlavor[] sourceFlavors = transferable.getTransferDataFlavors();
 
         for (DataFlavor flav : sourceFlavors) {
-            DnDUtil.log.debug("matchDropActions() - sourceFlavor:{}", flav);
+            log.debug("matchDropActions() - sourceFlavor:{}", flav);
         }
 
         int matchingActions = DnDConstants.ACTION_NONE;
@@ -226,8 +228,8 @@ public class ViewNodeDropTarget extends DropTarget implements DropTargetListener
         boolean areVRLs = DnDData.canConvertToVRLs(transferable);
         boolean areVFSPaths = DnDData.canConvertToVFSPaths(transferable);
 
-        DnDUtil.log.debug("matchDropActions(): Dropped types are VFSPath ={}", areVFSPaths);
-        DnDUtil.log.debug("matchDropActions(): Dropped types are VRLs    ={}", areVRLs);
+        log.debug("matchDropActions(): Dropped types are VFSPath ={}", areVFSPaths);
+        log.debug("matchDropActions(): Dropped types are VRLs    ={}", areVRLs);
 
         // Allow Links to Any VRL type:
         if (childTypes.contains(VRSTypes.VLINK_TYPE) && areVRLs) {

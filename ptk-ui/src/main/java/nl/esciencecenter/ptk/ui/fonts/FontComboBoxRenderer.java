@@ -21,14 +21,8 @@
 package nl.esciencecenter.ptk.ui.fonts;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.FocusListener;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Implementation of FontComboBoxRenderer. Render the text in the ComboBox with the font name
@@ -36,32 +30,31 @@ import java.util.Set;
  */
 public class FontComboBoxRenderer extends JPanel implements ListCellRenderer {
 
-    private FontToolBar fontToolBar;
+    private final int fontMaxSize;
     private JLabel label;
 
-    public FontComboBoxRenderer(FontToolBar bar) {
+    public FontComboBoxRenderer(FontToolBar bar, int fontMaxSize) {
         super();
-        this.fontToolBar = bar;
+        this.fontMaxSize=fontMaxSize;
         initGui();
     }
 
     protected void initGui() {
-        // this.setLayout(new FlowLayout(FlowLayout.CENTER,0,2));
-        this.setLayout(new BorderLayout(0,0));
-        this.label=new JLabel();
-        this.add((label),BorderLayout.CENTER);
+        this.setLayout(new BorderLayout(0, 0));
+        this.label = new JLabel();
+        this.add((label), BorderLayout.CENTER);
 
         this.setOpaque(false);
         this.label.setOpaque(true);
         this.label.setHorizontalAlignment(SwingConstants.CENTER);
         this.label.setVerticalAlignment(SwingConstants.CENTER);
         // one pixel between menu items
-        this.setBorder(new EmptyBorder(1,0,0,0));
+        this.setBorder(new EmptyBorder(1, 0, 0, 0));
     }
-    
+
     public Component getListCellRendererComponent(JList list, Object value, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
-        FontItem fontItem = (FontItem)value;
+        FontItem fontItem = (FontItem) value;
         this.label.setText(fontItem.getFontName());
 
         if (isSelected) {
@@ -79,6 +72,16 @@ public class FontComboBoxRenderer extends JPanel implements ListCellRenderer {
         this.label.setFont(fontItem.getCustomFont());
         this.setToolTipText(fontItem.getFontName()); // nice in case font is invisible.
         return this;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        // limit max font size for misbehaving fonts.
+        if (size.height>fontMaxSize) {
+            size=new Dimension(size.width, fontMaxSize);
+        }
+        return size;
     }
 
 }

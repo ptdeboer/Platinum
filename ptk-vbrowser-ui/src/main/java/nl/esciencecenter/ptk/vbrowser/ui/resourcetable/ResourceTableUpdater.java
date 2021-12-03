@@ -48,7 +48,7 @@ public class ResourceTableUpdater implements VRSEventListener, ProxyDataSourceUp
     private ResourceTableModel tableModel;
     private UIViewModel uiModel;
     private ViewNode rootNode;
-    private ViewNodeContainer tableContainer;
+    private final ViewNodeContainer tableContainer;
 
     /**
      * Create ProxyNode data Updater from ProxyNode

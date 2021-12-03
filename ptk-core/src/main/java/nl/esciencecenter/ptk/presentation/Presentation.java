@@ -53,11 +53,11 @@ public class Presentation implements Duplicatable<Presentation> {
 
         // privates 
 
-        private boolean doSort;
+        private final boolean doSort;
 
-        private boolean ignoreCase;
+        private final boolean ignoreCase;
 
-        private boolean reverseSort;
+        private final boolean reverseSort;
 
         SortOption(boolean doSort, boolean ignoreCase, boolean reverseSort) {
             this.doSort = doSort;

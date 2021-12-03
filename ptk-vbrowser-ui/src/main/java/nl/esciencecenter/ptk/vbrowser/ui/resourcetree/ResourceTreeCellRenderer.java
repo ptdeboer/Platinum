@@ -27,12 +27,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
 public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer {
-    // public static Color COLOR_LIGHT_BLUE=new Color(128,128,255);
 
-    /**
-     *
-     */
-    private ResourceTree myTree;
+    private final ResourceTree myTree;
 
     public ResourceTreeCellRenderer(ResourceTree tree) {
         this.myTree = tree;
@@ -67,8 +63,8 @@ public class ResourceTreeCellRenderer extends DefaultTreeCellRenderer {
         return this;
     }
 
-    public boolean imageUpdate2(Image img, int infoflags, int x, int y, int w, int h) {
-        return super.imageUpdate(img, infoflags, x, y, w, h);
+    public boolean imageUpdate2(Image img, int infoFlags, int x, int y, int w, int h) {
+        return super.imageUpdate(img, infoFlags, x, y, w, h);
 
     }
 

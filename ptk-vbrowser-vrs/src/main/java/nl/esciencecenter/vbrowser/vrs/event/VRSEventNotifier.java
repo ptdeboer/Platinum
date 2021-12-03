@@ -6,7 +6,7 @@ import nl.esciencecenter.ptk.events.EventDispatcher;
 @Slf4j
 public class VRSEventNotifier extends EventDispatcher<VRSEventType, VRSEvent, VRSEventListener> {
 
-    private static VRSEventNotifier instance;
+    private static final VRSEventNotifier instance;
 
     static {
         instance = new VRSEventNotifier(true);

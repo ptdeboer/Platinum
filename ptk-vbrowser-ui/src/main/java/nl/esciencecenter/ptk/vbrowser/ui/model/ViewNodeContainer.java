@@ -24,27 +24,42 @@ import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 /**
  * Interface for any (J)Component which can contain ViewNodes. A ViewNodeContainer in itself is also
  * a ViewNodeComponent.
  */
 public interface ViewNodeContainer extends ViewNodeComponent {
+
+    // === Hierarchy === //
+    BrowserInterface getBrowserInterface();
+
+    /**
+     * Return managed JComponent, at this moment this is always the ViewNodeContainer itself.
+     *
+     * @return type safe JComponent
+     */
+    JComponent getJComponent();
+
+    // === //
+
     ViewNode getNodeUnderPoint(Point p);
 
     /**
      * Create Pop-up menu when (right-)clicked the specified actionSourceNode.
      *
-     * @param actionSourceNode ViewNode the click occured.
+     * @param actionSourceNode ViewNode the click occurred.
      * @param canvasMenu       - whether this is a click the canvas (white space between the icons).
      * @return JPopupMenu
      */
     JPopupMenu createNodeActionMenuFor(ViewNode actionSourceNode, boolean canvasMenu);
 
-    // === Selection Model === 
+    // === Selection Model === //
+
     void clearNodeSelection();
 
-    ViewNode[] getNodeSelection();
+    List<ViewNode> getNodeSelection();
 
     /**
      * Toggle selection
@@ -56,11 +71,14 @@ public interface ViewNodeContainer extends ViewNodeComponent {
      */
     void setNodeSelectionRange(ViewNode firstNode, ViewNode lastNode, boolean isSelected);
 
-    /**
-     * Request focus for child. Return true if it has focus.
-     */
-    boolean requestNodeFocus(ViewNode node, boolean value);
+    // === AWT === //
 
-    BrowserInterface getBrowserInterface();
+    /**
+     * AWT bounds of selected ViewNode
+     *
+     * @param node ViewNode
+     * @return AWT Bounds.
+     */
+    Rectangle findBoundsOfSelectionNode(ViewNode node);
 
 }

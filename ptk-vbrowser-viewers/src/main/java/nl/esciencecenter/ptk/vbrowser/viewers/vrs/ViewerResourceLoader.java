@@ -29,6 +29,7 @@ import nl.esciencecenter.ptk.util.ContentReader;
 import nl.esciencecenter.ptk.util.ContentWriter;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VRSClient;
+import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.mimetypes.MimeTypes;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -46,18 +47,18 @@ import java.util.Properties;
  */
 public class ViewerResourceLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(ViewerResourceLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ViewerResourceLoader.class);
 
     // === Instance === 
 
-    private VRSClient vrsClient;
+    private final VRSClient vrsClient;
 
-    private String viewersConfigSubDirName;
+    private final String viewersConfigSubDirName;
 
-    public ViewerResourceLoader(VRSClient vrsClient, String viewersConfigSubDirName) {
+    public ViewerResourceLoader(VRSContext vrsContext, String viewersConfigSubDirName) {
         logger.debug("ViewerResourceLoader():viewersConfigSubDirName={}", viewersConfigSubDirName);
         this.viewersConfigSubDirName = viewersConfigSubDirName;
-        this.vrsClient = vrsClient;
+        this.vrsClient = new VRSClient(vrsContext); //private client;
     }
 
     public VRL getViewerConfigDir() {

@@ -25,14 +25,14 @@ package nl.esciencecenter.ptk.data;
  */
 public class BooleanHolder implements VARHolder<Boolean> {
 
-    public Boolean value = null;
+    public Boolean value;
 
     public BooleanHolder(boolean val) {
         value = val;
     }
 
     public BooleanHolder() {
-        value = new Boolean(false);
+        value = Boolean.FALSE;
     }
 
     public boolean booleanValue() {

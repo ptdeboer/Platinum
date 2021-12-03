@@ -3,8 +3,7 @@ package nl.esciencecenter.vbrowser.vrs;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 
-public interface VEditable
-{
+public interface VEditable {
     /**
      * returns true if the caller has the permissions to edit this resource.
      * This means the setAttribute(s) method(s) are allowed.
@@ -18,7 +17,9 @@ public interface VEditable
      */
     boolean setAttributes(Attribute[] attrs) throws VrsException;
 
-    /** Set single attribute. Return true if attribute was set. */
+    /**
+     * Set single attribute. Return true if attribute was set.
+     */
     boolean setAttribute(Attribute attr) throws VrsException;
 
 }

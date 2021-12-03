@@ -41,7 +41,7 @@ public class X509Viewer extends ViewerJPanel implements CertPanelListener {
 
     public static final String VIEW_METHOD = "viewCert";
 
-    private static String[] mimeTypes = {"application/x-x509-ca-cert",
+    private static final String[] mimeTypes = {"application/x-x509-ca-cert",
             // .crt and .pem can be both user AND CA
             "application/x-pem-file", "application/x-x509-pem-file", "application/x-x509-crt-file",
             // "application/x-x509-user-cert" = user cert! (not CA)
@@ -140,10 +140,7 @@ public class X509Viewer extends ViewerJPanel implements CertPanelListener {
 
     public void doUpdate(VRL location, String optMethodName) {
         // default to true ?
-        boolean add = true;
-
-        if (StringUtil.equals(optMethodName, VIEW_METHOD))
-            add = false;
+        boolean add = !StringUtil.equals(optMethodName, VIEW_METHOD);
 
         if (StringUtil.equals(optMethodName, ADD_METHOD))
             add = true;

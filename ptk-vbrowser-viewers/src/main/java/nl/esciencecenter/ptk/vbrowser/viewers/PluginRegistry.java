@@ -23,10 +23,7 @@ package nl.esciencecenter.ptk.vbrowser.viewers;
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.Pair;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.vbrowser.viewers.internal.HexViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.internal.ImageViewer;
-import nl.esciencecenter.ptk.vbrowser.viewers.internal.JavaWebStarter;
-import nl.esciencecenter.ptk.vbrowser.viewers.internal.TextViewer;
+import nl.esciencecenter.ptk.vbrowser.viewers.internal.*;
 import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
 import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMappingMatcher;
 import nl.esciencecenter.ptk.vbrowser.viewers.vrs.ViewerResourceLoader;
@@ -96,15 +93,15 @@ public class PluginRegistry {
     // Instance Fields
     // ===============
 
-    private ArrayList<PluginEntry> viewerPlugins = new ArrayList<PluginEntry>();
+    private final ArrayList<PluginEntry> viewerPlugins = new ArrayList<PluginEntry>();
 
-    private Map<String, List<PluginEntry>> mimeTypeViewers = new HashMap<String, List<PluginEntry>>();
+    private final Map<String, List<PluginEntry>> mimeTypeViewers = new HashMap<String, List<PluginEntry>>();
 
-    private Map<String, List<MenuEntry>> mimeMenuMappings = new HashMap<String, List<MenuEntry>>();
+    private final Map<String, List<MenuEntry>> mimeMenuMappings = new HashMap<String, List<MenuEntry>>();
 
-    private List<Pair<MenuMapping, MenuEntry>> toolMenuMappings = new ArrayList<Pair<MenuMapping, MenuEntry>>();
+    private final List<Pair<MenuMapping, MenuEntry>> toolMenuMappings = new ArrayList<Pair<MenuMapping, MenuEntry>>();
 
-    private ArrayList<PluginEntry> toolPlugins = new ArrayList<PluginEntry>();
+    private final ArrayList<PluginEntry> toolPlugins = new ArrayList<PluginEntry>();
 
     private ViewerResourceLoader resourceHandler = null;
 
@@ -121,9 +118,11 @@ public class PluginRegistry {
     protected void initDefaultViewers() {
         registerPlugin(TextViewer.class);
         registerPlugin(ImageViewer.class);
+        registerPlugin(ExtMediaViewer.class);
         registerPlugin(HexViewer.class);
         registerPlugin(X509Viewer.class);
         registerPlugin(JavaWebStarter.class);
+
     }
 
     public void registerPlugin(Class<? extends ViewerPlugin> viewerClass) {

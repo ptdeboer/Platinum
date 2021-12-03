@@ -1,5 +1,7 @@
 package nl.esciencecenter.ptk.vbrowser.ui.properties;
 
+import nl.esciencecenter.ptk.util.StringUtil;
+import nl.esciencecenter.ptk.vbrowser.ui.browser.laf.LookAndFeelType;
 import nl.esciencecenter.vbrowser.vrs.VRSProperties;
 
 import java.awt.*;
@@ -7,19 +9,13 @@ import java.awt.event.MouseEvent;
 import java.util.Map;
 
 public class UIProperties extends VRSProperties {
-    // default values:
 
-    private static Color default_label_selected_bg_color = Color.darkGray;
-
-    private static Color default_label_selected_fg_color = Color.black;
-
-    private static int default_mouse_selection_button = MouseEvent.BUTTON1;
-
-    private static int default_mouse_action_button = MouseEvent.BUTTON1;
-
-    private static int default_mouse_alt_button = MouseEvent.BUTTON3;
-
-    private static int default_mouse_popup_button = default_mouse_alt_button;
+    private static final Color default_label_selected_bg_color = Color.darkGray;
+    private static final Color default_label_selected_fg_color = Color.black;
+    private static final int default_mouse_selection_button = MouseEvent.BUTTON1;
+    private static final int default_mouse_action_button = MouseEvent.BUTTON1;
+    private static final int default_mouse_alt_button = MouseEvent.BUTTON3;
+    private static final int default_mouse_popup_button = default_mouse_alt_button;
 
     // ========
     // Instance
@@ -64,7 +60,7 @@ public class UIProperties extends VRSProperties {
         }
         // auto decode 
         Color color = Color.decode(value.toString());
-        this.set(name, color);
+        //this.set(name, color);
         return color;
     }
 
@@ -88,7 +84,6 @@ public class UIProperties extends VRSProperties {
             return true;
 
         return e.getButton() == getMousePopupButton();
-
     }
 
     public int getMousePopupButton() {
@@ -113,14 +108,18 @@ public class UIProperties extends VRSProperties {
         return getBooleanProperty(UIPropertyNames.SINGLE_CLICK_ACTION, true);
     }
 
+    public void setSingleClickAction(boolean value) {
+        setProperty(UIPropertyNames.SINGLE_CLICK_ACTION, Boolean.toString(value));
+    }
+
     /**
      * Wrapper to detection 'ActionCmd Events' since the PLAF way to detect event doesn't always work.
      * Typically this is a single mouse click or a double mouse click.
      *
-     * @param e
-     * @return
+     * @param e the vent.
+     * @return true for action click.
      */
-    public boolean isAction(MouseEvent e) {
+    public boolean isActionClick(MouseEvent e) {
         int mask = e.getModifiersEx();
 
         if ((mask & MouseEvent.CTRL_DOWN_MASK) > 0) {
@@ -157,12 +156,37 @@ public class UIProperties extends VRSProperties {
         return false;
     }
 
-    public int getShowDailogDelay() {
+    public int getShowDialogDelay() {
         return getIntegerProperty(UIPropertyNames.UI_MONITOR_SHOW_DIALOG_DELAY, 2);
     }
 
-    public boolean getAlwaysShowDailog() {
+    public boolean getAlwaysShowDialog() {
         return getBooleanProperty(UIPropertyNames.UI_MONITOR_ALWAYS_SHOW_DIALOG, true);
     }
+
+    public LookAndFeelType getLAFType() {
+        String valStr = this.getStringProperty(UIPropertyNames.UI_LOOK_AND_FEEL_TYPE);
+        if (StringUtil.isEmpty(valStr)) {
+            return LookAndFeelType.DEFAULT;
+        }
+        return LookAndFeelType.valueOf(valStr);
+    }
+
+    public void setLAFType(LookAndFeelType lafType) {
+        setProperty(UIPropertyNames.UI_LOOK_AND_FEEL_TYPE, lafType.toString());
+    }
+
+    public void setLaFEnabled(boolean value) {
+        setProperty(UIPropertyNames.UI_LOOK_AND_FEEL_ENABLED,Boolean.toString(value));
+    }
+
+    public boolean getLaFEnabled() {
+        return getBooleanProperty(UIPropertyNames.UI_LOOK_AND_FEEL_ENABLED,false);
+    }
+
+    public Color getFocusBorderColor() {
+        return getColor(UIPropertyNames.FOCUS_BORDER_COLOR_ENABLED, Color.LIGHT_GRAY);
+    }
+
 
 }

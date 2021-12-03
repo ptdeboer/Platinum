@@ -45,8 +45,6 @@ import java.util.List;
  * This class manages a Java Keystore which contains X509Certificates. <br>
  * Added support for PEM and DER Certificates so that grid certificates can be stored as well in one
  * single 'cacerts' file.
- *
- *
  */
 @Slf4j
 public class CertificateStore {
@@ -309,7 +307,7 @@ public class CertificateStore {
     /**
      * Default Options
      */
-    private CaCertOptions cacertOptions = new CaCertOptions();
+    private final CaCertOptions cacertOptions = new CaCertOptions();
 
     /**
      * The Java KeyStore to manage.
@@ -329,7 +327,7 @@ public class CertificateStore {
 
     private boolean isPersistent = true;
 
-    private Object keyStoreMutex = new Object();
+    private final Object keyStoreMutex = new Object();
 
     private String userPrivateKeyAlias = null;
 

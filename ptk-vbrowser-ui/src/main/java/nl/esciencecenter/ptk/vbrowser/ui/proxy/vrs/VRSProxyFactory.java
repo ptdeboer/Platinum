@@ -54,9 +54,9 @@ public class VRSProxyFactory extends ProxyFactory {
     // 
     // ========================================================================
 
-    private VRSClient vrsClient;
+    private final VRSClient vrsClient;
 
-    private VRSCopyManager transferManager;
+    private final VRSCopyManager transferManager;
 
     protected VRSProxyNodeDnDHandler proxyDnDHandler = null;
 
@@ -133,17 +133,24 @@ public class VRSProxyFactory extends ProxyFactory {
         return proxyDnDHandler;
     }
 
-    public ProxyNode updateProxyNode(VPath vpath, boolean refreshCache) throws ProxyException {
-        VRSProxyNode newNode = createVRSProxyNode(vpath, vpath.getVRL());
-        super.cacheUpdate(newNode);
-        return newNode;
+    public VRSProxyNode registerVRSProxyNode(VPath vpath) throws ProxyException {
+
+        ProxyNode prevNode = super.cacheFetch(vpath.getVRL());
+
+        if ((prevNode != null) && (prevNode instanceof VRSProxyNode)) {
+            return (VRSProxyNode) prevNode;
+        }
+
+        VRSProxyNode vrsNode = createVRSProxyNode(vpath, vpath.getVRL());
+        super.cacheUpdate(vrsNode);
+        return vrsNode;
     }
 
-    public List<ProxyNode> updateProxyNodes(List<VPath> vpaths, boolean refreshCache)
+    public List<ProxyNode> registerVRSProxyNodes(List<VPath> vpaths)
             throws ProxyException {
         ArrayList<ProxyNode> proxyNodes = new ArrayList<ProxyNode>();
         for (int i = 0; i < vpaths.size(); i++) {
-            proxyNodes.add(updateProxyNode(vpaths.get(i), refreshCache));
+            proxyNodes.add(registerVRSProxyNode(vpaths.get(i)));
         }
         return proxyNodes;
     }

@@ -36,7 +36,7 @@ public class ByteBufferBody extends AbstractContentBody {
 
     private final String filename;
 
-    private PutMonitor putMonitor;
+    private final PutMonitor putMonitor;
 
     public ByteBufferBody(final byte[] data, final String mimeType, final String filename,
                           PutMonitor optPutMonitor) {

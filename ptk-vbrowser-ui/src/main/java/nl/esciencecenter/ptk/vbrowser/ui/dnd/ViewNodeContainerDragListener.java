@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.dnd;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeComponent;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNodeContainer;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -38,6 +39,7 @@ import java.awt.event.InputEvent;
  * <p>
  * This Drag listener checks and selects the actual selected ViewNode inside a ViewNodeContainer.
  */
+@Slf4j
 public class ViewNodeContainerDragListener implements DragGestureListener {
 
     public ViewNodeContainerDragListener() {
@@ -62,7 +64,7 @@ public class ViewNodeContainerDragListener implements DragGestureListener {
         boolean multi = ((dge.getTriggerEvent().getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0);
 
         if ((comp instanceof ViewNodeComponent) == false) {
-            DnDUtil.log.error(this.getClass() + ":Actual component is not a ViewNode:{}", comp);
+            log.error(this.getClass() + ":Actual component is not a ViewNode:{}", comp);
             return;
         }
 
@@ -72,7 +74,7 @@ public class ViewNodeContainerDragListener implements DragGestureListener {
             // node could be the parent itself!
             ViewNodeContainer parent = node.getViewContainer();
 
-            DnDUtil.log.debug("Drag from ViewNode!:{}", node.getViewNode().getVRL());
+            log.debug("Drag from ViewNode!:{}", node.getViewNode().getVRL());
 
             // Redirect Drag Selection to Parent to enable multi-select.
             if (parent != null) {
@@ -94,14 +96,14 @@ public class ViewNodeContainerDragListener implements DragGestureListener {
 
         VRL vri = ((ViewNodeComponent) comp).getViewNode().getVRL();
 
-        DnDUtil.log.debug("Drag Vri:{}", vri);
+        log.debug("Drag Vri:{}", vri);
 
         // Swing way to initiate a Drag:
         TransferHandler trans = comp.getTransferHandler();
         if (trans != null) {
             trans.exportAsDrag(comp, trigger, DnDConstants.ACTION_COPY);
         } else {
-            DnDUtil.log.error("***Fatal: NULL TransferHandler for:{}" + comp);
+            log.error("***Fatal: NULL TransferHandler for:{}" + comp);
         }
     }
 

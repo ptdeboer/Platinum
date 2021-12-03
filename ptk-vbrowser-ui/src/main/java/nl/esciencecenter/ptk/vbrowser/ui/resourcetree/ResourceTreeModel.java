@@ -27,8 +27,8 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Generic ResourceTreeModel containing only ViewNodes and Attributes.
@@ -99,11 +99,6 @@ public class ResourceTreeModel extends DefaultTreeModel {
         return parent.getIndex(child);
     }
 
-    // public Enumeration<ResourceTreeNode> getChildren(ResourceTreeNode node)
-    // {
-    // return node.children();
-    // }
-
     // ========================================================================
     // Model updates
     // ========================================================================
@@ -124,7 +119,7 @@ public class ResourceTreeModel extends DefaultTreeModel {
     }
 
     public void clearNode(ResourceTreeNode node, boolean fireEvent) {
-        // remove previous children, might alread been removed
+        // remove previous children, might already been removed.
         node.clear();
 
         if (fireEvent)
@@ -142,7 +137,7 @@ public class ResourceTreeModel extends DefaultTreeModel {
     protected synchronized void updateChilds(ResourceTreeNode targetNode, ViewNode[] childs,
                                              boolean mergeAppend) {
         log.debug("+++ updateChilds(append={}) for:{},numChilds=#{}",
-                (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRI(),
+                (mergeAppend == true ? "mergeAppend" : "set"), targetNode.getVRL(),
                 ((childs != null) ? "" + childs.length : "?"));
 
         // possible background thread:
@@ -326,21 +321,21 @@ public class ResourceTreeModel extends DefaultTreeModel {
      */
     public List<ResourceTreeNode> findNodes(VRL locator) {
         ResourceTreeNode current = this.getRoot();
-        Vector<ResourceTreeNode> nodes = new Vector<ResourceTreeNode>();
+        List<ResourceTreeNode> nodes = new ArrayList<>();
         return findNodes(nodes, current, locator);
     }
 
     protected List<ResourceTreeNode> findNodes(List<ResourceTreeNode> nodes, ResourceTreeNode node,
                                                VRL locator) {
         // check parent:
-        if (node.getVRI().equals(locator))
+        if (node.getVRL().equals(locator))
             nodes.add(node);
 
         java.util.List<ResourceTreeNode> childs = node.getChilds();
         for (ResourceTreeNode child : childs) {
             // skip one recursion:
             if (child.hasChildren() == false) {
-                if (child.getVRI().equals(locator))
+                if (child.getVRL().equals(locator))
                     nodes.add(child);
             } else {
                 findNodes(nodes, child, locator);

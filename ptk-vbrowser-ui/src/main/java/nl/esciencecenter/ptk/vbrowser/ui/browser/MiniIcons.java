@@ -33,24 +33,25 @@ public class MiniIcons {
 
     // @formatter:off
     public static String[][] tabDeleteMiniColors = {
-            { ".", "#000000" },
-            { "X", "#ff0000" }
+            {".", "#000000"},
+            {"X", "#ff0000"}
     };
 
     // @formatter:off
-    public static String tabDeleteMiniIcon =
-            "...........\n" +
-            ".XX.....XX.\n" +
-            "..XX...XX..\n" +
-            "...XX.XX...\n" +
-            "....XXX....\n" +
-            "...XX.XX...\n" +
-            "..XX...XX..\n" +
-            ".XX.....XX.\n" +
-            "...........\n";
+    public static String[] tabDeleteMiniIcon = {
+            "...........",
+            ".XX.....XX.",
+            "..XX...XX..",
+            "...XX.XX...",
+            "....XXX....",
+            "...XX.XX...",
+            "..XX...XX..",
+            ".XX.....XX.",
+            "..........."
+    };
 
     // @formatter:off
-    public static String tabAddMiniIcon =
+    public static String tabAddMiniIcon = "" +
             ".........\n" +
             "....X....\n" +
             "....X....\n" +
@@ -62,7 +63,7 @@ public class MiniIcons {
             ".........\n";
 
     // @formatter:off
-    public static String tabMiniQuestionMark =
+    public static String tabMiniQuestionMark = "" +
             ".........\n" +
             "...XXXX..\n" +
             "..XX..XX.\n" +

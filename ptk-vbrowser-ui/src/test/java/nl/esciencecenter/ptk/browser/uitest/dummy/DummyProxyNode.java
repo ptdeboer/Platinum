@@ -23,6 +23,7 @@ package nl.esciencecenter.ptk.browser.uitest.dummy;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
@@ -215,7 +216,7 @@ public class DummyProxyNode extends ProxyNode {
     }
 
     @Override
-    protected VRL doGetResourceLinkVRL() {
+    protected VRL doGetResourceLinkTargetVRL() {
         return null;
     }
 
@@ -228,7 +229,7 @@ public class DummyProxyNode extends ProxyNode {
     }
 
     @Override
-    protected void doDelete(boolean recurse) throws ProxyException {
+    protected void doDelete(boolean recurse, ITaskMonitor monitor) throws ProxyException {
         if (recurse) {
             throw new ProxyException("Recursive delete not implemented");
         }

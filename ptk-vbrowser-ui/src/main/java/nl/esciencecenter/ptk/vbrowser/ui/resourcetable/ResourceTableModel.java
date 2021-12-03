@@ -52,7 +52,7 @@ public class ResourceTableModel extends AbstractTableModel implements
         private String rowKey;
         private AttributeSet rowAttributes;
         // cached attribute names index for fast searching.
-        private String _rowAttributeNames[];
+        private String[] _rowAttributeNames;
         private ViewNode viewNode;
 
         public RowData(ViewNode viewNode, String rowKey, AttributeSet attrs) {
@@ -61,9 +61,9 @@ public class ResourceTableModel extends AbstractTableModel implements
         }
 
         private void init(String newRowKey, AttributeSet newAttrs) {
-            this.rowKey=newRowKey;
-            this.rowAttributes=newAttrs;
-            this._rowAttributeNames=newAttrs.createKeyArray();
+            this.rowKey = newRowKey;
+            this.rowAttributes = newAttrs;
+            this._rowAttributeNames = newAttrs.createKeyArray();
         }
 
         public String getKey() {
@@ -86,7 +86,7 @@ public class ResourceTableModel extends AbstractTableModel implements
         public boolean setValue(int colNr, Object value) {
             String attrName = getAttributeName(colNr);
 
-            if (attrName==null) {
+            if (attrName == null) {
                 log.error("Column attribute name not found for nr:{}", colNr);
                 return false;
             }
@@ -105,7 +105,7 @@ public class ResourceTableModel extends AbstractTableModel implements
                 for (Attribute attr : attrs)
                     newData.put(attr);
             }
-            init(rowKey,newData);
+            init(rowKey, newData);
             uiFireRowChanged(this);
         }
 
@@ -125,8 +125,8 @@ public class ResourceTableModel extends AbstractTableModel implements
         }
 
         public String getAttributeName(int colNr) {
-            if ((colNr<0) || (colNr>=this._rowAttributeNames.length)) {
-                log.error("Column index out of bound:{} <> {}",colNr,_rowAttributeNames.length);
+            if ((colNr < 0) || (colNr >= this._rowAttributeNames.length)) {
+                log.error("Column index out of bound:{} <> {}", colNr, _rowAttributeNames.length);
                 return null;
             }
             return this._rowAttributeNames[colNr];
@@ -156,12 +156,12 @@ public class ResourceTableModel extends AbstractTableModel implements
      * Synchronized Vector which contains rows as shown, default empty NOT null. Also serves as data
      * mutex!
      */
-    private Vector<RowData> rows = new Vector<RowData>();
+    private final Vector<RowData> rows = new Vector<RowData>();
 
     /**
      * Mapping of Key String to row Index number
      */
-    private Map<String, Integer> rowKeyIndex = new Hashtable<String, Integer>();
+    private final Map<String, Integer> rowKeyIndex = new Hashtable<String, Integer>();
 
     // Current HeaderModel default empty, NOT null
     private HeaderModel headers = new HeaderModel();
@@ -859,11 +859,11 @@ public class ResourceTableModel extends AbstractTableModel implements
         RowData row = getRow(rowNr);
 
         if (row == null) {
-            log.warn("setValueAt()[{},{}]: Row not found:{}",rowNr,colNr,rowNr);
+            log.warn("setValueAt()[{},{}]: Row not found:{}", rowNr, colNr, rowNr);
             return;
         }
 
-        row.setValue(colNr,value);
+        row.setValue(colNr, value);
 
         // optimization note: table will collect multiple events
         // and do the drawing at once.

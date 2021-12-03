@@ -47,7 +47,7 @@ public class ResponseInputStream extends InputStream implements WebStream, Dispo
 
     protected InputStream sourceStream;
 
-    private URI uri;
+    private final URI uri;
 
     private IOException closeException;
 

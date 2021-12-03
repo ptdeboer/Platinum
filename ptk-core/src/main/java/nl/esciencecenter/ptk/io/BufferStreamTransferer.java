@@ -41,7 +41,7 @@ public class BufferStreamTransferer {
 
     // === instance ===
 
-    private String streamCopySubTaskName = "Performing StreamCopy";
+    private final String streamCopySubTaskName = "Performing StreamCopy";
 
     // data buffer: acces is synchronized.
     // This object is also used as general mutex.
@@ -117,9 +117,9 @@ public class BufferStreamTransferer {
         this.bufferSize = size;
     }
 
-    private Boolean readerWait = new Boolean(true);
+    private final Boolean readerWait = new Boolean(true);
 
-    private Boolean writerWait = new Boolean(true);
+    private final Boolean writerWait = new Boolean(true);
 
     private OutputStream outputStream = null;
 

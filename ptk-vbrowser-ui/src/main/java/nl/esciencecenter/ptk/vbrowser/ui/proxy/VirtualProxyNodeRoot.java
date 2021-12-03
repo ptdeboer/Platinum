@@ -23,6 +23,7 @@ package nl.esciencecenter.ptk.vbrowser.ui.proxy;
 import nl.esciencecenter.ptk.data.LongHolder;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
@@ -95,7 +96,7 @@ public class VirtualProxyNodeRoot extends ProxyNode {
     }
 
     @Override
-    protected List<String> doGetAttributeNames()  {
+    protected List<String> doGetAttributeNames() {
         return null;
     }
 
@@ -159,7 +160,7 @@ public class VirtualProxyNodeRoot extends ProxyNode {
     }
 
     @Override
-    protected VRL doGetResourceLinkVRL() {
+    protected VRL doGetResourceLinkTargetVRL() {
         return null;
     }
 
@@ -169,7 +170,7 @@ public class VirtualProxyNodeRoot extends ProxyNode {
     }
 
     @Override
-    protected void doDelete(boolean recurse) throws ProxyException {
+    protected void doDelete(boolean recurse, ITaskMonitor monitor) throws ProxyException {
         throw new ProxyException("Virtual root cannot be deleted.");
     }
 

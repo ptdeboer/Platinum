@@ -21,10 +21,14 @@
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetree;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings;
+import nl.esciencecenter.ptk.vbrowser.ui.actions.UIAction;
+import nl.esciencecenter.ptk.vbrowser.ui.actions.UIActionListener;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
 import nl.esciencecenter.ptk.vbrowser.ui.model.*;
+import nl.esciencecenter.ptk.vbrowser.ui.properties.UIProperties;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeSelectionModel;
@@ -34,28 +38,48 @@ import java.awt.*;
 import java.awt.dnd.Autoscroll;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
  * Actual Swing JTree 'View' Component.
  */
 @Slf4j
-public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll {
+public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll, UIActionListener {
 
-    public class FocusFollower extends MouseMotionAdapter {
+    /**
+     * Follow mouse movements inside Tree and update node focus+effects.
+     */
+    public class MouseFocusFollower extends MouseAdapter implements FocusListener {
         private ResourceTreeNode prevNode;
 
+        @Override
+        public void mouseEntered(MouseEvent event) {
+            log.debug("mouseEntered:{}", event);
+            ResourceTree.this.requestFocusInWindow();
+        }
+
         public void mouseMoved(MouseEvent e) {
-            if (prevNode != null)
+            if (prevNode != null) {
                 ResourceTree.this.toggleFocus(prevNode, false);
+            }
 
             ResourceTreeNode rtnode = ResourceTree.this.getRTNodeUnderPoint(e.getPoint());
-
             ResourceTree.this.toggleFocus(rtnode, true);
-
             prevNode = rtnode;
+        }
+
+        public void focusGained(FocusEvent e) {
+            setBorder(e.getComponent(), true);
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            setBorder(e.getComponent(), false);
+        }
+
+        public void setBorder(Component component, boolean value) {
+            ResourceTree.this.setFocusBorder(value);
         }
     }
 
@@ -89,12 +113,12 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     public void populate(ResourceTreeNode node) {
-        log.debug("ResourceTree:populate():{}", node.getVRI());
-
+        log.debug("ResourceTree:populate():{}", node.getVRL());
         this.dataUpdater.updateChilds(node);
     }
 
     private void init(BrowserInterface browser, ProxyDataSource viewNodeSource) {
+
         // default model
         this.uiModel = UIViewModel.createTreeViewModel();
 
@@ -129,11 +153,17 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 
         // Listen for Tree Selection Events
         addTreeExpansionListener(controller);
-
-        this.addFocusListener(this.resourceTreeListener);
+        // Mouse Focus follower for ResourceTreeNodes: mouse entered, moved and set border:
+        MouseFocusFollower mouseFocusFollower = new MouseFocusFollower();
+        this.addMouseListener(mouseFocusFollower);
+        this.addMouseMotionListener(mouseFocusFollower);
+        this.addFocusListener(mouseFocusFollower);
+        //
         this.addMouseListener(resourceTreeListener);
-        this.addMouseMotionListener(resourceTreeListener);
         this.setFocusable(true);
+
+        // custom quick-view actions.
+        KeyMappings.addActionKeyMappings(this, false);
 
         // === ResourceTreeCellRenderer ===
         // Setting the renderer fires (UI) update events !
@@ -145,8 +175,6 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
 
         // Properties
         this.setFocusable(true);
-        // focus follower for ResourceTreeNodes:
-        this.addMouseMotionListener(new FocusFollower());
 
         // [DnD]
         initDND();
@@ -289,14 +317,15 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         // super.clearSelection();
     }
 
-    public ViewNode[] getNodeSelection() {
+    public java.util.List<ViewNode> getNodeSelection() {
         ResourceTreeNode[] rtnodes = this.getRTSelection();
         if (rtnodes == null)
-            return null;
+            return new ArrayList<>();
 
-        ViewNode[] nodes = new ViewNode[rtnodes.length];
+        java.util.List<ViewNode> nodes = new ArrayList();
+
         for (int i = 0; i < rtnodes.length; i++)
-            nodes[i] = rtnodes[i].getViewItem();
+            nodes.add(rtnodes[i].getViewItem());
 
         return nodes;
     }
@@ -330,12 +359,6 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return false;
     }
 
-    @Override
-    public boolean requestNodeFocus(ViewNode node, boolean value) {
-        // done by focus follower;
-        return false;
-    }
-
     public void toggleFocus(ResourceTreeNode rtnode, boolean value) {
         if (rtnode == null) {
             // unset focus
@@ -358,15 +381,15 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
     }
 
     public ViewNode getCurrentSelectedNode() {
-        ViewNode[] nodes = this.getNodeSelection();
+        java.util.List<ViewNode> nodes = this.getNodeSelection();
 
-        if ((nodes == null) || (nodes.length <= 0))
+        if ((nodes == null) || (nodes.size() <= 0))
             return null;
 
-        return nodes[0];
+        return nodes.get(0);
     }
 
-    private int autoScrollMargin = 12;
+    private final int autoScrollMargin = 12;
 
     @Override
     public void autoscroll(Point p) {
@@ -393,7 +416,56 @@ public class ResourceTree extends JTree implements ViewNodeContainer, Autoscroll
         return controller.getBrowserInterface();
     }
 
+    @Override
+    public Rectangle findBoundsOfSelectionNode(ViewNode node) {
+        TreePath treePath = this.findTreePathOfSelection(node);
+        if (treePath == null) {
+            return null;
+        }
+        return getPathBounds(treePath);
+    }
+
+    public TreePath findTreePathOfSelection(ViewNode node) {
+        TreePath[] selPaths = getSelectionPaths();
+        if (selPaths == null) {
+            return null;
+        }
+        for (TreePath path : selPaths) {
+            Object pathNode = path.getLastPathComponent();
+            if ((pathNode instanceof ResourceTreeNode) && ((ResourceTreeNode) pathNode).viewNode.equals(node)) {
+                log.debug("Found selected viewNode: {}", path);
+                return path;
+            }
+        }
+        return null;
+    }
+
+
     public ProxyDataSource getDataSource() {
         return dataUpdater.getDataSource();
     }
+
+    public JComponent getJComponent() {
+        return this;
+    }
+
+    @Override
+    public void uiActionPerformed(UIAction action, ActionEvent event) {
+        // Delegate. need better api.
+        this.resourceTreeListener.uiActionPerformed(action, event);
+    }
+
+    public void setFocusBorder(boolean value) {
+        if (value) {
+            setBorder(BorderFactory.createLineBorder(getUIProperties().getFocusBorderColor(), 1));
+        } else {
+            // Invisible border to avoid jumping of content.
+            setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        }
+    }
+
+    private UIProperties getUIProperties() {
+        return this.getBrowserInterface().getPlatform().getGuiSettings();
+    }
+
 }

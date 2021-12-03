@@ -81,17 +81,18 @@ public class VRSCopyManager implements VRSTransferManager {
             ArrayList<VPath> nodes = new ArrayList<VPath>();
 
             for (VRL vrl : vrls) {
-                VPath sourcePath = vrsClient.openPath(vrl);
+                VPath targetPath = vrsClient.openPath(vrl);
+                boolean targetIsComposite=targetPath.isComposite();
                 monitor.logPrintf(" - linkDrop: %s\n", vrl);
                 VInfoResourcePath newNode;
 
                 if (destPath instanceof VInfoResourcePath) {
                     VInfoResourcePath infoDest = ((VInfoResourcePath) destPath);
 
-                    if (sourcePath instanceof VInfoResourcePath) {
-                        newNode = doCopyInfoNodeTo(sourcePath, destPath);
+                    if (targetPath instanceof VInfoResourcePath) {
+                        newNode = doCopyInfoNodeTo(targetPath, destPath);
                     } else {
-                        newNode = infoDest.createResourceLink(vrl, "Link to:" + vrl.getBasename());
+                        newNode = infoDest.createResourceLink(vrl, "Link to:" + vrl.getBasename(), targetIsComposite);
                     }
                     monitor.logPrintf(" - created new ResourceNode: %s\n", newNode);
                     nodes.add(newNode);
@@ -117,8 +118,8 @@ public class VRSCopyManager implements VRSTransferManager {
             return true;
         } catch (Throwable t) {
             monitor.setException(t);
-            monitor.logPrintf("Exception:%s\n",t.getMessage());
-            log.error("Exception:"+t.getMessage(), t);
+            monitor.logPrintf("Exception:%s\n", t.getMessage());
+            log.error("Exception:" + t.getMessage(), t);
             throw new VrsException(t.getMessage(), t);
         }
 

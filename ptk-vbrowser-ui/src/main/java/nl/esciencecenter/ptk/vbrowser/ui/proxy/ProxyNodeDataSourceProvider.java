@@ -38,11 +38,11 @@ import java.util.List;
  */
 public class ProxyNodeDataSourceProvider implements ProxyDataSource {
 
-    private ProxyNode rootNode;
+    private final ProxyNode rootNode;
 
-    private ProxyFactory proxyFactory;
+    private final ProxyFactory proxyFactory;
 
-    private VRSEventNotifier eventNotifier;
+    private final VRSEventNotifier eventNotifier;
 
     public ProxyNodeDataSourceProvider(ProxyNode sourceNode) {
         this.rootNode = sourceNode;
@@ -59,13 +59,11 @@ public class ProxyNodeDataSourceProvider implements ProxyDataSource {
                                           LongHolder numChildsLeft) throws ProxyException {
         ProxyNode[] childs;
 
-        // check toplevel:
         if (rootNode.hasLocator(locator)) {
             childs = ProxyNode.toArray(rootNode.getChilds(offset, range, numChildsLeft));
         } else {
-
             ProxyNode parent = proxyFactory.openLocation(locator);
-            childs = ProxyNode.toArray(parent.getChilds());
+            childs = ProxyNode.toArray(parent.getChilds(offset, range, numChildsLeft));
         }
 
         return childs;

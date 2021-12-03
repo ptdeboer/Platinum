@@ -29,6 +29,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
  * Data Source for ViewNodes.
  */
 public interface ViewNodeDataSource {
+
     /**
      * Register listener to receive data source update events. Listeners received events about
      * created ViewNodes

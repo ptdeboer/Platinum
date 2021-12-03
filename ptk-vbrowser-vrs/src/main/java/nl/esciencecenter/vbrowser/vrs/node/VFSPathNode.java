@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringList;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.presentation.Presentation;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.vbrowser.vrs.VFSPath;
 import nl.esciencecenter.vbrowser.vrs.VFileSystem;
@@ -307,25 +308,31 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
     }
 
     public boolean delete() throws VrsException {
-        return delete(LinkOption.NOFOLLOW_LINKS);
+        return delete(LinkOption.NOFOLLOW_LINKS, null);
     }
 
     public boolean delete(boolean recurse) throws VrsException {
-        return delete(recurse, LinkOption.NOFOLLOW_LINKS);
+        return delete(recurse, null, LinkOption.NOFOLLOW_LINKS);
     }
 
-    public boolean delete(boolean recurse, LinkOption... linkOptions) throws VrsException {
-        if (recurse == true) {
-            deleteContents(this, linkOptions);
-        }
+    public boolean delete(boolean recurse, ITaskMonitor optMonitor) throws VrsException {
+        return delete(recurse, optMonitor, LinkOption.NOFOLLOW_LINKS);
+    }
 
+    public boolean delete(boolean recurse, ITaskMonitor optMonitor, LinkOption... linkOptions) throws VrsException {
+        if (recurse == true) {
+            deleteContents(this, optMonitor, linkOptions);
+        }
+        if (optMonitor != null) {
+            optMonitor.logPrintf("Deleting:%s\n", this.getVRL());
+        }
         return delete(linkOptions);
     }
 
     /**
      * Recursive delete contents. Does not delete this directory.
      */
-    public static void deleteContents(VFSPath dirPath, LinkOption... linkOptions) throws VrsException {
+    public static void deleteContents(VFSPath dirPath, ITaskMonitor optMonitor, LinkOption... linkOptions) throws VrsException {
         // add content of current to heap
         List<? extends VFSPath> nodes = dirPath.list();
 
@@ -346,11 +353,14 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
             if (node.getVRL().isParentOf(dirPath.getVRL())) {
                 throw new VrsException("Refusing to delete parent of current path:" + node);
             } else if (node.getVRL().equals(dirPath.getVRL())) {
-                throw new VrsException("Recursive delete detected. Child node euqals parent:" + node);
+                throw new VrsException("Recursive delete detected. Child node equals parent:" + node);
             }
 
             if (node.isDir(linkOptions)) {
-                deleteContents(node, linkOptions);
+                deleteContents(node, optMonitor, linkOptions);
+            }
+            if (optMonitor != null) {
+                optMonitor.logPrintf("Deleting:%s\n", node.getVRL());
             }
             node.delete();
         }

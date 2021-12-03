@@ -50,7 +50,7 @@ public class TaskMonitorAdaptor implements ITaskMonitor {
 
     // === privates ===
 
-    private Object waitMutex = new Object();
+    private final Object waitMutex = new Object();
 
     private Throwable exception = null;
 
@@ -193,9 +193,9 @@ public class TaskMonitorAdaptor implements ITaskMonitor {
         {
             // sloppy code!
             if (format == null) {
-                taskLogger.record("logPrintf: NULL format",true);
+                taskLogger.record("logPrintf: NULL format", true);
             } else {
-                taskLogger.record(String.format(format, args),false);
+                taskLogger.record(String.format(format, args), false);
             }
         }
     }

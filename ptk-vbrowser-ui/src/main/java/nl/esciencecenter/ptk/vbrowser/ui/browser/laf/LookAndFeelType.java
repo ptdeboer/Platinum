@@ -1,8 +1,24 @@
 package nl.esciencecenter.ptk.vbrowser.ui.browser.laf;
 
 /**
- * Runtime supported LAF's
+ * Runtime supported LAF's.
+ * Updated for Jdk 11.
  */
 public enum LookAndFeelType {
-    NATIVE, DEFAULT, WINDOWS, METAL, GTK, KDEQT, PLASTIC_3D, PLASTIC_XP, QUAQUA, NIMBUS, SEAGLASS
+    DEFAULT("Default"),
+    NATIVE("Native"),
+    WINDOWS("Windows"),
+    METAL("Metal"),
+    MOTIF("Motif (CDE)"),
+    GTK("GTK"),
+    NIMBUS("Nimbus"),
+    ;
+    final private String name;
+    LookAndFeelType(String name) {
+        this.name=name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

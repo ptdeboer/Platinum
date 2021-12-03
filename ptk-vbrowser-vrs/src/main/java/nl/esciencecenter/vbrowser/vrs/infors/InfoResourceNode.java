@@ -41,8 +41,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static nl.esciencecenter.vbrowser.vrs.data.AttributeNames.ATTR_NAME;
-
 /**
  * Common parent for ResourcFolders, ResourceLinks and the RootInfoNode.<br>
  * Implements the Folder management methods and target resolving of ResourceLinks.
@@ -63,6 +61,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     }
 
     public static InfoResourceNode createLinkNode(InfoRSPathNode parent, String logicalName, VRL targetLink,
+                                                  boolean targetIsComposite,
                                                   String optIconURL, boolean showLinkIcon) throws VRLSyntaxException {
         VRL logicalVRL = parent.createNewSubNodeVRL();
         InfoResourceNode node = new InfoResourceNode(parent, InfoRSConstants.RESOURCELINK, logicalVRL);
@@ -70,6 +69,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         node.setIconUrl(optIconURL);
         node.setShowLinkIcon(showLinkIcon);
         node.setLogicalName(logicalName);
+        node.setTargetIsComposite(targetIsComposite);
         return node;
     }
 
@@ -152,12 +152,20 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         if (name == null) {
             VRL targetVrl = this.getTargetVRL();
             if (targetVrl != null) {
-                name = "link:" + targetVrl.toString();
+                name = "link:" + targetVrl;
             } else {
                 name = getVRL().getBasename();
             }
         }
         return name;
+    }
+
+    @Override
+    public boolean isComposite() {
+        if (!isResourceLink()) {
+            return super.isComposite();
+        }
+        return getTargetIsComposite(super.isComposite());
     }
 
     public VRL getTargetVRL() {
@@ -181,8 +189,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         attributes.set(InfoRSConstants.RESOURCE_TARGET_ISCOMPOSITE, value);
     }
 
-    public boolean getTargetIsComposite(boolean value) {
-        return attributes.getBooleanValue(InfoRSConstants.RESOURCE_TARGET_ISCOMPOSITE, false);
+    public boolean getTargetIsComposite(boolean defValue) {
+        return attributes.getBooleanValue(InfoRSConstants.RESOURCE_TARGET_ISCOMPOSITE, defValue);
     }
 
     @Override
@@ -199,7 +207,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         return getInfoRS().getVRSClient().openPath(vrl);
     }
 
-    public List<AttributeDescription> getResourceAttributeDescriptions()  {
+    public List<AttributeDescription> getResourceAttributeDescriptions() {
         ArrayList<AttributeDescription> descs = new ArrayList<AttributeDescription>();
         descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_MIMETYPE, AttributeType.STRING, false,
                 "Resource MimeType"));
@@ -207,6 +215,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
                 "Resource logical name"));
         descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_TARGETVRL, AttributeType.VRL, true,
                 "Resource Target VRL"));
+        descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_TARGET_ISCOMPOSITE, AttributeType.BOOLEAN, true,
+                "Resource Target is Composite"));
         descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_ICONURL, AttributeType.STRING, true,
                 "Resource Icon URL"));
         descs.add(new AttributeDescription(InfoRSConstants.RESOURCE_SHOWLINKICON, AttributeType.BOOLEAN, true,
@@ -223,8 +233,9 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
             return attr;
 
         if (name.equals(InfoRSConstants.RESOURCE_TARGETVRL)) {
-            // VRL attribute or nill attribute. 
             attr = AttributeUtil.createVRLAttribute(name, getTargetVRL(), true);
+        } else if (name.equals(InfoRSConstants.RESOURCE_TARGET_ISCOMPOSITE)) {
+            attr = new Attribute(name, getTargetIsComposite(true));
         } else if (name.equals(InfoRSConstants.RESOURCE_MIMETYPE)) {
             attr = new Attribute(name, getMimeType());
         } else if (name.equals(InfoRSConstants.RESOURCE_SHOWLINKICON)) {
@@ -301,8 +312,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     // Create/Delete Links/ResourceFolders
     // ======================================
 
-    public InfoResourceNode addResourceLink(String folderName, String logicalName, VRL targetLink, String optIconURL,
-                                            boolean save) throws VrsException {
+    public InfoResourceNode addResourceLink(String folderName, String logicalName, VRL targetLink, boolean targetIsComposite,
+                                            String optIconURL, boolean save) throws VrsException {
         log.debug(">>>Adding new resourceLink:{}", targetLink);
 
         InfoRSPathNode parentNode;
@@ -316,7 +327,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
             parentNode = this;
         }
 
-        InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, optIconURL, true);
+        InfoResourceNode node = InfoResourceNode.createLinkNode(parentNode, logicalName, targetLink, targetIsComposite,
+                optIconURL, true);
         parentNode.addSubNode(node);
 
         if (save) {
@@ -341,13 +353,13 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         }
     }
 
-    public InfoResourceNode create(String type, String name) throws VrsException {
+    public InfoResourceNode create(String type, String name, boolean targetIsComposite) throws VrsException {
         if (StringUtil.equals(type, InfoRSConstants.RESOURCEFOLDER)) {
             return this.createFolder(name);
         } else if (StringUtil.equals(type, InfoRSConstants.RESOURCELINK)) {
             // create link with dummy VRL;
             VRL vrl = this.resolveVRL("NewLink");
-            return this.createResourceLink(vrl, name);
+            return this.createResourceLink(vrl, name,targetIsComposite);
         } else {
             throw new VrsException("Resource type not supported:" + type);
         }
@@ -359,8 +371,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     }
 
     @Override
-    public InfoResourceNode createResourceLink(VRL targetVRL, String logicalName) throws VrsException {
-        InfoResourceNode subNode = InfoResourceNode.createLinkNode(this, logicalName, targetVRL, null, true);
+    public InfoResourceNode createResourceLink(VRL targetVRL, String logicalName, boolean targetIsComposite) throws VrsException {
+        InfoResourceNode subNode = InfoResourceNode.createLinkNode(this, logicalName, targetVRL, targetIsComposite, null, true);
         addPersistantNode(subNode, true);
         return subNode;
     }
@@ -435,8 +447,8 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
 
     @Override
     public boolean setAttributes(Attribute[] attrs) {
-        for (Attribute attr:attrs) {
-            this.setAttribute(attr,false);
+        for (Attribute attr : attrs) {
+            this.setAttribute(attr, false);
         }
         this.save();
         return true;
@@ -444,7 +456,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
 
     @Override
     public boolean setAttribute(Attribute attr) {
-        return this.setAttribute(attr,true);
+        return this.setAttribute(attr, true);
     }
 
     public boolean setAttribute(Attribute attr, boolean save) {

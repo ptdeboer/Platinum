@@ -21,13 +21,13 @@ public class SftpChannel implements AutoCloseable {
 
     private static final Logger logger = LoggerFactory.getLogger(SftpChannel.class);
 
-    private ChannelSftp channel;
+    private final ChannelSftp channel;
 
-    private Object channelMutex = new Object();
+    private final Object channelMutex = new Object();
 
     private String userHome;
 
-    private SshSession sshSession;
+    private final SshSession sshSession;
 
     public SftpChannel(SshSession session, ChannelSftp channel) {
         this.channel = channel;

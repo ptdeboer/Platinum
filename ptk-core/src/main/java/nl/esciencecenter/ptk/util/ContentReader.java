@@ -12,9 +12,9 @@ import java.util.Properties;
  */
 public class ContentReader implements Readable {
 
-    private boolean autoClose;
-    private InputStream inputStream;
-    private String charEncoding;
+    private final boolean autoClose;
+    private final InputStream inputStream;
+    private final String charEncoding;
 
 
     public ContentReader(InputStream inps) {

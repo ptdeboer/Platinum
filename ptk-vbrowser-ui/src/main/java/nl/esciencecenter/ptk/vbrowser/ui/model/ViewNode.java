@@ -33,20 +33,17 @@ import java.util.Map;
  * This is the UI component which is actually 'viewed'. Multiple ViewNodes can be "viewing" a single
  * resource (ProxyNode). See ProxyNode for resource attributes.
  */
-public class ViewNode // candidate: implements Serializable
-{
+public class ViewNode {
+
     public static final String DEFAULT_ICON = "defaultIcon";
-
     public static final String FOCUS_ICON = "focusIcon";
-
     public static final String SELECTED_ICON = "selectedIcon";
-
     public static final String SELECTED_FOCUS_ICON = "selectedFocusIcon";
 
-    public static VRL[] toVRLs(ViewNode[] selections) {
-        VRL[] vrls = new VRL[selections.length];
-        for (int i = 0; i < selections.length; i++) {
-            vrls[i] = selections[i].getVRL();
+    public static VRL[] toVRLs(List<ViewNode> selections) {
+        VRL[] vrls = new VRL[selections.size()];
+        for (int i = 0; i < selections.size(); i++) {
+            vrls[i] = selections.get(i).getVRL();
         }
         return vrls;
     }
@@ -71,7 +68,7 @@ public class ViewNode // candidate: implements Serializable
 
     protected String name;
 
-    protected Map<String, Icon> iconMapping = new Hashtable<String, Icon>();
+    protected Map<String, Icon> iconMapping = new Hashtable<>();
 
     protected String resourceType;
 

@@ -33,8 +33,6 @@ import java.util.Properties;
 /**
  * Simple Font Information holder class. FontInfo is used by the FontToolbar. Use createFont() to
  * instantiate a new Font object using the specified Font information.
- *
- *
  */
 @Slf4j
 public class FontInfo {

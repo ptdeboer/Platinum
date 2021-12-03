@@ -41,11 +41,8 @@ import java.util.List;
 public class InfoRootNode extends InfoResourceNode {
 
     protected InfoRS infors;
-
     protected LocalSystem localSystem;
-
     protected InfoConfigNode configNode;
-
     protected boolean autoSaveConfig = true;
 
     public InfoRootNode(InfoRS infoRS) throws VrsException {

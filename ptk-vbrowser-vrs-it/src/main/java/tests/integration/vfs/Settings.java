@@ -1,9 +1,5 @@
 package tests.integration.vfs;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-
 import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.vbrowser.vrs.VRS;
 import nl.esciencecenter.vbrowser.vrs.VRSContext;
@@ -12,10 +8,12 @@ import nl.esciencecenter.vbrowser.vrs.registry.Registry;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Test configuration settings.
- *
- *
  */
 public class Settings {
 
@@ -28,7 +26,7 @@ public class Settings {
     /**
      * Singleton!
      */
-    private static Settings instance;
+    private static final Settings instance;
 
     static {
         instance = new Settings();
@@ -79,7 +77,7 @@ public class Settings {
     // Instance
     // ========================================================================
 
-    private Map<TestLocation, VRL> testLocations = new Hashtable<TestLocation, VRL>();
+    private final Map<TestLocation, VRL> testLocations = new Hashtable<TestLocation, VRL>();
 
     private String testUserName;
 
@@ -106,7 +104,7 @@ public class Settings {
 
     public String[] getLocationNames() {
         Set<TestLocation> set = this.testLocations.keySet();
-        String names[] = new String[set.size()];
+        String[] names = new String[set.size()];
         names = set.toArray(names);
         return names;
     }

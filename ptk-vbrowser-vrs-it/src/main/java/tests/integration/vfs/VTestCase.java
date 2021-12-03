@@ -9,7 +9,7 @@ import nl.esciencecenter.vbrowser.vrs.VRSContext;
  * Super class for the VFS Test Cases.
  */
 public abstract class VTestCase {
-    
+
     public static final int VERBOSE_NONE = 10;
 
     public static final int VERBOSE_ERROR = 8;

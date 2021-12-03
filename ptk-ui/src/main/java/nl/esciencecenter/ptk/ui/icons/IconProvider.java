@@ -69,7 +69,7 @@ public class IconProvider {
     /**
      * Use image render cache for pre-rendered icons.
      */
-    private Hashtable<String, Image> iconHash = new Hashtable<String, Image>();
+    private final Hashtable<String, Image> iconHash = new Hashtable<String, Image>();
 
     /**
      * path prefix for the mimetype icons: <theme>/<size>/<type>
@@ -79,25 +79,25 @@ public class IconProvider {
     /**
      * default file icon
      */
-    private String file_icon_url = "icons/filesystem/file.png";
+    private final String file_icon_url = "icons/filesystem/file.png";
 
     /**
      * default folder icon
      */
-    private String folder_icon_url = "icons/filesystem/folder.png";
+    private final String folder_icon_url = "icons/filesystem/folder.png";
 
     /**
      * default home folder icon
      */
-    private String home_icon_url = "icons/filesystem/home_folder.png";
+    private final String home_icon_url = "icons/filesystem/home_folder.png";
 
-    private String brokenimage_url = "icons/iconprovider/brokenimage.png";
+    private final String brokenimage_url = "icons/iconprovider/brokenimage.png";
 
-    private String link_icon_url = "icons/iconprovider/linkimage.png";
+    private final String link_icon_url = "icons/iconprovider/linkimage.png";
 
-    private ImageRenderer iconRenderer;
+    private final ImageRenderer iconRenderer;
 
-    private ResourceLoader resourceLoader;
+    private final ResourceLoader resourceLoader;
 
     private Image brokenImage;
 
@@ -415,7 +415,7 @@ public class IconProvider {
 
         if (image != null) {
             if (useCache)
-                this.putImageToHash(image, "raw-" + url.toString(), false, null, false, false);
+                this.putImageToHash(image, "raw-" + url, false, null, false, false);
 
             return image;
         } else {

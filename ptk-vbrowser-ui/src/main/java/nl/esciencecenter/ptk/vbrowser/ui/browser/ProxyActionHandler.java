@@ -23,8 +23,10 @@ package nl.esciencecenter.ptk.vbrowser.ui.browser;
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.ui.panels.monitoring.TaskMonitorDialog;
+import nl.esciencecenter.ptk.util.CollectionUtil;
 import nl.esciencecenter.ptk.util.StringUtil;
 import nl.esciencecenter.ptk.vbrowser.ui.actionmenu.ActionCmd;
+import nl.esciencecenter.ptk.vbrowser.ui.dnd.CopyBuffer;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler.DropAction;
 import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
@@ -36,36 +38,49 @@ import nl.esciencecenter.vbrowser.vrs.event.VRSEvent;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Delegated ActionCmd Handler class for the Proxy Browser.<br>
- * Encapsulates Copy, Paste, Create, Delete, Rename, Link and Drag & Drop actions.
+ * Delegated ActionCmd Handler for the Proxy Browser.<br>
+ * Handles Copy, Paste, Create, Delete, Rename, Link and Drag & Drop actions.
  */
 @Slf4j
-public class ProxyActionHandler {
+final public class ProxyActionHandler {
 
-    private ProxyBrowserController proxyBrowser;
+    private final ProxyBrowserController proxyBrowser;
 
     public ProxyActionHandler(ProxyBrowserController proxyBrowser) {
         this.proxyBrowser = proxyBrowser;
     }
 
     public void handlePaste(ActionCmd action, ViewNode node) {
-        log.debug("*** Paste On:{}", node);
+        log.debug("Paste onto: {}", node);
+        if (!proxyBrowser.getCopyBuffer().hasBuffer()) {
+            log.warn("handlePaste(): Nothing in buffer...");
+            return;
+        }
+        CopyBuffer.CopyBufferElement bufEl = proxyBrowser.getCopyBuffer().getFirst();
+        List<VRL> vrls = bufEl.getVrls();
+        boolean isCut = bufEl.isCut();
+        log.error("***FIXME: Paste: {}:{}", isCut ? "<CutPaste>" : "<CopyPaste>", vrls);
+        proxyBrowser.showError("Not implemented", "Can't paste selection: not implemented");
     }
 
-    public void handleCopy(ActionCmd action, ViewNode node) {
-        log.debug("*** Copy On:{}", node);
+    public void handleCopy(ActionCmd action, ViewNode node, boolean isCut) {
+        handleCopySelection(action, node, CollectionUtil.singleton(node), isCut);
     }
 
-    public void handleCopySelection(ActionCmd action, ViewNode node) {
-        log.debug("*** Copy Selection:{}", node);
+    public void handleCopySelection(ActionCmd action, ViewNode node, List<ViewNode> selection, boolean isCut) {
+        List<VRL> vrls = new ArrayList<>();
+        selection.stream().forEach(nodeEl -> vrls.add(nodeEl.getVRL()));
+        proxyBrowser.getCopyBuffer().store(vrls, isCut);
+        log.error("Stored: {}", vrls);
     }
 
-    public void handleDeleteSelection(ViewNodeComponent viewComp, ActionCmd action, ViewNode node) {
-        log.debug("Delete Selection: {}", node);
-        ViewNode[] selections = ((ViewNodeContainer) viewComp).getNodeSelection();
+    public void handleDeleteSelection(ViewNodeComponent viewComp, ActionCmd action) {
+        log.debug("handleDeleteSelection: {}", viewComp);
+        List<ViewNode> selections = ((ViewNodeContainer) viewComp).getNodeSelection();
 
         final VRL[] vrls = ViewNode.toVRLs(selections);
 
@@ -73,7 +88,7 @@ public class ProxyActionHandler {
             @Override
             protected void doTask() {
                 try {
-                    doDeleteNodes(vrls, this.getTaskMonitor());
+                    doDeleteNodes(vrls, this.getTaskMonitor(), false);
                 } catch (Throwable e) {
                     proxyBrowser.handleException("Couldn't delete resources.", e);
                 }
@@ -115,7 +130,7 @@ public class ProxyActionHandler {
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public void handleDelete(ActionCmd action, ViewNode node) {
+    public void handleDelete(ActionCmd action, ViewNode node, boolean recursive) {
         boolean result = proxyBrowser.getUI().askOkCancel("Delete resource" + node + "?",
                 "Do you want to delete:'" + node.getName() + "'(" + node.getVRL() + "')", false);
 
@@ -128,7 +143,7 @@ public class ProxyActionHandler {
             @Override
             protected void doTask() {
                 try {
-                    doDeleteNodes(new VRL[]{locator}, this.getTaskMonitor());
+                    doDeleteNodes(new VRL[]{locator}, this.getTaskMonitor(), recursive);
                 } catch (Throwable e) {
                     proxyBrowser.handleException("Couldn't delete:" + locator, e);
                 }
@@ -198,9 +213,9 @@ public class ProxyActionHandler {
     // Backgrounded actions
     // ====================
 
-    protected void doCreateNewNode(VRL parentLocation, String type, String name,
-                                   ITaskMonitor taskMonitor) {
-        log.debug("*** doCreate:<{}>:{}", type, name);
+    private void doCreateNewNode(VRL parentLocation, String type, String name,
+                                 ITaskMonitor taskMonitor) {
+        log.debug("doCreateNewNode:<{}>:{}", type, name);
 
         try {
             String taskStr = "Creating new node:" + type;
@@ -216,18 +231,18 @@ public class ProxyActionHandler {
         }
     }
 
-    protected void doDeleteNodes(VRL[] locators, ITaskMonitor taskMonitor) {
+    private void doDeleteNodes(VRL[] locators, ITaskMonitor taskMonitor, boolean recursive) {
         for (VRL vrl : locators) {
             try {
                 String taskStr = "Deleting node:" + vrl;
                 taskMonitor.startSubTask(taskStr, 1);
                 ProxyNode delNode = proxyBrowser.openProxyNode(vrl);
                 ProxyNode parentNode = delNode.getParent();
-                delNode.delete(false);
+                delNode.delete(recursive, taskMonitor);
                 // must notify parent as well !
                 fireDeletedNodeEvent(parentNode, delNode);
                 taskMonitor.updateSubTaskDone(taskStr, 1);
-                taskMonitor.logPrintf(" - deleted:%s\n", vrl);
+                taskMonitor.logPrintf("Deleted:<%s>%s\n", delNode.getResourceType(), vrl);
                 taskMonitor.endSubTask(taskStr);
             } catch (Throwable ex) {
                 this.proxyBrowser.handleException("Failed to delete resource:" + vrl, ex);
@@ -236,7 +251,7 @@ public class ProxyActionHandler {
         }
     }
 
-    protected void doRenameNode(VRL locator, String newName, ITaskMonitor taskMonitor) {
+    private void doRenameNode(VRL locator, String newName, ITaskMonitor taskMonitor) {
 
         try {
             String taskStr = "Renaming node:" + locator;
@@ -253,9 +268,9 @@ public class ProxyActionHandler {
         }
     }
 
-    protected void doDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,
-                          ITaskMonitor taskMonitor) {
-        log.debug("*** doDrop {} on:{}", viewNode.getVRL(), dropAction);
+    private void doDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,
+                        ITaskMonitor taskMonitor) {
+        log.debug("doDrop {} on:{}", viewNode.getVRL(), dropAction);
 
         try {
             ProxyFactory factory = this.proxyBrowser.getProxyFactoryFor(viewNode.getVRL());

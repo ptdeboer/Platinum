@@ -58,11 +58,11 @@
             <artifactId>forms</artifactId>
             <version>1.2.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>looks</artifactId>
-            <version>2.2.2</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.jgoodies</groupId>-->
+<!--            <artifactId>looks</artifactId>-->
+<!--            <version>2.2.2</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jclarion</groupId>
             <artifactId>image4j</artifactId>

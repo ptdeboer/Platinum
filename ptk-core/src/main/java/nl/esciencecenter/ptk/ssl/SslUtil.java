@@ -64,16 +64,16 @@ public class SslUtil {
         return socket;
     }
 
-    /**
-     * @deprecated don't use static SSL Context.
-     */
-    public static void setStaticHttpsSslContext(SSLContext context) {
-        // Might not work in custom http/https context:
-        // Check web service compatibility here:
-        SSLSocketFactory factory = context.getSocketFactory();
-        sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultSSLSocketFactory(factory);
-        // sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultSSLSocketFactory(context.getSocketFactory());
-        // sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultAllowUserInteraction(true);
-    }
+//    /**
+//     * @deprecated don't use static SSL Context.
+//     */
+//    public static void setStaticHttpsSslContext(SSLContext context) {
+//        // Might not work in custom http/https context:
+//        // Check web service compatibility here:
+//        SSLSocketFactory factory = context.getSocketFactory();
+//        sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultSSLSocketFactory(factory);
+//        // sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultSSLSocketFactory(context.getSocketFactory());
+//        // sun.net.www.protocol.https.HttpsURLConnectionImpl.setDefaultAllowUserInteraction(true);
+//    }
 
 }

@@ -20,6 +20,7 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.iconspanel;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.ui.fonts.FontInfo;
 import nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeDragSourceListener;
@@ -28,26 +29,24 @@ import nl.esciencecenter.ptk.vbrowser.ui.model.*;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 /**
  * Icon Item. Combines Icon with a label.
  */
-public class IconItem extends JLabel implements ViewNodeComponent, FocusListener {
+@Slf4j
+public class IconItem extends JLabel implements ViewNodeComponent {
 
     private FontInfo fontInfo;
     private int max_icon_width;
     private ViewNode viewNode;
     private boolean selected;
     private UIViewModel uiModel;
+    private int row;
+    private int column;
 
     public IconItem(ViewNodeContainer parent, UIViewModel uiModel, ViewNode item) {
         init(parent, uiModel, item);
@@ -56,12 +55,10 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
     private void init(ViewNodeContainer parent, UIViewModel uiModel, ViewNode node) {
         this.viewNode = node;
         this.uiModel = uiModel;
-
         this.max_icon_width = uiModel.getMaxIconLabelWidth();
-
         this.setIcon(viewNode.getIcon());
         updateLabelText(viewNode.getName(), false);
-
+        //
         boolean visible = true;
 
         // Label Font + Text
@@ -74,21 +71,20 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
         // Label placement:
         if (uiModel.getIconLabelPlacement() == UIViewModel.UIDirection.VERTICAL) {
-            if (visible)
+            if (visible) {
                 this.setIconTextGap(8);
-            else
+            } else {
                 this.setIconTextGap(4);
+            }
 
             this.setVerticalAlignment(JLabel.TOP);
             this.setHorizontalAlignment(JLabel.CENTER);
-
             this.setVerticalTextPosition(JLabel.BOTTOM);
             this.setHorizontalTextPosition(JLabel.CENTER);
         } else {
             this.setIconTextGap(4);
             this.setVerticalAlignment(JLabel.CENTER);
             this.setHorizontalAlignment(JLabel.LEFT);
-
             this.setVerticalTextPosition(JLabel.CENTER);
             this.setHorizontalTextPosition(JLabel.RIGHT);
         }
@@ -96,14 +92,16 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
         // === Listeners ===
         this.setFocusable(true);
         // handle own focus events.
-        this.addFocusListener(this);
-
+        MouseAndFocusFollower mouseFocusListener = new MouseAndFocusFollower();
+        this.addFocusListener(mouseFocusListener);
+        this.addMouseListener(mouseFocusListener);
     }
 
     public void setViewComponentEventAdapter(ViewContainerEventAdapter handler) {
         // IconItem handles focus event, VCEAdaptor handles mouse events (?)
         // this.addFocusListener(handler);
         this.addMouseListener(handler);
+        //this.addKeyListener(handler);
     }
 
     protected void initDND(TransferHandler transferHandler, DragGestureListener dragListener) {
@@ -123,7 +121,6 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
         KeyMappings.addCopyPasteKeymappings(this);
 
         this.setTransferHandler(transferHandler);
-
     }
 
     public void updateLabelText(String text, boolean hasFocus) {
@@ -156,8 +153,8 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
         while (i < len) {
             switch (text.charAt(i)) {
-                // filter out special HTML characters:
-                // only a small set needs to be filtered:
+                // Filter out special HTML characters:
+                // Only a small set needs to be filtered for now:
                 case '/':
                 case '!':
                 case '@':
@@ -197,18 +194,6 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
     }
 
-    public void updateFocusBorder(boolean hasFocus) {
-        Border focusBorder;
-
-        if (hasFocus) {
-            focusBorder = new EtchedBorder();
-        } else {
-            focusBorder = new EmptyBorder(2, 2, 2, 2);
-        }
-
-        this.setBorder(focusBorder);
-    }
-
     public ViewNode getViewNode() {
         return this.viewNode;
     }
@@ -218,6 +203,7 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
     }
 
     public void updateFocus(boolean hasFocus) {
+        log.debug("Update focus:{}:{}", viewNode.getName(), hasFocus);
         updateIcon(selected, hasFocus);
         updateLabelText(viewNode.getName(), hasFocus);
         // updateFocusBorder(hasFocus);
@@ -231,21 +217,6 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
 
     public boolean hasViewNode(ViewNode node) {
         return this.viewNode.equals(node);
-    }
-
-    public boolean requestFocus(boolean value) {
-        // forward to focus subsystem !
-        return this.requestFocusInWindow();
-    }
-
-    @Override
-    public void focusGained(FocusEvent e) {
-        this.updateFocus(true);
-    }
-
-    @Override
-    public void focusLost(FocusEvent e) {
-        this.updateFocus(false);
     }
 
     @Override
@@ -294,6 +265,23 @@ public class IconItem extends JLabel implements ViewNodeComponent, FocusListener
     public Dimension getPreferredSize() {
         Dimension size = super.getPreferredSize();
         return size;
+    }
+
+    public void setRowColumn(int row, int column) {
+        this.row = row;
+        this.column = column;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public boolean hasRowCol(int row2, int col2) {
+        return ((row == row2) && (column == col2));
     }
 
 }

@@ -71,9 +71,7 @@ public class DnDData {
 
     public static class VRLEntry implements Serializable {
         public VRL vrl;
-
         public String resourceType;
-
         public String mimeType;
 
         @Override
@@ -104,7 +102,7 @@ public class DnDData {
     public static DataFlavor flavorVRLEntryList = new DataFlavor(VBROWSER_VRL_MIMETYPE + ";class="
             + DnDUtil.mimeTypeClassName(VRLEntryList.class), "(Array)List<VRL> class");
 
-    /***
+    /**
      * List of VFS VRls contains only (remote) files or directories.
      */
     public static DataFlavor flavorVFSPaths = new DataFlavor(VBROWSER_VFSPATH_MIMETYPE + ";class="
@@ -253,8 +251,7 @@ public class DnDData {
      */
     public static List<VRL> getJavaFileListVRLs(Transferable t) throws UnsupportedFlavorException,
             IOException {
-        java.util.List<File> fileList = (java.util.List<File>) t
-                .getTransferData(DataFlavor.javaFileListFlavor);
+        java.util.List<File> fileList = (java.util.List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
         Iterator<File> iterator = fileList.iterator();
 
         int len = fileList.size();
@@ -262,15 +259,15 @@ public class DnDData {
             return null;
         }
 
-        List<VRL> vris = new ArrayList<VRL>(len);
+        List<VRL> vrls = new ArrayList<VRL>(len);
 
         while (iterator.hasNext()) {
             java.io.File file = iterator.next();
             VRL vrl = new VRL("file", null, file.getAbsolutePath());
-            vris.add(vrl);
+            vrls.add(vrl);
         }
 
-        return vris;
+        return vrls;
     }
 
     /**

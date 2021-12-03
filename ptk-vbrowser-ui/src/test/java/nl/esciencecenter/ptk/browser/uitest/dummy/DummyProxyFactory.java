@@ -20,11 +20,18 @@
 
 package nl.esciencecenter.ptk.browser.uitest.dummy;
 
+import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.data.StringHolder;
+import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ProxyNodeDnDHandler;
+import nl.esciencecenter.ptk.vbrowser.ui.model.ViewNode;
+import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+
+import java.util.List;
 
 public class DummyProxyFactory extends ProxyFactory {
 
@@ -47,6 +54,18 @@ public class DummyProxyFactory extends ProxyFactory {
     @Override
     public boolean canOpen(VRL locator, StringHolder reason) {
         return locator.hasScheme("dummy");
+    }
+
+    @Override
+    public ProxyNodeDnDHandler getProxyDnDHandler(ViewNode viewNode) {
+        return new ProxyNodeDnDHandler() {
+            @Override
+            public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls, ITaskMonitor taskMonitor) throws ProxyException {
+                System.err.printf("FIXME: ViewNodeDnDHandler.doDrop:%s:%s:", dropAction,
+                        new ExtendedList<VRL>(vrls));
+                return true;
+            }
+        };
     }
 
 }

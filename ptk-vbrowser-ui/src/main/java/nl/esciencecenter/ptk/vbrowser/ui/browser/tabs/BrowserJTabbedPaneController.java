@@ -19,9 +19,8 @@ public class BrowserJTabbedPaneController {
     }
 
     public TabContentPanel addTab(String name, JComponent comp, boolean setFocus, boolean withScrollPane) {
-        // I) New ContenPanel
-        TabContentPanel tabPanel = TabContentPanel.createTab(name, comp, withScrollPane);
-
+        // I) New ContentPanel
+        TabContentPanel tabPanel = TabContentPanel.createTab(comp, withScrollPane);
         int newIndex = tabPane.getTabCount();
         tabPane.add(tabPanel, newIndex);
         // use size from ui model:
@@ -29,7 +28,7 @@ public class BrowserJTabbedPaneController {
 
         TabButtonHandler handler = new TabButtonHandler(tabPanel);
         // II) Tab Header
-        TabTopLabelPanel topTapPnl = new TabTopLabelPanel(tabPanel, handler);
+        TabTopLabelPanel topTapPnl = new TabTopLabelPanel(name, tabPanel, handler);
         tabPane.setTabComponentAt(newIndex, topTapPnl);
 
         if (newIndex > 0) {
@@ -53,13 +52,12 @@ public class BrowserJTabbedPaneController {
         Component tabComp = tabPane.getTabComponentAt(index);
 
         if (tabComp instanceof TabTopLabelPanel) {
-            ((TabTopLabelPanel) tabComp).setTabLabelText(name);
+            ((TabTopLabelPanel) tabComp).setLabelText(name);
         } else {
             log.error("FIXME:Component #{} is not a TabTopLabelPanel:{}", index, tabComp);
+            this.tabPane.setTitleAt(index, name);
         }
 
-        this.tabPane.setTitleAt(index, name);
-        tab.setName(name);
     }
 
     public TabContentPanel getCurrentTab() {

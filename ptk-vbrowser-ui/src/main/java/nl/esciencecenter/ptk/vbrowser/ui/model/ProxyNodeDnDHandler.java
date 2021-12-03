@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.vbrowser.ui.model;
 
-import nl.esciencecenter.ptk.data.ExtendedList;
 import nl.esciencecenter.ptk.task.ITaskMonitor;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
@@ -30,30 +29,13 @@ import java.util.List;
 /**
  * Default DnD Handler for ViewNodes.
  */
-public class ProxyNodeDnDHandler {
+public abstract class ProxyNodeDnDHandler {
 
     public enum DropAction {
         COPY, MOVE, LINK, COPY_PASTE, CUT_PASTE
     }
 
-    private static ProxyNodeDnDHandler defaultInstance = null;
-
-    public static ProxyNodeDnDHandler getInstance() {
-        if (defaultInstance == null) {
-            defaultInstance = new ProxyNodeDnDHandler();
-        }
-        return defaultInstance;
-    }
-
-    public ProxyNodeDnDHandler() {
-
-    }
-
-    public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vris,
-                          ITaskMonitor taskMonitor) throws ProxyException {
-        System.err.printf("FIXME: ViewNodeDnDHandler.doDrop:%s:%s:", dropAction,
-                new ExtendedList<VRL>(vris));
-        return true;
-    }
+    public abstract boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls,
+                                   ITaskMonitor taskMonitor) throws ProxyException;
 
 }

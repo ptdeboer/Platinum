@@ -147,7 +147,7 @@ public class SortUtil {
     }
 
     /**
-     * In place sorting of generelized list.
+     * In place sorting of generalized list.
      */
     public static <T> int[] qsort(List<T> list, Comparer<T> comparer) {
         if (list == null)

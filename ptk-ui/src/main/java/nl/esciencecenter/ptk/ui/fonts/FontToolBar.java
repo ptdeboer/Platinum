@@ -33,7 +33,9 @@ import java.net.URL;
 public class FontToolBar extends JToolBar implements ActionListener {
 
     // text viewer attributes:
-    private String[] fontSizes = {"6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "36", "48"};
+    private final int[] fontSizes = {6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 24,32, 36, 48};
+    private final int fontPrefSize;
+    private final int fontMaxSize;
     private String[] fontFamilyNames;
     private int fontSizeEnumIndex = 9;
     private FontInfo fontInfo = new FontInfo();
@@ -50,11 +52,9 @@ public class FontToolBar extends JToolBar implements ActionListener {
     // controllers/listeners
     private FontComboBoxRenderer fontCBRenderer;
 
-    public FontToolBar() {
-        initGUI();
-    }
-
-    public FontToolBar(FontToolbarListener listener) {
+    public FontToolBar(FontToolbarListener listener, int fontPrefSize, int fontMaxSize) {
+        this.fontPrefSize=fontPrefSize;
+        this.fontMaxSize=fontMaxSize;
         this.listener = listener;
         initGUI();
     }
@@ -77,7 +77,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
 
         fontSizeEnumIndex = 9;
 
-        fontInfo.setFontSize(new Integer(fontSizes[fontSizeEnumIndex]));
+        fontInfo.setFontSize(fontSizes[fontSizeEnumIndex]);
         fontInfo.setFontFamily(fontFamilyNames[0]);
     }
 
@@ -92,10 +92,10 @@ public class FontToolBar extends JToolBar implements ActionListener {
         {
             fontFamilyCB = new JComboBox();
             // FontComboBoxRenderer uses the fontname as render font
-            this.fontCBRenderer = new FontComboBoxRenderer(this);
+            this.fontCBRenderer = new FontComboBoxRenderer(this,fontMaxSize);
             fontFamilyCB.setRenderer(fontCBRenderer);
             for (String val : fontFamilyNames) {
-                fontFamilyCB.addItem(new FontItem(val));
+                fontFamilyCB.addItem(new FontItem(val,fontPrefSize));
             }
             add(fontFamilyCB);
 
@@ -109,8 +109,8 @@ public class FontToolBar extends JToolBar implements ActionListener {
         {
             fontSizeCB = new JComboBox();
             add(fontSizeCB);
-            for (String val : fontSizes)
-                fontSizeCB.addItem(val);
+            for (int val : fontSizes)
+                fontSizeCB.addItem(""+val);
 
             fontSizeCB.setSelectedIndex(6);
             fontSizeCB.addActionListener(this);
@@ -198,7 +198,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
     }
 
     public void updateFont() {
-        String fontName = ((FontItem)fontFamilyCB.getSelectedItem()).getFontName();
+        String fontName = ((FontItem) fontFamilyCB.getSelectedItem()).getFontName();
         fontInfo.setFontFamily(fontName);
         fontInfo.setFontSize(new Integer((String) fontSizeCB.getSelectedItem()));
         fontInfo.setAntiAliasing(this.antiAliasingButton.isSelected());
@@ -227,8 +227,8 @@ public class FontToolBar extends JToolBar implements ActionListener {
         }
 
         for (int i = 0; i < this.fontSizes.length; i++) {
-            String typestr = "" + info.getFontSize();
-            if (typestr.compareToIgnoreCase(fontSizes[i]) == 0) {
+            int val=info.getFontSize();
+            if (val==fontSizes[i]) {
                 this.fontSizeCB.setSelectedIndex(i);
                 break;
             }

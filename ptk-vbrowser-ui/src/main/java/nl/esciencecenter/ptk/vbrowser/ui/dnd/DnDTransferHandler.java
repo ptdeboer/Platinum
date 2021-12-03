@@ -33,6 +33,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.InputEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default TransgerHandler for ViewNodes.
@@ -40,7 +42,7 @@ import java.awt.event.InputEvent;
 @Slf4j
 public class DnDTransferHandler extends TransferHandler {
 
-    private static DnDTransferHandler defaultTransferHandler = new DnDTransferHandler();
+    private static final DnDTransferHandler defaultTransferHandler = new DnDTransferHandler();
 
     public static DnDTransferHandler getDefault() {
         return defaultTransferHandler;
@@ -109,7 +111,7 @@ public class DnDTransferHandler extends TransferHandler {
 
     protected Transferable createTransferable(ViewNodeComponent c) {
         // Debug("Create Transferable:"+c);
-        ViewNode[] nodes = null;
+        List<ViewNode> nodes = null;
 
         ViewNodeContainer parent = c.getViewContainer();
 
@@ -121,15 +123,15 @@ public class DnDTransferHandler extends TransferHandler {
             nodes = ((ViewNodeContainer) c).getNodeSelection();
         } else {
             // stand-alone 'node'
-            nodes = new ViewNode[1];
-            nodes[0] = c.getViewNode(); // get actual view node i.s.o contains
+            nodes = new ArrayList();
+            nodes.add(c.getViewNode()); // get actual view node i.s.o contains
             // selection.
         }
 
-        if ((nodes != null) && (nodes.length > 0)) {
-            log.debug("createTransferable(): getNodeSelection()={}", nodes.length);
+        if ((nodes != null) && (nodes.size() > 0)) {
+            log.debug("createTransferable(): getNodeSelection()={}", nodes.size());
 
-            if (nodes.length <= 0)
+            if (nodes.size() <= 0)
                 return null;
 
             return VRLEntryListTransferable.createFrom(nodes);

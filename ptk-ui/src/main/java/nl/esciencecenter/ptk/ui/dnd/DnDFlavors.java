@@ -115,9 +115,13 @@ public class DnDFlavors {
     /**
      * Flavors in order of preference which might be converted to URI(s).
      */
-    public static DataFlavor[] uriDataFlavors = {DnDFlavors.javaURLFlavor,
-            DnDFlavors.javaFileListFlavor, DnDFlavors.javaURIListAsTextFlavor,
-            DnDFlavors.plainTextFlavor, DnDFlavors.javaStringFlavor};
+    public static DataFlavor[] uriDataFlavors = {//
+            DnDFlavors.javaURLFlavor,//
+            DnDFlavors.javaFileListFlavor, //
+            DnDFlavors.javaURIListAsTextFlavor,//
+            DnDFlavors.plainTextFlavor,//
+            DnDFlavors.javaStringFlavor//
+    };
 
     public static List<URI> getURIList(Transferable transferable)
             throws UnsupportedFlavorException, IOException {

@@ -35,7 +35,7 @@ public class VRSTaskMonitor extends TransferMonitor {
     // instance
     // ========================================================================
 
-    private VRSActionType actionType = VRSActionType.UNKNOWN;
+    private final VRSActionType actionType = VRSActionType.UNKNOWN;
 
     // instance methods
     protected VRSTaskMonitor(ITaskMonitor parentMonitor, VRSActionType vrsAction, String resourceType,

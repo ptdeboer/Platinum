@@ -71,14 +71,14 @@ public class Registry {
     //
     // ========================================================================
 
-    private Map<String, ArrayList<SchemeInfo>> registeredSchemes = new LinkedHashMap<String, ArrayList<SchemeInfo>>();
+    private final Map<String, ArrayList<SchemeInfo>> registeredSchemes = new LinkedHashMap<String, ArrayList<SchemeInfo>>();
 
     /**
      * List of services. VRSFactories are registered using their class names as key.
      */
-    private Map<String, VResourceSystemFactory> registeredServices = new HashMap<String, VResourceSystemFactory>();
+    private final Map<String, VResourceSystemFactory> registeredServices = new HashMap<String, VResourceSystemFactory>();
 
-    private ResourceSystemInstances instances = new ResourceSystemInstances();
+    private final ResourceSystemInstances instances = new ResourceSystemInstances();
 
     private Registry() {
         init();
@@ -208,7 +208,7 @@ public class Registry {
         log.debug("cleanupFor:{}", ctxId);
         Map<String, VResourceSystem> list = instances.getResourceSystemsFor(vrsContext);
         //
-        if ((list!=null) && (!list.isEmpty())) {
+        if ((list != null) && (!list.isEmpty())) {
             for (String key : list.keySet().toArray(new String[0])) {
                 VResourceSystem resourceSys = list.get(key);
                 log.debug("cleanupFor:{}: - VResourceSystem instance:{}:{}", ctxId, resourceSys.getServerVRL(),

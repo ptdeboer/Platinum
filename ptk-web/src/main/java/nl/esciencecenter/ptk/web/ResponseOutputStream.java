@@ -39,7 +39,7 @@ public class ResponseOutputStream extends OutputStream implements WebStream, Dis
 
     protected OutputStream sourceStream;
 
-    private URI uri;
+    private final URI uri;
 
     public ResponseOutputStream(WebClient client, HttpPut putMethod) throws IllegalStateException,
             IOException {

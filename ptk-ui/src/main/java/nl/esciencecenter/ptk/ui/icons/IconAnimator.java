@@ -75,7 +75,7 @@ public class IconAnimator implements Runnable {
     //  
     // ================================ // 
 
-    private List<IconInfo> icons = new Vector<IconInfo>(); //synchronized vector 
+    private final List<IconInfo> icons = new Vector<IconInfo>(); //synchronized vector
     private Thread thread;
     private boolean mustStop = false;
 

@@ -42,7 +42,7 @@ public class ViewerFrame extends JFrame {
 
     protected void initGui() {
         Component viewerComponent = viewerPlugin.getViewerPanel();
-        if (viewerComponent!=null) {
+        if (viewerComponent != null) {
             this.add(viewerComponent);
         }
     }

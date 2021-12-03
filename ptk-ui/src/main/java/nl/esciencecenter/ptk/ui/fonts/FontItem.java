@@ -4,12 +4,12 @@ import java.awt.*;
 
 public class FontItem {
 
-    private String fontName;
+    private final String fontName;
     private final Font customFont;
 
-    public FontItem(String fontName) {
-        this.fontName=fontName;
-        this.customFont =  new Font(fontName, 0,16);
+    public FontItem(String fontName, int size) {
+        this.fontName = fontName;
+        this.customFont = new Font(fontName, 0, size);
     }
 
     public String getFontName() {

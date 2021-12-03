@@ -101,10 +101,6 @@ public class Secret implements Disposable {
         return secret.clone();
     }
 
-    public void finalize() {
-        dispose();
-    }
-
     public String toString() {
         return "<Secret!>";
     }

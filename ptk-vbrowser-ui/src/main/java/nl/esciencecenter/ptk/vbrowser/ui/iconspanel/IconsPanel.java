@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.object.Disposable;
 import nl.esciencecenter.ptk.vbrowser.ui.UIGlobal;
 import nl.esciencecenter.ptk.vbrowser.ui.actions.KeyMappings;
+import nl.esciencecenter.ptk.vbrowser.ui.actions.UIAction;
+import nl.esciencecenter.ptk.vbrowser.ui.actions.UIActionListener;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterface;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.dnd.ViewNodeContainerDragListener;
@@ -40,29 +42,25 @@ import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 
 @Slf4j
-public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable {
+public class IconsPanel extends JPanel implements ListDataListener, ViewNodeContainer, Disposable, UIActionListener {
 
     /**
      * private UIModel for this icon panel.
      */
     private UIViewModel uiModel;
-
     private IconLayoutManager layoutManager;
-
     private IconsPanelController iconsPanelController;
 
     private IconListModel iconModel;
-
     private BrowserInterface masterBrowser;
 
     private IconsPanelUpdater iconsPanelUpdater;
-
     private ViewContainerEventAdapter viewComponentHandler;
-
     private ViewNodeContainerDragListener dragListener;
 
     public IconsPanel(BrowserInterface browser, ProxyDataSource viewNodeSource) {
@@ -78,16 +76,22 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
         initGui();
 
-        // add listener last:
+        // Add listeners last:
         this.iconsPanelController = new IconsPanelController(browser, this);
         this.viewComponentHandler = new ViewContainerEventAdapter(this, iconsPanelController);
         // Mouse and Focus
-        this.addMouseMotionListener(viewComponentHandler);
+        MouseAndFocusFollower mouseFocusListener = new MouseAndFocusFollower();
+        this.addFocusListener(mouseFocusListener);
+        this.addMouseListener(mouseFocusListener);
+        // Generic Event Handler
         this.addMouseListener(this.viewComponentHandler);
-        this.addFocusListener(this.viewComponentHandler);
+
+        // Selection and action key mappings.
+        KeyMappings.addSelectionKeyMappings(this, true);
+        KeyMappings.addMovementKeyMappings(this, true);
+        KeyMappings.addActionKeyMappings(this, true);
 
         this.setFocusable(true);
-
         initDND();
     }
 
@@ -111,7 +115,6 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         // DnD is closely linked to the KeyMapping! (CTRL-C, CTRL-V)
         // Add Copy/Paste Menu shortcuts to this component:
         KeyMappings.addCopyPasteKeymappings(this);
-        KeyMappings.addSelectionKeyMappings(this);
 
         // canvas is drop target:
         this.setDropTarget(new ViewNodeDropTarget(this));
@@ -127,6 +130,8 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     private void initGui() {
+
+
         // layoutmanager:
         this.layoutManager = new IconLayoutManager(this.uiModel);
         this.setLayout(layoutManager);
@@ -195,10 +200,10 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
 
     @Override
     public void intervalRemoved(ListDataEvent e) {
-        log.error("intervalRemoved():[{},{}]", e.getIndex0(), e.getIndex1());
+        log.debug("intervalRemoved():[{},{}]", e.getIndex0(), e.getIndex1());
 
-        int start = e.getIndex0();
-        int end = e.getIndex1(); // inclusive
+        int start = e.getIndex0(); // inclusive start
+        int end = e.getIndex1(); // inclusive end
 
         for (int i = start; i <= end; i++) {
             delete(i);
@@ -206,11 +211,13 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     protected void delete(int index) {
+        log.debug("delete #{}", index);
         // remove and leave empty spot:
         Component comp = this.getComponent(index);
         this.remove(comp);
         comp.setEnabled(false);
-
+        comp.setVisible(false);
+        this.repaint();
     }
 
     private void uiUpdate(final boolean clear, final int start, final int _end) {
@@ -307,18 +314,14 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public ViewNode[] getNodeSelection() {
-        Vector<ViewNode> items = new Vector<ViewNode>();
+    public List<ViewNode> getNodeSelection() {
+        ArrayList<ViewNode> items = new ArrayList();
 
         for (IconItem item : this.getIconItems()) {
             if (item.isSelected())
                 items.add(item.getViewNode());
         }
-
-        ViewNode[] nodes = new ViewNode[items.size()];
-        nodes = items.toArray(nodes);
-
-        return nodes;
+        return items;
     }
 
     @Override
@@ -348,7 +351,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
         return null;
     }
 
-    public IconItem[] getIconItems() {
+    public List<IconItem> getIconItems() {
         ArrayList<IconItem> itemList = new ArrayList<IconItem>();
         // filter out icon items;
         Component[] comps = this.getComponents();
@@ -357,11 +360,7 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
             if (comp instanceof IconItem)
                 itemList.add((IconItem) comp);
 
-        IconItem[] items = new IconItem[itemList.size()];
-        for (int i = 0; i < itemList.size(); i++)
-            items[i] = itemList.get(i);
-
-        return items;
+        return itemList;
     }
 
     @Override
@@ -418,18 +417,6 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     }
 
     @Override
-    public boolean requestNodeFocus(ViewNode node, boolean value) {
-        if (value == true) {
-            IconItem item = this.getIconItem(node);
-            // forward request to focus subsystem!
-            if (item != null)
-                return item.requestFocusInWindow();
-        }
-
-        return false;
-    }
-
-    @Override
     public ViewNodeContainer getViewContainer() {
         return null;
     }
@@ -453,5 +440,94 @@ public class IconsPanel extends JPanel implements ListDataListener, ViewNodeCont
     @Override
     public BrowserInterface getBrowserInterface() {
         return this.masterBrowser;
+    }
+
+    @Override
+    public Rectangle findBoundsOfSelectionNode(ViewNode node) {
+        IconItem item = this.getIconItem(node);
+        if (item == null) {
+            return null;
+        }
+        return item.getBounds();
+    }
+
+    @Override
+    public JComponent getJComponent() {
+        return this;
+    }
+
+    @Override
+    public void uiActionPerformed(UIAction action, ActionEvent event) {
+        if (performMoveActions(action)) {
+            return;
+        }
+        // Delegate. need better api.
+        this.viewComponentHandler.uiActionPerformed(action, event);
+    }
+
+    private boolean performMoveActions(UIAction action) {
+        if (action == KeyMappings.LEFT) {
+            moveSelection(-1, 0);
+            return true;
+        } else if (action == KeyMappings.RIGHT) {
+            moveSelection(+1, 0);
+            return true;
+        } else if (action == KeyMappings.UP) {
+            moveSelection(0, -1);
+            return true;
+        } else if (action == KeyMappings.DOWN) {
+            moveSelection(0, +1);
+            return true;
+        }
+        return false;
+    }
+
+    private void moveSelection(int dx, int dy) {
+        log.debug("MoveFocus: {},{}", dx, dy);
+        IconItem item = findIconWithFocus();
+        // unselect
+        log.debug("has focus={}", item);
+
+        int row = item.getRow();
+        int col = item.getColumn();
+        int newRow = row + dy;
+        int newCol = col + dx;
+        IconItem nextItem = findIconByRowCol(newRow, newCol);
+
+        if (nextItem != null) {
+            nextItem.requestFocusInWindow();
+            this.clearNodeSelection();
+            this.setNodeSelection(nextItem.getViewNode(), true);
+        } else {
+            log.debug("Row/Col out of bounds.");
+        }
+    }
+
+    private IconItem findIconByRowCol(int newRow, int newCol) {
+        for (IconItem item : this.getIconItems()) {
+            if (item.hasRowCol(newRow, newCol)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+
+    private IconItem findIconWithFocus() {
+        for (IconItem icon : this.getIconItems()) {
+            if (icon.hasFocus()) {
+                return icon;
+            }
+        }
+        return null;
+    }
+
+    public void updateFocus(boolean value) {
+        log.debug("Set Border:{}", value);
+        if (value) {
+            setBorder(BorderFactory.createLineBorder(getPlatform().getGuiSettings().getFocusBorderColor()));
+        } else {
+            setBorder(null);
+        }
     }
 }

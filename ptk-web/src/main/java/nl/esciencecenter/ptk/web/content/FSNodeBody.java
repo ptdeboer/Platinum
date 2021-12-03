@@ -44,7 +44,7 @@ public class FSNodeBody extends AbstractContentBody {
 
     private PutMonitor putMonitor = null;
 
-    private int defaultChunkSize = 4096;
+    private final int defaultChunkSize = 4096;
 
     public FSNodeBody(final FSPath node, final String mimeType, PutMonitor putMonitor) {
         super(mimeType);
@@ -140,8 +140,8 @@ public class FSNodeBody extends AbstractContentBody {
         return totalWritten;
     }
 
-    private void debug(String format, Object ...args) {
-        log.debug(format,args);
+    private void debug(String format, Object... args) {
+        log.debug(format, args);
     }
 
 }

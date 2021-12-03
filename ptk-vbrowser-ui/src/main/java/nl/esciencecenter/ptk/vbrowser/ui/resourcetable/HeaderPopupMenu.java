@@ -78,14 +78,14 @@ public class HeaderPopupMenu extends JPopupMenu {
     // Object Stuff
     // ========================================================================
 
-    private ActionListener popupListener = new ANPopupListener();
+    private final ActionListener popupListener = new ANPopupListener();
 
-    private ResourceTable tablePanel;
+    private final ResourceTable tablePanel;
 
     /**
      * Header name that was clicked on.
      */
-    private String headerName;
+    private final String headerName;
 
     public HeaderPopupMenu(ResourceTable table, String header) {
         this.tablePanel = table;

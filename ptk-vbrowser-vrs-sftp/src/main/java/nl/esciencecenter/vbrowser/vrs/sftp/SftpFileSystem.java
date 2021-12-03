@@ -69,9 +69,9 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
      */
     public static final String SSH_USER_IDENTITY_FILES = ResourceConfigInfo.ATTR_USER_KEY_FILES;
 
-    private SshSession sftpSession;
+    private final SshSession sftpSession;
 
-    private SftpChannel sftpChannel;
+    private final SftpChannel sftpChannel;
 
     public SftpFileSystem(JSch jsch, VRSContext context, ResourceConfigInfo info, VRL vrl)
             throws VrsException {
@@ -295,7 +295,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
             case ChannelSftp.SSH_FX_EOF:
                 return new ResourceException("Resource read exception (EOF):" + action, e);
             case ChannelSftp.SSH_FX_PERMISSION_DENIED:
-                return new ResourceAccessDeniedException("Resource read exception (EOF):" + action,e);
+                return new ResourceAccessDeniedException("Resource read exception (EOF):" + action, e);
             case ChannelSftp.SSH_FX_FAILURE:
                 return new ResourceException("Unknown Failure:" + action, e);
 

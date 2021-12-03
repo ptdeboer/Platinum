@@ -1,6 +1,6 @@
 package nl.esciencecenter.ptk.browser.uitest.dummy;
 
-import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserInterfaceAdaptor;
+import nl.esciencecenter.ptk.vbrowser.uitest.resourcetable.BrowserInterfaceAdaptor;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;

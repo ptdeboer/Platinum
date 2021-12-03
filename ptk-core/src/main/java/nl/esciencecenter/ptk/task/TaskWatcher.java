@@ -34,9 +34,9 @@ public class TaskWatcher implements ITaskSource {
 
     // === //
 
-    private String name;
+    private final String name;
 
-    private int maxTerminatedTasks = 100;
+    private final int maxTerminatedTasks = 100;
 
     protected Vector<ActionTask> activeTasks = new Vector<ActionTask>();
 

@@ -25,12 +25,13 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-public class IconListModel { // implements ListModel
+public class IconListModel {
 
-    protected Vector<IconItem> icons = new Vector<IconItem>();
-    protected Vector<ListDataListener> listeners = new Vector<ListDataListener>();
+    final private List<IconItem> icons = new ArrayList<>();
+    final private List<ListDataListener> listeners = new ArrayList<>();
 
     public IconListModel() {
     }
@@ -64,18 +65,11 @@ public class IconListModel { // implements ListModel
     }
 
     public void setItems(IconItem[] items) {
-        if (this.icons == null) {
-            icons = new Vector<IconItem>();
-        } else {
-            synchronized (this.icons) {
-                icons.clear();
-            }
-        }
 
         synchronized (this.icons) {
-            // add item and fire event per item if this is an incremental
-            // update;
+            icons.clear();
             if (items != null) {
+                // Add item and fire event per item if this is an incremental update;
                 for (IconItem item : items) {
                     addItem(item, false);
                 }
@@ -223,6 +217,10 @@ public class IconListModel { // implements ListModel
         for (ListDataListener l : getListeners()) {
             l.contentsChanged(event);
         }
+    }
+
+    protected List<IconItem> getIcons() {
+        return this.icons;
     }
 
 }

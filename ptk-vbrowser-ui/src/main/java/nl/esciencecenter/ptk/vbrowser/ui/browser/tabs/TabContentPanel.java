@@ -35,42 +35,26 @@ import java.awt.*;
 public class TabContentPanel extends JPanel {
 
     private JPanel topPanel;
-
-    // ===
-    //
-    // ===
     private JScrollPane scrollPane;
     private JComponent content;
-    private JPanel tabNavBar;
 
     public TabContentPanel(boolean withScrollPane) {
         super();
         initGui(withScrollPane);
     }
 
-    public static TabContentPanel createTab(String name, JComponent comp, boolean withScrollPane) {
+    public static TabContentPanel createTab(JComponent comp, boolean withScrollPane) {
         TabContentPanel tabP = new TabContentPanel(withScrollPane);
         tabP.setContent(comp);
-        tabP.setName(name);
-        if (withScrollPane) {
-            tabP.scrollPane.setName(name);
-        }
-        tabP.setToolTipText(name);
-
         return tabP;
     }
 
     protected void initGui(boolean withScrollPane) {
-
         {
             this.setLayout(new BorderLayout());
             {
                 this.topPanel = new JPanel();
                 this.add(topPanel, BorderLayout.NORTH);
-                {
-                    this.tabNavBar = new JPanel();
-                    topPanel.add(tabNavBar);
-                }
             }
 
             if (withScrollPane) {
@@ -87,10 +71,6 @@ public class TabContentPanel extends JPanel {
         }
 
         return null;
-    }
-
-    public boolean contains(Class<? extends JComponent> componentClass) {
-        return componentClass.isInstance(content);
     }
 
     public JComponent getContent() {
