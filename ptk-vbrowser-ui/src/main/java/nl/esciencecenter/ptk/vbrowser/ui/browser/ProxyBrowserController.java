@@ -297,7 +297,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             if ((selectedNodes != null) && (selectedNodes.size() > 0)) {
                 if (selectedNodes.size() > 1) {
                     // Some might
-                    showError("Multi Selection Error",
+                    showMessage("Multi Selection Error",
                             "Global menu actions not supported for multiple selections. Please select one resource.");
                     return;
                 }
@@ -347,7 +347,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case CREATE_NEW_WINDOW:
             case OPEN_IN_NEW_WINDOW:
                 if (targetNode == null) {
-                    showError("No selection", "Nothing selected");
+                    showMessage("No selection", "Nothing selected");
                     return;
                 }
                 createBrowser(targetNode.getVRL());
@@ -361,7 +361,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                     if (globalMenuAction == true) {
                         targetVrl = this.getCurrentViewNode().getVRL();
                     } else {
-                        showError("No selection", "Nothing selected");
+                        showMessage("No selection", "Nothing selected");
                         return;
                     }
                 }
@@ -421,7 +421,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case LOOKANDFEEL: {
                 if (!this.platform.getGuiSettings().getLaFEnabled()) {
                     // Must disable in gui.
-                    showError("Please Enable LaF.","Custom Look and Feel not enabled.");
+                    showMessage("Please Enable LaF.","Custom Look and Feel not enabled.");
                 } else {
                     this.switchLookAndFeel(LookAndFeelType.valueOf(action.getArg0()), true);
                 }
@@ -769,7 +769,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
                 try {
                     ProxyNode node = openProxyNode(locator);
                     if (node.exists() == false) {
-                        showError("Invalid location", "Couldn't open location, resource doesn't exist:" + locator);
+                        showMessage("Invalid location", "Couldn't open location, resource doesn't exist:" + locator);
                     } else {
                         updateCurrentViewNode(node, addToHistory, newTab);
                     }
@@ -824,7 +824,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     public boolean doDrop(Component uiComponent, Point optPoint, ViewNode viewNode, DropAction dropAction,
                           List<VRL> vris) {
         // Delegate to action handler.
-        return this.proxyActionHandler.handleDrop(uiComponent, optPoint, viewNode, dropAction, vris);
+        return this.proxyActionHandler.handlePasteOrDrop(uiComponent, optPoint, viewNode, dropAction, vris);
     }
 
     public void updateHasActiveTasks(boolean active) {
@@ -863,7 +863,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
         ExceptionDialog.show(this.browserFrame, ex);
     }
 
-    public void showError(String title, String message) {
+    public void showMessage(String title, String message) {
         proxyUI.showMessage(title, message, false);
     }
 

@@ -54,17 +54,18 @@ final public class ProxyActionHandler {
         this.proxyBrowser = proxyBrowser;
     }
 
-    public void handlePaste(ActionCmd action, ViewNode node) {
-        log.debug("Paste onto: {}", node);
+    public void handlePaste(ActionCmd action, ViewNode viewNode) {
+        log.debug("Paste onto: {}", viewNode);
         if (!proxyBrowser.getCopyBuffer().hasBuffer()) {
+            proxyBrowser.showMessage("Empty buffer","Nothing in copy buffer.");
             log.warn("handlePaste(): Nothing in buffer...");
             return;
         }
         CopyBuffer.CopyBufferElement bufEl = proxyBrowser.getCopyBuffer().getFirst();
         List<VRL> vrls = bufEl.getVrls();
         boolean isCut = bufEl.isCut();
-        log.error("***FIXME: Paste: {}:{}", isCut ? "<CutPaste>" : "<CopyPaste>", vrls);
-        proxyBrowser.showError("Not implemented", "Can't paste selection: not implemented");
+
+        this.handlePasteOrDrop(null,null, viewNode,DropAction.COPY_PASTE,vrls);
     }
 
     public void handleCopy(ActionCmd action, ViewNode node, boolean isCut) {
@@ -183,7 +184,7 @@ final public class ProxyActionHandler {
         TaskMonitorDialog.showTaskMonitorDialog(null, task, 0);
     }
 
-    public boolean handleDrop(Component uiComponent, Point optPoint, final ViewNode viewNode,
+    public boolean handlePasteOrDrop(Component optComponent, Point optPoint, final ViewNode viewNode,
                               final DropAction dropAction, final List<VRL> vrls) {
         // ===================================
         // Do interactive UI stuff here ...
@@ -196,7 +197,7 @@ final public class ProxyActionHandler {
             @Override
             protected void doTask() {
                 try {
-                    doDrop(viewNode, dropAction, vrls, this.getTaskMonitor());
+                    doPasteOrDrop(viewNode, dropAction, vrls, this.getTaskMonitor());
                 } catch (Throwable e) {
                     proxyBrowser.handleException(
                             "Failed to drop  open location:" + viewNode.getVRL(), e);
@@ -268,9 +269,9 @@ final public class ProxyActionHandler {
         }
     }
 
-    private void doDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,
+    private void doPasteOrDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,
                         ITaskMonitor taskMonitor) {
-        log.debug("doDrop {} on:{}", viewNode.getVRL(), dropAction);
+        log.debug("doPasteOrDrop {} on:{}", viewNode.getVRL(), dropAction);
 
         try {
             ProxyFactory factory = this.proxyBrowser.getProxyFactoryFor(viewNode.getVRL());
