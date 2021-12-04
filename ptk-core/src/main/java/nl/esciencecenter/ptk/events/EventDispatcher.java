@@ -66,7 +66,7 @@ public class EventDispatcher<EventTypeT, EventT extends IEvent<EventTypeT>, Even
                 throw new Error("Dispatcher Already Started!");
             }
 
-            thread = new Thread(this,this.getClass().getCanonicalName());
+            thread = new Thread(this, this.getClass().getCanonicalName());
             thread.setDaemon(true);
             thread.start();
         }

@@ -156,7 +156,7 @@ public class IOUtil {
 
             // start background writer:
             cbuffer.setInputStream(inputs);
-            cbuffer.setOutputstream(outputs);
+            cbuffer.setOutputStream(outputs);
 
             // ====================================
             // Transfer !

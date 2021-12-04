@@ -105,10 +105,10 @@ public class ColorMap extends ArrayList<Color> {
             GREEN_SHADED, PASTEL_PINK};
     private static final long serialVersionUID = -6308055676355616655L;
     public static Map<String, ColorMap> colorMaps = null;
-    private Color backgroundColor;
+    private final Color backgroundColor;
 
     // === // 
-    private Color foregroundColor;
+    private final Color foregroundColor;
 
     public ColorMap(Color background, Color foreground, Color[] colors) {
         super();

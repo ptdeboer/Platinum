@@ -93,7 +93,7 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
     /**
      * Paint mutex: can also be use to wait for a repaint()
      */
-    private Object paintImageMutex = new Object();
+    private final Object paintImageMutex = new Object();
 
     // ===============================
     // === MUTEX and Paint Control ===
@@ -101,7 +101,7 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
     /**
      * Render mutex do not resize or swap text buffers between rendering attempts
      */
-    private Object textBufferMutex = new Object();
+    private final Object textBufferMutex = new Object();
     /**
      * Whether whole text buffer should be painted or only the characters which have changed
      */
@@ -117,23 +117,23 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
     /**
      * Whether textBuffer Renderer should wait for the Swing paint thread
      */
-    private boolean optionRendererWaitForPaint = true;
+    private final boolean optionRendererWaitForPaint = true;
     /**
      * Whether to use own graphics charset renderer instead of the default fonts graphics
      */
-    private boolean optionUseOwnGraphicsCharsetRenderer = true;
+    private final boolean optionUseOwnGraphicsCharsetRenderer = true;
     /**
      * If not null always use this font for graphic charsets
      */
-    private String optionFixedGraphicsCharset = "Monospaced";
+    private final String optionFixedGraphicsCharset = "Monospaced";
     /**
      * VI demands this
      */
-    private boolean optionSupportAltScreenBuffer = true;
+    private final boolean optionSupportAltScreenBuffer = true;
     /**
      * set to false: Delta character renderer seems to work now
      */
-    private boolean optionAlwaysPaintCompleteTextBuffer = false;
+    private final boolean optionAlwaysPaintCompleteTextBuffer = false;
     private Map<Key, ?> renderingHints;
     private boolean slowScroll;
 
@@ -557,12 +557,9 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
                     // ====
 
                     boolean paintBackground = true;
-                    boolean paintBackgroundAhead = false;
+                    boolean paintBackgroundAhead = sChar.isItalic() || sChar.isUberBold();
 
-                    if (sChar.isItalic() || sChar.isUberBold()) {
-                        // clear next char
-                        paintBackgroundAhead = true;
-                    }
+                    // clear next char
 
                     // previous char was italic: current background has aleady been draw: don't clear current;
                     if (paintBackgroundAheadDone)
@@ -1661,7 +1658,7 @@ public class CharPane extends JComponent implements CharacterTerminal, ActionLis
         private int virtualSize = 100;
 
         // offset: start of current top screen must be less then (virtualSize-rows)
-        private int virtualOffset = 0;
+        private final int virtualOffset = 0;
 
         private boolean bufferChanged;
 

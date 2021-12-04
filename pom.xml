@@ -23,8 +23,8 @@
         <!-- ptk -->
         <module>ptk-core</module>
         <module>ptk-web</module>
-        <module>ptk-ui</module>
         <module>ptk-util-vterm</module>
+        <module>ptk-ui-common</module>
         <module>ptk-vbrowser-vrs</module>
         <module>ptk-vbrowser-vrs-sftp</module>
         <module>ptk-vbrowser-ui</module>

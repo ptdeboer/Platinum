@@ -97,7 +97,7 @@ public class VTxTokenDefs {
      *  {UTF8_STRING, <OPTION>, TERMINATOR_UTF8_STRING, SEQEUNCE_TOKEN}
      * </pre>
      */
-    private static Object[][] tokenDefs = {
+    private static final Object[][] tokenDefs = {
             // ==================================================
             // Single Char Tokens
             // ==================================================

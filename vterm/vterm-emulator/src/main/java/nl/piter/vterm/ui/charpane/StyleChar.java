@@ -49,7 +49,7 @@ public class StyleChar {
     boolean hasChanged = true; // when a redraw is needed
 
     int alpha = 255; // 0=transparent,255=opaque 
-    private byte[] charUnique = new byte[20];
+    private final byte[] charUnique = new byte[20];
 
     public void copyFrom(StyleChar schar) {
         setBytes(schar.charBytes, schar.numBytes);

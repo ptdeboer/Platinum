@@ -20,7 +20,6 @@
 
 package nl.esciencecenter.ptk.io;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -33,7 +32,7 @@ public class FSWriter implements Writable, RandomWritable, AutoCloseable {
 
     protected Path _path;
 
-    public FSWriter(Path path) throws FileNotFoundException {
+    public FSWriter(Path path) {
         _path = path;
     }
 

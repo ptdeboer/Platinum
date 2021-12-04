@@ -50,13 +50,13 @@ public class VTermJFrame extends JFrame implements Runnable {
             + "(C) VL-e consortium/Piter.NL<br>"
             + "Author Piter T. de Boer<br>"
             + "Render Engine (C) Piter.NL</center></html>";
-    private static int verbose = 0; // 0=silent, 1 = error and fixmes,2=warn,3=info,4=debug,5=very debug,6=trace
+    private static final int verbose = 0; // 0=silent, 1 = error and fixmes,2=warn,3=info,4=debug,5=very debug,6=trace
 
     // ========================================================================
     private java.net.URI startURI = null;
     // ========================================================================
     // options/config:
-    private boolean _saveConfigEnabled = true;
+    private final boolean _saveConfigEnabled = true;
     // =======================================================================
     //
     // =======================================================================
@@ -70,7 +70,7 @@ public class VTermJFrame extends JFrame implements Runnable {
     private Thread thread = null;
     private Properties persistantProperties = null;
     private String termType = TermConst.TERM_XTERM;
-    private VTermChannelProvider termProvider;
+    private final VTermChannelProvider termProvider;
     private ShellChannel shellChannel;
     //
     private boolean sessionAlive;
@@ -79,7 +79,7 @@ public class VTermJFrame extends JFrame implements Runnable {
     // GUI 
     // ==============
     // Menu
-    private boolean isResizable = true;
+    private final boolean isResizable = true;
     private JMenuBar menu;
     private JCheckBoxMenuItem sshXForwardingCB;
     private JMenuItem sshXForwardingConfig;
@@ -95,7 +95,7 @@ public class VTermJFrame extends JFrame implements Runnable {
     /**
      * Current view properties
      */
-    private Properties sessionProperties = new Properties();
+    private final Properties sessionProperties = new Properties();
 
     public VTermJFrame(VTermChannelProvider termProvider) {
         this.termProvider = termProvider;

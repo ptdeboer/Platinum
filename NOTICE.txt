@@ -9,13 +9,6 @@
 Software Notices
 ================
 
- This product uses com.jgoodies the "Forms" and "Looks" Freeware libraries. They are
-licensed under the BSD license. See "notices/LICENSE.com.jgoodies-forms.txt" and 
-"notices/LICENSE.jgoodies.com-looks.txt"
-
- This product uses Image4j libraries (see: net.sf.imag4j). They are licensed under
-the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1. see "notices/LICENSE.imag4j.txt" 
-
  This product uses the Apache HTTP-Client and related libraries. They are licensed
 under the Apache 2.0 License. See "notices/LICENSE.apache.txt"
 

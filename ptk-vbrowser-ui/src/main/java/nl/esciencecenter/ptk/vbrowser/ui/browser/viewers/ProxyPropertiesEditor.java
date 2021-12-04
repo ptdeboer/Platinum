@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Properties Viewer/Editor. Uses ProxyNode as attribute source.
+ * Properties Viewer/Editor. Uses (internal) ProxyNode as attribute source.
  */
 public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
 
@@ -75,10 +75,6 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
     // Browser registry :
     private BrowserInterface browser;
     private UIViewModel uiModel;
-
-    public ProxyPropertiesEditor() {
-        super();
-    }
 
     public ProxyPropertiesEditor(ProxyBrowserController masterBrowser, ViewNode node) {
         super();

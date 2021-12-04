@@ -109,7 +109,7 @@ public class BufferStreamTransferer {
     public BufferStreamTransferer(int size, InputStream input, OutputStream output) {
         init(size);
         this.setInputStream(input);
-        this.setOutputstream(output);
+        this.setOutputStream(output);
     }
 
     private void init(int size) {
@@ -117,9 +117,9 @@ public class BufferStreamTransferer {
         this.bufferSize = size;
     }
 
-    private final Boolean readerWait = new Boolean(true);
+    private final Boolean readerWait = true;
 
-    private final Boolean writerWait = new Boolean(true);
+    private final Boolean writerWait = true;
 
     private OutputStream outputStream = null;
 
@@ -132,7 +132,7 @@ public class BufferStreamTransferer {
     /**
      * Sets the OutputStream to write to. Can be called only once.
      */
-    public void setOutputstream(OutputStream outp) {
+    public void setOutputStream(OutputStream outp) {
         if (this.outputStream != null)
             throw new Error("Cannot set OutputStream twice!");
 
@@ -184,15 +184,13 @@ public class BufferStreamTransferer {
                 // Do buffer calculations in MuTex'd time:
                 synchronized (buffer) {
                     delta = buflen; // ? istr.available();
-                    int free = buflen - (int) (totalRead - nrWritten); // free
-                    // space
-                    // in
-                    // buffer
+                    // free space in buffer
+                    int free = buflen - (int) (totalRead - nrWritten);
                     // do not read past free space in buffer
                     if (delta > free)
                         delta = free;
 
-                    // do not read to much at once:
+                    // do not read too much at once:
                     if (delta > readChunkSize)
                         delta = readChunkSize;
 
@@ -201,8 +199,8 @@ public class BufferStreamTransferer {
                         if (totalRead + delta > nrToTransfer)
                             delta = (int) (nrToTransfer - totalRead);
 
-                    start = (int) (totalRead % buflen);// start in cicular
-                    // buffer
+                    // start in cicular buffer
+                    start = (int) (totalRead % buflen);
 
                     // do not read past buffer end (wrap around)
                     if (start + delta > buflen)

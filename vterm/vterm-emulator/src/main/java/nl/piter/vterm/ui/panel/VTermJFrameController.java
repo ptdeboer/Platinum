@@ -11,7 +11,7 @@ import java.awt.event.*;
 public class VTermJFrameController implements WindowListener, ComponentListener, EmulatorListener,
         ActionListener {
 
-    private VTermJFrame vTermJFrame;
+    private final VTermJFrame vTermJFrame;
     private String shortTitle;
     private String longTitle;
 

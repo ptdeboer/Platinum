@@ -11,8 +11,8 @@ import java.awt.event.ActionListener;
 public class InputDialog implements ActionListener {
 
     private String result = null;
-    private Dialog dialog;
-    private TextField textf;
+    private final Dialog dialog;
+    private final TextField textf;
 
     public InputDialog(String title, String text, boolean passwd) {
         super();

@@ -25,7 +25,7 @@ import static nl.piter.vterm.emulator.VTxTokenDefs.CTRL_ESC;
 public class VTxXEmulator implements Emulator {
 
     protected InputStream errorInput;
-    private OutputStream outputStream;
+    private final OutputStream outputStream;
 
     protected boolean isConnected = false;
     protected String termType;
@@ -43,7 +43,7 @@ public class VTxXEmulator implements Emulator {
     private VTxTokenizer tokenizer = null;
     //private final VTXTokenTableFactory tokenDefFactory;
 
-    private List<EmulatorListener> listeners = new ArrayList();
+    private final List<EmulatorListener> listeners = new ArrayList();
 
     byte[] single = new byte[1];
 

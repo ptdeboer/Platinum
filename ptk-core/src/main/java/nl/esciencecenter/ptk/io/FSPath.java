@@ -330,6 +330,18 @@ public class FSPath {
         return false;
     }
 
+    public boolean isReadable() {
+        return Files.isReadable(this._path);
+    }
+
+    public boolean isWritable() {
+        return Files.isWritable(this._path);
+    }
+
+    public boolean isExecutable() {
+        return Files.isExecutable(this._path);
+    }
+
     // ==========================
     // Directory methods
     // ==========================

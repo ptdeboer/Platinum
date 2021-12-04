@@ -29,7 +29,7 @@ public class VTxTokenizer {
     private static final int MAX_BYTES = 256;
 
     // typically unput buffer should not be bigger then 1.
-    private static int MAX_BUF = 1024;
+    private static final int MAX_BUF = 1024;
 
     // =======================================================================
     //
@@ -44,19 +44,19 @@ public class VTxTokenizer {
      */
     MiniBuffer byteBuffer = new MiniBuffer(MAX_BYTES); // sequence parsed:
     MiniBuffer putBuffer = new MiniBuffer(MAX_BYTES);
-    private InputStream inputStream;
+    private final InputStream inputStream;
 
     // ===
     // State of Tokenizer
     // ===
 
-    private MiniBuffer patternBuffer = new MiniBuffer(MAX_BUF);
+    private final MiniBuffer patternBuffer = new MiniBuffer(MAX_BUF);
 
     /**
      * Token Arguments
      */
     public class Arguments {
-        private int[] integerArgs = new int[16];
+        private final int[] integerArgs = new int[16];
         private int numIntegerArgs;
         private int dummyND;
         private String stringArg;
@@ -120,8 +120,8 @@ public class VTxTokenizer {
         }
     }
 
-    private State state = new State();
-    private Arguments arguments = new Arguments();
+    private final State state = new State();
+    private final Arguments arguments = new Arguments();
 
     public VTxTokenizer(InputStream inps) {
         this.inputStream = inps;
@@ -450,7 +450,7 @@ public class VTxTokenizer {
         }
     }
 
-    private final Logger vtermTokenRecorder= LoggerFactory.getLogger("VTERM-RECORDER");
+    private final Logger vtermTokenRecorder = LoggerFactory.getLogger("VTERM-RECORDER");
 
     private Token match(Token token) {
 

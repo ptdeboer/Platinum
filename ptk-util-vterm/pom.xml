@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
-            <artifactId>ptk-ui</artifactId>
+            <artifactId>ptk-ui-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- tools -->
