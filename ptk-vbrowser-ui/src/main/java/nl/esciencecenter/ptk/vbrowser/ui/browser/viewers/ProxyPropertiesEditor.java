@@ -76,6 +76,10 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
     private BrowserInterface browser;
     private UIViewModel uiModel;
 
+    public ProxyPropertiesEditor() {
+        super();
+    }
+    
     public ProxyPropertiesEditor(ProxyBrowserController masterBrowser, ViewNode node) {
         super();
         this.browser = masterBrowser;
