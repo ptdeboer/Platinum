@@ -136,15 +136,22 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     @Override
     public String getIconURL(int size) {
         String str = attributes.getStringValue(InfoRSConstants.RESOURCE_ICONURL);
-        if (str != null)
+        if (str != null) {
             return str;
-        if (isResourceFolder()) {
-            String iconUrl = "icons/infors/vle-world-folder.png";
-            attributes.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
-            return iconUrl;
-        } else {
-            return null;
         }
+        String iconUrl=null;
+        if (isResourceFolder()) {
+            iconUrl = "icons/infors/vle-world-folder.png";
+        } else if (isResourceLink()) {
+            if (getTargetIsComposite(true)) {
+                iconUrl = "icons/infors/resourcelink-dir.png";
+            } else {
+                iconUrl = "icons/infors/resourcelink-file.png";
+            }
+        }
+        attributes.set(InfoRSConstants.RESOURCE_ICONURL, iconUrl);
+        return iconUrl;
+
     }
 
     public String getName() {

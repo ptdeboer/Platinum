@@ -79,7 +79,7 @@ public class ProxyPropertiesEditor extends ViewerJPanel implements ProxyViewer {
     public ProxyPropertiesEditor() {
         super();
     }
-    
+
     public ProxyPropertiesEditor(ProxyBrowserController masterBrowser, ViewNode node) {
         super();
         this.browser = masterBrowser;
