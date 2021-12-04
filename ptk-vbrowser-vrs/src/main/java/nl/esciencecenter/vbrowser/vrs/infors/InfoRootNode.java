@@ -159,7 +159,10 @@ public class InfoRootNode extends InfoResourceNode {
         return rootConfigVrl;
     }
 
-    protected void save() {
+    /**
+     * Root node can be saved.
+     */
+    public void save() {
         // check autosave
         if ((this.getVRSContext().hasPersistantConfig() == false) || (autoSaveConfig == false)) {
             log.debug("save():hasPersistantConfig=False");

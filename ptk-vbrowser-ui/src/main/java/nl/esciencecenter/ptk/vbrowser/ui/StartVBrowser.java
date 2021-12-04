@@ -124,6 +124,7 @@ public class StartVBrowser {
                 for (String[] link : defaultLinks) {
                     rootNode.addResourceLink(myLinksName, link[0], new VRL(link[1]), true, null, false);
                 }
+                rootNode.save();
             }
 
             // Main virtual root to browsing. Use the 'info' system resource:

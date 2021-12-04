@@ -353,6 +353,11 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         }
     }
 
+    @Override
+    public InfoResourceNode create(String type, String name) throws VrsException {
+        return this.create(type,name,false);
+    }
+
     public InfoResourceNode create(String type, String name, boolean targetIsComposite) throws VrsException {
         if (StringUtil.equals(type, InfoRSConstants.RESOURCEFOLDER)) {
             return this.createFolder(name);
@@ -384,6 +389,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     @Override
     public InfoResourceNode renameTo(String newName) throws VrsException {
         this.setLogicalName(newName);
+        save();
         // name change doesn't change path
         return this;
     }
@@ -399,9 +405,7 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
         } else {
             log.error("Received delete for parentless node:{}", this);
         }
-        if (rootNode != null) {
-            rootNode.save();
-        }
+        save();
         return true;
     }
 
@@ -433,13 +437,13 @@ public class InfoResourceNode extends InfoRSPathNode implements VStreamAccessabl
     protected void save() {
         //
         if (getVRSContext().hasPersistantConfig() == false) {
-            log.debug("Not saving InfoNodes. Non persistant context");
+            log.debug("Not saving InfoNode. Non persistent context");
             return;
         }
         // delegete to parent
         InfoRootNode rootNode = this.getRootNode();
         if (rootNode == null) {
-            log.error("save(): Cat not save InfoNodes: No RootNode!");
+            log.warn("save(): Can not save InfoNode: No RootNode!");
         } else {
             rootNode.save();
         }

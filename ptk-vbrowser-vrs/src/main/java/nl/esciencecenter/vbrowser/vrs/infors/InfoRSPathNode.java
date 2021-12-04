@@ -297,14 +297,14 @@ public abstract class InfoRSPathNode extends VPathNode {
     }
 
     /**
-     * Get top level root resource node. performs a upwards recursive search to get the root node.
+     * Get top level root resource node. Performs an upwards looped search to get the root node.
      */
     protected InfoRootNode getRootNode() {
         InfoRSPathNode node = this;
 
         while (node.parent != null) {
             if (node == node.parent) {
-                throw new Error("InfoRS hierachy error: parent of this node equals current node:" + node);
+                throw new Error("InfoRS hierarchy error: parent of this node equals current node:" + node);
             }
             node = node.parent;
         }
