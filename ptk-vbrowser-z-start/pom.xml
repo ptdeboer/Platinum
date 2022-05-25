@@ -16,7 +16,7 @@
         <!-- make sure all ptk dependencies are here: -->
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
-            <artifactId>ptk-core</artifactId>
+            <artifactId>ptk-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -27,11 +27,6 @@
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-vbrowser-vrs-sftp</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>nl.esciencecenter.platinum</groupId>
-            <artifactId>ptk-util-vterm</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -54,7 +49,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>nl.esciencecenter.ptk.vbrowser.ui.StartVRSBrowser</mainClass>
+                            <mainClass>nl.esciencecenter.ptk.vbrowser.ui.StartVBrowser</mainClass>
                             <!--  set to false to allow custom CLASSPATH (or -cp) -->
                             <addClasspath>false</addClasspath> -->
                         </manifest>

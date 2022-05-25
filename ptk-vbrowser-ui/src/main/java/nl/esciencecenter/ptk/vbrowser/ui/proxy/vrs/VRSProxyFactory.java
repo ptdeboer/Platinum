@@ -40,7 +40,7 @@ import java.util.List;
 
 /**
  * VRS Proxy Factory for VRSProxyNodes. <br>
- * Bindings betweern ProxyNode and the VRS.
+ * Bindings between ProxyNode and the VRS.
  */
 @Slf4j
 public class VRSProxyFactory extends ProxyFactory {

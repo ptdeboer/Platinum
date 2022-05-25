@@ -49,7 +49,7 @@
     <dependencies>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
-            <artifactId>ptk-core</artifactId>
+            <artifactId>ptk-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- external -->

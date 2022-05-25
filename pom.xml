@@ -21,9 +21,8 @@
        <!-- external modules -->
         <module>vterm</module>
         <!-- ptk -->
-        <module>ptk-core</module>
+        <module>ptk-common</module>
         <module>ptk-web</module>
-        <module>ptk-util-vterm</module>
         <module>ptk-ui-common</module>
         <module>ptk-vbrowser-vrs</module>
         <module>ptk-vbrowser-vrs-sftp</module>

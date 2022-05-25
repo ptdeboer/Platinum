@@ -13,7 +13,7 @@
 # settings 
 # defaults:
 JAVA=java
-VBROWSER_CLASS=nl.esciencecenter.ptk.vbrowser.ui.StartVRSBrowser
+VBROWSER_CLASS=nl.esciencecenter.ptk.vbrowser.ui.StartVBrowser
 
 ##
 # VBROWSER_SYSCONFDIR 

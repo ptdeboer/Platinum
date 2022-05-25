@@ -122,6 +122,7 @@ public class PluginRegistry {
         registerPlugin(HexViewer.class);
         registerPlugin(X509Viewer.class);
         registerPlugin(JavaWebStarter.class);
+        registerPlugin(WebResourceViewer.class);
     }
 
     public void registerPlugin(Class<? extends ViewerPlugin> viewerClass) {

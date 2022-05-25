@@ -29,13 +29,13 @@ import java.util.List;
 /**
  * Default DnD Handler for ViewNodes.
  */
-public abstract class ProxyNodeDnDHandler {
+public interface ProxyNodeDnDHandler {
 
-    public enum DropAction {
+    enum DropAction {
         COPY, MOVE, LINK, COPY_PASTE, CUT_PASTE
     }
 
-    public abstract boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls,
+    boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls,
                                    ITaskMonitor taskMonitor) throws ProxyException;
 
 }

@@ -33,7 +33,7 @@ public class StartVBrowserDev {
         URL log4j = Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
         System.err.printf(" using log4j:%s",log4j);
         try {
-            new StartVBrowser().start(args);
+            new VBrowserBoot().start(args);
         } catch (Exception e) {
             e.printStackTrace();
         }

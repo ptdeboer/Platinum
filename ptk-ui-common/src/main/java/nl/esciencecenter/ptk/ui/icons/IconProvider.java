@@ -475,7 +475,7 @@ public class IconProvider {
     }
 
     /**
-     * Read PROPRIATIARY: .ico file and return Icon Image
+     * Read PROPRIETARY: .ico file and return Icon Image
      */
     public BufferedImage getIcoImage(URL iconurl) throws IOException {
         try {

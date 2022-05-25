@@ -2,7 +2,6 @@ package nl.esciencecenter.ptk.vbrowser.ui.tool.vtermstarter;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.Pair;
-import nl.esciencecenter.ptk.util.vterm.StartVTerm;
 import nl.esciencecenter.ptk.vbrowser.viewers.ToolPlugin;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.menu.MenuMapping;
@@ -10,13 +9,16 @@ import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.sftp.SSHShellChannelFactory;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
+import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.emulator.VTermChannelProvider;
+import nl.piter.vterm.ui.panel.VTerm;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +119,7 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
             VTermChannelProvider provider = new VTermChannelProvider();
             provider.registerChannelFactory("SSH", new SSHShellChannelFactory(context));
             // Could already create authenticated shell channel here (Optional!)
-            StartVTerm.startVTerm(provider, null, uri);
+            startVTerm(provider, null, uri);
         } catch (URISyntaxException e) {
             throw new VrsException("URI Syntax exeption:" + vrl, e);
         }
@@ -176,6 +178,10 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
         List<Pair<MenuMapping, List<String>>> mappings = new ArrayList<>();
         mappings.add(new Pair<>(menuMap, methods));
         return mappings;
+    }
+
+    public static VTerm startVTerm(final VTermChannelProvider provider, final ShellChannel shellChan, final URI loc) {
+        return new nl.piter.vterm.VTermStarter().withChannelProvider(provider).start(shellChan, loc);
     }
 
 }

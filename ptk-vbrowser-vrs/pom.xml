@@ -42,11 +42,6 @@
     <dependencies>
         <dependency>
             <groupId>nl.esciencecenter.platinum</groupId>
-            <artifactId>ptk-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>nl.esciencecenter.platinum</groupId>
             <artifactId>ptk-web</artifactId>
             <version>${project.version}</version>
         </dependency>

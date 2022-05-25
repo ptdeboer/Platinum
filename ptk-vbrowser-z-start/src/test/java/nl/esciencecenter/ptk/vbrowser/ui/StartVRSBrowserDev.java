@@ -34,7 +34,7 @@ public class StartVRSBrowserDev {
         URL log4j = Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
         System.err.printf("StartVRSBrowserDev:using log4j:%s\n",log4j);
         try {
-            new StartVRSBrowser().start(args);
+            new StartVBrowser().start(args);
         } catch (Exception e) {
             e.printStackTrace();
         }

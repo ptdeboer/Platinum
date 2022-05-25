@@ -35,17 +35,19 @@ import nl.esciencecenter.vbrowser.vrs.VRSContext;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsIOException;
+import nl.esciencecenter.vbrowser.vrs.io.VInputStreamCreator;
 import nl.esciencecenter.vbrowser.vrs.node.VResourceSystemNode;
 import nl.esciencecenter.vbrowser.vrs.registry.ResourceConfigInfo;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 /**
  * Adaptor for (web) URLs.
  */
 @Slf4j
-public class WebResourceSystem extends VResourceSystemNode {
+public class WebResourceSystem extends VResourceSystemNode implements VInputStreamCreator {
 
     public static final String DEFAULT_HTTPRS_SERVERID = "webrs";
 
@@ -207,6 +209,15 @@ public class WebResourceSystem extends VResourceSystemNode {
     @Override
     public VPath resolve(VRL vrl) throws VrsException {
         return new WebNode(this, vrl);
+    }
+
+    @Override
+    public InputStream createInputStream(VRL vrl) throws VrsException {
+        try {
+            return getWebClient().doGetInputStream(getVRL().toURI());
+        } catch (Exception e) {
+            throw new VrsIOException(e.getMessage(), e);
+        }
     }
 
 }

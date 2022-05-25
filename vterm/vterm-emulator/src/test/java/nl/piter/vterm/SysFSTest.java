@@ -75,7 +75,7 @@ public class SysFSTest {
 
     private void testFilePath(String filePath) {
         URI uri = new SysFS().resolveFileURI(filePath);
-        log.info("resolve:'{}'=>'{}'",filePath,uri);
+        log.info("resolve:'{}'=>'{}'", filePath, uri);
     }
 
 }

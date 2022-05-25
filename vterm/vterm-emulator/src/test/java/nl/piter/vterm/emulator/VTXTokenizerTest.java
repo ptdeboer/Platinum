@@ -111,8 +111,8 @@ public class VTXTokenizerTest {
     public void testXGRAPHMODE_setTitle() {
 
         // \[]0;XXXX;\007
-        byte[] source = new byte[]{CTRL_ESC, ']', '0',';','X','X','X','X',007};
-        testSequence(source, Tokens.Token.XGRAPHMODE, 0,"XXXX");
+        byte[] source = new byte[]{CTRL_ESC, ']', '0', ';', 'X', 'X', 'X', 'X', 007};
+        testSequence(source, Tokens.Token.XGRAPHMODE, 0, "XXXX");
 
     }
 
@@ -144,8 +144,8 @@ public class VTXTokenizerTest {
         try {
             Tokens.Token token = tokenizer.nextToken();
             Assert.assertEquals(expected, token);
-            Assert.assertEquals(graphmodeInt,tokenizer.args().ints(0));
-            Assert.assertEquals(graphmodeStr,tokenizer.args().strArg());
+            Assert.assertEquals(graphmodeInt, tokenizer.args().ints(0));
+            Assert.assertEquals(graphmodeStr, tokenizer.args().strArg());
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -19,7 +19,13 @@ Default maven build:
 
     mvn clean package verify
 
-See assembled distribution in module `ptk-zipdist` :
+After build, see the assembled distribution in module `ptk-zipdist` :
 
     ptk-zipdist/target/ptk-zipdist-${VERSION}-dist.zip
 
+
+Start
+---
+Start the (default) vbrowser.sh from the `bin` directory:
+
+    ${DIST}/bin/vbrowser.sh

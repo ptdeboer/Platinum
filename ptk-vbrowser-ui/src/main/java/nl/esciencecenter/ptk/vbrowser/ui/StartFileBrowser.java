@@ -26,7 +26,7 @@ import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.vrs.VRSProxyFactory;
 
 /**
- * Default File Browser.
+ * Default File Browser without any extra plugins.
  */
 public class StartFileBrowser {
 

@@ -125,6 +125,8 @@ public class BrowserPlatform {
         // Init Viewers and ViewerPlugins.
         // ===================================
         this.viewerEventDispatcher = new ViewerEventDispatcher(true);
+        // initialize defaults;
+        loadUIProperties(true);
         initViewers();
     }
 
@@ -354,7 +356,7 @@ public class BrowserPlatform {
      *
      * @return
      */
-    public UIProperties loadUIProperties() throws VrsException {
+    public UIProperties loadUIProperties(boolean initDefaults) throws VrsException {
         VRL propLoc=getGUISettingsLoc();
         if (propLoc != null) {
             if (new VRSClient(vrsContext).existsFile(propLoc)) {
@@ -362,7 +364,9 @@ public class BrowserPlatform {
                 return this.guiSettings;
             }
         }
-        this.guiSettings = new UIProperties();
+        if (initDefaults) {
+            this.guiSettings = new UIProperties();
+        }
         return guiSettings;
     }
 
@@ -374,8 +378,13 @@ public class BrowserPlatform {
     }
 
     public VRL getGUISettingsLoc() throws VRLSyntaxException {
-        return this.getVRSContext().getPersistantConfigLocation().resolvePath(this.platformID + ".props");
+        VRL confDir = this.getVRSContext().getPersistantConfigLocation();
+        if (confDir==null) {
+            return null;
+        }
+        return confDir.resolvePath(this.platformID + ".props");
     }
+
     // ==============  
     // Dispose/Misc.
     // ==============

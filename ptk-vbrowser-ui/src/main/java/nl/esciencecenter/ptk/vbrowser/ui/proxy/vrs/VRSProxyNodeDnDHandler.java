@@ -43,7 +43,7 @@ import java.util.List;
  * transfer has been performed.
  */
 @Slf4j
-public class VRSProxyNodeDnDHandler extends ProxyNodeDnDHandler {
+public class VRSProxyNodeDnDHandler implements ProxyNodeDnDHandler {
 
     protected VRSCopyManager vrsManager;
     protected VRSProxyFactory proxyFactory;
