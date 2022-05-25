@@ -20,7 +20,7 @@ public class VTermStarterDev {
         frame.setVisible(true);
 
         try {
-            vtermStart.startViewer(new VRL("file",null, "/tmp"),null);
+            vtermStart.startViewer(new VRL("file", null, "/tmp"), null);
         } catch (VrsException e) {
             e.printStackTrace();
         }

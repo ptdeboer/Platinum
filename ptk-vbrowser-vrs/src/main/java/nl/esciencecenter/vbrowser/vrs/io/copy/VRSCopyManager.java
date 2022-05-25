@@ -82,7 +82,7 @@ public class VRSCopyManager implements VRSTransferManager {
 
             for (VRL vrl : vrls) {
                 VPath targetPath = vrsClient.openPath(vrl);
-                boolean targetIsComposite=targetPath.isComposite();
+                boolean targetIsComposite = targetPath.isComposite();
                 monitor.logPrintf(" - linkDrop: %s\n", vrl);
                 VInfoResourcePath newNode;
 

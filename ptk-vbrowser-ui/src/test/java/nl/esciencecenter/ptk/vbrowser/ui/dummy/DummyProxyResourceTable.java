@@ -1,11 +1,11 @@
 package nl.esciencecenter.ptk.vbrowser.ui.dummy;
 
-import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.BrowserInterfaceAdaptor;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyFactory;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNode;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyNodeDataSourceProvider;
+import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.BrowserInterfaceAdaptor;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTable;
 import nl.esciencecenter.ptk.vbrowser.ui.resourcetable.ResourceTableModel;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;

@@ -221,19 +221,19 @@ public class LocalFSPathNode extends VFSPathNode implements VStreamAccessable, V
     }
 
     public String createPermissionsString() {
-        boolean d=this.isDir(LinkOption.NOFOLLOW_LINKS);
-        boolean r=this.fsNode.isReadable();
-        boolean w=this.fsNode.isWritable();
-        boolean x=this.fsNode.isExecutable();
-        boolean l=fsNode.isSymbolicLink();
+        boolean d = this.isDir(LinkOption.NOFOLLOW_LINKS);
+        boolean r = this.fsNode.isReadable();
+        boolean w = this.fsNode.isWritable();
+        boolean x = this.fsNode.isExecutable();
+        boolean l = fsNode.isSymbolicLink();
 
-        char[] drwx=new char[4];
+        char[] drwx = new char[4];
 
-        drwx[0]=d?'d':'-';
-        drwx[0]=l?'l':drwx[0];
-        drwx[1]=r?'r':'-';
-        drwx[2]=w?'w':'-';
-        drwx[3]=x?'x':'-';
+        drwx[0] = d ? 'd' : '-';
+        drwx[0] = l ? 'l' : drwx[0];
+        drwx[1] = r ? 'r' : '-';
+        drwx[2] = w ? 'w' : '-';
+        drwx[3] = x ? 'x' : '-';
         return new String(drwx);
     }
 

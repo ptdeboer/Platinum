@@ -240,7 +240,7 @@ public class HexViewer extends ViewerJPanel implements FontToolbarListener// , T
             }
             // FontToolBar
             {
-                fontToolBar = new FontToolBar(this,16,32);
+                fontToolBar = new FontToolBar(this, 16, 32);
                 toolPanel.add(fontToolBar);
                 fontToolBar.setFocusable(false);
                 fontToolBar.setVisible(default_show_font_toolbar);

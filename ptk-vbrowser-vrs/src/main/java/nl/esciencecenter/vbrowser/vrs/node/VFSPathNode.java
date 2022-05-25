@@ -40,7 +40,6 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.LinkOption;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
@@ -191,10 +190,8 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
             if (time != null) {
                 return new Attribute(name, Presentation.createDate(time));
             }
-        }
-        else if (name.compareTo(ATTR_PERMISSIONSTRING) == 0)
-        {
-          return new Attribute(name,createPermissionsString());
+        } else if (name.compareTo(ATTR_PERMISSIONSTRING) == 0) {
+            return new Attribute(name, createPermissionsString());
         }
 
         return null;
@@ -382,10 +379,11 @@ public abstract class VFSPathNode extends VPathNode implements VFSPath {
 
     /**
      * Fetch implementation specific permissions and return as human readable String.
+     *
      * @return unix like access string. 'drwxrwxrwx'.
      */
     public String createPermissionsString() {
-            return "";
+        return "";
     }
 
     // ===================

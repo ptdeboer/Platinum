@@ -57,7 +57,7 @@ final public class ProxyActionHandler {
     public void handlePaste(ActionCmd action, ViewNode viewNode) {
         log.debug("Paste onto: {}", viewNode);
         if (!proxyBrowser.getCopyBuffer().hasBuffer()) {
-            proxyBrowser.showMessage("Empty buffer","Nothing in copy buffer.");
+            proxyBrowser.showMessage("Empty buffer", "Nothing in copy buffer.");
             log.warn("handlePaste(): Nothing in buffer...");
             return;
         }
@@ -65,7 +65,7 @@ final public class ProxyActionHandler {
         List<VRL> vrls = bufEl.getVrls();
         boolean isCut = bufEl.isCut();
 
-        this.handlePasteOrDrop(null,null, viewNode,DropAction.COPY_PASTE,vrls);
+        this.handlePasteOrDrop(null, null, viewNode, DropAction.COPY_PASTE, vrls);
     }
 
     public void handleCopy(ActionCmd action, ViewNode node, boolean isCut) {
@@ -185,7 +185,7 @@ final public class ProxyActionHandler {
     }
 
     public boolean handlePasteOrDrop(Component optComponent, Point optPoint, final ViewNode viewNode,
-                              final DropAction dropAction, final List<VRL> vrls) {
+                                     final DropAction dropAction, final List<VRL> vrls) {
         // ===================================
         // Do interactive UI stuff here ...
         // ===================================
@@ -270,7 +270,7 @@ final public class ProxyActionHandler {
     }
 
     private void doPasteOrDrop(ViewNode viewNode, DropAction dropAction, List<VRL> vrls,
-                        ITaskMonitor taskMonitor) {
+                               ITaskMonitor taskMonitor) {
         log.debug("doPasteOrDrop {} on:{}", viewNode.getVRL(), dropAction);
 
         try {

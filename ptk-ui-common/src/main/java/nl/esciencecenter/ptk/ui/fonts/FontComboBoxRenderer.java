@@ -35,7 +35,7 @@ public class FontComboBoxRenderer extends JPanel implements ListCellRenderer {
 
     public FontComboBoxRenderer(FontToolBar bar, int fontMaxSize) {
         super();
-        this.fontMaxSize=fontMaxSize;
+        this.fontMaxSize = fontMaxSize;
         initGui();
     }
 
@@ -78,8 +78,8 @@ public class FontComboBoxRenderer extends JPanel implements ListCellRenderer {
     public Dimension getPreferredSize() {
         Dimension size = super.getPreferredSize();
         // limit max font size for misbehaving fonts.
-        if (size.height>fontMaxSize) {
-            size=new Dimension(size.width, fontMaxSize);
+        if (size.height > fontMaxSize) {
+            size = new Dimension(size.width, fontMaxSize);
         }
         return size;
     }

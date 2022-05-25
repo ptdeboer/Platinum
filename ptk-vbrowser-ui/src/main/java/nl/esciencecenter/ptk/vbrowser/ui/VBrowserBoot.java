@@ -89,7 +89,7 @@ public class VBrowserBoot {
     public ProxyBrowserController start(String[] args) {
 
         try {
-            BrowserPlatform platform=getBrowserPlatform();
+            BrowserPlatform platform = getBrowserPlatform();
 
             // Default VRSContext
             VRSContext context = platform.getVRSContext();

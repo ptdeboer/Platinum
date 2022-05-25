@@ -14,8 +14,9 @@ public enum LookAndFeelType {
     NIMBUS("Nimbus"),
     ;
     final private String name;
+
     LookAndFeelType(String name) {
-        this.name=name;
+        this.name = name;
     }
 
     public String getName() {

@@ -1,7 +1,7 @@
 package nl.esciencecenter.ptk.vbrowser.ui.resourcetable;
 
-import nl.esciencecenter.ptk.vbrowser.ui.dummy.StartDummyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.browser.BrowserPlatform;
+import nl.esciencecenter.ptk.vbrowser.ui.dummy.StartDummyBrowser;
 import nl.esciencecenter.ptk.vbrowser.ui.proxy.ProxyException;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 

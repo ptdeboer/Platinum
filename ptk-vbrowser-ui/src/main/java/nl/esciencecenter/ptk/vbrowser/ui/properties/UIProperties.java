@@ -177,11 +177,11 @@ public class UIProperties extends VRSProperties {
     }
 
     public void setLaFEnabled(boolean value) {
-        setProperty(UIPropertyNames.UI_LOOK_AND_FEEL_ENABLED,Boolean.toString(value));
+        setProperty(UIPropertyNames.UI_LOOK_AND_FEEL_ENABLED, Boolean.toString(value));
     }
 
     public boolean getLaFEnabled() {
-        return getBooleanProperty(UIPropertyNames.UI_LOOK_AND_FEEL_ENABLED,false);
+        return getBooleanProperty(UIPropertyNames.UI_LOOK_AND_FEEL_ENABLED, false);
     }
 
     public Color getFocusBorderColor() {

@@ -26,7 +26,7 @@ public class TestFontToolBar {
         panel.setLayout(new BorderLayout());
         frame.getContentPane().add(panel);
 
-        FontToolBar bar = new FontToolBar(null,16,32);
+        FontToolBar bar = new FontToolBar(null, 16, 32);
         bar.setListener(new FontChangeListener());
         panel.add(bar, BorderLayout.CENTER);
 

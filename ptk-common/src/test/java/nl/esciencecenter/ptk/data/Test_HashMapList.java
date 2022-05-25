@@ -28,7 +28,7 @@ public class Test_HashMapList {
         String[] actualValues = hash.toArray(new String[0]);
 
         for (int i = 0; i < 100; i++) {
-            Object actualKey=actualKeys[i];
+            Object actualKey = actualKeys[i];
             Assert.assertEquals("Value at #" + i + " not correct.", vals[i], hash.get(keys[i]));
             Assert.assertEquals("Key #" + i + " not correct.", keys[i], actualKey);
             Assert.assertEquals("getKeyArray() has wrong value at #" + i, keys[i], actualKeys[i]);

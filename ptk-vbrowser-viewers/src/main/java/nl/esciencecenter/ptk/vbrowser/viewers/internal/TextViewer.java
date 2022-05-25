@@ -263,7 +263,7 @@ public class TextViewer extends ViewerJPanel implements ActionListener, FontTool
                 toolPanel.setLayout(new FlowLayout());
                 // // Font Toolbar
                 {
-                    this.fontToolbar = new FontToolBar(this, 16,24);
+                    this.fontToolbar = new FontToolBar(this, 16, 24);
                     toolPanel.add(fontToolbar);
                 }
                 {

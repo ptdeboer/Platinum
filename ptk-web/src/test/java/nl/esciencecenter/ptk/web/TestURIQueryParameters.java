@@ -1,11 +1,10 @@
 package nl.esciencecenter.ptk.web;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 
 public class TestURIQueryParameters {
 

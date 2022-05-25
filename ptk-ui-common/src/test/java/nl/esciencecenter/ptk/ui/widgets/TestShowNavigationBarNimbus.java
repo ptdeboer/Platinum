@@ -1,7 +1,6 @@
 package nl.esciencecenter.ptk.ui.widgets;
 
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;

@@ -421,7 +421,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
             case LOOKANDFEEL: {
                 if (!this.platform.getGuiSettings().getLaFEnabled()) {
                     // Must disable in gui.
-                    showMessage("Please Enable LaF.","Custom Look and Feel not enabled.");
+                    showMessage("Please Enable LaF.", "Custom Look and Feel not enabled.");
                 } else {
                     this.switchLookAndFeel(LookAndFeelType.valueOf(action.getArg0()), true);
                 }
@@ -872,7 +872,7 @@ public class ProxyBrowserController implements BrowserInterface, ActionMenuListe
     }
 
     private void switchLookAndFeel(LookAndFeelType lafType, boolean enable) {
-        this.getPlatform().switchLookAndFeelType(this.browserFrame, lafType,enable);
+        this.getPlatform().switchLookAndFeelType(this.browserFrame, lafType, enable);
     }
 
     public CopyBuffer getCopyBuffer() {

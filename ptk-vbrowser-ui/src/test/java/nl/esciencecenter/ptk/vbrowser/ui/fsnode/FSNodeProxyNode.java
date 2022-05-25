@@ -65,15 +65,13 @@ public class FSNodeProxyNode extends ProxyNode {
         init();
     }
 
-    public FSNodeProxyNode(ProxyFactory anyFileProxyFactory, VRL loc, FSPath file)
-             {
+    public FSNodeProxyNode(ProxyFactory anyFileProxyFactory, VRL loc, FSPath file) {
         super(anyFileProxyFactory, loc);
         this.file = file;
         init();
     }
 
-    protected FSNodeProxyNode(ProxyFactory anyFileProxyFactory, FSNodeProxyNode parent, VRL locator)
-             {
+    protected FSNodeProxyNode(ProxyFactory anyFileProxyFactory, FSNodeProxyNode parent, VRL locator) {
         super(anyFileProxyFactory, locator);
         init();
     }
@@ -133,17 +131,17 @@ public class FSNodeProxyNode extends ProxyNode {
         return subrange(nodes, offset, range);
     }
 
-    protected FSNodeProxyNode createNewNode(FSPath fsNode)  {
+    protected FSNodeProxyNode createNewNode(FSPath fsNode) {
         return new FSNodeProxyNode(getProxyFactory(), new VRL(fsNode.toURI()), fsNode);
     }
 
     @Override
-    protected String doGetMimeType()  {
+    protected String doGetMimeType() {
         return MimeTypes.getDefault().getMimeType(file.getPathname());
     }
 
     @Override
-    protected boolean doGetIsComposite()  {
+    protected boolean doGetIsComposite() {
         return this.file.isDirectory();
     }
 
@@ -172,12 +170,12 @@ public class FSNodeProxyNode extends ProxyNode {
     }
 
     @Override
-    protected List<String> doGetAttributeNames()  {
+    protected List<String> doGetAttributeNames() {
         return metaFile.getAttributeNames();
     }
 
     @Override
-    protected List<Attribute> doGetAttributes(String[] names)  {
+    protected List<Attribute> doGetAttributes(String[] names) {
         return metaFile.getAttributes(names);
     }
 
@@ -186,7 +184,7 @@ public class FSNodeProxyNode extends ProxyNode {
     }
 
     @Override
-    protected Map<String, AttributeDescription> doGetAttributeDescriptions(String[] names)  {
+    protected Map<String, AttributeDescription> doGetAttributeDescriptions(String[] names) {
         return null;
     }
 
@@ -202,7 +200,7 @@ public class FSNodeProxyNode extends ProxyNode {
     }
 
     @Override
-    protected String doGetIconURL(String status, int size)  {
+    protected String doGetIconURL(String status, int size) {
         return null;
     }
 
@@ -248,18 +246,17 @@ public class FSNodeProxyNode extends ProxyNode {
     }
 
     @Override
-    protected boolean doExists()  {
+    protected boolean doExists() {
         return this.file.exists(LinkOption.NOFOLLOW_LINKS);
     }
 
     @Override
-    protected ResourceConfigInfo doGetResourceConfigInfo()  {
+    protected ResourceConfigInfo doGetResourceConfigInfo() {
         return null;
     }
 
     @Override
-    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info)
-             {
+    protected ResourceConfigInfo doUpdateResourceConfigInfo(ResourceConfigInfo info) {
         return null;
     }
 

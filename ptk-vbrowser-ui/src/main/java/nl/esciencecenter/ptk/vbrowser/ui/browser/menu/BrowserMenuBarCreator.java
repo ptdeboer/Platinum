@@ -190,7 +190,7 @@ public class BrowserMenuBarCreator {
             for (LookAndFeelType type : supported) {
                 JMenuItem lafMI = new JMenuItem();
                 lafMenu.add(lafMI);
-                String name=type.getName();
+                String name = type.getName();
 //                if (lafEnabled && type==lafType) {
 //                    name="<html><b>"+type.getName()+"</b></html>";
 //                }

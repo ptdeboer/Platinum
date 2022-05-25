@@ -1,7 +1,6 @@
 package nl.esciencecenter.ptk.ui.widgets;
 
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.ui.widgets.AutoCompleteTextField;
 
 import javax.swing.*;
 import java.awt.*;

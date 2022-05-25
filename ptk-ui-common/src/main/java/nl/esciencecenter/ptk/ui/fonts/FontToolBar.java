@@ -33,7 +33,7 @@ import java.net.URL;
 public class FontToolBar extends JToolBar implements ActionListener {
 
     // text viewer attributes:
-    private final int[] fontSizes = {6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 24,32, 36, 48};
+    private final int[] fontSizes = {6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 24, 32, 36, 48};
     private final int fontPrefSize;
     private final int fontMaxSize;
     private String[] fontFamilyNames;
@@ -53,8 +53,8 @@ public class FontToolBar extends JToolBar implements ActionListener {
     private FontComboBoxRenderer fontCBRenderer;
 
     public FontToolBar(FontToolbarListener listener, int fontPrefSize, int fontMaxSize) {
-        this.fontPrefSize=fontPrefSize;
-        this.fontMaxSize=fontMaxSize;
+        this.fontPrefSize = fontPrefSize;
+        this.fontMaxSize = fontMaxSize;
         this.listener = listener;
         initGUI();
     }
@@ -92,10 +92,10 @@ public class FontToolBar extends JToolBar implements ActionListener {
         {
             fontFamilyCB = new JComboBox();
             // FontComboBoxRenderer uses the fontname as render font
-            this.fontCBRenderer = new FontComboBoxRenderer(this,fontMaxSize);
+            this.fontCBRenderer = new FontComboBoxRenderer(this, fontMaxSize);
             fontFamilyCB.setRenderer(fontCBRenderer);
             for (String val : fontFamilyNames) {
-                fontFamilyCB.addItem(new FontItem(val,fontPrefSize));
+                fontFamilyCB.addItem(new FontItem(val, fontPrefSize));
             }
             add(fontFamilyCB);
 
@@ -110,7 +110,7 @@ public class FontToolBar extends JToolBar implements ActionListener {
             fontSizeCB = new JComboBox();
             add(fontSizeCB);
             for (int val : fontSizes)
-                fontSizeCB.addItem(""+val);
+                fontSizeCB.addItem("" + val);
 
             fontSizeCB.setSelectedIndex(6);
             fontSizeCB.addActionListener(this);
@@ -227,8 +227,8 @@ public class FontToolBar extends JToolBar implements ActionListener {
         }
 
         for (int i = 0; i < this.fontSizes.length; i++) {
-            int val=info.getFontSize();
-            if (val==fontSizes[i]) {
+            int val = info.getFontSize();
+            if (val == fontSizes[i]) {
                 this.fontSizeCB.setSelectedIndex(i);
                 break;
             }

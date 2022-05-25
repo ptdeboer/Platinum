@@ -1,10 +1,10 @@
 package nl.esciencecenter.ptk.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class TestWebConfig {
 
@@ -37,7 +37,7 @@ public class TestWebConfig {
     }
 
     protected void testCreateConfig(String scheme, String user, String host, int port,
-            String servicePath, String expectedUri) throws URISyntaxException {
+                                    String servicePath, String expectedUri) throws URISyntaxException {
 
         URI uri = new URI(expectedUri);
         uri = uri.normalize();

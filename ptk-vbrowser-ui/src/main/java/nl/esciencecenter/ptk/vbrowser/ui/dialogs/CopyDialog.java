@@ -23,10 +23,8 @@ package nl.esciencecenter.ptk.vbrowser.ui.dialogs;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.vbrowser.ui.attribute.AttributePanel;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeSet;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import javax.swing.*;
@@ -173,12 +171,12 @@ public class CopyDialog extends javax.swing.JDialog implements ActionListener {
                     optionsPanel.add(destVrl, new CellConstraints("6, 7, 2, 1, default, default"));
                     destVrl.setText("<dest>");
                 }
-				optionsPanel.add(getSourceAttrsPanel(), new CellConstraints("4, 4, 3, 1, default, default"));
+                optionsPanel.add(getSourceAttrsPanel(), new CellConstraints("4, 4, 3, 1, default, default"));
                 optionsPanel.add(createSeperatorLbl(), new CellConstraints("2, 9, 6, 1, default, default"));
-				optionsPanel.add(getDestAttrsPanel(), new CellConstraints("4, 8, 3, 1, default, default"));
-				optionsPanel.add(getAlwaysOverwriteCB(), new CellConstraints("4, 11, 3, 1, default, default"));
-				optionsPanel.add(getAlwaysSkipCB(), new CellConstraints("4, 12, 3, 1, default, default"));
-				optionsPanel.add(getOptionLbl(), new CellConstraints("2, 10, 3, 1, default, default"));
+                optionsPanel.add(getDestAttrsPanel(), new CellConstraints("4, 8, 3, 1, default, default"));
+                optionsPanel.add(getAlwaysOverwriteCB(), new CellConstraints("4, 11, 3, 1, default, default"));
+                optionsPanel.add(getAlwaysSkipCB(), new CellConstraints("4, 12, 3, 1, default, default"));
+                optionsPanel.add(getOptionLbl(), new CellConstraints("2, 10, 3, 1, default, default"));
             }
             {
                 JPanel buttonPanel = new JPanel();

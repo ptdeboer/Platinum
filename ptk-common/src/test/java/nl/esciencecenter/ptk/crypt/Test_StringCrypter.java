@@ -314,9 +314,9 @@ public class Test_StringCrypter {
     }
 
     protected static void outPrintf(String format, Object... args) {
-        String msg=String.format(format,args);
+        String msg = String.format(format, args);
         if (msg.endsWith("\n")) {
-            msg=msg.substring(0,msg.length()-1);
+            msg = msg.substring(0, msg.length() - 1);
         }
         log.debug(msg);
     }

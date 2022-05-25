@@ -274,7 +274,7 @@ public class BrowserPlatform {
 
     public void initLookAndFeel() {
         if (this.getGuiSettings().getLaFEnabled()) {
-            this.switchLookAndFeelType(rootFrame, guiSettings.getLAFType(),true);
+            this.switchLookAndFeelType(rootFrame, guiSettings.getLAFType(), true);
         }
     }
 
@@ -295,9 +295,9 @@ public class BrowserPlatform {
 //            log.info("switchLookAndFeelType():{}", lafType);
 //        }
 
-        if ((lafType==null) || (!enable)) {
+        if ((lafType == null) || (!enable)) {
             // switch back for now and disable.
-            lafType=NATIVE;
+            lafType = NATIVE;
         }
 
         try {
@@ -357,7 +357,7 @@ public class BrowserPlatform {
      * @return
      */
     public UIProperties loadUIProperties(boolean initDefaults) throws VrsException {
-        VRL propLoc=getGUISettingsLoc();
+        VRL propLoc = getGUISettingsLoc();
         if (propLoc != null) {
             if (new VRSClient(vrsContext).existsFile(propLoc)) {
                 this.guiSettings = uiPropertiesSaver.loadFrom(propLoc);
@@ -379,7 +379,7 @@ public class BrowserPlatform {
 
     public VRL getGUISettingsLoc() throws VRLSyntaxException {
         VRL confDir = this.getVRSContext().getPersistantConfigLocation();
-        if (confDir==null) {
+        if (confDir == null) {
             return null;
         }
         return confDir.resolvePath(this.platformID + ".props");
@@ -407,7 +407,7 @@ public class BrowserPlatform {
      * Immediately close and dipspose all registered resources;
      */
     public void dispose() {
-        if (rootFrame!=null) {
+        if (rootFrame != null) {
             this.rootFrame.dispose();
         }
         this.viewerEventDispatcher.stop();

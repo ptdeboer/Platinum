@@ -2,7 +2,6 @@ package nl.esciencecenter.ptk.ui.widgets;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.ui.widgets.NavigationBar;
 
 import javax.swing.*;
 import java.awt.*;

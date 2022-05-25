@@ -6,7 +6,6 @@ import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.data.Attribute;
 import nl.esciencecenter.vbrowser.vrs.data.AttributeDescription;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VRLSyntaxException;
-import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 
 import java.util.List;
@@ -34,12 +33,12 @@ public class DummyNode implements VPath {
     }
 
     @Override
-    public String getResourceType()  {
+    public String getResourceType() {
         return "DUMMY";
     }
 
     @Override
-    public VResourceSystem getResourceSystem()  {
+    public VResourceSystem getResourceSystem() {
         return this.dummyRS;
     }
 
@@ -54,12 +53,12 @@ public class DummyNode implements VPath {
     }
 
     @Override
-    public VPath getParent()  {
+    public VPath getParent() {
         return dummyRS.createNode(vrl.getParent());
     }
 
     @Override
-    public String getIconURL(int size)  {
+    public String getIconURL(int size) {
         return "dummy.png";
     }
 
@@ -79,32 +78,32 @@ public class DummyNode implements VPath {
     }
 
     @Override
-    public List<Attribute> getAttributes(String[] names)  {
+    public List<Attribute> getAttributes(String[] names) {
         return null;
     }
 
     @Override
-    public List<String> getAttributeNames()  {
+    public List<String> getAttributeNames() {
         return null;
     }
 
     @Override
-    public boolean sync()  {
+    public boolean sync() {
         return true;
     }
 
     @Override
-    public boolean isComposite()  {
+    public boolean isComposite() {
         return isComposite;
     }
 
     @Override
-    public List<String> getChildResourceTypes()  {
+    public List<String> getChildResourceTypes() {
         return new StringList("dummy");
     }
 
     @Override
-    public List<? extends VPath> list()  {
+    public List<? extends VPath> list() {
         return null;
     }
 

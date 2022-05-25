@@ -28,11 +28,11 @@ import java.net.URL;
  * In dev environment including log4j from test/resourcess
  */
 public class StartVRSBrowserDev {
-    
+
     public static void main(String args[]) {
 
         URL log4j = Thread.currentThread().getContextClassLoader().getResource("log4j.xml");
-        System.err.printf("StartVRSBrowserDev:using log4j:%s\n",log4j);
+        System.err.printf("StartVRSBrowserDev:using log4j:%s\n", log4j);
         try {
             new StartVBrowser().start(args);
         } catch (Exception e) {

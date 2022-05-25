@@ -5,10 +5,8 @@
 
 package nl.esciencecenter.ptk.vbrowser.viewers.internal;
 
-import nl.esciencecenter.ptk.GlobalProperties;
 import nl.esciencecenter.ptk.data.HashMapList;
 import nl.esciencecenter.ptk.data.StringList;
-import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.ptk.vbrowser.viewers.MimeViewer;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerJPanel;
 import nl.esciencecenter.ptk.vbrowser.viewers.ViewerPlugin;
@@ -99,11 +97,11 @@ public class WebResourceViewer extends ViewerJPanel implements ActionListener, V
     public void startURI(VRL vrl) {
         try {
             debug("starting:" + vrl);
-            this.urlTF.setText("url:"+vrl.toString());
-            String text=getResourceHandler().readText(vrl,"UTF8");
+            this.urlTF.setText("url:" + vrl.toString());
+            String text = getResourceHandler().readText(vrl, "UTF8");
             this.infoTA.setText(text);
         } catch (Throwable e) {
-            notifyException("Exception:"+e,e);
+            notifyException("Exception:" + e, e);
         }
     }
 

@@ -51,7 +51,7 @@ public class BrowserInterfaceAdaptor implements BrowserInterface {
 
     private JPopupMenu jpopupMenu;
 
-    private ProxyNodeDnDHandler dndHandler=new ProxyNodeDnDHandler() {
+    private ProxyNodeDnDHandler dndHandler = new ProxyNodeDnDHandler() {
         @Override
         public boolean doDrop(ViewNode targetDropNode, DropAction dropAction, List<VRL> vrls, ITaskMonitor taskMonitor) throws ProxyException {
             System.err.printf("FIXME: ViewNodeDnDHandler.doDrop:%s:%s:", dropAction,

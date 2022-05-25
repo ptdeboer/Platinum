@@ -3,14 +3,12 @@ package nl.esciencecenter.ptk.util;
 import nl.esciencecenter.ptk.io.FSPath;
 import nl.esciencecenter.ptk.net.URIFactory;
 import nl.esciencecenter.ptk.net.URIUtil;
-import nl.esciencecenter.ptk.util.ResourceLoader.URLResolver;
 import org.junit.Assert;
 import org.junit.Test;
 import settings.Settings;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.LinkOption;
 
 /**
