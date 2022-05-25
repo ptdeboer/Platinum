@@ -1,15 +1,15 @@
 #!/bin/bash
 ##
-# (C-Left) PTdB.
-# 
+# (C-Left) Piter.NL
+#
 
-#default header file: 
+#default header file:
 headerfile=etc/header.txt
 
-# Usage updateHeaders: <header file> 
+# Usage updateHeaders: <header file>
 if [ -n "$1" ] ; then
     headerfile="$1"
-fi 
+fi
 
 # replaceHeader()
 replaceHeader()
@@ -38,44 +38,48 @@ replaceHeader()
                              x
                              d
                 }
+                # strip bogus comments before package
+                /package/ {
+                             s/.*package/package/
+                }
   }
   # print rest
   p
  '
-} 
+}
 
-for file in `find . -name "*.java"` ; do 
+for file in `find . -name "*.java"` ; do
   echo updating file: $file
-  replaceHeader "$file" $headerfile  > "$file".new 
+  replaceHeader "$file" $headerfile  > "$file".new
   res=$?
 
-  if [ $res != 0 ]  ; then 
+  if [ $res != 0 ]  ; then
       echo "Error. replace script failed"
-      exit 1 
-  fi 
+      exit 1
+  fi
 
   diff "$file" "$file".new
   echo "proceed ? [Y/n/s/q] (Yes,No,Skip File, Quit)"
-  read answer 
-  case $answer in 
-        ""|[yY]) 
-              mv "$file" "$file".old 
-              mv "$file".new "$file" 
+  read answer
+  case $answer in
+        ""|[yY])
+              mv "$file" "$file".old
+              mv "$file".new "$file"
               rm "$file".old
-              ;; 
+              ;;
         [nN])
-              exit  2  
-              ;; 
+              exit  2
+              ;;
         [sS])
-              echo "Skipping:" $file 
-	      rm "$file".new 
-              ;; 
-        [qQ])  
+              echo "Skipping:" $file
+	      rm "$file".new
+              ;;
+        [qQ])
               exit 2
               ;;
-        *) 
+        *)
               echo "Error"
-              ;; 
+              ;;
   esac
-done  
+done
 

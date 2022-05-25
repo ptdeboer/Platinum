@@ -8,6 +8,11 @@ See here for the Wiki:
  - https://github.com/NLeSC/Platinum/wiki
 
 
+Java 11 notice
+---
+This project has been upgrade to a Java 11 project. 
+
+
 Build
 ---
 Default maven build:
