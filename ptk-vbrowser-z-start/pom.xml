@@ -39,6 +39,15 @@
             <artifactId>ptk-vbrowser-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- add runtime dependency for vterm binaries -->
+        <dependency>
+            <groupId>nl.piter.vterm</groupId>
+            <artifactId>vterm-emulator</artifactId>
+            <version>${vterm.version}</version>
+            <classifier>linux-bin</classifier>
+            <type>zip</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>

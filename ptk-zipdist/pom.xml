@@ -20,16 +20,14 @@
             <artifactId>ptk-vbrowser-z-start</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- is already a dependency from pkt-util-vterm -->
-        <!--		<dependency>-->
-        <!--			<groupId>nl.piter.vterm</groupId>-->
-        <!--			<artifactId>vterm-emulator</artifactId>-->
-        <!--			<version>${vterm.version}</version>-->
-        <!--			<classifier>linux-bin</classifier>-->
-        <!--			<type>zip</type>-->
-        <!--			<scope>runtime</scope>-->
-        <!--		</dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>nl.piter.vterm</groupId>-->
+<!--            <artifactId>vterm-emulator</artifactId>-->
+<!--            <version>${vterm.version}</version>-->
+<!--            <classifier>linux-bin</classifier>-->
+<!--            <type>zip</type>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 
     </dependencies>
 

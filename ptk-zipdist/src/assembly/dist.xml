@@ -14,10 +14,9 @@
             <!-- Now, select which projects to include in this module-set, this will
                 include dependencies to other modules available in the reactor vat -->
             <includes>
-                <include>*:ptk-core</include>
+                <include>*:ptk-common</include>
                 <include>*:ptk-web</include>
-                <include>*:ptk-ui</include>
-                <include>*:ptk-util-vterm</include>
+                <include>*:ptk-vbrowser-ui</include>
                 <include>*:ptk-vbrowser-vrs</include>
                 <include>*:ptk-vbrowser-vrs-sftp</include>
                 <include>*:ptk-vbrowser-ui</include>
@@ -104,15 +103,14 @@
 
     <dependencySets>
         <dependencySet>
-            <!--			<useProjectArtifact>false</useProjectArtifact>-->
-            <!--			<useProjectAttachments>true</useProjectAttachments>-->
             <unpack>true</unpack>
-            <!--			<scope>runtime</scope>-->
+            <!-- <scope>runtime</scope>-->
             <includes>
                 <!-- Full pattern: groupId:artifactId:type:classifier -->
                 <include>nl.piter.vterm:vterm-emulator:zip:linux-bin</include>
             </includes>
-            <useTransitiveFiltering>true</useTransitiveFiltering>
+            <!-- important: do not include vterm dependencies (like logging,etc.) or they will be unpacked here also -->
+            <useTransitiveFiltering>false</useTransitiveFiltering>
             <outputDirectory>bin/</outputDirectory>
         </dependencySet>
     </dependencySets>
