@@ -26,10 +26,15 @@
 
             <binaries>
                 <outputDirectory>lib/</outputDirectory>
-                <!-- default targets are 'jar' so keep them packed -->
                 <unpack>false</unpack>
+                <includeDependencies>true</includeDependencies>
                 <dependencySets>
-                    <dependencySet><!-- filter here --></dependencySet>
+                    <dependencySet>
+                        <!-- filter transient dependencies -->
+                        <excludes>
+                            <exclude>*:vterm-emulator:zip:bin</exclude>
+                        </excludes>
+                        </dependencySet>
                 </dependencySets>
             </binaries>
         </moduleSet>
@@ -42,6 +47,32 @@
             </includes>
             <binaries>
                 <attachmentClassifier>scripts</attachmentClassifier>
+                <outputDirectory>bin/</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <unpack>true</unpack>
+            </binaries>
+        </moduleSet>
+
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>*:ptk-vbrowser-z-start</include>
+            </includes>
+            <binaries>
+                <attachmentClassifier>scripts</attachmentClassifier>
+                <outputDirectory>bin/</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <unpack>true</unpack>
+            </binaries>
+        </moduleSet>
+
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>*:vterm-emulator</include>
+            </includes>
+            <binaries>
+                <attachmentClassifier>bin</attachmentClassifier>
                 <outputDirectory>bin/</outputDirectory>
                 <includeDependencies>false</includeDependencies>
                 <unpack>true</unpack>
@@ -101,19 +132,21 @@
         <!--		</moduleSet>-->
     </moduleSets>
 
-    <dependencySets>
-        <dependencySet>
-            <unpack>true</unpack>
-            <!-- <scope>runtime</scope>-->
-            <includes>
-                <!-- Full pattern: groupId:artifactId:type:classifier -->
-                <include>nl.piter.vterm:vterm-emulator:zip:linux-bin</include>
-            </includes>
-            <!-- important: do not include vterm dependencies (like logging,etc.) or they will be unpacked here also -->
-            <useTransitiveFiltering>false</useTransitiveFiltering>
-            <outputDirectory>bin/</outputDirectory>
-        </dependencySet>
-    </dependencySets>
+    <!-- example using dependencySets, but since vterm-emulator is in the current module Reactor this isn't needed -->
+
+<!--    <dependencySets>-->
+<!--        <dependencySet>-->
+<!--            <unpack>true</unpack>-->
+<!--            &lt;!&ndash; <scope>runtime</scope>&ndash;&gt;-->
+<!--            <includes>-->
+<!--                &lt;!&ndash; Full pattern: groupId:artifactId:type:classifier &ndash;&gt;-->
+<!--                <include>nl.piter.vterm:vterm-emulator:zip:linux-bin</include>-->
+<!--            </includes>-->
+<!--            &lt;!&ndash; important: do not include vterm dependencies (like logging,etc.) or they will be unpacked here also &ndash;&gt;-->
+<!--            <useTransitiveFiltering>false</useTransitiveFiltering>-->
+<!--            <outputDirectory>bin/</outputDirectory>-->
+<!--        </dependencySet>-->
+<!--    </dependencySets>-->
 
     <fileSets>
         <fileSet>

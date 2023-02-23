@@ -44,12 +44,12 @@
                 <!-- add linux binaries -->
                 <configuration>
                     <descriptors>
-                        <descriptor>src/assembly/linux-bin.xml</descriptor>
+                        <descriptor>src/assembly/bin.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>linux-bin</id>
+                        <id>bin</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
