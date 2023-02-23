@@ -40,15 +40,6 @@
             <artifactId>ptk-vbrowser-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Add runtime dependency for vterm binaries -->
-        <dependency>
-            <groupId>nl.piter.vterm</groupId>
-            <artifactId>vterm-emulator</artifactId>
-            <version>${vterm.version}</version>
-            <classifier>bin</classifier>
-            <type>zip</type>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -62,7 +53,6 @@
                             <mainClass>nl.esciencecenter.ptk.vbrowser.ui.StartVBrowser</mainClass>
                             <!--  set to false to allow custom CLASSPATH (or -cp) -->
                             <addClasspath>false</addClasspath>
-                            -->
                         </manifest>
                     </archive>
                 </configuration>
