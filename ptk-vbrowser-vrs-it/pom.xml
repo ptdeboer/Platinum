@@ -8,7 +8,7 @@
     <parent>
         <groupId>nl.esciencecenter.platinum</groupId>
         <artifactId>platinum</artifactId>
-        <version>1.5.0</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
