@@ -51,7 +51,8 @@
                         <manifest>
                             <mainClass>nl.esciencecenter.ptk.vbrowser.ui.StartVBrowser</mainClass>
                             <!--  set to false to allow custom CLASSPATH (or -cp) -->
-                            <addClasspath>false</addClasspath> -->
+                            <addClasspath>false</addClasspath>
+                            -->
                         </manifest>
                     </archive>
                 </configuration>

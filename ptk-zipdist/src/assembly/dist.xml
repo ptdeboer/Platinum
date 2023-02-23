@@ -1,133 +1,133 @@
 <assembly>
-	<id>dist</id>
-	<formats>
-		<format>dir</format> <!-- create local dir -->
-		<format>zip</format>
-	</formats>
+    <id>dist</id>
+    <formats>
+        <format>dir</format> <!-- create local dir -->
+        <format>zip</format>
+    </formats>
 
-	<!-- Strip the 'target/MODULES-VERSION-dist/MODULE-VERSION/' basedir -->
-	<includeBaseDirectory>false</includeBaseDirectory>
-	<moduleSets>
-		<moduleSet>
-			<!-- Enable access to all projects in the current multimodule build -->
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<!-- Now, select which projects to include in this module-set, this will 
-				include dependencies to other modules available in the reactor vat -->
-			<includes>
-				<include>*:ptk-core</include>
-				<include>*:ptk-web</include>
-				<include>*:ptk-ui</include>
-				<include>*:ptk-util-vterm</include>
-				<include>*:ptk-vbrowser-vrs</include>
-				<include>*:ptk-vbrowser-vrs-sftp</include>
-				<include>*:ptk-vbrowser-ui</include>
-				<include>*:ptk-vbrowser-viewers</include>
-				<include>*:ptk-vbrowser-z-start</include>
-			</includes>
+    <!-- Strip the 'target/MODULES-VERSION-dist/MODULE-VERSION/' basedir -->
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <moduleSets>
+        <moduleSet>
+            <!-- Enable access to all projects in the current multimodule build -->
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <!-- Now, select which projects to include in this module-set, this will
+                include dependencies to other modules available in the reactor vat -->
+            <includes>
+                <include>*:ptk-core</include>
+                <include>*:ptk-web</include>
+                <include>*:ptk-ui</include>
+                <include>*:ptk-util-vterm</include>
+                <include>*:ptk-vbrowser-vrs</include>
+                <include>*:ptk-vbrowser-vrs-sftp</include>
+                <include>*:ptk-vbrowser-ui</include>
+                <include>*:ptk-vbrowser-viewers</include>
+                <include>*:ptk-vbrowser-z-start</include>
+            </includes>
 
-			<binaries>
-				<outputDirectory>lib/</outputDirectory>
-				<!-- default targets are 'jar' so keep them packed -->
-				<unpack>false</unpack>
-					<dependencySets>
-						<dependencySet><!-- filter here --></dependencySet>
-					</dependencySets>
-			</binaries>
-		</moduleSet>
+            <binaries>
+                <outputDirectory>lib/</outputDirectory>
+                <!-- default targets are 'jar' so keep them packed -->
+                <unpack>false</unpack>
+                <dependencySets>
+                    <dependencySet><!-- filter here --></dependencySet>
+                </dependencySets>
+            </binaries>
+        </moduleSet>
 
-		<!-- Scripts: binary attachment = '*-scripts' -->
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>*:ptk-vbrowser-z-start</include>
-			</includes>
-			<binaries>
-				<attachmentClassifier>scripts</attachmentClassifier>
-				<outputDirectory>bin/</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>true</unpack>
-			</binaries>
-		</moduleSet>
+        <!-- Scripts: binary attachment = '*-scripts' -->
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>*:ptk-vbrowser-z-start</include>
+            </includes>
+            <binaries>
+                <attachmentClassifier>scripts</attachmentClassifier>
+                <outputDirectory>bin/</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <unpack>true</unpack>
+            </binaries>
+        </moduleSet>
 
-		<!-- Configuration: '*-conf' -->
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>*:ptk-vbrowser-vrs</include>
-				<include>*:ptk-vbrowser-z-start</include>
-			</includes>
-			<binaries>
-				<attachmentClassifier>conf</attachmentClassifier>
-				<outputDirectory>etc/</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>true</unpack>
-			</binaries>
-		</moduleSet>
+        <!-- Configuration: '*-conf' -->
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>*:ptk-vbrowser-vrs</include>
+                <include>*:ptk-vbrowser-z-start</include>
+            </includes>
+            <binaries>
+                <attachmentClassifier>conf</attachmentClassifier>
+                <outputDirectory>etc/</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <unpack>true</unpack>
+            </binaries>
+        </moduleSet>
 
-		<!-- Icons: '*-icons' -->
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-<!--				<include>*:ptk-ui</include>-->
-				<include>*:ptk-vbrowser-ui</include>
-			</includes>
-			<binaries>
-				<attachmentClassifier>icons</attachmentClassifier>
-				<!-- Note: icon assemblies should have directory 'icons/' already as 
-					prefixed root directory so the the preferred output directory becomes lib/icons. 
-					This should match expected classpath prefix of "icons/" when appending "lib/" 
-					to the application classpath. This way custom 'icons' directories are possible, 
-					for example "lib/icons-theme/" -->
-				<outputDirectory>lib/</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>true</unpack>
-			</binaries>
-		</moduleSet>
+        <!-- Icons: '*-icons' -->
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <!--				<include>*:ptk-ui</include>-->
+                <include>*:ptk-vbrowser-ui</include>
+            </includes>
+            <binaries>
+                <attachmentClassifier>icons</attachmentClassifier>
+                <!-- Note: icon assemblies should have directory 'icons/' already as
+                    prefixed root directory so the the preferred output directory becomes lib/icons.
+                    This should match expected classpath prefix of "icons/" when appending "lib/"
+                    to the application classpath. This way custom 'icons' directories are possible,
+                    for example "lib/icons-theme/" -->
+                <outputDirectory>lib/</outputDirectory>
+                <includeDependencies>false</includeDependencies>
+                <unpack>true</unpack>
+            </binaries>
+        </moduleSet>
 
-<!--		&lt;!&ndash; External libraries: "*-plugin-lib-ext" -> lobobrowser only &ndash;&gt;-->
-<!--		<moduleSet>-->
-<!--			<useAllReactorProjects>true</useAllReactorProjects>-->
-<!--			<includes>-->
-<!--				<include>*:ptk-vbrowser-viewers-loboviewer</include>-->
-<!--			</includes>-->
-<!--			<binaries>-->
-<!--				&lt;!&ndash; The lib-ext is used here to specify custom, non maven, library dependencies -->
-<!--					These jars are in ${module}/lib/* directory. Modules must export them with -->
-<!--					the "-lib-ext" identifier. &ndash;&gt;-->
-<!--				<attachmentClassifier>plugin-ext-lib</attachmentClassifier>-->
-<!--				<outputDirectory>lib/plugins/</outputDirectory>-->
-<!--				<includeDependencies>false</includeDependencies>-->
-<!--				<unpack>true</unpack>-->
-<!--			</binaries>-->
-<!--		</moduleSet>-->
-	</moduleSets>
+        <!--		&lt;!&ndash; External libraries: "*-plugin-lib-ext" -> lobobrowser only &ndash;&gt;-->
+        <!--		<moduleSet>-->
+        <!--			<useAllReactorProjects>true</useAllReactorProjects>-->
+        <!--			<includes>-->
+        <!--				<include>*:ptk-vbrowser-viewers-loboviewer</include>-->
+        <!--			</includes>-->
+        <!--			<binaries>-->
+        <!--				&lt;!&ndash; The lib-ext is used here to specify custom, non maven, library dependencies -->
+        <!--					These jars are in ${module}/lib/* directory. Modules must export them with -->
+        <!--					the "-lib-ext" identifier. &ndash;&gt;-->
+        <!--				<attachmentClassifier>plugin-ext-lib</attachmentClassifier>-->
+        <!--				<outputDirectory>lib/plugins/</outputDirectory>-->
+        <!--				<includeDependencies>false</includeDependencies>-->
+        <!--				<unpack>true</unpack>-->
+        <!--			</binaries>-->
+        <!--		</moduleSet>-->
+    </moduleSets>
 
-	<dependencySets>
-		<dependencySet>
-<!--			<useProjectArtifact>false</useProjectArtifact>-->
-<!--			<useProjectAttachments>true</useProjectAttachments>-->
-			<unpack>true</unpack>
-<!--			<scope>runtime</scope>-->
-			<includes>
-				<!-- Full pattern: groupId:artifactId:type:classifier -->
-				<include>nl.piter.vterm:vterm-emulator:zip:linux-bin</include>
-			</includes>
-			<useTransitiveFiltering>true</useTransitiveFiltering>
-			<outputDirectory>bin/</outputDirectory>
-		</dependencySet>
-	</dependencySets>
+    <dependencySets>
+        <dependencySet>
+            <!--			<useProjectArtifact>false</useProjectArtifact>-->
+            <!--			<useProjectAttachments>true</useProjectAttachments>-->
+            <unpack>true</unpack>
+            <!--			<scope>runtime</scope>-->
+            <includes>
+                <!-- Full pattern: groupId:artifactId:type:classifier -->
+                <include>nl.piter.vterm:vterm-emulator:zip:linux-bin</include>
+            </includes>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+            <outputDirectory>bin/</outputDirectory>
+        </dependencySet>
+    </dependencySets>
 
-	<fileSets>
-		<fileSet>
-			<!-- From Platinum Root -->
-			<directory>../</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>README*</include>
-				<include>LICENSE*</include>
-				<include>NOTICE*</include>
-			</includes>
-		</fileSet>
-	</fileSets>
+    <fileSets>
+        <fileSet>
+            <!-- From Platinum Root -->
+            <directory>../</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
 
 </assembly>

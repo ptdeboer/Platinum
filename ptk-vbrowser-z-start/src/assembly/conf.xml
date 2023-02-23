@@ -1,20 +1,20 @@
 <assembly>
-	<id>conf</id>
-	<formats>
+    <id>conf</id>
+    <formats>
 
-		<format>zip</format>
-	</formats>
-	 <includeBaseDirectory>false</includeBaseDirectory>
-	<fileSets>
-		<fileSet>
-			<directory>src/config/</directory>
-			<!-- ptk-zipdist puts them in 'etc/' -->
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>*.sh</include>
-				<include>*.xml</include>
-			</includes>
-			<fileMode>0644</fileMode>
-		</fileSet>
-	</fileSets>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/config/</directory>
+            <!-- ptk-zipdist puts them in 'etc/' -->
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>*.sh</include>
+                <include>*.xml</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+    </fileSets>
 </assembly>

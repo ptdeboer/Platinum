@@ -15,34 +15,34 @@
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-jar-plugin</artifactId>-->
-<!--                &lt;!&ndash; exclude icons from default jar &ndash;&gt;-->
-<!--                <configuration>-->
-<!--                    <excludes>-->
-<!--                        <exclude>icons/**</exclude>-->
-<!--                    </excludes>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <artifactId>maven-assembly-plugin</artifactId>-->
-<!--                &lt;!&ndash; create custom *-icons zip &ndash;&gt;-->
-<!--                <configuration>-->
-<!--                    <descriptors>-->
-<!--                        <descriptor>src/assembly/icons.xml</descriptor>-->
-<!--                    </descriptors>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>icons</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>single</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-jar-plugin</artifactId>-->
+            <!--                &lt;!&ndash; exclude icons from default jar &ndash;&gt;-->
+            <!--                <configuration>-->
+            <!--                    <excludes>-->
+            <!--                        <exclude>icons/**</exclude>-->
+            <!--                    </excludes>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <artifactId>maven-assembly-plugin</artifactId>-->
+            <!--                &lt;!&ndash; create custom *-icons zip &ndash;&gt;-->
+            <!--                <configuration>-->
+            <!--                    <descriptors>-->
+            <!--                        <descriptor>src/assembly/icons.xml</descriptor>-->
+            <!--                    </descriptors>-->
+            <!--                </configuration>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>icons</id>-->
+            <!--                        <phase>package</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>single</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 
@@ -58,11 +58,11 @@
             <artifactId>forms</artifactId>
             <version>1.2.1</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.jgoodies</groupId>-->
-<!--            <artifactId>looks</artifactId>-->
-<!--            <version>2.2.2</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.jgoodies</groupId>-->
+        <!--            <artifactId>looks</artifactId>-->
+        <!--            <version>2.2.2</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.jclarion</groupId>
             <artifactId>image4j</artifactId>
