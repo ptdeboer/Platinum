@@ -132,21 +132,20 @@
         <!--		</moduleSet>-->
     </moduleSets>
 
-    <!-- example using dependencySets, but since vterm-emulator is in the current module Reactor this isn't needed -->
-
-<!--    <dependencySets>-->
-<!--        <dependencySet>-->
-<!--            <unpack>true</unpack>-->
-<!--            &lt;!&ndash; <scope>runtime</scope>&ndash;&gt;-->
-<!--            <includes>-->
-<!--                &lt;!&ndash; Full pattern: groupId:artifactId:type:classifier &ndash;&gt;-->
-<!--                <include>nl.piter.vterm:vterm-emulator:zip:linux-bin</include>-->
-<!--            </includes>-->
-<!--            &lt;!&ndash; important: do not include vterm dependencies (like logging,etc.) or they will be unpacked here also &ndash;&gt;-->
-<!--            <useTransitiveFiltering>false</useTransitiveFiltering>-->
-<!--            <outputDirectory>bin/</outputDirectory>-->
-<!--        </dependencySet>-->
-<!--    </dependencySets>-->
+    <!-- external dependency, not in module reactor -->
+    <dependencySets>
+        <dependencySet>
+            <unpack>true</unpack>
+             <scope>runtime</scope>
+            <includes>
+                <!-- Full pattern: groupId:artifactId:type:classifier -->
+                <include>nl.piter.vterm:vterm-emulator:zip:bin</include>
+            </includes>
+            <!-- important: do not include vterm dependencies (like logging,etc.) or they will be unpacked here also -->
+            <useTransitiveFiltering>false</useTransitiveFiltering>
+            <outputDirectory>bin/</outputDirectory>
+        </dependencySet>
+    </dependencySets>
 
     <fileSets>
         <fileSet>

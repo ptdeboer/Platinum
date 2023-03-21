@@ -19,7 +19,7 @@
 
     <modules>
         <!-- external modules -->
-	<!-- <module>vterm</module> -->
+	    <!-- <module>vterm</module> -->
         <!-- ptk -->
         <module>ptk-common</module>
         <module>ptk-web</module>
