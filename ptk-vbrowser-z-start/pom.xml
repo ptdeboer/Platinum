@@ -40,6 +40,11 @@
             <artifactId>ptk-vbrowser-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>nl.piter.vterm</groupId>-->
+<!--            <artifactId>vterm-emulator</artifactId>-->
+<!--            <version>${vterm.version}</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -58,6 +63,7 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
