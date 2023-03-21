@@ -9,6 +9,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.api.ShellChannelFactory;
+import nl.piter.vterm.api.VTermUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +25,10 @@ public class SSHShellChannelFactory implements ShellChannelFactory {
         this.vrsClient = new VRSClient(context);
     }
 
-    public ShellChannel createChannel(java.net.URI uri, String user, char[] password,
-                                      ChannelOptions options) throws IOException {
+    public ShellChannel createChannel(String user, String host, int port, char[] password,
+                                      ChannelOptions options, VTermUI ui) throws IOException {
         try {
-            VRL vrl = new VRL(uri);
+            VRL vrl = new VRL("ssh", user, host, port, "/");
             VResourceSystem vrs = this.vrsClient.getVResourceSystemFor(vrl);
 
             logger.error(">>> Found vrs:{}", vrs);
@@ -35,10 +36,10 @@ public class SSHShellChannelFactory implements ShellChannelFactory {
             if (vrs instanceof VShellChannelCreator) {
                 return ((VShellChannelCreator) vrs).createShellChannel(vrl, options);
             } else {
-                throw new IOException("ShellChannel not supported for resource:" + uri);
+                throw new IOException("ShellChannel not supported for resource:" + vrl);
             }
         } catch (VrsException e) {
-            throw new IOException("Failed to createShellChannel to:" + uri, e);
+            throw new IOException("Failed to createShellChannel to:" + user + "@" + host + ":" + port, e);
         }
     }
 

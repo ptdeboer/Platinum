@@ -29,12 +29,12 @@
                 <unpack>false</unpack>
                 <includeDependencies>true</includeDependencies>
                 <dependencySets>
-                    <dependencySet>
-                        <!-- filter transient dependencies -->
-                        <excludes>
-                            <exclude>*:vterm-emulator:zip:bin</exclude>
-                        </excludes>
-                        </dependencySet>
+<!--                    <dependencySet>-->
+<!--                        &lt;!&ndash; filter transient dependencies &ndash;&gt;-->
+<!--                        <excludes>-->
+<!--                            <exclude>*:*:zip:bin</exclude>-->
+<!--                        </excludes>-->
+<!--                        </dependencySet>-->
                 </dependencySets>
             </binaries>
         </moduleSet>
