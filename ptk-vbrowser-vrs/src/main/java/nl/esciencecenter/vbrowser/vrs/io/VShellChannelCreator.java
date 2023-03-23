@@ -22,8 +22,8 @@
 package nl.esciencecenter.vbrowser.vrs.io;
 
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
+import nl.piter.vterm.api.TermChannelOptions;
 
 import java.io.IOException;
 
@@ -33,6 +33,6 @@ public interface VShellChannelCreator {
      * Create Shell Channel to current resource or use optionalLocation to resolve location of
      * shell.
      */
-    ShellChannel createShellChannel(VRL optionalLocation, ChannelOptions options) throws IOException;
+    ShellChannel createShellChannel(VRL optionalLocation, TermChannelOptions options) throws IOException;
 
 }

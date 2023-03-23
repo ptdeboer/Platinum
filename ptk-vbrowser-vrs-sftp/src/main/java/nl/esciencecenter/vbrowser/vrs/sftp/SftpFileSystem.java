@@ -37,8 +37,8 @@ import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SftpEntry;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRLUtil;
-import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
+import nl.piter.vterm.api.TermChannelOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -305,7 +305,7 @@ public class SftpFileSystem extends VFileSystemNode implements VStreamCreator,
     }
 
     @Override
-    public ShellChannel createShellChannel(VRL optionalLocation, ChannelOptions options) throws IOException {
+    public ShellChannel createShellChannel(VRL optionalLocation, TermChannelOptions options) throws IOException {
         try {
             ChannelShell shellChannel = this.sftpSession.createShellChannel();
             SshShellChannel sshShellChannel = new SshShellChannel(this.sftpSession, shellChannel, options);

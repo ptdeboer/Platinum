@@ -6,10 +6,10 @@ import nl.esciencecenter.vbrowser.vrs.VResourceSystem;
 import nl.esciencecenter.vbrowser.vrs.exceptions.VrsException;
 import nl.esciencecenter.vbrowser.vrs.io.VShellChannelCreator;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
-import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.api.ShellChannelFactory;
-import nl.piter.vterm.api.VTermUI;
+import nl.piter.vterm.api.TermChannelOptions;
+import nl.piter.vterm.api.TermUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class SSHShellChannelFactory implements ShellChannelFactory {
     }
 
     public ShellChannel createChannel(String user, String host, int port, char[] password,
-                                      ChannelOptions options, VTermUI ui) throws IOException {
+                                      TermChannelOptions options, TermUI ui) throws IOException {
         try {
             VRL vrl = new VRL("ssh", user, host, port, "/");
             VResourceSystem vrs = this.vrsClient.getVResourceSystemFor(vrl);

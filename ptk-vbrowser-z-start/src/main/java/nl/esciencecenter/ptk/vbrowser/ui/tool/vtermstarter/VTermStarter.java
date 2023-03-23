@@ -11,7 +11,8 @@ import nl.esciencecenter.vbrowser.vrs.sftp.SSHShellChannelFactory;
 import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.emulator.VTermChannelProvider;
-import nl.piter.vterm.ui.panel.VTerm;
+import nl.piter.vterm.ui.VTerm;
+
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;

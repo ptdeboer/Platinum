@@ -5,8 +5,8 @@ import com.jcraft.jsch.JSchException;
 import lombok.extern.slf4j.Slf4j;
 import nl.esciencecenter.ptk.io.IOUtil;
 import nl.esciencecenter.vbrowser.vrs.sftp.jsch.SshSession;
-import nl.piter.vterm.api.ChannelOptions;
 import nl.piter.vterm.api.ShellChannel;
+import nl.piter.vterm.api.TermChannelOptions;
 import nl.piter.vterm.api.TermConst;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class SshShellChannel implements ShellChannel {
     private OutputStream stdin;
     private InputStream stdout;
 
-    public SshShellChannel(SshSession sftpSession, ChannelShell shellChannel, ChannelOptions options) {
+    public SshShellChannel(SshSession sftpSession, ChannelShell shellChannel, TermChannelOptions options) {
         this.session = sftpSession;
         this.channel = shellChannel;
         // TODO: proper options forwarding!
