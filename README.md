@@ -9,7 +9,7 @@ See here for the Wiki:
 
 Java 11 notice
 ---
-This project has been upgrade to a Java 11 project.
+This project has been upgraded to a Java 11 project.
 
 
 Build
