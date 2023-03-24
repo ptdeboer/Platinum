@@ -13,7 +13,7 @@
     <properties>
         <ptk.version>${project.version}</ptk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vterm.version>2.1.1</vterm.version>
+        <vterm.version>2.1.2</vterm.version>
         <jackson.version>2.8.11</jackson.version>
     </properties>
 
