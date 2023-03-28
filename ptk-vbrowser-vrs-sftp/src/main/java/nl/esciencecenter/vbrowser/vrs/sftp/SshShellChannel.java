@@ -49,6 +49,10 @@ public class SshShellChannel implements ShellChannel {
         this.options = new SshChannelOptions(options.getTermType(), options.getDefaultColumns(), options.getDefaultRows());
     }
 
+    public String getType() {
+        return "SSH";
+    }
+
     public void connect() throws IOException {
         //
         try {
@@ -121,7 +125,7 @@ public class SshShellChannel implements ShellChannel {
         }
     }
 
-    public void setPtySize(int col, int row, int wp, int hp) {
+    public void sendPtySize(int col, int row, int wp, int hp) {
         if (this.isConnected() == false) {
             log.error("setPtySize(): NOT connected!");
             return;
@@ -150,8 +154,8 @@ public class SshShellChannel implements ShellChannel {
     }
 
     @Override
-    public boolean setPtyTermSize(int col, int row, int wp, int hp) {
-        this.setPtySize(col, row, wp, hp);
+    public boolean sendPtyTermSize(int col, int row, int wp, int hp) {
+        this.sendPtySize(col, row, wp, hp);
         return true;
     }
 
