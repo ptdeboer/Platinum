@@ -66,19 +66,6 @@
             </binaries>
         </moduleSet>
 
-        <moduleSet>
-            <useAllReactorProjects>true</useAllReactorProjects>
-            <includes>
-                <include>*:vterm-emulator</include>
-            </includes>
-            <binaries>
-                <attachmentClassifier>bin</attachmentClassifier>
-                <outputDirectory>bin/</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-                <unpack>true</unpack>
-            </binaries>
-        </moduleSet>
-
         <!-- Configuration: '*-conf' -->
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
@@ -131,21 +118,6 @@
         <!--			</binaries>-->
         <!--		</moduleSet>-->
     </moduleSets>
-
-    <!-- external dependency, not in module reactor -->
-    <dependencySets>
-        <dependencySet>
-            <unpack>true</unpack>
-             <scope>runtime</scope>
-            <includes>
-                <!-- Full pattern: groupId:artifactId:type:classifier -->
-                <include>nl.piter.vterm:vterm-emulator:zip:bin</include>
-            </includes>
-            <!-- important: do not include vterm dependencies (like logging,etc.) or they will be unpacked here also -->
-            <useTransitiveFiltering>false</useTransitiveFiltering>
-            <outputDirectory>bin/</outputDirectory>
-        </dependencySet>
-    </dependencySets>
 
     <fileSets>
         <fileSet>

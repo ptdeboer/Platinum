@@ -133,11 +133,6 @@ public class SshShellChannel implements ShellChannel {
         this.channel.setPtySize(col, row, wp, hp);
     }
 
-    @Override
-    public String getPtyTermType() {
-        return this.options.termType;
-    }
-
     public void setPtyType(String type) {
         if (this.isConnected() == false) {
             log.error("setPtyType(): NOT connected!");

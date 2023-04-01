@@ -8,12 +8,12 @@
     <artifactId>platinum</artifactId>
     <packaging>pom</packaging>
     <name>Platinum [PTK]</name>
-    <version>1.6.1</version>
+    <version>1.6.4-SNAPSHOT</version>
 
     <properties>
         <ptk.version>${project.version}</ptk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vterm.version>2.2.0</vterm.version>
+        <vterm.version>2.3.3</vterm.version>
         <jackson.version>2.8.11</jackson.version>
     </properties>
 

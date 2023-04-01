@@ -10,10 +10,12 @@ import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.api.ShellChannelFactory;
 import nl.piter.vterm.api.TermChannelOptions;
 import nl.piter.vterm.api.TermUI;
+import nl.piter.vterm.channels.impl.PtyChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 
 public class SSHShellChannelFactory implements ShellChannelFactory {
 
@@ -25,11 +27,17 @@ public class SSHShellChannelFactory implements ShellChannelFactory {
         this.vrsClient = new VRSClient(context);
     }
 
-    public ShellChannel createChannel(String user, String host, int port, char[] password,
+    public ShellChannel createChannel(URI uri, String user, char[] password,
                                       TermChannelOptions options, TermUI ui) throws IOException {
+        VRL vrl = new VRL(uri);
+
         try {
-            VRL vrl = new VRL("ssh", user, host, port, "/");
+
             VResourceSystem vrs = this.vrsClient.getVResourceSystemFor(vrl);
+
+            if (vrl.hasScheme("file")) {
+                return new PtyChannelFactory().createChannel(vrl.toURINoException(), user, password, options, ui);
+            }
 
             logger.error(">>> Found vrs:{}", vrs);
 
@@ -39,7 +47,7 @@ public class SSHShellChannelFactory implements ShellChannelFactory {
                 throw new IOException("ShellChannel not supported for resource:" + vrl);
             }
         } catch (VrsException e) {
-            throw new IOException("Failed to createShellChannel to:" + user + "@" + host + ":" + port, e);
+            throw new IOException("Failed to createShellChannel to: " + vrl);
         }
     }
 

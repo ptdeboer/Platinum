@@ -12,6 +12,7 @@ import nl.esciencecenter.vbrowser.vrs.vrl.VRL;
 import nl.piter.vterm.api.ShellChannel;
 import nl.piter.vterm.emulator.VTermChannelProvider;
 import nl.piter.vterm.ui.VTerm;
+import nl.piter.vterm.ui.VTermSessionManager;
 
 
 import javax.swing.*;
@@ -120,9 +121,10 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
             VTermChannelProvider provider = new VTermChannelProvider();
             provider.registerChannelFactory("SSH", new SSHShellChannelFactory(context));
             // Could already create authenticated shell channel here (Optional!)
-            startVTerm(provider, null, uri);
+
+            startVTerm(provider, VTermSessionManager.SESSION_SSH, null, uri);
         } catch (URISyntaxException e) {
-            throw new VrsException("URI Syntax exeption:" + vrl, e);
+            throw new VrsException("URI Syntax exception:" + vrl, e);
         }
     }
 
@@ -175,14 +177,18 @@ public class VTermStarter extends ViewerJPanel implements ActionListener, ToolPl
     public List<Pair<MenuMapping, List<String>>> getMenuMappings() {
         ArrayList<String> methods = new ArrayList<String>();
         methods.add("open:Open VTerm");
-        MenuMapping menuMap = new MenuMapping(null, "sftp", null, null);
+
+        MenuMapping sftpMenu = new MenuMapping(null, "sftp", null, null);
+        MenuMapping shellMenu  = new MenuMapping(null, "file", null, null);
         List<Pair<MenuMapping, List<String>>> mappings = new ArrayList<>();
-        mappings.add(new Pair<>(menuMap, methods));
+        mappings.add(new Pair<>(sftpMenu, methods));
+        mappings.add(new Pair<>(shellMenu, methods));
+
         return mappings;
     }
 
-    public static VTerm startVTerm(final VTermChannelProvider provider, final ShellChannel shellChan, final URI loc) {
-        return new nl.piter.vterm.VTermStarter().withChannelProvider(provider).start(shellChan, loc);
+    public static VTerm startVTerm(final VTermChannelProvider provider, String sessionType, final ShellChannel shellChan, final URI loc) {
+        return new nl.piter.vterm.VTermStarter().withChannelProvider(provider).start(sessionType,shellChan, loc);
     }
 
 }

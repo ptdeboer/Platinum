@@ -9,7 +9,7 @@
     <parent>
         <groupId>nl.esciencecenter.platinum</groupId>
         <artifactId>platinum</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,16 +20,6 @@
             <artifactId>ptk-vbrowser-z-start</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- runtime dependency on binaries -->
-        <dependency>
-            <groupId>nl.piter.vterm</groupId>
-            <artifactId>vterm-emulator</artifactId>
-            <version>${vterm.version}</version>
-            <classifier>bin</classifier>
-            <type>zip</type>
-            <scope>runtime</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
