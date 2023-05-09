@@ -1,7 +1,7 @@
 Platinum
 ========
 
-Swing based GUI Toolkit containing the new VBrowser 2.0 API.
+Swing based GUI Toolkit containing the new VBrowser 2.0 API.\
 From 2013 to 2015 this was the follow-up from the VL-e's VBrowser project.
 
 See here for the Wiki:
